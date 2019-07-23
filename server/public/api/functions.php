@@ -12,8 +12,4 @@ if (!function_exists('handleError')) {
   }
 }
 
-function startup()
-{
-  header('Content-Type: application/json');
-}
 ?>
