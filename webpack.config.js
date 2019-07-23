@@ -39,7 +39,7 @@ module.exports = {
       '/api': {
         target: 'http://localhost',
         headers: {
-          Host: 'tbd'
+          Host: 'anteater-express.localhost'
         }
       }
     }
