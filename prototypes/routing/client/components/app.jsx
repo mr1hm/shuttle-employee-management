@@ -93,17 +93,45 @@ export default class App extends React.Component {
       });
   }
 
-  pageIndex() {
-    return <h2>Home</h2>;
+  loginView() {
+    return <h2>Login</h2>;
   }
 
-  pageDay() {
-    return <h2>Day</h2>;
+  welcomeView() {
+    return <h2>Welcome</h2>;
   }
-  
-  pageMonth() {
-    return <h2>Month</h2>;
+
+  dailyView() {
+    return <h2>My Shifts - Day</h2>;
   }
+
+  monthlyView() {
+    return <h2>My Shifts- Month</h2>;
+  }
+
+  weeklyView() {
+    return <h2>My Shifts - Week </h2>;
+  }
+
+  availableShifts() {
+    return <h2>Available Shifts</h2>;
+  }
+
+  // link from hamburger menu
+  myInfo() {
+    return <h2>My Info</h2>;
+  }
+
+  // link from hamburger menu
+  adminSummaryPage() {
+    return <h2>Admin</h2>;
+  }
+
+  // link from hamburger menu
+  campusResources() {
+    return <h2>Resources</h2>;
+  }
+
 
   render() {
     var cartArray = this.state.cart;
@@ -123,20 +151,45 @@ export default class App extends React.Component {
           <nav>
             <ul>
               <li>
-                <Link to="/">Home</Link>
+                <Link to="/">Login</Link>
               </li>
               <li>
-                <Link to="/day/">Day</Link>
+                <Link to="/welcome/">Welcome</Link>
               </li>
               <li>
-                <Link to="/month/">Month</Link>
+                <Link to="/weekly/">View Week</Link>
+              </li>
+              <li>
+                <Link to="/daily/">View Day</Link>
+              </li>
+              <li>
+                <Link to="/monthly/">View Month</Link>
+              </li>
+              <li>
+                <Link to="/available/">Add Shift</Link>
+              </li>
+              <li>
+                <Link to="/myinfo/">My Info</Link>
+              </li>
+              <li>
+                <Link to="/admin/">Admin</Link>
+              </li>
+              <li>
+                <Link to="/resources/">Resources</Link>
               </li>
             </ul>
           </nav>
 
-          <Route path="/" exact component={this.pageIndex} />
-          <Route path="/day/" component={this.pageDay} />
-          <Route path="/month/" component={this.pageMonth} />
+          <Route path="/" exact component={this.loginView} />
+          <Route path="/welcome/" component={this.welcomeView} />
+          <Route path="/weekly/" component={this.weeklyView} />
+          <Route path="/monthly/" component={this.monthlyView} />
+          <Route path="/daily/" component={this.dailyView} />
+          <Route path="/available/" component={this.availableShifts} />
+
+          <Route path="/myinfo/" component={this.myInfo} />
+          <Route path="/admin/" component={this.adminSummaryPage} />
+          <Route path="/resources/" component={this.campusResources} />
         </div>
       </Router>
     );
