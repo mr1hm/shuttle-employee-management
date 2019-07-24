@@ -8,8 +8,13 @@ class Welcome extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div>Shifts</div>
-        <div> Welcome </div>
+        <div className="container" style={{ top: "5%", left: "80%", position: "absolute" }}>
+          <div className= "row " >Shifts</div>
+        </div>
+
+        <div className="container" style={{ top: "40%", left: "40%", position: "absolute" }}>
+          <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >Welcome</div>
+        </div>
       </React.Fragment>
 
     );
