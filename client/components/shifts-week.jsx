@@ -6,9 +6,12 @@ class ShiftsWeek extends React.Component{
   }
   render(){
     return(
-      <div>View Month</div>
-      <div>Week Shifts View</div>
-      <div>View Day</div>
+      <React.Fragment>
+        <div>View Month</div>
+        <div>Week Shifts View</div>
+        <div>View Day</div>
+      </React.Fragment>
+
     );
   };
 }
