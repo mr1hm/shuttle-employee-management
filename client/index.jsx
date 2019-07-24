@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import App from './components/app';
-import Welcome from './components/welcome';
+import App from './components/app';
+
 
 
 ReactDOM.render(
-  <Welcome />,
+  <App />,
   document.querySelector('#root')
 );
