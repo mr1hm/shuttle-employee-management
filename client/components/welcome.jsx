@@ -7,8 +7,11 @@ class Welcome extends React.Component {
 
   render() {
     return (
-      <div>Shifts</div>
-      <div> Welcome </div>
+      <React.Fragment>
+        <div>Shifts</div>
+        <div> Welcome </div>
+      </React.Fragment>
+
     );
   }
 }
