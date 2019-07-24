@@ -1,4 +1,5 @@
 import React from 'react';
+import { isNullOrUndefined } from 'util';
 
  class App extends React.Component {
   constructor(props){
@@ -7,7 +8,10 @@ import React from 'react';
 
   render(){
     return (
-      <div> This will be where Login, Welcome, and Shift will render</div>
+      <div className="container" style={{ top: "40%", left: "20%", position: "absolute" }}>
+        <div className="row" style={{ display: "inline", transform: "translate(-50%, -50%)"}} > This will be where Login, Welcome, and Shift will render</div>
+      </div>
+
     );
   }
 }
