@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './topmenu.css';
 
 
 const TopMenu = (props)=> (
-    <nav>
+    <nav className="topnav">
         <ul>
             <li>
                 <Link to="/">Login</Link>
