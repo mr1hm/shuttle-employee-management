@@ -5,7 +5,7 @@ const publicPath = path.resolve(__dirname, 'server/public');
 
 module.exports = {
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx', '.css']
   },
   entry: './client',
   output: {
@@ -24,7 +24,11 @@ module.exports = {
             ]
           }
         }
-      }
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
     ]
   },
   devtool: 'source-map',
