@@ -1,0 +1,59 @@
+{
+  "startDate": "7-22-2019",
+  "endDate": "7-27-2019",
+  "userID": 60,
+  "userScheduleShiftID": 308,
+  "scheduleID": 8,
+  "week": {
+    "0": [
+      {"startTime": "12:00:00",
+       "endTime": "15:00:00",
+       "date": "7-22-2019",
+       "scheduled": true,
+       "posted": false,
+       "restricted": false }],
+    "1": [{
+        "startTime": "22:00:00",
+        "endTime": "00:00:00",
+        "date": "7-22-2019",
+        "scheduled": false,
+        "posted": false,
+        "restricted": true
+      }],
+    "2": [{
+        "startTime": "06:00:00",
+        "endTime": "11:00:00",
+        "date": "7-23-2019",
+        "scheduled": true,
+        "posted": false,
+        "restricted": false,
+
+      },
+      {
+        "startTime": "7:00:00",
+        "endTime": "00:00:00",
+        "date": "7-23-2019",
+        "scheduled": true,
+        "posted": true,
+        "restricted": false
+      },
+    {
+      "startTime": "22:00:00",
+      "endTime": "00:00:00",
+      "date": "7-23-2019",
+      "scheduled": false,
+      "posted": false,
+      "restricted": true
+    }],
+    "3": [],
+    "4": [],
+    "5": [],
+    "6": [],
+
+
+  },
+  "rules": { "maxWeeklyHours": "19.5",
+    "maxShiftHours": 5
+  }
+
+}
