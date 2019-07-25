@@ -6,36 +6,36 @@
   "scheduleID": 8,
   "week": {
     "0": [
-      {"startTime": "12:00:00",
-       "endTime": "15:00:00",
+      {"startTime": "1563735600000",
+       "endTime": "1563746400000",
        "date": "1563692400000",
        "posted": false,
        "restricted": false }],
     "1": [{
-        "startTime": "22:00:00",
-        "endTime": "00:00:00",
+        "startTime": "1563858000000",
+        "endTime": "1563778800000",
         "date": "1563778800000",
         "posted": false,
         "restricted": true
       }],
     "2": [{
-        "startTime": "06:00:00",
-        "endTime": "11:00:00",
+        "startTime": "1563886800000",
+        "endTime": "1563904800000",
         "date": "1563865200000",
         "posted": false,
-        "restricted": false,
+        "restricted": false
 
       },
       {
-        "startTime": "7:00:00",
-        "endTime": "00:00:00",
+        "startTime": "1563890400000",
+        "endTime": "1563944400000",
         "date": "1563865200000",
         "posted": true,
         "restricted": false
       },
     {
-      "startTime": "22:00:00",
-      "endTime": "00:00:00",
+      "startTime": "1563944400000",
+      "endTime": "1563865200000",
       "date": "1563865200000",
       "posted": false,
       "restricted": true
