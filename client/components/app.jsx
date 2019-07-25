@@ -11,7 +11,6 @@ import Welcome from './welcome';
 
   render(){
     return (
-
         <div>
           <nav>
             <ul>
@@ -28,14 +27,9 @@ import Welcome from './welcome';
             <Route path="/welcome/" component={Welcome} />
           </Switch>
         </div>
-
- 
     );
   }
 }
 export default App;
 
 
-/* <div className="container" style={{ top: "40%", left: "20%", position: "absolute" }}>
-<div className="row" style={{ display: "inline", transform: "translate(-50%, -50%)"}} > This will be where Login, Welcome, and Shift will render</div>
-</div> */
