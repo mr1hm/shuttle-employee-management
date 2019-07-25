@@ -1,7 +1,8 @@
 import React from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
-import Welcome from './welcome';
-
+import Welcome from './welcome/welcome';
+import TopMenu from './nav/topmenu/topmenu';
+import ShiftsWeek from './shifts/weeks/shifts-week';
 
  class App extends React.Component {
   constructor(props){
@@ -21,19 +22,11 @@ import Welcome from './welcome';
   render(){
     return (
         <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Login</Link>
-              </li>
-              <li>
-                <Link to="/welcome/">Go to Welcome Page</Link>
-              </li>
-            </ul>
-          </nav>
+          <TopMenu/>
           <Switch>
             <Route path="/" exact component={this.loginView} />
             <Route path="/welcome/" component={Welcome} />
+            <Route path="/shifts/week" component={ShiftsWeek} />
           </Switch>
         </div>
     );
