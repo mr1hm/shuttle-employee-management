@@ -1,7 +1,6 @@
 import React from 'react';
 import WeekOfMonth from './week-component';
 import MonthHeader from './month-header';
-import MonthFooter from './month-footer';
 
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -62,11 +61,10 @@ export default class ShiftsMonth extends React.Component {
   }
   render() {
     return (
-    <React.Fragment>
+      <div>
       <MonthHeader/>
       {this.bundleWeeks()}
-      <MonthFooter/>
-    </React.Fragment>
-    );
+      </div>
+    )
   }
 }
