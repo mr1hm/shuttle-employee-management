@@ -3,6 +3,7 @@ import { Switch, Route, Link } from 'react-router-dom';
 import Welcome from './welcome/welcome';
 import TopMenu from './nav/topmenu/topmenu';
 import ShiftsWeek from './shifts/weeks/shifts-week';
+import ShiftsMonth from './shifts/month/shifts-month';
 
  class App extends React.Component {
   constructor(props){
@@ -27,6 +28,7 @@ import ShiftsWeek from './shifts/weeks/shifts-week';
             <Route path="/" exact component={this.loginView} />
             <Route path="/welcome/" component={Welcome} />
             <Route path="/shifts/week" component={ShiftsWeek} />
+            <Route path="/shifts/month/shifts-month/" component={ShiftsMonth} />
           </Switch>
         </div>
     );
