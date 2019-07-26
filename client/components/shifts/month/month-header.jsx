@@ -1,4 +1,5 @@
 import React from 'react';
+import MonthNav from './shift-month-nav'
 
 export default function MonthHeader() {
   return (
@@ -6,11 +7,10 @@ export default function MonthHeader() {
         <div className="col">
           <h5>MY SHIFT - MONTH</h5>
         </div>
-        <div className="col-6">
-          <div>Current Month</div>
+        <div className="col-6">  
+          <MonthNav/>
         </div>
         <div className="col">
-          <div>Hamburger Menu</div>
         </div>
       </div>
   );

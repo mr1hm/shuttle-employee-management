@@ -19,6 +19,12 @@ import ShiftsMonth from './shifts/month/shifts-month';
     );
   }
 
+  getDayOfWeekForFirstOfCurrentMonth() {
+    var today = new Date();
+    var dateObjOfFirstOfCurrentMonth = new Date(today.getFullYear(), today.getMonth());
+    console.log(dateObjOfFirstOfCurrentMonth.getDay());
+    return dateObjOfFirstOfCurrentMonth.getDay();
+  }  
 
   render(){
     return (
