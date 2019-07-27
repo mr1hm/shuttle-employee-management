@@ -1,0 +1,32 @@
+[
+  {
+    "dayOfWeek": 2,
+    "endDate": "2019-08-30",
+    "endTime": "T03:00:00",
+    "startDate": "2019-07-22",
+    "startTime": "T12:00:00",
+    "userID": 60,
+    "userScheduleShiftID": 308,
+    "repeat": true
+  },
+  {
+    "dayOfWeek": 3,
+    "endDate": "2019-08-30",
+    "endTime": "T07:46:00",
+    "startDate": "2019-07-22",
+    "startTime": "T06:30:00",
+    "userID": 60,
+    "userScheduleShiftID": 308,
+    "repeat": true
+  },
+  {
+    "dayOfWeek": 4,
+    "endDate": "2019-08-30",
+    "endTime": "T07:46:00",
+    "startDate": "2019-07-22",
+    "startTime": "T06:30:00",
+    "userID": 60,
+    "userScheduleShiftID": 308,
+    "repeat": true
+  }
+]
