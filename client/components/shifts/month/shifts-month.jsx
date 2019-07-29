@@ -1,6 +1,7 @@
 import React from 'react';
 import WeekOfMonth from './week-component';
 import MonthHeader from './month-header';
+import Legends from './shift-month-legends';
 
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -61,9 +62,10 @@ export default class ShiftsMonth extends React.Component {
   }
   render() {
     return (
-      <div>
+      <div class="col-md-auto">
       <MonthHeader/>
       {this.bundleWeeks()}
+      <Legends/>
       </div>
     )
   }
