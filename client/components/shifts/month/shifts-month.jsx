@@ -1,6 +1,5 @@
 import React from 'react';
-import WeekOfMonth from './week-component';
-import MonthHeader from './month-header';
+import WeekOfMonth from './week-of-month-component';
 
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -99,7 +98,6 @@ export default class ShiftsMonth extends React.Component {
   render() {
     return (
     <React.Fragment>
-      <MonthHeader/>
       {this.bundleWeeks()}
     </React.Fragment>
     );
