@@ -24,7 +24,7 @@ export default class ShiftsMonth extends React.Component {
         id: 3,
         date: '2019-07-23',
         day: 'Tuesday',
-        hours: 5
+        hours: 5.25
       },
       {
         id: 4,
@@ -36,7 +36,7 @@ export default class ShiftsMonth extends React.Component {
         id: 5,
         date: '2019-07-25',
         day: 'Thursday',
-        hours: 4.5
+        hours: 4.75
       },
       {
         id: 6,
