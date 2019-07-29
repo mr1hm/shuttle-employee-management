@@ -6,6 +6,8 @@ export default class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
     this.bundleWeeks = this.bundleWeeks.bind(this);
+    this.getIndexFirstDayOfMonth = this.getIndexFirstDayOfMonth.bind(this);
+    this.getNumberOfDaysInMonth = this.getNumberOfDaysInMonth.bind(this);
     this.weeklyScheduledHours = [
       {
         id: 1,
@@ -53,15 +55,15 @@ export default class ShiftsMonth extends React.Component {
   }
   getIndexFirstDayOfMonth(year, monthIndex) {
     const today = new Date();
-    fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
-    numberMonth = (typeof monthIndex !== 'undefined') ? monthIndex : today.getMonth();
+    let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
+    let numberMonth = (typeof monthIndex !== 'undefined') ? monthIndex : today.getMonth();
     const monthFirstDay = new Date(fourDigitYear, numberMonth);
     return monthFirstDay.getDay();
   }
   getNumberOfDaysInMonth(year, month) {
     const today = new Date();
-    fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
-    numberMonth = (typeof month !== 'undefined') ? month : today.getMonth()+1;
+    let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
+    let numberMonth = (typeof month !== 'undefined') ? month : today.getMonth() + 1;
     const monthLastDayDate = new Date(fourDigitYear, numberMonth, 0);
     return monthLastDayDate.getDate();
   }
@@ -85,9 +87,9 @@ export default class ShiftsMonth extends React.Component {
         }
       }
       weekOutput.push(
-        <WeekOfMonth 
-          key={this.weeklyScheduledHours.id} 
-          weeklyHours={this.weeklyScheduledHours} 
+        <WeekOfMonth
+          key={this.weeklyScheduledHours.id}
+          weeklyHours={this.weeklyScheduledHours}
           currentWeekArray={currentWeekArray}
         />
       );
