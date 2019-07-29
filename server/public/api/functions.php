@@ -22,4 +22,10 @@ if (!function_exists('handleCors')) {
   }
 }
 
+function getBodyData()
+{
+  $data = file_get_contents('php://input');
+  return $data = json_decode($data, true);
+}
+
 ?>
