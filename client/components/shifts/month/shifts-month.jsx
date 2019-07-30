@@ -62,8 +62,8 @@ export default class ShiftsMonth extends React.Component {
   render() {
     return (
       <div>
-      <MonthHeader/>
-      {this.bundleWeeks()}
+        <MonthHeader/>
+        {this.bundleWeeks()}
       </div>
     )
   }
