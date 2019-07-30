@@ -8,7 +8,6 @@ import ShiftsWeek from './shifts/week/shifts-week';
   constructor(props){
     super(props);
   }
-
   loginView() {
     return (
           <div className="container" style={{ top: "40%", left: "20%", position: "absolute" }}>
@@ -17,8 +16,6 @@ import ShiftsWeek from './shifts/week/shifts-week';
           </div>
     );
   }
-
-
   render(){
     return (
         <div>

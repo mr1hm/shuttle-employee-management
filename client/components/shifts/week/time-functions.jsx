@@ -1,6 +1,6 @@
 function convertUnixTime(time) {
   const convertedDate = new Date(time);
-    console.log(convertedDate.toString());
+
   return convertedDate.toString();
 }
 function convertUnixDateDay(time) {
