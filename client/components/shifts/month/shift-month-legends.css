@@ -18,14 +18,14 @@
   border-radius: 50%
 }
 .posted-icon{
-  background-color:yellow;
+  background-color:goldenrod;
   height: 20px;
   width: 20px;
   border-radius: 50%
 }
 .both-icon{
   background-color: transparent;
-  border: 2px solid yellow;
+  border: 2px solid goldenrod;
   height: 22px;
   width: 22px;
 }

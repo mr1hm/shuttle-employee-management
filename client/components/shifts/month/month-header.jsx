@@ -1,5 +1,5 @@
 import React from 'react';
-import MonthNav from './shift-month-nav'
+import MonthNav from './range-nav-bar'
 
 export default function MonthHeader() {
   return (
