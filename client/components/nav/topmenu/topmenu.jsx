@@ -6,14 +6,7 @@ import HamburgerMenu from './hamburger-menu';
 
 const TopMenu = (props)=> {
     return (
-    <nav className="topnav">
-        <div>
-            {/* <li>
-                <Link to="/">Login</Link>
-            </li>
-            <li>
-                <Link to="/welcome/">Go to Welcome Page</Link>
-            </li> */}
+        <div className="topnav">
             <HamburgerMenu>
                 <div className="dropdown-item"><Link className="d-block text-center" to="/myinfo">MyInfo</Link></div>
                 <div className="dropdown-item"><Link className="d-block text-center" to="/shifts/day/shifts-day">Day</Link></div>
@@ -22,8 +15,6 @@ const TopMenu = (props)=> {
                 <div className="dropdown-item"><Link className="d-block text-center" to="/shifts/available/shifts-available">Available</Link></div>
             </HamburgerMenu>
         </div>
-    </nav>
-
     )
 }
 export default TopMenu;
