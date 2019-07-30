@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
 import Welcome from './welcome/welcome';
 import TopMenu from './nav/topmenu/topmenu';
-import ShiftsWeek from './shifts/weeks/shifts-week';
+import ShiftsWeek from './shifts/week/shifts-week';
 
  class App extends React.Component {
   constructor(props){
@@ -12,7 +12,7 @@ import ShiftsWeek from './shifts/weeks/shifts-week';
   loginView() {
     return (
           <div className="container" style={{ top: "40%", left: "20%", position: "absolute" }}>
-            <div className="row" style={{ display: "inline", transform: "translate(-50%, -50%)"}} > 
+            <div className="row" style={{ display: "inline", transform: "translate(-50%, -50%)"}} >
             This will be where Login, Welcome, and Shift will render</div>
           </div>
     );
@@ -33,5 +33,3 @@ import ShiftsWeek from './shifts/weeks/shifts-week';
   }
 }
 export default App;
-
-
