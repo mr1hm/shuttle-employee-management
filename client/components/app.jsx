@@ -20,7 +20,6 @@ import ShiftsAvailable from './shifts/available/shifts-available';
     </div>
     );
   }
-
   render(){
     return (
         <div>
@@ -39,5 +38,3 @@ import ShiftsAvailable from './shifts/available/shifts-available';
   }
 }
 export default App;
-
-
