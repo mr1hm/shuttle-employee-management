@@ -18,9 +18,7 @@ class ShiftsWeek extends React.Component{
           <div className = "row mt-5">View Day</div>
           <div className = "row mt-5">View Day</div>
         </div>
-
       </React.Fragment>
-
     );
   };
 }

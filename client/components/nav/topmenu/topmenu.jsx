@@ -15,6 +15,9 @@ const TopMenu = (props)=> (
             <li>
                 <Link to="/shifts/week">Shifts (Week)</Link>
             </li>
+            <li>
+                <Link to="/shifts/month/shifts-month/">Shifts (Month)</Link>
+            </li>
         </ul>
     </nav>
 )
