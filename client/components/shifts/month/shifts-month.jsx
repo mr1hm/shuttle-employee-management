@@ -1,11 +1,13 @@
 import React from 'react';
-import WeekOfMonth from './week-component';
+import WeekOfMonth from './week-of-month-component';
 import MonthHeader from './month-header';
 
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
     this.bundleWeeks = this.bundleWeeks.bind(this);
+    this.getIndexFirstDayOfMonth = this.getIndexFirstDayOfMonth.bind(this);
+    this.getNumberOfDaysInMonth = this.getNumberOfDaysInMonth.bind(this);
     this.weeklyScheduledHours = [
       {
         id: 1,
@@ -23,7 +25,7 @@ export default class ShiftsMonth extends React.Component {
         id: 3,
         date: '2019-07-23',
         day: 'Tuesday',
-        hours: 5
+        hours: 5.25
       },
       {
         id: 4,
@@ -35,7 +37,7 @@ export default class ShiftsMonth extends React.Component {
         id: 5,
         date: '2019-07-25',
         day: 'Thursday',
-        hours: 4.5
+        hours: 4.75
       },
       {
         id: 6,
@@ -51,11 +53,46 @@ export default class ShiftsMonth extends React.Component {
       }
     ];
   }
+  getIndexFirstDayOfMonth(year, monthIndex) {
+    const today = new Date();
+    let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
+    let numberMonth = (typeof monthIndex !== 'undefined') ? monthIndex : today.getMonth();
+    const monthFirstDay = new Date(fourDigitYear, numberMonth);
+    return monthFirstDay.getDay();
+  }
+  getNumberOfDaysInMonth(year, month) {
+    const today = new Date();
+    let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
+    let numberMonth = (typeof month !== 'undefined') ? month : today.getMonth() + 1;
+    const monthLastDayDate = new Date(fourDigitYear, numberMonth, 0);
+    return monthLastDayDate.getDate();
+  }
   bundleWeeks() {
+    const firstDayOfMonth = this.getIndexFirstDayOfMonth();
+    const numberOfDaysInMonth = this.getNumberOfDaysInMonth();
     const weekOutput = [];
     const numOfWeeks = 5;
+    let calendarDayCounter = 0;
     for (var weekIndex = 0; weekIndex < numOfWeeks; weekIndex++) {
-      weekOutput.push(<WeekOfMonth key={this.weeklyScheduledHours.id} weeklyHours={this.weeklyScheduledHours} />);
+      const currentWeekArray = [];
+      for (let i = 0; i < 7; i++) {
+        if (i < firstDayOfMonth && calendarDayCounter === 0) {
+          currentWeekArray[i] = null;
+        } else {
+          ++calendarDayCounter;
+          currentWeekArray[i] = calendarDayCounter;
+        }
+        if (calendarDayCounter === numberOfDaysInMonth) {
+          calendarDayCounter = 0;
+        }
+      }
+      weekOutput.push(
+        <WeekOfMonth
+          key={this.weeklyScheduledHours.id}
+          weeklyHours={this.weeklyScheduledHours}
+          currentWeekArray={currentWeekArray}
+        />
+      );
     }
     return weekOutput;
   }
@@ -68,3 +105,4 @@ export default class ShiftsMonth extends React.Component {
     )
   }
 }
+
