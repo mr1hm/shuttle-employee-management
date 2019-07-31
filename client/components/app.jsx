@@ -12,7 +12,6 @@ import ShiftsAvailable from './shifts/available/shifts-available';
   constructor(props){
     super(props);
   }
-
   loginView() {
     return (
       <div className="container" style={{ top: "40%", left: "40%", position: "absolute" }}>
