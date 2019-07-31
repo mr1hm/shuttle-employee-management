@@ -11,12 +11,15 @@ import ShiftsAvailable from './shifts/available/shifts-available';
  class App extends React.Component {
   constructor(props){
     super(props);
+    this.state = {
+      unixTimestamp: 1564506000
+    }
   }
   loginView() {
     return (
       <div className="container" style={{ top: "40%", left: "40%", position: "absolute" }}>
-      <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >Login</div>
-    </div>
+        <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >Login</div>
+      </div>
     );
   }
   render(){
@@ -24,13 +27,14 @@ import ShiftsAvailable from './shifts/available/shifts-available';
         <div>
           <TopMenu/>
           <Switch>
-            <Route path = "/" exact component={this.loginView} />
-            <Route path = "/welcome/" component={Welcome} />
-            <Route path = "/myinfo/" component={MyInfo} /> 
-            <Route path = "/shifts/week" component={ShiftsWeek} />
-            <Route path = "/shifts/day" component={ShiftsDay} />
-            <Route path = "/shifts/month" component={ShiftsMonth} />
-            <Route path = "/shifts/available" component={ShiftsAvailable} />            
+            <Route path = "/" exact component={this.loginView} render={(props) => <Dashboard {...props} date={this.state.dummyDate} />}/>
+            <Route path = "/welcome/" render={(props) => <Welcome {...props} date={this.state.unixTimestamp} />}/>
+            <Route path = "/myinfo/" render={(props) => <MyInfo {...props} date={this.state.unixTimestamp} />}/> 
+            <Route path = "/shifts/week" render={(props) => <ShiftsWeek {...props} date={this.state.unixTimestamp}  />}/>
+            <Route path = "/shifts/day" render={(props) => <ShiftsDay {...props} date={this.state.unixTimestamp}  />}/>
+            <Route path = "/shifts/month" render={(props) => <ShiftsMonth {...props} date={this.state.unixTimestamp}  />}/>
+            <Route 
+            path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} date={this.state.unixTimestamp} />}/>        
           </Switch>
         </div>
     );
