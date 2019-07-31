@@ -1,0 +1,187 @@
+.masterContainerIphone {
+    /* position: relative; */
+}
+/*////////////////////// Header ///////////////////////*/
+.headerContainer {
+    display: inline-block;
+    width: 100%;
+    top: 2%;
+    position: absolute;
+}
+.headerElement {
+    width: 33%;
+    display: inline-block;
+    float: left;
+    position: relative;
+}
+.pageTitleContainer {
+    /* border: 1px solid blue; */
+    font-size: 25px;
+    font-weight: bold;
+    left: 2%;
+}
+.weekSelectionContainer {
+    /* border: 1px solid green; */
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+}
+.weekSelector {
+    height: 10px;
+    width: 10px;
+    position: absolute;
+}
+.weekDropDownLeft {
+    top: 25%;
+    left: 8%;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-right: 16px solid lightgray;
+    border-bottom: 8px solid transparent;
+}
+.weekDropDownRight {
+    top: 25%;
+    left: 85%;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-left: 16px solid lightgray;
+    border-bottom: 8px solid transparent;
+}
+.hamburgerMenuContainer {
+    right: 1.5%;
+}
+.hamburgerMenu {
+    height: 35px;
+    width: 35px;
+    float: right;
+    text-align: center;
+    font-size: 10px;
+    background-color: grey;
+}
+/*////////////////////// SUBHEADER ///////////////////////*/
+.subheaderContainer {
+    display: inline-block;
+    width: 50%;
+    top: 13%;
+    position: absolute;
+    left: 2%;
+}
+.hourWeekContainer {
+    display: inline-block;
+    position: relative;
+}
+.hourPostContainer {
+    font-size: 14px;
+    display: inline-block;
+    position: relative;
+    left: 2%;
+}
+.viewMonthLinkContainer{
+    display: inline-block;
+    width: 50%;
+    top: 100%;
+    position: absolute;
+    right: 2%;
+}
+.viewHoursContainer {
+    display: inline-block;
+    width: 100%;
+    top: 22%;
+    position: absolute;
+    right:.5%;
+    margin-bottom: 10px;
+}
+.viewMonthLink {
+    position: relative;
+    float: right;
+}
+/*////////////////////// CALENDAR ///////////////////////*/
+.calendarContainer {
+    display: inline-block;
+    width: 96%;
+    height: 270px;
+    top: 28%;
+    position: absolute;
+    left: 2%;
+    overflow-y: scroll;
+    /* border: .25px solid gray; */
+}
+.hoursRowContainer {
+    width: 100%;
+    height: 20px;
+    margin-top: 10px;
+}
+.hoursRow {
+    width: 81%;
+    text-align: center;
+    position: relative;
+    left: 19%;
+}
+.calendarHour {
+    width: 5.25%;
+    height: 100%;
+    display: inline-block;
+    text-align: left;
+}
+.dayRowContainer {
+    height: 75%;
+    width: 83%;
+    float: left;
+    left: 17%;
+    text-align: center;
+    display: inline-block;
+    position: relative;
+    border: 1px solid black;
+    margin-top: 10px;
+}
+.dayRowFill {
+    background-color: lightgrey;
+    height: 100%;
+    width: 100%;
+}
+.dayDataContainer {
+    width: 100%;
+    height: 100px;
+}
+.dayLabelContainer {
+    height: 75%;
+    width: 14%;
+    float: left;
+    display: inline-block;
+    position: absolute;
+    text-align: center;
+}
+.dayText {
+    width: 100%;
+    font-weight: bold;
+    font-size: 25px;
+    margin-top: 10px;
+    line-height: 20px;
+}
+.dateText {
+    position: absolute;
+    width: 100%;
+    font-weight: bold;
+    font-size: 20px;
+    top: 15%;
+}
+.dayHours {
+    position: absolute;
+    top: 34%;
+    width: 100%;
+    font-size: 14px;
+}
+.shift{
+    width: 10%;
+    height: 100%;
+    position: absolute;
+}
+.scheduled {
+    background-color: rgb(2, 2, 66);
+}
+.posted {
+    background-color: rgb(238, 204, 13);
+}
