@@ -2,8 +2,8 @@ import React from 'react';
 import './shifts-week.css';
 import HoursOfOperation from './hours-of-operation';
 import ShiftsWeekDay from './shifts-week-day';
-class ShiftsWeek extends React.Component {
 
+class ShiftsWeek extends React.Component {
   render() {
     return (
       <div className="masterContainerIphone">
@@ -91,6 +91,7 @@ const scheduleDummyData = {
       "posted": true,
       "restricted": true,
       "clickCallback": () => { console.log('click') }
+<<<<<<< HEAD
     }],
     "3": [{
       "startTime": "0800",
@@ -132,6 +133,10 @@ const scheduleDummyData = {
         "clickCallback": () => { console.log('click') }
       }
     ]
+=======
+    }]
+
+>>>>>>> 043af59086ad64f6d51d100f72135818f69df0ab
   }
 }
 
