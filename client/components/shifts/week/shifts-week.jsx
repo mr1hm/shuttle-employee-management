@@ -4,7 +4,34 @@ import HoursOfOperation from './hours-of-operation';
 import ShiftsWeekDay from './shifts-week-day';
 
 class ShiftsWeek extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      data: null
+    }
+  }
+
+  componentDidMount(){
+    fetch(`/api/dummy-data/dummy-data-shifts-week.json`, {
+      method: 'GET'
+    })
+      .then(response => {
+        console.log("res:", response)
+        return response.json()
+      })
+      .then(myJson => {
+        console.log('myjson: ', myJson);
+        this.setState({
+          data: myJson
+        })
+      });
+  }
+
   render() {
+    if (!this.state.data){
+      return null;
+    }
+
     return (
       <div className="masterContainerIphone">
         <div className="headerContainer">
@@ -32,10 +59,11 @@ class ShiftsWeek extends React.Component {
         <div className="viewHoursContainer">
           <HoursOfOperation />
         </div>
+
         <div className="calendarContainer">
-          {Object.keys(scheduleDummyData.week).sort().map(day=> {
+          {this.state.data.week.map(day=> {
             return (
-              <ShiftsWeekDay shifts={scheduleDummyData.week[day]} />
+              <ShiftsWeekDay shifts={day} />
             )
           })}
         </div>
@@ -44,6 +72,8 @@ class ShiftsWeek extends React.Component {
     );
   };
 }
+
+/*
 const scheduleDummyData = {
   "startDate": 1563692400000,
   "endDate": 1564210800000,
@@ -57,43 +87,39 @@ const scheduleDummyData = {
         "endTime": "1500",
         "date": 1563704640000,
         "posted": false,
-        "restricted": false,
-        "clickCallback": () => { console.log('click') }
+        "restricted": false
       }],
     "1": [{
       "startTime": "0800",
       "endTime": "1115",
       "date": 1563778800000,
       "posted": false,
-      "restricted": true,
-      "clickCallback": () => { console.log('click') }
+      "restricted": true
     }],
     "2": [{
       "startTime": "1500",
       "endTime": "2045",
       "date": 1563865200000,
       "posted": false,
-      "restricted": false,
-      "clickCallback": () => { console.log('click') }
+      "restricted": false
     },
     {
       "startTime": "2100",
       "endTime": "2300",
       "date": 1563865200000,
       "posted": true,
-      "restricted": false,
-      "clickCallback": () => { console.log('click') }
+      "restricted": false
     },
     {
       "startTime": "0700",
       "endTime": "1200",
       "date": 1563865200000,
       "posted": true,
-      "restricted": true,
-      "clickCallback": () => { console.log('click') }
+      "restricted": true
     }]
 
   }
 }
+*/
 
 export default ShiftsWeek;
