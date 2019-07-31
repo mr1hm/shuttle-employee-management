@@ -91,8 +91,52 @@ const scheduleDummyData = {
       "posted": true,
       "restricted": true,
       "clickCallback": () => { console.log('click') }
+<<<<<<< HEAD
+    }],
+    "3": [{
+      "startTime": "0800",
+      "endTime": "1115",
+      "date": 1563951600000,
+      "posted": false,
+      "restricted": true,
+      "clickCallback": () => { console.log('click') }
+    },
+      {
+        "startTime": "1400",
+        "endTime": "1900",
+        "date": 1563951600000,
+        "posted": false,
+        "restricted": true,
+        "clickCallback": () => { console.log('click') }
+      }
+    ],
+    "4": [
+      { "startTime": "0000",
+        "endTime": "0000",
+        "date": 1564038000000,
+        "clickCallback": () => { console.log('click')}
+    }
+    ],
+    "5": [
+      {
+        "startTime": "0000",
+        "endTime": "0000",
+        "date": 1564124400000,
+        "clickCallback": () => { console.log('click') }
+      }
+    ],
+    "6": [
+      {
+        "startTime": "0000",
+        "endTime": "0000",
+        "date": 1564210800000,
+        "clickCallback": () => { console.log('click') }
+      }
+    ]
+=======
     }]
 
+>>>>>>> 043af59086ad64f6d51d100f72135818f69df0ab
   }
 }
 
