@@ -7,8 +7,8 @@
   "week": [
     [
       {
-        "startTime": "0800",
-        "endTime": "1030",
+        "startTime": "0600",
+        "endTime": "0730",
         "date": 1563704640000,
         "posted": false,
         "restricted": false
@@ -16,34 +16,41 @@
     ],
     [
       {
-        "startTime": "0800",
-        "endTime": "1115",
+        "startTime": "1700",
+        "endTime": "2000",
         "date": 1563778800000,
         "posted": false,
-        "restricted": true
+        "restricted": false
+      },
+      {
+        "startTime": "1100",
+        "endTime": "1345",
+        "date": 1563778800000,
+        "posted": true,
+        "restricted": false
       }
     ],
     [
       {
-        "startTime": "1500",
-        "endTime": "2045",
+        "startTime": "0900",
+        "endTime": "1200",
         "date": 1563865200000,
         "posted": false,
         "restricted": false
       },
       {
-        "startTime": "2100",
-        "endTime": "2300",
+        "startTime": "1200",
+        "endTime": "1400",
         "date": 1563865200000,
         "posted": true,
         "restricted": false
       },
       {
-        "startTime": "0700",
-        "endTime": "1200",
+        "startTime": "1600",
+        "endTime": "1930",
         "date": 1563865200000,
         "posted": true,
-        "restricted": true
+        "restricted": false
       }
     ]
   ],

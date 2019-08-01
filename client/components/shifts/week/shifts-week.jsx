@@ -16,13 +16,11 @@ class ShiftsWeek extends React.Component {
       method: 'GET'
     })
       .then(response => {
-        console.log("res:", response)
         return response.json()
       })
-      .then(myJson => {
-        console.log('myjson: ', myJson);
+      .then(weekShiftInfo => {
         this.setState({
-          data: myJson
+          data: weekShiftInfo
         })
       });
   }
@@ -70,53 +68,5 @@ class ShiftsWeek extends React.Component {
     );
   };
 }
-
-/*
-const scheduleDummyData = {
-  "startDate": 1563692400000,
-  "endDate": 1564210800000,
-  "userID": 60,
-  "userScheduleShiftID": 308,
-  "scheduleID": 8,
-  "week": {
-    "0": [
-      {
-        "startTime": "1230",
-        "endTime": "1500",
-        "date": 1563704640000,
-        "posted": false,
-        "restricted": false
-      }],
-    "1": [{
-      "startTime": "0800",
-      "endTime": "1115",
-      "date": 1563778800000,
-      "posted": false,
-      "restricted": true
-    }],
-    "2": [{
-      "startTime": "1500",
-      "endTime": "2045",
-      "date": 1563865200000,
-      "posted": false,
-      "restricted": false
-    },
-    {
-      "startTime": "2100",
-      "endTime": "2300",
-      "date": 1563865200000,
-      "posted": true,
-      "restricted": false
-    },
-    {
-      "startTime": "0700",
-      "endTime": "1200",
-      "date": 1563865200000,
-      "posted": true,
-      "restricted": true
-    }]
-  }
-}
-*/
 
 export default ShiftsWeek;

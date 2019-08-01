@@ -1,6 +1,5 @@
 function convertUnixTime(time) {
   const convertedDate = new Date(time);
-
   return convertedDate.toString();
 }
 function convertUnixDateDay(time) {
@@ -33,7 +32,6 @@ function getShiftEndHour(time) {
 function getShiftEndMinute(time) {
   const timeResult = convertUnixTime(time);
   const splitTimeResult = timeResult.split(':');
-
   return splitTimeResult[1];
 }
 function calculateDailyWorkingHours(startTime, endTime) {
@@ -50,5 +48,23 @@ function calculateDailyWorkingHours(startTime, endTime) {
   return shiftHoursPerDay;
 }
 
+function getTotalDayWorkingHours(props) {
+  let hourTotal = 0;
+  for (var i = 0; i < props.length; i++){
+    
+    if (props[i].restricted === true){
+      continue;
+    }
+    const hoursPerShift = calculateDailyWorkingHours(props[i].startTime, props[i].endTime);
+    hourTotal += hoursPerShift;
+  }
+  
+  if (hourTotal === 1){
+    return hourTotal + ' Hour';
+  } else {
+     return hourTotal + ' Hours';
+  }
+}
+
 export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours };
+  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours };

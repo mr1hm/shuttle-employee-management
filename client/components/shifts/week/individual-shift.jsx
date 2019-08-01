@@ -6,7 +6,6 @@ import {
 
 class IndividualShift extends React.Component {
   render() {
-
     return    this.props.shiftInfo.map(singleShiftObject => {
                 const range = { min: 600, max: 2400 };
                 const availableHours = (range.max - range.min)/100;

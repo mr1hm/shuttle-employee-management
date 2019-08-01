@@ -25,24 +25,24 @@ export default class ShiftsMonth extends React.Component {
         })
       });
   }
-
-  getIndexFirstDayOfMonth(year, monthIndex) {
-    const today = new Date();
-    let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
-    let numberMonth = (typeof monthIndex !== 'undefined') ? monthIndex : today.getMonth();
-    const monthFirstDay = new Date(fourDigitYear, numberMonth);
+  getMonthAndYearForCalendar(unixTimeStamp) {
+    const calendarSource = {};
+    let targetDay = (typeof unixTimeStamp === 'undefined') ? new Date() : new Date(unixTimeStamp);
+    calendarSource.month = targetDay.getMonth();
+    calendarSource.year = targetDay.getFullYear();
+    return calendarSource;
+  }
+  getIndexFirstDayOfMonth(unixTimeStamp) {
+    const monthFirstDay = new Date(this.getMonthAndYearForCalendar(unixTimeStamp).year, this.getMonthAndYearForCalendar(unixTimeStamp).month);
     return monthFirstDay.getDay();
   }
-  getNumberOfDaysInMonth(year, month) {
-    const today = new Date();
-    let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
-    let numberMonth = (typeof month !== 'undefined') ? month : today.getMonth() + 1;
-    const monthLastDayDate = new Date(fourDigitYear, numberMonth, 0);
+  getNumberOfDaysInMonth(unixTimeStamp) {
+    const monthLastDayDate = new Date(this.getMonthAndYearForCalendar(unixTimeStamp).year, this.getMonthAndYearForCalendar(unixTimeStamp).month + 1, 0);
     return monthLastDayDate.getDate();
   }
   bundleWeeks() {
-    const firstDayOfMonth = this.getIndexFirstDayOfMonth();
-    const numberOfDaysInMonth = this.getNumberOfDaysInMonth();
+    const firstDayOfMonth = this.getIndexFirstDayOfMonth(this.props.date);
+    const numberOfDaysInMonth = this.getNumberOfDaysInMonth(this.props.date);
     const weekOutput = [];
     const numOfWeeks = 5;
     let calendarDayCounter = 0;
