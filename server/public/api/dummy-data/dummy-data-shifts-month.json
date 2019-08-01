@@ -1,32 +1,44 @@
 [
   {
-    "dayOfWeek": 2,
-    "endDate": "2019-08-30",
-    "endTime": "T03:00:00",
-    "startDate": "2019-07-22",
-    "startTime": "T12:00:00",
-    "userID": 60,
-    "userScheduleShiftID": 308,
-    "repeat": true
+    "id": 1,
+    "date": "2019-07-21",
+    "day": "Sunday",
+    "hours": 0
   },
   {
-    "dayOfWeek": 3,
-    "endDate": "2019-08-30",
-    "endTime": "T07:46:00",
-    "startDate": "2019-07-22",
-    "startTime": "T06:30:00",
-    "userID": 60,
-    "userScheduleShiftID": 308,
-    "repeat": true
+    "id": 2,
+    "date": "2019-07-22",
+    "day": "Monday",
+    "hours": 5.75
   },
   {
-    "dayOfWeek": 4,
-    "endDate": "2019-08-30",
-    "endTime": "T07:46:00",
-    "startDate": "2019-07-22",
-    "startTime": "T06:30:00",
-    "userID": 60,
-    "userScheduleShiftID": 308,
-    "repeat": true
+    "id": 3,
+    "date": "2019-07-23",
+    "day": "Tuesday",
+    "hours": 5.25
+  },
+  {
+    "id": 4,
+    "date": "2019-07-24",
+    "day": "Wednesday",
+    "hours": 0
+  },
+  {
+    "id": 5,
+    "date": "2019-07-25",
+    "day": "Thursday",
+    "hours": 4.75
+  },
+  {
+    "id": 6,
+    "date": "2019-07-26",
+    "day": "Friday",
+    "hours": 0
+  },
+  {
+    "id": 7,
+    "date": "2019-07-27",
+    "day": "Saturday",
+    "hours": 0
   }
 ]
