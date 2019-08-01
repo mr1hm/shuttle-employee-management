@@ -12,7 +12,7 @@ import ShiftsAvailable from './shifts/available/shifts-available';
   constructor(props){
     super(props);
     this.state = {
-      unixTimestamp: 1564506000
+      presetDateForTesting: 1564506000
     }
   }
   loginView() {
@@ -27,14 +27,14 @@ import ShiftsAvailable from './shifts/available/shifts-available';
         <div>
           <TopMenu/>
           <Switch>
-            <Route path = "/" exact component={this.loginView} render={(props) => <Dashboard {...props} date={this.state.dummyDate} />}/>
-            <Route path = "/welcome/" render={(props) => <Welcome {...props} date={this.state.unixTimestamp} />}/>
+            <Route path = "/" exact component={this.loginView} render={(props) => <Dashboard {...props} date={this.state.presetDateForTesting} />}/>
+            <Route path = "/welcome/" render={(props) => <Welcome {...props} date={this.state.presetDateForTesting} />}/>
             <Route path = "/myinfo/" render={(props) => <MyInfo {...props} date={this.state.unixTimestamp} />}/> 
-            <Route path = "/shifts/week" render={(props) => <ShiftsWeek {...props} date={this.state.unixTimestamp}  />}/>
-            <Route path = "/shifts/day" render={(props) => <ShiftsDay {...props} date={this.state.unixTimestamp}  />}/>
-            <Route path = "/shifts/month" render={(props) => <ShiftsMonth {...props} date={this.state.unixTimestamp}  />}/>
+            <Route path = "/shifts/week" render={(props) => <ShiftsWeek {...props} date={this.state.presetDateForTesting}  />}/>
+            <Route path = "/shifts/day" render={(props) => <ShiftsDay {...props} date={this.state.presetDateForTesting}  />}/>
+            <Route path = "/shifts/month" render={(props) => <ShiftsMonth {...props} date={this.state.presetDateForTesting}  />}/>
             <Route 
-            path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} date={this.state.unixTimestamp} />}/>        
+            path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} date={this.state.presetDateForTesting} />}/>        
           </Switch>
         </div>
     );
