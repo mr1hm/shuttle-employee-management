@@ -34,7 +34,10 @@ class ShiftsWeek extends React.Component {
 
     return (
       <div className="masterContainerIphone">
-        {/* <div className="headerContainer">
+        
+        {/* This was turned off until a decision could be made about where header content will reside.
+        
+        <div className="headerContainer">
           <div className="pageTitleContainer headerElement">
             <div className="pageTitle">My Shifts - Week</div>
           </div>
