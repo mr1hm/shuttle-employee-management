@@ -1,29 +1,18 @@
 import React from 'react'
 import IndividualShift from './individual-shift';
-import {convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours} from './time-functions';
+import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours } from './time-functions';
 class ShiftsWeekDay extends React.Component {
 
-  getTotalDayWorkingHours(startTime, EndTime) {
-    let hourTotal = null;
-
-    for (var numberOfShifts = 1; numberOfShifts < this.props.shifts.length+1; numberOfShifts++) {
-      const hoursPerShift = calculateDailyWorkingHours(startTime, EndTime);
-      hourTotal += hoursPerShift;
-    }
-
-    return hourTotal;
-  }
-
   render() {
-    console.log(this.getTotalDayWorkingHours('0800', '1200'));
+    console.log('shift length: ', this.props.shifts);
 
       return (
         <div className="dayDataContainer">
           <div className="dayLabelContainer">
             <div className="dayText">{convertUnixDateDay(this.props.shifts[0].date)}</div>
             <div className="dateText">{convertUnixDateNumber(this.props.shifts[0].date)}</div>
-            <div className="dayHours">{this.getTotalDayWorkingHours(this.props.shifts[0].startTime, this.props.shifts[0].endTime)} Hours</div>
+            <div className="dayHours">{getTotalDayWorkingHours(this.props.shifts)}</div>
           </div>
           <div className="dayRowContainer">
             <div className="dayRowFill">
@@ -32,7 +21,6 @@ class ShiftsWeekDay extends React.Component {
           </div>
         </div>
       )
-
   }
 }
 export default ShiftsWeekDay;
