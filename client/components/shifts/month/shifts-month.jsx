@@ -9,52 +9,23 @@ export default class ShiftsMonth extends React.Component {
     this.getIndexFirstDayOfMonth = this.getIndexFirstDayOfMonth.bind(this);
     this.getNumberOfDaysInMonth = this.getNumberOfDaysInMonth.bind(this);
     this.state = {
-      scheduledHoursForCurrentMonth: [
-        {
-          id: 1,
-          date: '2019-07-21',
-          day: 'Sunday',
-          hours: 0
-        },
-        {
-          id: 2,
-          date: '2019-07-22',
-          day: 'Monday',
-          hours: 5.75
-        },
-        {
-          id: 3,
-          date: '2019-07-23',
-          day: 'Tuesday',
-          hours: 5.25
-        },
-        {
-          id: 4,
-          date: '2019-07-24',
-          day: 'Wednesday',
-          hours: 0
-        },
-        {
-          id: 5,
-          date: '2019-07-25',
-          day: 'Thursday',
-          hours: 4.75
-        },
-        {
-          id: 6,
-          date: '2019-07-26',
-          day: 'Friday',
-          hours: 0
-        },
-        {
-          id: 7,
-          date: '2019-07-27',
-          day: 'Saturday',
-          hours: 0
-        }
-      ]
+      scheduledHoursForCurrentMonth: []
     }
   }
+  componentDidMount(){
+    fetch('/api/dummy-data/dummy-data-shifts-month.json', {
+      method: 'GET'
+    })
+      .then(res => {
+        return res.json()
+      })
+      .then(jsonRes => {
+        this.setState({
+          scheduledHoursForCurrentMonth: jsonRes
+        })
+      });
+  }
+
   getIndexFirstDayOfMonth(year, monthIndex) {
     const today = new Date();
     let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
@@ -99,6 +70,14 @@ export default class ShiftsMonth extends React.Component {
     return weekOutput;
   }
   render() {
+    if(this.state.scheduledHoursForCurrentMonth.length !== 0){
+      return (
+            <div>
+              <MonthHeader/>
+              {this.bundleWeeks()}
+            </div>
+          )
+    }
     return (
       <div>
         <MonthHeader/>
