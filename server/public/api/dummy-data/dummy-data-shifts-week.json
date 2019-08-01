@@ -16,8 +16,15 @@
     ],
     [
       {
-        "startTime": "0800",
-        "endTime": "1115",
+        "startTime": "0900",
+        "endTime": "1200",
+        "date": 1563778800000,
+        "posted": false,
+        "restricted": true
+      },
+      {
+        "startTime": "1700",
+        "endTime": "2000",
         "date": 1563778800000,
         "posted": false,
         "restricted": true
@@ -25,22 +32,22 @@
     ],
     [
       {
-        "startTime": "1500",
-        "endTime": "2045",
+        "startTime": "0600",
+        "endTime": "0900",
         "date": 1563865200000,
         "posted": false,
         "restricted": false
       },
       {
-        "startTime": "2100",
-        "endTime": "2300",
+        "startTime": "1400",
+        "endTime": "1700",
         "date": 1563865200000,
         "posted": true,
         "restricted": false
       },
       {
-        "startTime": "0700",
-        "endTime": "1200",
+        "startTime": "2000",
+        "endTime": "2300",
         "date": 1563865200000,
         "posted": true,
         "restricted": true
