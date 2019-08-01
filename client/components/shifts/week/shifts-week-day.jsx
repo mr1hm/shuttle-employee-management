@@ -5,8 +5,6 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
 class ShiftsWeekDay extends React.Component {
 
   render() {
-    console.log('shift length: ', this.props.shifts);
-
       return (
         <div className="dayDataContainer">
           <div className="dayLabelContainer">
