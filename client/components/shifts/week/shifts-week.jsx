@@ -43,9 +43,7 @@ class ShiftsWeek extends React.Component {
             <div className="weekSelection">July 21 - July 27</div>
             <div className="weekSelector weekDropDown weekDropDownRight"></div>
           </div>
-          <div className="hamburgerMenuContainer headerElement">
-            <div className="hamburgerMenu"></div>
-          </div>
+
         </div>
         <div className="subheaderContainer">
           <div className="hourWeekContainer">
@@ -117,7 +115,6 @@ const scheduleDummyData = {
       "posted": true,
       "restricted": true
     }]
-
   }
 }
 */
