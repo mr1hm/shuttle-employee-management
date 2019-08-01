@@ -34,7 +34,7 @@ class ShiftsWeek extends React.Component {
 
     return (
       <div className="masterContainerIphone">
-        <div className="headerContainer">
+        {/* <div className="headerContainer">
           <div className="pageTitleContainer headerElement">
             <div className="pageTitle">My Shifts - Week</div>
           </div>
@@ -44,7 +44,7 @@ class ShiftsWeek extends React.Component {
             <div className="weekSelector weekDropDown weekDropDownRight"></div>
           </div>
 
-        </div>
+        </div> */}
         <div className="subheaderContainer">
           <div className="hourWeekContainer">
             <div className="hourWeek">Total Hours This Week: <strong>10.5 </strong></div>
