@@ -7,9 +7,10 @@ class WeekOfMonth extends React.Component {
     for (let i = 0; i < this.props.weeklyHours.length; i++) {
       sumOfHours += this.props.weeklyHours[i].hours;
     }
+    let fullHours = Math.trunc(sumOfHours);
+    let minutes = ((sumOfHours - fullHours) * 60).toFixed(0);
     return (
-      sumOfHours.toFixed(0) + 'h ' +
-            ((sumOfHours - sumOfHours.toFixed(0)) * 60).toFixed(0) + 'm'
+      fullHours + 'h ' + minutes + 'm'
     );
   }
   render() {
