@@ -85,10 +85,10 @@ function displayCurrentDate(range){
 }
 
 return (
-    <div class="weekSelectionContainer">
-      <div class="weekSelector weekDropDown weekDropDownLeft"></div>
-      <div class="weekSelection">{displayCurrentDate(dateRange)}</div>
-      <div class="weekSelector weekDropDown weekDropDownRight"></div>
+    <div className="weekSelectionContainer">
+      <div className="weekSelector weekDropDown weekDropDownLeft"></div>
+      <div className="weekSelection">{displayCurrentDate(dateRange)}</div>
+      <div className="weekSelector weekDropDown weekDropDownRight"></div>
     </div>
   )
 }
