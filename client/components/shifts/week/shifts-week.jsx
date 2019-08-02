@@ -2,7 +2,7 @@ import React from 'react';
 import './shifts-week.css';
 import HoursOfOperation from './hours-of-operation';
 import ShiftsWeekDay from './shifts-week-day';
-import TopMenu from '../../topmenu/topmenu';
+import TopMenuShifts from '../../topmenu/topmenu-shift';
 
 
 class ShiftsWeek extends React.Component {
@@ -34,21 +34,8 @@ class ShiftsWeek extends React.Component {
 
     return (
       <div className="masterContainerIphone">
-        <TopMenu title="WEEK"/>
-        
-        {/* This was turned off until a decision could be made about where header content will reside.
-        
-        <div className="headerContainer">
-          <div className="pageTitleContainer headerElement">
-            <div className="pageTitle">My Shifts - Week</div>
-          </div>
-          <div className="weekSelectionContainer headerElement">
-            <div className="weekSelector weekDropDown weekDropDownLeft"></div>
-            <div className="weekSelection">July 21 - July 27</div>
-            <div className="weekSelector weekDropDown weekDropDownRight"></div>
-          </div>
-
-        </div> */}
+        <TopMenuShifts title="WEEK"/>
+  
         <div className="subheaderContainer">
           <div className="hourWeekContainer">
             <div className="hourWeek">Total Hours This Week: <strong>10.5 </strong></div>
