@@ -1,7 +1,6 @@
 import React from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
 import Welcome from './welcome/welcome';
-import TopMenu from './nav/topmenu/topmenu';
 import MyInfo from './myinfo/myinfo';
 import ShiftsWeek from './shifts/week/shifts-week';
 import ShiftsDay from './shifts/day/shifts-day';
@@ -12,7 +11,7 @@ import ShiftsAvailable from './shifts/available/shifts-available';
   constructor(props){
     super(props);
     this.state = {
-      presetDateForTesting: 1564506000
+      presetDateForTesting: 1564531200000
     }
   }
   loginView() {
@@ -25,7 +24,6 @@ import ShiftsAvailable from './shifts/available/shifts-available';
   render(){
     return (
         <div>
-          <TopMenu/>
           <Switch>
             <Route path = "/" exact component={this.loginView} render={(props) => <Dashboard {...props} date={this.state.presetDateForTesting} />}/>
             <Route path = "/welcome/" render={(props) => <Welcome {...props} date={this.state.presetDateForTesting} />}/>
