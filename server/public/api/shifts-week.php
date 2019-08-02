@@ -16,6 +16,7 @@
   //mysqli_num_rows
     //might want to throw an error or an empty array
 
+
 //get the data from the result and put it into a variable
   //while row = mysqli_fetch_assoc (gives me one row at a time everytime I call it)
   $data = [];
