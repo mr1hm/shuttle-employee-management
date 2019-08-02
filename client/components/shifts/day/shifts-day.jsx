@@ -4,6 +4,7 @@ function OneOfMyShifts(props) {
     let recurringShift = (props.shifts.recurring) ? "Recurring Shift" : "One-time Shift";
     let shiftPosted =  (props.shifts.posted) ? "Shift is Posted" : null;
     let shiftButton = (props.shifts.posted) ? "Cancel Post" : "Details";
+    let todaysDate = props.date.presetDateForTesting;
     // debugger;
     return(
         <tr>
