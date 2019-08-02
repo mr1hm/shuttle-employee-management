@@ -1,7 +1,7 @@
 import React from 'react'
 import IndividualShift from './individual-shift';
-import {convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours} from './time-functions';
+import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours } from './time-functions';
 class ShiftsWeekDay extends React.Component {
 
   render() {
@@ -10,7 +10,7 @@ class ShiftsWeekDay extends React.Component {
           <div className="dayLabelContainer">
             <div className="dayText">{convertUnixDateDay(this.props.shifts[0].date)}</div>
             <div className="dateText">{convertUnixDateNumber(this.props.shifts[0].date)}</div>
-            <div className="dayHours">{calculateDailyWorkingHours(this.props.shifts[0].startTime, this.props.shifts[0].endTime)} Hours</div>
+            <div className="dayHours">{getTotalDayWorkingHours(this.props.shifts)}</div>
           </div>
           <div className="dayRowContainer">
             <div className="dayRowFill">
@@ -19,7 +19,6 @@ class ShiftsWeekDay extends React.Component {
           </div>
         </div>
       )
-
   }
 }
 export default ShiftsWeekDay;
