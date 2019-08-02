@@ -1,5 +1,5 @@
 import React from 'react';
-import TopMenu from '../../topmenu/topmenu';
+import TopMenuShifts from '../../topmenu/topmenu-shift';
 
 
 function OneOfMyShifts(props) {
@@ -54,7 +54,7 @@ class ShiftsDay extends React.Component {
   return (
 
     <div>
-      <TopMenu title="DAY"/>
+      <TopMenuShifts title="DAY"/>
     <div>Total Hours: {totalHours} [posted: {postedHours}] </div>
       <table className='table table-striped'>
         <thead>
