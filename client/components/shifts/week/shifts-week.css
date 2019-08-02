@@ -11,8 +11,8 @@
 .headerElement {
     width: 33%;
     display: inline-block;
-    float: left;
-    position: relative;
+    /* float: left; */
+    position: relative
 }
 .pageTitleContainer {
     /* border: 1px solid blue; */

@@ -2,6 +2,8 @@ import React from 'react';
 import './shifts-week.css';
 import HoursOfOperation from './hours-of-operation';
 import ShiftsWeekDay from './shifts-week-day';
+import TopMenu from '../../topmenu/topmenu';
+
 
 class ShiftsWeek extends React.Component {
   constructor(props){
@@ -34,6 +36,7 @@ class ShiftsWeek extends React.Component {
 
     return (
       <div className="masterContainerIphone">
+        <TopMenu title="WEEK"/>
         
         {/* This was turned off until a decision could be made about where header content will reside.
         
