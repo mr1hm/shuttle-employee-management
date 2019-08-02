@@ -1,4 +1,6 @@
 import React from 'react';
+import TopMenu from '../../topmenu/topmenu';
+
 
 function OneOfMyShifts(props) {
     let recurringShift = (props.shifts.recurring) ? "Recurring Shift" : "One-time Shift";
@@ -52,6 +54,7 @@ class ShiftsDay extends React.Component {
   return (
 
     <div>
+      <TopMenu title="DAY"/>
     <div>Total Hours: {totalHours} [posted: {postedHours}] </div>
       <table className='table table-striped'>
         <thead>

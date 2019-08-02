@@ -1,7 +1,7 @@
 import React from 'react';
 import './nav-styles.css';
 
-export default function MonthNav (){
+export default function Nav (){
 
 const dateRange = [
   {
