@@ -3,7 +3,7 @@
  set_exception_handler('error_handler');
  require_once('db_connection.php');
 
- $query = "SELECT * FROM `shift` ORDER BY `id` ASC";
+ $query = "SELECT * FROM `shift` WHERE `ownerID`= 1";
  $result = mysqli_query($conn, $query);
  //check if query was valid
   //if the result is an object, the query worked
