@@ -43,7 +43,6 @@ class ShiftsDay extends React.Component {
   let noShifts = (!this.state.myShiftsToday.length) ? "No shifts scheduled today" : null;
   let postedHours = 0;
   let totalHours = 0;
-  let todaysDate = this.state.myShiftsToday.shiftDate;
   
   for (var i = 0 ; i < this.state.myShiftsToday.length; i++) {
     if(this.state.myShiftsToday[i].posted) {
@@ -54,7 +53,7 @@ class ShiftsDay extends React.Component {
   return (
 
     <div>
-    <div>Today's Date {todaysDate}</div>
+    <div>Today's Date {this.props.date}</div>
     <div>Total Hours: {totalHours} [posted: {postedHours}] </div>
       <table className='table table-striped'>
         <thead>
