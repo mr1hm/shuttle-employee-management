@@ -55,7 +55,7 @@ class ShiftsDay extends React.Component {
   return (
 
     <div>
-    <TopMenu title="DAY"/>
+    {/* <TopMenu title="DAY"/> */}
     <div>Today's Date {this.props.date}</div>
     <div>Total Hours: {totalHours} [posted: {postedHours}] </div>
       <table className='table table-striped'>
