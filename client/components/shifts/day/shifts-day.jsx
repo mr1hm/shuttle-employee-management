@@ -45,6 +45,7 @@ class ShiftsDay extends React.Component {
   let noShifts = (!this.state.myShiftsToday.length) ? "No shifts scheduled today" : null;
   let postedHours = 0;
   let totalHours = 0;
+  
   for (var i = 0 ; i < this.state.myShiftsToday.length; i++) {
     if(this.state.myShiftsToday[i].posted) {
       postedHours += this.state.myShiftsToday[i].hoursThisShift;
@@ -54,7 +55,8 @@ class ShiftsDay extends React.Component {
   return (
 
     <div>
-      <TopMenu title="DAY"/>
+    <TopMenu title="DAY"/>
+    <div>Today's Date {this.props.date}</div>
     <div>Total Hours: {totalHours} [posted: {postedHours}] </div>
       <table className='table table-striped'>
         <thead>
