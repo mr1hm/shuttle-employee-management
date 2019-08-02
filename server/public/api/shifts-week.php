@@ -3,7 +3,8 @@
  set_exception_handler('error_handler');
  require_once('db_connection.php');
 
- $query = "SELECT * FROM `shift` WHERE `ownerID`= 1";
+ $id = $_GET['id'];
+ $query = "SELECT * FROM `shift` WHERE `ownerID`= $id ";
  $result = mysqli_query($conn, $query);
  //check if query was valid
   //if the result is an object, the query worked
@@ -15,6 +16,7 @@
 //check how many rows of data were found (separate from the former check)
   //mysqli_num_rows
     //might want to throw an error or an empty array
+
 
 
 //get the data from the result and put it into a variable

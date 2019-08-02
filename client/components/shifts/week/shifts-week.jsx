@@ -7,12 +7,13 @@ class ShiftsWeek extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      data: null
+      data: null,
+
     }
   }
-
+//need to change 1 to a dynamic value somehow
   componentDidMount(){
-    fetch(`/api/dummy-data/dummy-data-shifts-week.json`, {
+    fetch('/api/shifts-week.php?id=' + 1 {
       method: 'GET'
     })
       .then(response => {
