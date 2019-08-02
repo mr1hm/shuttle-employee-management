@@ -1,6 +1,6 @@
 import React from 'react';
 import WeekOfMonth from './week-of-month-component';
-import TopMenuShifts from '../../topmenu/topmenu-shift';
+import TopMenuShift from '../../topmenu/topmenu-shift';
 
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -70,17 +70,9 @@ export default class ShiftsMonth extends React.Component {
     return weekOutput;
   }
   render() {
-    if(this.state.scheduledHoursForCurrentMonth.length !== 0){
-      return (
-            <div>
-              <MonthHeader/>
-              {this.bundleWeeks()}
-            </div>
-          )
-    }
     return (
       <div>
-        <TopMenuShifts title="MONTH"/>
+        <TopMenuShift title="MONTH"/>
         {this.bundleWeeks()}
       </div>
     )
