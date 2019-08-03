@@ -3,8 +3,8 @@
  set_exception_handler('error_handler');
  require_once('db_connection.php');
 
- $id = $_GET['id'];
- $query = "SELECT * FROM `shift` WHERE `ownerID`= $id ";
+
+ $query = "SELECT * FROM `shift` WHERE `ownerID`= 1 ";
  $result = mysqli_query($conn, $query);
  //check if query was valid
   //if the result is an object, the query worked
@@ -23,6 +23,10 @@
   //while row = mysqli_fetch_assoc (gives me one row at a time everytime I call it)
   $data = [];
   while($row = mysqli_fetch_assoc($result)){
+    //changing database field of status to equal posted and then be changing the value to true or false
+    //like in the dummy data
+    $row['posted'] = $row['status'] === 'posted' ? true: false;
+    unset($row['status']);
     $data[] = $row;
   }
   print(json_encode($data));
