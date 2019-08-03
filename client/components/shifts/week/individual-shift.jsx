@@ -2,7 +2,7 @@ import React from 'react';
 import {
   convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours
-} from './time-functions';
+} from '../../../lib/time-functions';
 
 class IndividualShift extends React.Component {
   render() {

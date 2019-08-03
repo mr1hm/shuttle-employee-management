@@ -1,6 +1,7 @@
 import React from 'react';
 import WeekOfMonth from './week-of-month-component';
 import TopMenuShifts from '../../topmenu/topmenu-shift';
+import { findIconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -49,11 +50,26 @@ export default class ShiftsMonth extends React.Component {
     for (var weekIndex = 0; weekIndex < numOfWeeks; weekIndex++) {
       const currentWeekArray = [];
       for (let i = 0; i < 7; i++) {
+        console.log ('inside week loop', i);
         if (i < firstDayOfMonth && calendarDayCounter === 0) {
           currentWeekArray[i] = null;
         } else {
           ++calendarDayCounter;
-          currentWeekArray[i] = calendarDayCounter;
+          //TODO: need to bundle the calendar day and the day status into the same element of the currentWeekArray
+          //TODO: let dayDetails = [calendarDayCounter, _______] The ____ will come from the json file. Will hold both the day of week and status of whether the person is working. Confirm with Seong and Richard that the same approach is going to be used once the database is connected. 
+          //TODO:change the LINE BELOW to assign the subarray that holds both items. currentWeekArray[i] = dayDetails;
+          this.state.scheduledHoursForCurrentMonth.forEach(element => {
+            console.log(element.date.slice(-2));
+            if (element.date.slice(-2) === calendarDayCounter) {
+              if (element.hours > 0) {
+                currentWeekArray[i] = [calendarDayCounter, 'x'];
+              } else {
+                currentWeekArray[i] = [calendarDayCounter, ''];
+              }
+            }
+          })
+
+          // currentWeekArray[i] = calendarDayCounter;
         }
         if (calendarDayCounter === numberOfDaysInMonth) {
           calendarDayCounter = 0;
@@ -70,19 +86,23 @@ export default class ShiftsMonth extends React.Component {
     return weekOutput;
   }
   render() {
-    if(this.state.scheduledHoursForCurrentMonth.length !== 0){
-      return (
-            <div>
-              <MonthHeader/>
-              {this.bundleWeeks()}
-            </div>
-          )
-    }
+    // if(this.state.scheduledHoursForCurrentMonth.length !== 0){
+    //   return (
+    //         <div>
+    //           <MonthHeader/>
+    //           {this.bundleWeeks()}
+    //         </div>
+    //       )
+    // }
     return (
-      <div>
-        <TopMenuShifts title="MONTH"/>
-        {this.bundleWeeks()}
-      </div>
+      <React.Fragment>
+        <div>
+          <TopMenuShifts title="MONTH"/>
+        </div>
+        <div>
+          {this.bundleWeeks()}
+        </div>
+      </React.Fragment>
     )
   }
 }
