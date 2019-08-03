@@ -10,11 +10,12 @@ class ShiftsWeek extends React.Component {
     super(props);
     this.state = {
       data: null
+
     }
   }
 
   componentDidMount(){
-    fetch(`/api/dummy-data/dummy-data-shifts-week.json`, {
+    fetch('/api/shifts-week.php?' , {
       method: 'GET'
     })
       .then(response => {
@@ -50,7 +51,7 @@ class ShiftsWeek extends React.Component {
         </div>
 
         <div className="calendarContainer">
-          {this.state.data.week.map(day=> {
+          {this.state.data.map(day=> {
             return (
               <ShiftsWeekDay shifts={day} />
             )
