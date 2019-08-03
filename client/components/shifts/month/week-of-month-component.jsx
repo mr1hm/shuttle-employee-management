@@ -5,7 +5,8 @@ class WeekOfMonth extends React.Component {
   calculateSumOfHoursScheduledForWeek() {
     let sumOfHours = null;
     for (let i = 0; i < this.props.weeklyHours.length; i++) {
-      sumOfHours += this.props.weeklyHours[i].hours;
+      var weeklyHours = this.props.weeklyHours
+      sumOfHours += (weeklyHours[i].endTime-weeklyHours[i].startTime)/100;
     }
     let fullHours = Math.trunc(sumOfHours);
     let minutes = ((sumOfHours - fullHours) * 60).toFixed(0);

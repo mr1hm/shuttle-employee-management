@@ -1,4 +1,5 @@
 import React from 'react';
+import './shifts-month.css'
 import WeekOfMonth from './week-of-month-component';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 
@@ -13,13 +14,15 @@ export default class ShiftsMonth extends React.Component {
     }
   }
   componentDidMount(){
-    fetch('/api/dummy-data/dummy-data-shifts-month.json', {
+    fetch('/api/shifts-month.php', {
       method: 'GET'
     })
       .then(res => {
         return res.json()
       })
       .then(jsonRes => {
+        console.log("db-datapoints: ", jsonRes)
+        console.log("hoursInShift: ", (jsonRes[0].endTime-jsonRes[0].startTime)/100 + " hours on the", (new Date(1563704640000)).getDate() )
         this.setState({
           scheduledHoursForCurrentMonth: jsonRes
         })
@@ -73,7 +76,10 @@ export default class ShiftsMonth extends React.Component {
     return (
       <div>
         <TopMenuShift title="MONTH"/>
+        <div class="wrapper">
         {this.bundleWeeks()}
+        </div>
+        
       </div>
     )
   }
