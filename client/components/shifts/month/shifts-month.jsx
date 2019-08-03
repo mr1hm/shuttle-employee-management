@@ -1,6 +1,6 @@
 import React from 'react';
 import WeekOfMonth from './week-of-month-component';
-import MonthHeader from './month-header';
+import TopMenuShift from '../../topmenu/topmenu-shift';
 
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -9,69 +9,40 @@ export default class ShiftsMonth extends React.Component {
     this.getIndexFirstDayOfMonth = this.getIndexFirstDayOfMonth.bind(this);
     this.getNumberOfDaysInMonth = this.getNumberOfDaysInMonth.bind(this);
     this.state = {
-      scheduledHoursForCurrentMonth: [
-        {
-          id: 1,
-          date: '2019-07-21',
-          day: 'Sunday',
-          hours: 0
-        },
-        {
-          id: 2,
-          date: '2019-07-22',
-          day: 'Monday',
-          hours: 5.75
-        },
-        {
-          id: 3,
-          date: '2019-07-23',
-          day: 'Tuesday',
-          hours: 5.25
-        },
-        {
-          id: 4,
-          date: '2019-07-24',
-          day: 'Wednesday',
-          hours: 0
-        },
-        {
-          id: 5,
-          date: '2019-07-25',
-          day: 'Thursday',
-          hours: 4.75
-        },
-        {
-          id: 6,
-          date: '2019-07-26',
-          day: 'Friday',
-          hours: 0
-        },
-        {
-          id: 7,
-          date: '2019-07-27',
-          day: 'Saturday',
-          hours: 0
-        }
-      ]
+      scheduledHoursForCurrentMonth: []
     }
   }
-  getIndexFirstDayOfMonth(year, monthIndex) {
-    const today = new Date();
-    let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
-    let numberMonth = (typeof monthIndex !== 'undefined') ? monthIndex : today.getMonth();
-    const monthFirstDay = new Date(fourDigitYear, numberMonth);
+  componentDidMount(){
+    fetch('/api/dummy-data/dummy-data-shifts-month.json', {
+      method: 'GET'
+    })
+      .then(res => {
+        return res.json()
+      })
+      .then(jsonRes => {
+        this.setState({
+          scheduledHoursForCurrentMonth: jsonRes
+        })
+      });
+  }
+  getMonthAndYearForCalendar(unixTimeStamp) {
+    const calendarSource = {};
+    let targetDay = (typeof unixTimeStamp === 'undefined') ? new Date() : new Date(unixTimeStamp);
+    calendarSource.month = targetDay.getMonth();
+    calendarSource.year = targetDay.getFullYear();
+    return calendarSource;
+  }
+  getIndexFirstDayOfMonth(unixTimeStamp) {
+    const monthFirstDay = new Date(this.getMonthAndYearForCalendar(unixTimeStamp).year, this.getMonthAndYearForCalendar(unixTimeStamp).month);
     return monthFirstDay.getDay();
   }
-  getNumberOfDaysInMonth(year, month) {
-    const today = new Date();
-    let fourDigitYear = (typeof year !== 'undefined') ? year : today.getFullYear();
-    let numberMonth = (typeof month !== 'undefined') ? month : today.getMonth() + 1;
-    const monthLastDayDate = new Date(fourDigitYear, numberMonth, 0);
+  getNumberOfDaysInMonth(unixTimeStamp) {
+    const monthLastDayDate = new Date(this.getMonthAndYearForCalendar(unixTimeStamp).year, this.getMonthAndYearForCalendar(unixTimeStamp).month + 1, 0);
     return monthLastDayDate.getDate();
   }
   bundleWeeks() {
-    const firstDayOfMonth = this.getIndexFirstDayOfMonth();
-    const numberOfDaysInMonth = this.getNumberOfDaysInMonth();
+    const firstDayOfMonth = this.getIndexFirstDayOfMonth(this.props.date);
+    const numberOfDaysInMonth = this.getNumberOfDaysInMonth(this.props.date);
     const weekOutput = [];
     const numOfWeeks = 5;
     let calendarDayCounter = 0;
@@ -101,7 +72,7 @@ export default class ShiftsMonth extends React.Component {
   render() {
     return (
       <div>
-        <MonthHeader/>
+        <TopMenuShift title="MONTH"/>
         {this.bundleWeeks()}
       </div>
     )

@@ -1,7 +1,7 @@
 import React from 'react'
 import IndividualShift from './individual-shift';
-import {convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours} from './time-functions';
+import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours } from '../../../lib/time-functions';
 class ShiftsWeekDay extends React.Component {
 
   // getTotalDayWorkingHours(startTime, EndTime) {
@@ -29,7 +29,6 @@ class ShiftsWeekDay extends React.Component {
           </div>
         </div>
       )
-
   }
 }
 export default ShiftsWeekDay;
