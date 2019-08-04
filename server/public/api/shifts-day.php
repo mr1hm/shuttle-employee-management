@@ -1,5 +1,5 @@
 <?php
-require_once 'db_connection.php';
+require_once './db_connection.php';
 $query = "SELECT * FROM `shift`";
 $result = mysqli_query($conn, $query);
 if(!$result) {
