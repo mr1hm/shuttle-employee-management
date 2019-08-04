@@ -5,9 +5,12 @@
 
  //data sanitization
  //if data exists validate
+//  $id = $_GET('id');
+//  $id = intval($id);
 
 
- $query = "SELECT * FROM `shift` WHERE `ownerID`= 1 ";
+ $query = "SELECT * FROM `shift` WHERE `ownerID`= 1 AND (`shiftDate` >= '1563704640000' AND `shiftDate` <='1564210800000')
+            ORDER BY `shiftDate` ASC";
  $result = mysqli_query($conn, $query);
  //check if query was valid
   //if the result is an object, the query worked

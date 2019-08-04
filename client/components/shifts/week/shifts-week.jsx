@@ -9,7 +9,7 @@ class ShiftsWeek extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      data: []
+      data: null
 
     }
   }
@@ -18,7 +18,7 @@ class ShiftsWeek extends React.Component {
       .then(response => { return response.json() })
       .then(weekShiftInfo => {
         this.setState({
-          data: weekShiftInfo //this setState may be changed depending on how we want state to be set up
+          data: weekShiftInfo
         })
       })
   }
