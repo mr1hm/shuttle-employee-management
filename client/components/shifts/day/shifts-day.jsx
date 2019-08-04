@@ -42,51 +42,56 @@ class ShiftsDay extends React.Component {
   }
     
   render(){
-    console.log('this.state.myShiftsToday:', this.state.myShiftsToday);
-    let noShifts = (!this.state.myShiftsToday.length) ? "No shifts scheduled today" : null;
-    let postedHours = 0;
-    let totalHours = 0;
-    
-    for (var i = 0 ; i < this.state.myShiftsToday.length; i++) {
-      if(this.state.myShiftsToday[i].posted) {
-        postedHours += this.state.myShiftsToday[i].hoursThisShift;
-      }
-      totalHours += this.state.myShiftsToday[i].hoursThisShift;
+  if(!this.state.myShiftsToday.length) {
+    return;
+  } else{
+  let noShifts = (!this.state.myShiftsToday.length) ? "No shifts scheduled today" : null;
+  let postedHours = 0;
+  let totalHours = 0;
+  
+  for (var i = 0 ; i < this.state.myShiftsToday.length; i++) {
+    if(this.state.myShiftsToday[i].posted) {
+      postedHours += this.state.myShiftsToday[i].hoursThisShift;
     }
-    return (
-      <div>
-        <TopMenuShifts title="DAY"/>
-      <div>Today's Date {this.props.date}</div>
-      <div>Total Hours: {totalHours} [posted: {postedHours}] </div>
-        <table className='table table-striped'>
-          <thead>
-              <tr>
-                  <td>Line/#</td>
-                  <td>Start-End</td>
-                  <td>Rounds</td>
-                  <td>Shift Hours</td>
-                  <td>Post Status</td>
-                  <td>Action</td>
-              </tr>
-          </thead>
-          <tbody>
-          {
-            this.state.myShiftsToday.map(shifts => {
-              return (
-                
-                  < OneOfMyShifts
-                    key = { shifts.shiftId }
-                    shifts = { shifts }
-                  />                              
-              );
-            })
-          }
-          </tbody>     
-        </table>
-        {noShifts}
-        </div>
-      );
+    totalHours += this.state.myShiftsToday[i].hoursThisShift;
+  }
+  return (
+
+    <div>
+      <TopMenuShifts title="DAY"/>
+    <div>Today's Date {this.props.date}</div>
+    <div>Total Hours: {totalHours} [posted: {postedHours}] </div>
+      <table className='table table-striped'>
+        <thead>
+            <tr>
+                <td>Line/#</td>
+                <td>Start-End</td>
+                <td>Rounds</td>
+                <td>Shift Hours</td>
+                <td>Post Status</td>
+                <td>Action</td>
+            </tr>
+        </thead>
+        <tbody>
+        {
+          this.state.myShiftsToday.map(shifts => {
+            return (
+              
+                < OneOfMyShifts
+                  key = { shifts.id }
+                  shifts = { shifts }
+                />                              
+            );
+          })
+        }
+        </tbody>     
+      </table>
+      {noShifts}
+      </div>
+    );
     }
+  }
+
 }
 
 export default ShiftsDay;

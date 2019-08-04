@@ -86,8 +86,18 @@ function displayCurrentDate(range){
 
 return (
     <div className="weekSelectionContainer">
+      {/* add a click handler to process the click to the left
+      based on click handler fetch certain data
+      change the name in the center of the page based on what is passed by props
+      populate page based on new data from new fetch
+      change the content on the page*/}
       <div className="weekSelector weekDropDown weekDropDownLeft"></div>
       <div className="weekSelection">{displayCurrentDate(dateRange)}</div>
+      {/* add a click handler to process the click to the left
+      based on click handler fetch certain data
+      change the name in the center of the page based on what is passed by props
+      populate page based on new data from new fetch
+      change the content on the page*/}
       <div className="weekSelector weekDropDown weekDropDownRight"></div>
     </div>
   )
