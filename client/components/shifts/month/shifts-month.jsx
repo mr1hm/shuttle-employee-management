@@ -12,18 +12,15 @@ export default class ShiftsMonth extends React.Component {
       scheduledHoursForCurrentMonth: []
     }
   }
+  fetchCallMethod(url, methodToUse) {
+    fetch(url, {method: methodToUse})
+      .then(res => {return res.json()})
+      .then(jsonRes => {this.setState({
+        scheduledHoursForCurrentMonth: jsonRes //this setState may be changed depending on how we want state to be set up
+      })})
+  }
   componentDidMount(){
-    fetch('/api/dummy-data/dummy-data-shifts-month.json', {
-      method: 'GET'
-    })
-      .then(res => {
-        return res.json()
-      })
-      .then(jsonRes => {
-        this.setState({
-          scheduledHoursForCurrentMonth: jsonRes
-        })
-      });
+    this.fetchCallMethod('/api/shifts-month.php', 'GET');
   }
   getMonthAndYearForCalendar(unixTimeStamp) {
     const calendarSource = {};
