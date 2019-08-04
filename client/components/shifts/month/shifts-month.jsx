@@ -46,41 +46,28 @@ export default class ShiftsMonth extends React.Component {
   bundleWeeks() {
     const firstDayOfMonth = this.getIndexFirstDayOfMonth(this.props.date);
     const numberOfDaysInMonth = this.getNumberOfDaysInMonth(this.props.date);
-    const weekOutput = [];
-    const numOfWeeks = 5;
-    let calendarDayCounter = 0;
-    for (var weekIndex = 0; weekIndex < numOfWeeks; weekIndex++) {
-      const currentWeekArray = [];
-      for (let i = 0; i < 7; i++) {
-        if (i < firstDayOfMonth && calendarDayCounter === 0) {
-          currentWeekArray[i] = null;
-        } else {
-          ++calendarDayCounter;
-          currentWeekArray[i] = calendarDayCounter;
-        }
-        if (calendarDayCounter === numberOfDaysInMonth) {
-          calendarDayCounter = 0;
-        }
-      }
-      weekOutput.push(
-        <WeekOfMonth
-          key={this.state.scheduledHoursForCurrentMonth.id}
-          weeklyHours={this.state.scheduledHoursForCurrentMonth}
-          currentWeekArray={currentWeekArray}
-        />
-      );
+
+    var monthDivArray=[]
+    for(var numberOfDaysOfPrevMonth=0; numberOfDaysOfPrevMonth < new Date(this.props.date).getDay();numberOfDaysOfPrevMonth++){
+            monthDivArray.push(<div>{30+numberOfDaysOfPrevMonth}</div>)
+          }
+
+    for(var i = firstDayOfMonth; i<numberOfDaysInMonth; i++){
+      monthDivArray.push(<div>{i}</div>)
     }
-    return weekOutput;
-  }
+    
+    console.log("number of days carried over from prev month: ",new Date(this.props.date).getDay())
+    return monthDivArray
+    }
+
   render() {
     return (
-      <div>
+      <div class="calenderContainer">
         <TopMenuShift title="MONTH"/>
-        <div class="wrapper">
-        {this.bundleWeeks()}
-        </div>
-        
+    <div class="wrapper">
+                {this.bundleWeeks()}
       </div>
+    </div>
     )
   }
 }
