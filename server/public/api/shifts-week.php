@@ -3,6 +3,9 @@
  set_exception_handler('error_handler');
  require_once('db_connection.php');
 
+ //data sanitization
+ //if data exists validate
+
 
  $query = "SELECT * FROM `shift` WHERE `ownerID`= 1 ";
  $result = mysqli_query($conn, $query);

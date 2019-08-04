@@ -9,24 +9,24 @@ class ShiftsWeek extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      data: null
+      data: []
 
     }
   }
-
-  componentDidMount(){
-    fetch('/api/shifts-week.php?' , {
-      method: 'GET'
-    })
-      .then(response => {
-        return response.json()
-      })
+  getData(url, methodToUse) {
+    fetch(url, { method: methodToUse })
+      .then(response => { return response.json() })
       .then(weekShiftInfo => {
         this.setState({
-          data: weekShiftInfo
+          data: weekShiftInfo //this setState may be changed depending on how we want state to be set up
         })
-      });
+      })
   }
+
+  componentDidMount(){
+    this.getData('/api/shifts-week.php?', 'GET');
+  }
+
 
   render() {
     if (!this.state.data){
@@ -36,7 +36,7 @@ class ShiftsWeek extends React.Component {
     return (
       <div className="masterContainerIphone">
         <TopMenuShifts title="WEEK"/>
-  
+
         <div className="subheaderContainer">
           <div className="hourWeekContainer">
             <div className="hourWeek">Total Hours This Week: <strong>10.5 </strong></div>

@@ -39,6 +39,10 @@ function calculateDailyWorkingHours(startTime, endTime) {
     startTime = "0" + startTime;
     parseInt(startTime);
   }
+  if (endTime.length < 4) {
+    endTime = "0" + endTime;
+    parseInt(endTime);
+  }
 
   const startHour = startTime.slice(0, 2);
   const endHour = endTime.slice(0, 2);
@@ -56,14 +60,14 @@ function calculateDailyWorkingHours(startTime, endTime) {
 function getTotalDayWorkingHours(props) {
   let hourTotal = 0;
   for (var i = 0; i < props.length; i++){
-    
+
     if (props[i].restricted === true){
       continue;
     }
     const hoursPerShift = calculateDailyWorkingHours(props[i].startTime, props[i].endTime);
     hourTotal += hoursPerShift;
   }
-  
+
   if (hourTotal === 1){
     return hourTotal + ' Hour';
   } else {
