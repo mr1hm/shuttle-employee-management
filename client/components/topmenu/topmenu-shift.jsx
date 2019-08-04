@@ -11,7 +11,7 @@ const TopMenuShift = (props)=> {
                     <h3>Shifts - {props.title}</h3>
                 </div>
                 <div className="col-5">
-                    <Nav/> 
+                    <Nav page={props.page} date={props.date}/> 
                     {/* pass down a prop that lets it know what the new content will be */}
                 </div>
                 <div className="col">

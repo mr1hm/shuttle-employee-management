@@ -1,104 +1,113 @@
 import React from 'react';
 import './nav-styles.css';
 
-export default function Nav (){
-
-const dateRange = [
-  {
-    "year":2019,
-    "month":7,
-    "date":28
-  },
-  {
-    "year":2019,
-    "month":7,
-    "date":29
-  },
-  {
-    "year":2019,
-    "month":7,
-    "date":30
-  },
-  {
-    "year":2019,
-    "month":7,
-    "date":31
-  },
-  {
-    "year":2019,
-    "month":8,
-    "date":1
-  },
-  {
-    "year":2019,
-    "month":8,
-    "date":4
-  },
-  {
-    "year":2019,
-    "month":8,
-    "date":10
-  },
-  {
-    "year":2019,
-    "month":8,
-    "date":12
-  },
-  {
-    "year":2019,
-    "month":8,
-    "date":17
-  },
-  {
-    "year":2019,
-    "month":8,
-    "date":19
-  },
-  {
-    "year":2019,
-    "month":8,
-    "date":20
+class Nav extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      date: this.props.date,
+      centerContent: null
+    }
+    this.leftArrowContent = this.leftArrowContent.bind(this);
+    this.rightArrowContent = this.rightArrowContent.bind(this);
   }
-]
 
-function displayCurrentDate(range){
+  convertUnixMonth(time) {
+    const convertedDate = new Date(time);
+    const dateString = "" + convertedDate;
+    const arrayDateString = dateString.split(' ');
+    console.log()
+    return arrayDateString[1].toUpperCase();
+  }
+  convertUnixDay(time) {
+    const convertedDate = new Date(time);
+    const dateString = "" + convertedDate;
+    const arrayDateString = dateString.split(' ');
+    console.log(arrayDateString);
+    return arrayDateString[0].toUpperCase();
+  }
 
-  let endDate = new Date();
-  endDate.setMonth([range.length-1].month-1);
-  endDate.setDate(range[range.length-1].date-1);
-  let startDate = new Date();
-  startDate.setMonth(range[0].month-1);
-  startDate.setDate(range[0].date-1);
+  leftArrowContent() {
+    var currentDate, content;
 
-  if(range.length===1){
-    let dateForDisplay = range[0].year + ' . ' + range[0].month + ' . ' + range[0].date;
-    return(dateForDisplay);
-  } else if (range.length <= 7){
-    let startDate = range[0];
-    let endDate = range[range.length-1];
-    let rangeFordisplay = `${startDate.month}-${startDate.date} to ${endDate.month}-${endDate.date}`;
-    return(rangeFordisplay);
-  } else{
-    const monthName = ["January","Feburary","March","April","May","June","July","August","September","October","November","Devember"]
-    return(monthName[range[0].month-1])
+    if (this.props.page === 'month') {
+    //eventually this will have to be adjust to accomodate months of slightly different lengths
+      currentDate = this.state.date - 30*(86400);
+      content = this.convertUnixMonth(currentDate);
+      this.setState({
+        date: currentDate,
+        centerContent: content
+      })
+    // } else if (this.props.page === 'week') {
+    //entire content needs to adjusted to include first day and last day of week
+    //   currentDate = this.state.date - 7*(86400);
+    //   content = this.convertUnixDay(currentDate);
+    //   this.setState({
+    //     date: currentDate,
+    //     centerContent: content
+    //   })
+    } else if (this.props.page === 'day') {
+      currentDate = this.state.date - 86400;
+      console.log('left arrow (previous day) day unix:', currentDate);
+      content = this.convertUnixDay(currentDate);
+      console.log('right arrow (previous day) day coverted to text:', content);
+      this.setState({
+        date: currentDate,
+        centerContent: content
+      })
+    }
+  }
+  rightArrowContent() {
+    var currentDate, content;
+    if (this.props.page === 'month') {
+      //eventually this will have to be adjust to accomodate months of slightly different lengths
+      currentDate = this.state.date + 30*(86400);
+      content = this.convertUnixMonth(currentDate);
+      this.setState({
+        date: currentDate,
+        centerContent: content
+      })
+    //} else if (this.props.page === 'week') {
+      //entire content needs to adjusted to include first day and last day of week
+      // currentDate = this.state.date + 7*(86400);
+      // console.log('right arrow (next day) day unix:', currentDate);
+      // content = this.convertUnixDay(currentDate);
+      // console.log('right arrow (next day) day coverted to day:', content);
+      // this.setState({
+      //   date: currentDate,
+      //   centerContent: content
+      // })
+    } else if (this.props.page === 'day') {
+      currentDate = this.state.date + 86400;
+      console.log('right arrow (next day) day unix:', currentDate);
+      content = this.convertUnixDay(currentDate);
+      console.log('right arrow (next day) day coverted to text:', content);
+      this.setState({
+        date: currentDate,
+        centerContent: content
+      })
+    }
+  }
+
+  render(){
+    return (
+      <div className="weekSelectionContainer">
+        {/* add a click handler to process the click to the left
+        based on click handler fetch certain data
+        change the name in the center of the page based on what is passed by props
+        populate page based on new data from new fetch
+        change the content on the page*/}
+        <div className="weekSelector weekDropDown weekDropDownLeft" onClick={this.leftArrowContent}>{this.state.centerContent}</div>
+        <div className="weekSelection"></div>
+        {/* add a click handler to process the click to the left
+        based on click handler fetch certain data
+        change the name in the center of the page based on what is passed by props
+        populate page based on new data from new fetch
+        change the content on the page*/}
+        <div className="weekSelector weekDropDown weekDropDownRight" onClick={this.rightArrowContent}></div>
+      </div>
+    );
   }
 }
 
-return (
-    <div className="weekSelectionContainer">
-      {/* add a click handler to process the click to the left
-      based on click handler fetch certain data
-      change the name in the center of the page based on what is passed by props
-      populate page based on new data from new fetch
-      change the content on the page*/}
-      <div className="weekSelector weekDropDown weekDropDownLeft"></div>
-      <div className="weekSelection">{displayCurrentDate(dateRange)}</div>
-      {/* add a click handler to process the click to the left
-      based on click handler fetch certain data
-      change the name in the center of the page based on what is passed by props
-      populate page based on new data from new fetch
-      change the content on the page*/}
-      <div className="weekSelector weekDropDown weekDropDownRight"></div>
-    </div>
-  )
-}
+export default Nav;

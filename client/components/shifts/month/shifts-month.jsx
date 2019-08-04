@@ -58,18 +58,18 @@ export default class ShiftsMonth extends React.Component {
           //TODO: need to bundle the calendar day and the day status into the same element of the currentWeekArray
           //TODO: let dayDetails = [calendarDayCounter, _______] The ____ will come from the json file. Will hold both the day of week and status of whether the person is working. Confirm with Seong and Richard that the same approach is going to be used once the database is connected. 
           //TODO:change the LINE BELOW to assign the subarray that holds both items. currentWeekArray[i] = dayDetails;
-          this.state.scheduledHoursForCurrentMonth.forEach(element => {
-            console.log(element.date.slice(-2));
-            if (element.date.slice(-2) === calendarDayCounter) {
-              if (element.hours > 0) {
-                currentWeekArray[i] = [calendarDayCounter, 'x'];
-              } else {
-                currentWeekArray[i] = [calendarDayCounter, ''];
-              }
-            }
-          })
+          // this.state.scheduledHoursForCurrentMonth.forEach(element => {
+          //   console.log(element.date.slice(-2));
+          //   if (element.date.slice(-2) === calendarDayCounter) {
+          //     if (element.hours > 0) {
+          //       currentWeekArray[i] = [calendarDayCounter, 'x'];
+          //     } else {
+          //       currentWeekArray[i] = [calendarDayCounter, ''];
+          //     }
+          //   }
+          // })
 
-          // currentWeekArray[i] = calendarDayCounter;
+          currentWeekArray[i] = calendarDayCounter;
         }
         if (calendarDayCounter === numberOfDaysInMonth) {
           calendarDayCounter = 0;
@@ -97,7 +97,7 @@ export default class ShiftsMonth extends React.Component {
     return (
       <React.Fragment>
         <div>
-          <TopMenuShifts title="MONTH"/>
+          <TopMenuShifts title="MONTH" page='month'/>
         </div>
         <div>
           {this.bundleWeeks()}

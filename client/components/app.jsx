@@ -28,7 +28,7 @@ import Welcome from './welcome/welcome';
           <Switch>
           <Route path = "/login/" render={(props) => <Login {...props} date={this.state.presetDateForTesting} />}/>
             <Route path = "/welcome/" render={(props) => <Welcome {...props} date={this.state.presetDateForTesting} />}/>
-            <Route path = "/myinfo/" render={(props) => <MyInfo {...props} date={this.state.unixTimestamp} />}/> 
+            <Route path = "/myinfo/" render={(props) => <MyInfo {...props} date={this.state.presetDateForTesting} />}/> 
             <Route path = "/shifts/week" render={(props) => <ShiftsWeek {...props} date={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/day" render={(props) => <ShiftsDay {...props} date={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/month" render={(props) => <ShiftsMonth {...props} date={this.state.presetDateForTesting}  />}/>
