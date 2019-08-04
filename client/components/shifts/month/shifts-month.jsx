@@ -9,6 +9,8 @@ export default class ShiftsMonth extends React.Component {
     this.bundleDays = this.bundleDays.bind(this);
     this.getIndexFirstDayOfMonth = this.getIndexFirstDayOfMonth.bind(this);
     this.getNumberOfDaysInMonth = this.getNumberOfDaysInMonth.bind(this);
+    this.calculateSumOfHoursScheduledForWeek = this.calculateSumOfHoursScheduledForWeek.bind(this); 
+    this.calculateShiftHours = this.calculateShiftHours.bind(this)
     this.state = {
       scheduledHoursForCurrentMonth: []
     }
@@ -47,39 +49,73 @@ export default class ShiftsMonth extends React.Component {
 
   }
 
+  calculateShiftHours(startTime, endTime){
 
-  calculateSumOfHoursScheduledForWeek(week){
-    //takes in an array of shifts for one week as an argument = [{startTime: "600", endTime: "1100", shiftDate: "1563704640000"},{startTime: "1330", endTime: "1630", shiftDate: "1563951600000"}]
-    let totalHoursForWeek = 0;
-    
-    for(let i=0; i<week.length;i++){
+      let startHourDigits = Math.trunc(startTime/100) //6
+      let startMinuteDigits = startTime/100 - Math.floor(startTime/100)//00
+      let endHourDigits = Math.trunc(endTime/100) //11
+      let endMinuteDigits = endTime/100 - Math.floor(endTime/100)//00
 
-      let hourDiff = (week[i].endTime-week[i].startTime)/100;
-      let totalHoursForDay = Math.trunc(hourDiff); //5hours
-      totalHoursForWeek +=totalHoursForDay;
-      
-      let fullHours ;
-      
-    }
-    
+      let startTimeInMinutes = startHourDigits*60 + startMinuteDigits
+      let endTimeInMinutes = endHourDigits*60 + endMinuteDigits
+
+      let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
+
+      return shiftLengthInMinutes;
+
+     
   }
 
-  calculateSumOfHoursScheduledForWeek() {
-        let sumOfHours = null;
-        for (let i = 0; i < this.props.weeklyHours.length; i++) {
-          var weeklyHours = this.props.weeklyHours
-          sumOfHours += (weeklyHours[i].endTime-weeklyHours[i].startTime)/100;
+  calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek){
+
+    let totalShiftLengthForWeek = 0;
+    //takes in an array of shifts for one week as an argument = [{startTime: "600", endTime: "1100", shiftDate: "1563704640000"},{startTime: "1330", endTime: "1630", shiftDate: "1563951600000"}]
+    //let totalHoursForWeek = 0; //initial hours total for week         Math.ceil(6.45) = 7.00    minutes =  60-(startTime.-Math.floor(startTime/100)*100) +  endTime-Math.floor(endTime/100)*100      hours =  Math.floor(endTime/100) - Math.ceil(startTime/100) = 4  -startTime  60 - 45 min,    ,4 hours 15min
+    for(let shiftIndex=0; shiftIndex<arrayOfShiftsForWeek.length; shiftIndex++){ //loop through each shift in week
+      let shiftToCalculate = arrayOfShiftsForWeek[shiftIndex]
+      let hoursForShift = this.calculateShiftHours(shiftToCalculate.startTime, shiftToCalculate.endTime)
+      totalShiftLengthForWeek += hoursForShift
+    }
+      let totalHours = Math.floor(totalShiftLengthForWeek/60)
+      let totalMinutes = totalShiftLengthForWeek%60
+
+      console.log(totalHours + "h: " + totalMinutes + "min")
+      return (totalHours + "h: " + totalMinutes + "min")
+  }
+
+  displayWeeklyHours(shiftsInMonthArray){
+      //loop through shift array and look for unix time for  week. 
+      let weekArray = []
+      for(var shiftIndex=0; shiftIndex<shiftsInMonthArray.length; shiftIndex++){ //any shift in month
+        let unixOfShift = shiftsInMonthArray[shiftIndex].shiftDate
+        console.log("unixOfShift: ",unixOfShift)
+        // let unixConverted = new Date(unixOfShift) // convert unix of each shift in month
+        let unixConverted = new Date(1563704640000)
+        console.log("unixConverted: ",unixConverted)
+
+        if(unixConverted.getDate() < 7){ //check if each shift in month is in first week
+          weekArray.push(shiftsInMonthArray[shiftIndex])
+          //call calcilatefucntion passing in the array for week
+          this.calculateSumOfHoursScheduledForWeek(weekArray)
+        } else if (unixConverted.getDate() < 14){
+          weekArray.push(shiftsInMonthArray[shiftIndex])
+          this.calculateSumOfHoursScheduledForWeek(weekArray)
+        } else if (unixConverted.getDate() < 21){
+          weekArray.push(shiftsInMonthArray[shiftIndex])
+          this.calculateSumOfHoursScheduledForWeek(weekArray)
+        } else if (unixConverted.getDate() < 28){
+          weekArray.push(shiftsInMonthArray[shiftIndex])
+          this.calculateSumOfHoursScheduledForWeek(weekArray)
+        } else if (unixConverted.getDate() < 32){
+          weekArray.push(shiftsInMonthArray[shiftIndex])
+          this.calculateSumOfHoursScheduledForWeek(weekArray)
         }
-        let fullHours = Math.trunc(sumOfHours);
-        let minutes = ((sumOfHours - fullHours) * 60).toFixed(0);
-        return (
-          fullHours + 'h ' + minutes + 'm'
-        );
+        // let totalHours = this.calculateSumOfHoursScheduledForWeek(weekArray)
+        // console.log("totalHours: ", totalHours)
+        // return totalHours;
       }
 
 
-
-  displayWeeklyHours(){
 
   }
   bundleDays() {
@@ -113,11 +149,7 @@ export default class ShiftsMonth extends React.Component {
                 </div>
                 <div class="col col-lg-2">
                   <div class="totalHoursColumn">
-                    <div class = "totalHoursForWeek">Total Hours for Week 1</div>
-                    <div class = "totalHoursForWeek">Total Hours for Week 2</div>
-                    <div class = "totalHoursForWeek">Total Hours for Week 3</div>
-                    <div class = "totalHoursForWeek">Total Hours for Week 4</div>
-                    <div class = "totalHoursForWeek">Total Hours for Week 4</div>
+                    <div class = "totalHoursForWeek">Total Hours for Week{this.displayWeeklyHours(this.state.scheduledHoursForCurrentMonth)}</div>
                   </div>
                 </div>
         </div>
