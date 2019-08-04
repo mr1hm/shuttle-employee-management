@@ -1,12 +1,12 @@
 import React from 'react';
 import './shifts-month.css'
-import WeekOfMonth from './week-of-month-component';
+import DayOfMonth from './day-of-week-component';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
-    this.bundleWeeks = this.bundleWeeks.bind(this);
+    this.bundleDays = this.bundleDays.bind(this);
     this.getIndexFirstDayOfMonth = this.getIndexFirstDayOfMonth.bind(this);
     this.getNumberOfDaysInMonth = this.getNumberOfDaysInMonth.bind(this);
     this.state = {
@@ -43,7 +43,46 @@ export default class ShiftsMonth extends React.Component {
     const monthLastDayDate = new Date(this.getMonthAndYearForCalendar(unixTimeStamp).year, this.getMonthAndYearForCalendar(unixTimeStamp).month + 1, 0);
     return monthLastDayDate.getDate();
   }
-  bundleWeeks() {
+  sumHoursOfWeek(){
+
+  }
+
+
+  calculateSumOfHoursScheduledForWeek(week){
+    //takes in an array of shifts for one week as an argument = [{startTime: "600", endTime: "1100", shiftDate: "1563704640000"},{startTime: "1330", endTime: "1630", shiftDate: "1563951600000"}]
+    let totalHoursForWeek = 0;
+    
+    for(let i=0; i<week.length;i++){
+
+      let hourDiff = (week[i].endTime-week[i].startTime)/100;
+      let totalHoursForDay = Math.trunc(hourDiff); //5hours
+      totalHoursForWeek +=totalHoursForDay;
+      
+      let fullHours ;
+      
+    }
+    
+  }
+
+  calculateSumOfHoursScheduledForWeek() {
+        let sumOfHours = null;
+        for (let i = 0; i < this.props.weeklyHours.length; i++) {
+          var weeklyHours = this.props.weeklyHours
+          sumOfHours += (weeklyHours[i].endTime-weeklyHours[i].startTime)/100;
+        }
+        let fullHours = Math.trunc(sumOfHours);
+        let minutes = ((sumOfHours - fullHours) * 60).toFixed(0);
+        return (
+          fullHours + 'h ' + minutes + 'm'
+        );
+      }
+
+
+
+  displayWeeklyHours(){
+
+  }
+  bundleDays() {
     const firstDayOfMonth = this.getIndexFirstDayOfMonth(this.props.date);
     const numberOfDaysInMonth = this.getNumberOfDaysInMonth(this.props.date);
 
@@ -53,7 +92,7 @@ export default class ShiftsMonth extends React.Component {
           }
 
     for(var i = firstDayOfMonth; i<numberOfDaysInMonth; i++){
-      monthDivArray.push(<div>{i}</div>)
+      monthDivArray.push(<DayOfMonth dayIndex={i}/>)
     }
     
     console.log("number of days carried over from prev month: ",new Date(this.props.date).getDay())
@@ -62,12 +101,28 @@ export default class ShiftsMonth extends React.Component {
 
   render() {
     return (
-      <div class="calenderContainer">
+      <div class ="calenderContainer">
         <TopMenuShift title="MONTH"/>
-    <div class="wrapper">
-                {this.bundleWeeks()}
-      </div>
+        <div class="row">
+                <div class="col col-lg-1">
+                </div>
+                <div class="col">
+                  <div class="wrapper">
+                      {this.bundleDays()}
+                  </div>
+                </div>
+                <div class="col col-lg-2">
+                  <div class="totalHoursColumn">
+                    <div class = "totalHoursForWeek">Total Hours for Week 1</div>
+                    <div class = "totalHoursForWeek">Total Hours for Week 2</div>
+                    <div class = "totalHoursForWeek">Total Hours for Week 3</div>
+                    <div class = "totalHoursForWeek">Total Hours for Week 4</div>
+                    <div class = "totalHoursForWeek">Total Hours for Week 4</div>
+                  </div>
+                </div>
+        </div>
     </div>
+
     )
   }
 }
