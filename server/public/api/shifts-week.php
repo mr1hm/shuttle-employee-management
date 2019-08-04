@@ -5,11 +5,11 @@
 
  //data sanitization
  //if data exists validate
-//  $id = $_GET('id');
-//  $id = intval($id);
+ $id = 1;
+ $id = intval($id);
 
 
- $query = "SELECT * FROM `shift` WHERE `ownerID`= 1 AND (`shiftDate` >= '1563704640000' AND `shiftDate` <='1564210800000')
+ $query = "SELECT * FROM `shift` WHERE `ownerID`= {$id} AND (`shiftDate` >= '1563704640000' AND `shiftDate` <='1564210800000')
             ORDER BY `shiftDate` ASC";
  $result = mysqli_query($conn, $query);
  //check if query was valid

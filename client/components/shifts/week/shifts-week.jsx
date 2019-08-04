@@ -24,7 +24,7 @@ class ShiftsWeek extends React.Component {
   }
 
   componentDidMount(){
-    this.getData('/api/shifts-week.php?', 'GET');
+    this.getData('/api/shifts-week.php?' ,  'GET');
   }
 
 
