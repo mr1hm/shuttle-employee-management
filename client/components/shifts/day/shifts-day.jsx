@@ -27,7 +27,9 @@ class ShiftsDay extends React.Component {
     }
   }
   componentDidMount(){
-    fetch(`/api/dummy-data-day-shifts.json`, {
+    //fetch(`/api/dummy-data-day-shifts.json`, {
+    fetch('http://127.0.0.1/lfz/_classes/c519/519_anteater_express/server/public/api/shifts-day.php', {
+    //fetch('http://anteater-express.localhost/api/shifts-day.php', {
       method: 'GET'
     })
       .then(response => {
