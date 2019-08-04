@@ -5,7 +5,7 @@
 
  //data sanitization
  //if data exists validate
- $id = 1;
+ $id = $_GET['id'];
  $id = intval($id);
 
 
