@@ -1,7 +1,6 @@
 import React from 'react';
 import WeekOfMonth from './week-of-month-component';
 import TopMenuShift from '../../topmenu/topmenu-shift';
-
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
@@ -12,18 +11,15 @@ export default class ShiftsMonth extends React.Component {
       scheduledHoursForCurrentMonth: []
     }
   }
+  fetchCallMethod(url, methodToUse) {
+    fetch(url, {method: methodToUse})
+      .then(res => {return res.json()})
+      .then(jsonRes => {this.setState({
+        scheduledHoursForCurrentMonth: jsonRes //this setState may be changed depending on how we want state to be set up
+      })})
+  }
   componentDidMount(){
-    fetch('/api/dummy-data/dummy-data-shifts-month.json', {
-      method: 'GET'
-    })
-      .then(res => {
-        return res.json()
-      })
-      .then(jsonRes => {
-        this.setState({
-          scheduledHoursForCurrentMonth: jsonRes
-        })
-      });
+    this.fetchCallMethod('/api/shifts-month.php', 'GET');
   }
   getMonthAndYearForCalendar(unixTimeStamp) {
     const calendarSource = {};
@@ -72,10 +68,13 @@ export default class ShiftsMonth extends React.Component {
   render() {
     return (
       <div>
+<<<<<<< HEAD
+        <TopMenuShift title="MONTH" page='month' date={this.props.date}/>
+=======
         <TopMenuShift title="MONTH"/>
+>>>>>>> rc20190805
         {this.bundleWeeks()}
       </div>
     )
   }
 }
-

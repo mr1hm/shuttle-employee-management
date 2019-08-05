@@ -1,6 +1,5 @@
 import React from 'react';
 import DayOfWeek from './day-of-week-component';
-
 class WeekOfMonth extends React.Component {
   calculateSumOfHoursScheduledForWeek() {
     let sumOfHours = null;
@@ -40,5 +39,4 @@ class WeekOfMonth extends React.Component {
     );
   }
 }
-
 export default WeekOfMonth;

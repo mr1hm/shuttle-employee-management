@@ -35,7 +35,7 @@ class ShiftsWeek extends React.Component {
 
     return (
       <div className="masterContainerIphone">
-        <TopMenuShifts title="WEEK"/>
+        <TopMenuShifts title="WEEK" page='week' date={this.props.date}/>
   
         <div className="subheaderContainer">
           <div className="hourWeekContainer">
