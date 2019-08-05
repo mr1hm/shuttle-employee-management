@@ -68,7 +68,7 @@ export default class ShiftsMonth extends React.Component {
   render() {
     return (
       <div>
-        <TopMenuShift title="MONTH"/>
+        <TopMenuShift title="MONTH" page='month' date={this.props.date}/>
         {this.bundleWeeks()}
       </div>
     )
