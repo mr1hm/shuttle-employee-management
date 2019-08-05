@@ -40,10 +40,12 @@ module.exports = {
     watchContentBase: true,
     stats: 'minimal',
     proxy: {
-      '/api': {
-        target: 'http://localhost',
+      '/api/**': {
+        target: 'http://anteater-express.localhost',
+        secure: false,
+        changeOrigin: true,
         headers: {
-          Host: 'anteater-express.localhost'
+          Host: 'http://anteater-express.localhost'
         }
       }
     }

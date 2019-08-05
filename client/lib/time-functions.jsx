@@ -35,6 +35,11 @@ function getShiftEndMinute(time) {
   return splitTimeResult[1];
 }
 function calculateDailyWorkingHours(startTime, endTime) {
+  if (startTime.length < 4){
+    startTime = "0" + startTime;
+    parseInt(startTime);
+  }
+
   const startHour = startTime.slice(0, 2);
   const endHour = endTime.slice(0, 2);
   const startMinute = startTime.slice(2);
