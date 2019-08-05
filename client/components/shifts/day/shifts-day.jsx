@@ -68,7 +68,7 @@ class ShiftsDay extends React.Component {
   return (
 
     <div>
-      <TopMenuShifts title="DAY" page='day' date={this.props.date}/>
+      <TopMenuShifts title="DAY" page='day' date={this.props.match.params.date}/>
     <div>Today's Date {this.props.date}</div>
     <div>Total Hours: {totalHours} [posted: {postedHours}] </div>
       <table className='table table-striped'>
