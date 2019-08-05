@@ -36,13 +36,15 @@ class Nav extends React.Component {
     var day = new Date(incomingDate);
     var nextDay = new Date(day);
     nextDay.setDate(day.getDate() + increment);
+    var nextTimestamp = nextDay.getTime();
+    console.log('timestamp', nextTimestamp)
     const convertedDate = new Date(nextDay);
     const dateString = "" + convertedDate;
     const dayText = dateString.slice(-64, -47);
     this.setState({
       centerContent: dayText
     })
-    return <Link></Link>
+    return `./../../components/shifts/day/shifts-day/:${nextTimestamp}`;
   }
 
   generateTextMonth(incomingDate, increment) {
@@ -93,10 +95,10 @@ class Nav extends React.Component {
     return (
       <div className="weekSelectionContainer">
         {/* TODO: This is leftover code -- need to change classNames to reflect more generic nav, will do later since it is CSS*/}
-        <div className="weekSelector weekDropDown weekDropDownLeft">{this.leftArrowContent}</div>
+        <div className="weekSelector weekDropDown weekDropDownLeft"><Link to={this.leftArrowContent}></Link></div>
         <div className="weekSelection">{this.state.centerContent}</div>
         {/* TODO: this is leftover code -- need to change classNames to reflect more generic nav, will do later since it CSS*/}
-        <div className="weekSelector weekDropDown weekDropDownRight">{this.rightArrowContent}</div>
+        <div className="weekSelector weekDropDown weekDropDownRight"><Link to={this.rightArrowContent}></Link></div>
       </div>  
     );
   }
