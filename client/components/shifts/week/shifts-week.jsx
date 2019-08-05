@@ -13,20 +13,20 @@ class ShiftsWeek extends React.Component {
 
     }
   }
-
-  componentDidMount(){
-    fetch('/api/shifts-week.php?' , {
-      method: 'GET'
-    })
-      .then(response => {
-        return response.json()
-      })
+  getData(url, methodToUse) {
+    fetch(url, { method: methodToUse })
+      .then(response => { return response.json() })
       .then(weekShiftInfo => {
         this.setState({
           data: weekShiftInfo
         })
-      });
+      })
   }
+
+  componentDidMount(){
+    this.getData('/api/shifts-week.php?id=' + 1 ,  'GET');
+  }
+
 
   render() {
     if (!this.state.data){
