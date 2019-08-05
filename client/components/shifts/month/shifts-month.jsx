@@ -48,6 +48,11 @@ export default class ShiftsMonth extends React.Component {
   sumHoursOfWeek(){
 
   }
+  getDayOfWeek(unixTimeStamp){
+    const dateInUnix = new Date(unixTimeStamp);
+    console.log(dateInUnix.getDay())
+    return dateInUnix.getDay()
+  }
 
   calculateShiftHours(startTime, endTime){
 
@@ -61,9 +66,7 @@ export default class ShiftsMonth extends React.Component {
 
       let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
 
-      return shiftLengthInMinutes;
-
-     
+      return shiftLengthInMinutes; 
   }
 
   calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek){
@@ -87,47 +90,28 @@ export default class ShiftsMonth extends React.Component {
       //loop through shift array and look for unix time for  week. 
       let weekArray = []
       for(var shiftIndex=0; shiftIndex<shiftsInMonthArray.length; shiftIndex++){ //any shift in month
-        let unixOfShift = shiftsInMonthArray[shiftIndex].shiftDate
+        var unixOfShift = shiftsInMonthArray[shiftIndex].shiftDate
         console.log("unixOfShift: ",unixOfShift)
         // let unixConverted = new Date(unixOfShift) // convert unix of each shift in month
-        let unixConverted = new Date(1563704640000)
-        console.log("unixConverted: ",unixConverted)
+        var unixConverted = new Date(1563704640000)
+        console.log("unixConverted: ",unixConverted.getDay())
 
-        if(unixConverted.getDate() < 7){ //check if each shift in month is in first week
-          weekArray.push(shiftsInMonthArray[shiftIndex])
-          //call calcilatefucntion passing in the array for week
-          this.calculateSumOfHoursScheduledForWeek(weekArray)
-        } else if (unixConverted.getDate() < 14){
-          weekArray.push(shiftsInMonthArray[shiftIndex])
-          this.calculateSumOfHoursScheduledForWeek(weekArray)
-        } else if (unixConverted.getDate() < 21){
-          weekArray.push(shiftsInMonthArray[shiftIndex])
-          this.calculateSumOfHoursScheduledForWeek(weekArray)
-        } else if (unixConverted.getDate() < 28){
-          weekArray.push(shiftsInMonthArray[shiftIndex])
-          this.calculateSumOfHoursScheduledForWeek(weekArray)
-        } else if (unixConverted.getDate() < 32){
-          weekArray.push(shiftsInMonthArray[shiftIndex])
-          this.calculateSumOfHoursScheduledForWeek(weekArray)
-        }
+       
         // let totalHours = this.calculateSumOfHoursScheduledForWeek(weekArray)
         // console.log("totalHours: ", totalHours)
         // return totalHours;
       }
-
-
-
   }
   bundleDays() {
     const firstDayOfMonth = this.getIndexFirstDayOfMonth(this.props.date);
     const numberOfDaysInMonth = this.getNumberOfDaysInMonth(this.props.date);
 
     var monthDivArray=[]
-    for(var numberOfDaysOfPrevMonth=0; numberOfDaysOfPrevMonth < new Date(this.props.date).getDay();numberOfDaysOfPrevMonth++){
+    for(var numberOfDaysOfPrevMonth=0; numberOfDaysOfPrevMonth < new Date(this.props.date).getDay()-1; numberOfDaysOfPrevMonth++){
             monthDivArray.push(<div>{30+numberOfDaysOfPrevMonth}</div>)
           }
 
-    for(var i = firstDayOfMonth; i<numberOfDaysInMonth; i++){
+    for(var i = firstDayOfMonth; i<=numberOfDaysInMonth; i++){
       monthDivArray.push(<DayOfMonth dayIndex={i}/>)
     }
     
@@ -149,7 +133,9 @@ export default class ShiftsMonth extends React.Component {
                 </div>
                 <div class="col col-lg-2">
                   <div class="totalHoursColumn">
-                    <div class = "totalHoursForWeek">Total Hours for Week{this.displayWeeklyHours(this.state.scheduledHoursForCurrentMonth)}</div>
+                    <div class = "totalHoursForWeek">Total Hours for Week
+                    {this.displayWeeklyHours(this.state.scheduledHoursForCurrentMonth)}
+                    </div>
                   </div>
                 </div>
         </div>
