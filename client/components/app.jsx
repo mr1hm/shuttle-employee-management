@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import MyInfo from './myinfo/myinfo';
 import ShiftsWeek from './shifts/week/shifts-week';
 import ShiftsDay from './shifts/day/shifts-day';
@@ -15,13 +15,13 @@ import Welcome from './welcome/welcome';
       presetDateForTesting: 1564531200000
     }
   }
-  loginView() {
-    return (
-      <div className="container" style={{ top: "40%", left: "40%", position: "absolute" }}>
-        <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >Login</div>
-      </div>
-    );
-  }
+  // loginView() {
+  //   return (
+  //     <div className="container" style={{ top: "40%", left: "40%", position: "absolute" }}>
+  //       <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >Login</div>
+  //     </div>
+  //   );
+  // }
   render(){
     return (
         <div>
