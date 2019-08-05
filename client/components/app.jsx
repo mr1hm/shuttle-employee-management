@@ -26,12 +26,12 @@ import Welcome from './welcome/welcome';
     return (
         <div>
           <Switch>
-          <Route path = "/login/" render={(props) => <Login {...props} date={this.state.presetDateForTesting} />}/>
-            <Route path = "/welcome/" render={(props) => <Welcome {...props} date={this.state.presetDateForTesting} />}/>
-            <Route path = "/myinfo/" render={(props) => <MyInfo {...props} date={this.state.presetDateForTesting} />}/> 
-            <Route path = "/shifts/week" render={(props) => <ShiftsWeek {...props} date={this.state.presetDateForTesting}  />}/>
-            <Route path = "/shifts/day" render={(props) => <ShiftsDay {...props} date={this.state.presetDateForTesting}  />}/>
-            <Route path = "/shifts/month" render={(props) => <ShiftsMonth {...props} date={this.state.presetDateForTesting}  />}/>
+          <Route path = "/login/" render={(props) => <Login {...props} />}/>
+            <Route path = "/welcome/" render={(props) => <Welcome {...props}  />}/>
+            <Route path = "/myinfo/" render={(props) => <MyInfo {...props} />}/> 
+            <Route path = "/shifts/week/:date" render={(props) => <ShiftsWeek {...props} date={this.state.presetDateForTesting}  />}/>
+            <Route path = "/shifts/day/:date" render={(props) => <ShiftsDay {...props} date={this.state.presetDateForTesting}  />}/>
+            <Route path = "/shifts/month/:date" render={(props) => <ShiftsMonth {...props} date={this.state.presetDateForTesting}  />}/>
             <Route 
             path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} date={this.state.presetDateForTesting} />}/>        
           </Switch>
