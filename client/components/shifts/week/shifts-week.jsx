@@ -17,23 +17,8 @@ class ShiftsWeek extends React.Component {
     const convertedDateStart = new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
-  
-    switch(finalConvertedDate){
-      case 0: 
-        return time;
-      case 1: 
-        return time - 86400000;
-      case 2: 
-        return time - (finalConvertedDate * 86400000);
-      case 3: 
-        return time - (finalConvertedDate * 86400000);
-      case 4: 
-        return time - (finalConvertedDate * 86400000);
-      case 5: 
-        return time - (finalConvertedDate * 86400000);
-      case 6: 
-        return time - (finalConvertedDate * 86400000);
-    }
+    
+    return time - finalConvertedDate * 86400000;
   }
 
   generateEndOfWeekTimestamp(time) {
@@ -41,22 +26,7 @@ class ShiftsWeek extends React.Component {
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
   
-    switch(finalConvertedDate){
-      case 0: 
-        return time + (6 * 86400000);
-      case 1: 
-        return time + (5 * 86400000);
-      case 2: 
-        return time + (4 * 86400000);
-      case 3: 
-        return time + (3 * 86400000);
-      case 4: 
-        return time + (2 * 86400000);
-      case 5: 
-        return time + 86400000;
-      case 6: 
-        return time;
-    }
+    return time + (6 - finalConvertedDate) * 86400000;
   }
 
   getData(url, methodToUse) {
@@ -81,13 +51,15 @@ class ShiftsWeek extends React.Component {
       return null;
     }
 
-    if (this.props.match.params.date === undefined) {
-      this.props.match.params.date = this.props.defaultDate;
-    } 
+    // if (this.props.match.params.date === undefined) {
+    //   this.props.match.params.date = this.props.defaultDate;
+    // } 
   
+    const datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
+
     return (
       <div className="masterContainerIphone">
-        <TopMenuShifts title="WEEK" page='week' date={this.props.match.params.date}/>
+        <TopMenuShifts title="WEEK" page='week' date={datePropToUse}/>
   
         <div className="subheaderContainer">
           <div className="hourWeekContainer">
