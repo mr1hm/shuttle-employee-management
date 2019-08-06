@@ -6,11 +6,14 @@ import TopMenuShift from '../../topmenu/topmenu-shift';
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
-    this.bundleDays = this.bundleDays.bind(this);
     this.getIndexFirstDayOfMonth = this.getIndexFirstDayOfMonth.bind(this);
     this.getNumberOfDaysInMonth = this.getNumberOfDaysInMonth.bind(this);
-    this.calculateSumOfHoursScheduledForWeek = this.calculateSumOfHoursScheduledForWeek.bind(this); 
-    this.calculateShiftHours = this.calculateShiftHours.bind(this)
+    this.calculateShiftHours = this.calculateShiftHours.bind(this);
+    this.displayCalendarPage = this.displayCalendarPage.bind(this);
+    this.groupShiftsByDate = this.groupShiftsByDate.bind(this);
+    this.displayWeeklyHours = this.displayWeeklyHours.bind(this);
+    this.chunkArray = this.chunkArray.bind(this);
+    this.calculateSumOfHoursScheduledForWeek = this.calculateSumOfHoursScheduledForWeek.bind(this);
     this.state = {
       scheduledHoursForCurrentMonth: []
     }
@@ -23,8 +26,6 @@ export default class ShiftsMonth extends React.Component {
         return res.json()
       })
       .then(jsonRes => {
-        console.log("db-datapoints: ", jsonRes)
-        console.log("hoursInShift: ", (jsonRes[0].endTime-jsonRes[0].startTime)/100 + " hours on the", (new Date(1563704640000)).getDate() )
         this.setState({
           scheduledHoursForCurrentMonth: jsonRes
         })
@@ -45,21 +46,12 @@ export default class ShiftsMonth extends React.Component {
     const monthLastDayDate = new Date(this.getMonthAndYearForCalendar(unixTimeStamp).year, this.getMonthAndYearForCalendar(unixTimeStamp).month + 1, 0);
     return monthLastDayDate.getDate();
   }
-  sumHoursOfWeek(){
-
-  }
-  getDayOfWeek(unixTimeStamp){
-    const dateInUnix = new Date(unixTimeStamp);
-    console.log(dateInUnix.getDay())
-    return dateInUnix.getDay()
-  }
-
   calculateShiftHours(startTime, endTime){
 
-      let startHourDigits = Math.trunc(startTime/100) //6
-      let startMinuteDigits = startTime/100 - Math.floor(startTime/100)//00
-      let endHourDigits = Math.trunc(endTime/100) //11
-      let endMinuteDigits = endTime/100 - Math.floor(endTime/100)//00
+      let startHourDigits = Math.trunc(startTime/100)
+      let startMinuteDigits = startTime/100 - Math.floor(startTime/100)
+      let endHourDigits = Math.trunc(endTime/100) 
+      let endMinuteDigits = endTime/100 - Math.floor(endTime/100)
 
       let startTimeInMinutes = startHourDigits*60 + startMinuteDigits
       let endTimeInMinutes = endHourDigits*60 + endMinuteDigits
@@ -68,56 +60,126 @@ export default class ShiftsMonth extends React.Component {
 
       return shiftLengthInMinutes; 
   }
+  groupShiftsByDate(shiftsArray) {
+    var shifts = {};
+
+    for(var shiftIndex=0; shiftIndex<shiftsArray.length; shiftIndex++){
+      shifts[`${shiftsArray[shiftIndex].shiftDate}`] = shiftsArray[shiftIndex];
+    }
+    console.log("shifts:",shifts);
+    return shifts;
+  }
+  generateCalendarPage() {
+    var selectedDate = new Date();
+    var firstDayOfMonth = new Date(selectedDate);
+    firstDayOfMonth.setDate(1);
+  
+    var calendarPage = [firstDayOfMonth];
+    var previousDate = firstDayOfMonth;
+    while (previousDate.getDay() > 0) {
+      previousDate = new Date(previousDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+      calendarPage.unshift(previousDate);
+    }
+    var nextDayOfMonth = new Date(firstDayOfMonth);
+    nextDayOfMonth.setDate(nextDayOfMonth.getDate() + 1);
+  
+    while (nextDayOfMonth.getMonth() === firstDayOfMonth.getMonth()) {
+      calendarPage.push(nextDayOfMonth);
+      nextDayOfMonth = new Date(nextDayOfMonth);
+      nextDayOfMonth.setDate(nextDayOfMonth.getDate() + 1);
+    }
+  
+    var dayOfNextMonth = new Date(nextDayOfMonth);
+  
+    while (dayOfNextMonth.getDay() !== 0) {
+      calendarPage.push(dayOfNextMonth);
+      dayOfNextMonth = new Date(dayOfNextMonth);
+      dayOfNextMonth.setDate(dayOfNextMonth.getDate() + 1);
+    }
+  
+    return calendarPage;
+  }
+  
+  displayCalendarPage() {
+
+    var monthDivArray=[]
+
+    var calendarPage = this.generateCalendarPage();
+
+    for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
+      monthDivArray.push(<DayOfMonth dayIndex={calendarPage[dayOfCalendar].getDate()}/>)
+    }
+    return monthDivArray
+  }
+
+  chunkArray(calendarArray, chunkSize){
+    var calenderIndex = 0;
+    var calendarArrayLength = calendarArray.length;
+    var bundledWeeksArray = [];
+    
+    for (calenderIndex = 0; calenderIndex < calendarArrayLength; calenderIndex += chunkSize) {
+        var weekChunk = calendarArray.slice(calenderIndex, calenderIndex+chunkSize);
+        bundledWeeksArray.push(weekChunk);
+    }
+
+    return bundledWeeksArray;
+}
+
+  displayWeeklyHours(calendarPage,shiftsArray){
+
+    var displayedWeekTotalHourDiv = []
+    var weekHourTotal=0;
+
+    var calendarDates = calendarPage.map(day => day.getDate())
+    var bundledWeeksArray = this.chunkArray(calendarPage,7);
+    var weeklyShiftsArray = []
+    console.log("bundledWeeksArray: ",bundledWeeksArray)
+    for(var shiftIndex=0; shiftIndex<shiftsArray.length; shiftIndex++){
+          for(var weekIndex=0; weekIndex<bundledWeeksArray.length; weekIndex++){
+
+            for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){
+
+              if(bundledWeeksArray[weekIndex][dateIndex].getDate() === new Date(parseInt(shiftsArray[shiftIndex].shiftDate)).getDate()){
+                weeklyShiftsArray.push(shiftsArray[shiftIndex]);
+                
+                var sum = this.calculateShiftHours((shiftsArray[shiftIndex].startTime),(shiftsArray[shiftIndex].endTime))/60
+                console.log("week", weekIndex+1 + ": totalHours: " + sum)
+                
+              } 
+              else {
+                weekHourTotal = 0
+              }
+
+            }
+
+               weekHourTotal = this.calculateSumOfHoursScheduledForWeek(weeklyShiftsArray)
+
+            displayedWeekTotalHourDiv.push(weekHourTotal)
+            
+
+          }
+          console.log("calendarDates: ",calendarDates)
+          console.log("calendarPage: ",calendarPage);
+          console.log("shiftsArray:",shiftsArray)
+          
+    }
+console.log("displayedWeekTotalHourDiv: ",displayedWeekTotalHourDiv)
+    return weekHourTotal
+  }
 
   calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek){
-
     let totalShiftLengthForWeek = 0;
-    //takes in an array of shifts for one week as an argument = [{startTime: "600", endTime: "1100", shiftDate: "1563704640000"},{startTime: "1330", endTime: "1630", shiftDate: "1563951600000"}]
-    //let totalHoursForWeek = 0; //initial hours total for week         Math.ceil(6.45) = 7.00    minutes =  60-(startTime.-Math.floor(startTime/100)*100) +  endTime-Math.floor(endTime/100)*100      hours =  Math.floor(endTime/100) - Math.ceil(startTime/100) = 4  -startTime  60 - 45 min,    ,4 hours 15min
-    for(let shiftIndex=0; shiftIndex<arrayOfShiftsForWeek.length; shiftIndex++){ //loop through each shift in week
+    for(let shiftIndex=0; shiftIndex<arrayOfShiftsForWeek.length; shiftIndex++){
       let shiftToCalculate = arrayOfShiftsForWeek[shiftIndex]
       let hoursForShift = this.calculateShiftHours(shiftToCalculate.startTime, shiftToCalculate.endTime)
       totalShiftLengthForWeek += hoursForShift
     }
-      let totalHours = Math.floor(totalShiftLengthForWeek/60)
-      let totalMinutes = totalShiftLengthForWeek%60
-
+      let totalHours = Math.floor(totalShiftLengthForWeek/60);
+      let totalMinutes = totalShiftLengthForWeek%60;
       console.log(totalHours + "h: " + totalMinutes + "min")
       return (totalHours + "h: " + totalMinutes + "min")
   }
-
-  displayWeeklyHours(shiftsInMonthArray){
-      //loop through shift array and look for unix time for  week. 
-      let weekArray = []
-      for(var shiftIndex=0; shiftIndex<shiftsInMonthArray.length; shiftIndex++){ //any shift in month
-        var unixOfShift = shiftsInMonthArray[shiftIndex].shiftDate
-        console.log("unixOfShift: ",unixOfShift)
-        // let unixConverted = new Date(unixOfShift) // convert unix of each shift in month
-        var unixConverted = new Date(1563704640000)
-        console.log("unixConverted: ",unixConverted.getDay())
-
-       
-        // let totalHours = this.calculateSumOfHoursScheduledForWeek(weekArray)
-        // console.log("totalHours: ", totalHours)
-        // return totalHours;
-      }
-  }
-  bundleDays() {
-    const firstDayOfMonth = this.getIndexFirstDayOfMonth(this.props.date);
-    const numberOfDaysInMonth = this.getNumberOfDaysInMonth(this.props.date);
-
-    var monthDivArray=[]
-    for(var numberOfDaysOfPrevMonth=0; numberOfDaysOfPrevMonth < new Date(this.props.date).getDay()-1; numberOfDaysOfPrevMonth++){
-            monthDivArray.push(<div>{30+numberOfDaysOfPrevMonth}</div>)
-          }
-
-    for(var i = firstDayOfMonth; i<=numberOfDaysInMonth; i++){
-      monthDivArray.push(<DayOfMonth dayIndex={i}/>)
-    }
-    
-    console.log("number of days carried over from prev month: ",new Date(this.props.date).getDay())
-    return monthDivArray
-    }
 
   render() {
     return (
@@ -128,13 +190,13 @@ export default class ShiftsMonth extends React.Component {
                 </div>
                 <div class="col">
                   <div class="wrapper">
-                      {this.bundleDays()}
+                      {this.displayCalendarPage()}
                   </div>
                 </div>
                 <div class="col col-lg-2">
                   <div class="totalHoursColumn">
-                    <div class = "totalHoursForWeek">Total Hours for Week
-                    {this.displayWeeklyHours(this.state.scheduledHoursForCurrentMonth)}
+                    <div class = "totalHoursForWeek">Total Week Hrs <br></br> 
+                    {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)}
                     </div>
                   </div>
                 </div>
