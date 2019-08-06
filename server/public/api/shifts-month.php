@@ -22,16 +22,12 @@ $query = "SELECT * FROM `shift` WHERE `ownerID`= {$ownerID} AND (`shiftDate` >= 
             ORDER BY `shiftDate` ASC";
 
 $result = mysqli_query($conn, $query);
-
 if (!$result) {
     throw new Exception('mysql error ' . mysqli_error($conn));
 }
-
 $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $data[] = $row;
 }
-
 print(json_encode($data));
-
 ?>
