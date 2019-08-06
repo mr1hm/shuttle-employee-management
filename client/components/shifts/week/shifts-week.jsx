@@ -73,7 +73,7 @@ class ShiftsWeek extends React.Component {
         <div className="calendarContainer">
           {this.state.data.map(day=> {
             return (
-              <ShiftsWeekDay shifts={day} />
+              <ShiftsWeekDay shifts={day} defaultDay={this.props.defaultDate} />
             )
           })}
         </div>
