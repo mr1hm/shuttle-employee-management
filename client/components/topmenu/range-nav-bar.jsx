@@ -1,5 +1,7 @@
 //TODO: There is quite a bit of repeated code for date manipulation. Eventually the common code should be placed into functions.
 
+//TODO: There is a A LOT OF GARBAGE CODE, but I don't want delete yet.
+
 import React from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
 import './nav-styles.css';
@@ -123,10 +125,10 @@ class Nav extends React.Component {
     return (
       <div className="weekSelectionContainer">
         {/* TODO: This is leftover code --  do later since CSS*/}
-        <div className="weekSelector weekDropDown weekDropDownLeft" ><Link to={leftRoute}></Link></div>
+        <Link to={leftRoute}><div className="weekSelector weekDropDown weekDropDownLeft" ></div></Link>
         <div className="weekSelection">{this.generateText()}</div>
         {/* TODO: This is leftover code --  do later since CSS*/}
-        <div className="weekSelector weekDropDown weekDropDownRight" ><Link to={rightRoute}></Link></div>
+        <Link to={rightRoute}> <div className="weekSelector weekDropDown weekDropDownRight" ></div></Link>
       </div>  
     );
   }
