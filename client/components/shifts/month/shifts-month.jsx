@@ -1,23 +1,19 @@
 import React from 'react';
 import './shifts-month.css'
-import DayOfMonth from './day-of-week-component';
 import TopMenuShift from '../../topmenu/topmenu-shift';
-
+import DayOfMonth from './day-of-month-component';
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
     this.query = ``;
     this.id = `&id=1`;
     this.datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
-    this.getIndexFirstDayOfMonth = this.getIndexFirstDayOfMonth.bind(this);
-    this.getNumberOfDaysInMonth = this.getNumberOfDaysInMonth.bind(this);
     this.calculateShiftHours = this.calculateShiftHours.bind(this);
     this.displayCalendarPage = this.displayCalendarPage.bind(this);
     this.groupShiftsByDate = this.groupShiftsByDate.bind(this);
     this.displayWeeklyHours = this.displayWeeklyHours.bind(this);
     this.chunkArray = this.chunkArray.bind(this);
-    this.calculateSumOfHoursScheduledForWeek = this.calculateSumOfHoursScheduledForWeek.bind(this);
-    
+    this.calculateSumOfHoursScheduledForWeek = this.calculateSumOfHoursScheduledForWeek.bind(this);   
     this.state = {
       scheduledHoursForCurrentMonth: []
     }
@@ -28,27 +24,44 @@ export default class ShiftsMonth extends React.Component {
       .then(res => {return res.json()})
       .then(jsonRes => {this.setState({
         scheduledHoursForCurrentMonth: jsonRes
-      }), console.log("state:", this.state)})
+      })})
       .catch(error => {throw(error)})
   }
   componentDidMount(){
     this.fetchCallMethod(this.query, this.id, 'GET');
   }
-
-  getMonthAndYearForCalendar(unixTimeStamp) {
-    const calendarSource = {};
-    let targetDay = (typeof unixTimeStamp === 'undefined') ? new Date() : new Date(unixTimeStamp);
-    calendarSource.month = targetDay.getMonth();
-    calendarSource.year = targetDay.getFullYear();
-    return calendarSource;
-  }
-  getIndexFirstDayOfMonth(unixTimeStamp) {
-    const monthFirstDay = new Date(this.getMonthAndYearForCalendar(unixTimeStamp).year, this.getMonthAndYearForCalendar(unixTimeStamp).month);
-    return monthFirstDay.getDay();
-  }
-  getNumberOfDaysInMonth(unixTimeStamp) {
-    const monthLastDayDate = new Date(this.getMonthAndYearForCalendar(unixTimeStamp).year, this.getMonthAndYearForCalendar(unixTimeStamp).month + 1, 0);
-    return monthLastDayDate.getDate();
+  generateCalendarPage(unixTimeStamp) {
+    var selectedDate = new Date(unixTimeStamp);
+    var firstDayOfMonth = new Date(selectedDate);
+    firstDayOfMonth.setDate(1);
+  
+    var calendarPage = [firstDayOfMonth];
+    var previousDate = firstDayOfMonth;
+    while (previousDate.getDay() > 0) {
+      previousDate = new Date(previousDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+      calendarPage.unshift(previousDate);
+    }
+    var nextDayOfMonth = new Date(firstDayOfMonth);
+    nextDayOfMonth.setDate(nextDayOfMonth.getDate() + 1);
+  
+    while (nextDayOfMonth.getMonth() === firstDayOfMonth.getMonth()) {
+      calendarPage.push(nextDayOfMonth);
+      nextDayOfMonth = new Date(nextDayOfMonth);
+      nextDayOfMonth.setDate(nextDayOfMonth.getDate() + 1);
+    }
+  
+    var dayOfNextMonth = new Date(nextDayOfMonth);
+  
+    while (dayOfNextMonth.getDay() !== 0) {
+      calendarPage.push(dayOfNextMonth);
+      dayOfNextMonth = new Date(dayOfNextMonth);
+      dayOfNextMonth.setDate(dayOfNextMonth.getDate() + 1);
+    }
+    const unixCalendarStartRange = new Date(calendarPage[0].toDateString()).getTime();
+    const unixCalendarEndRange = new Date(calendarPage[calendarPage.length - 1].toDateString()).getTime();
+    this.query = `?unixstart=${unixCalendarStartRange}&unixend=${unixCalendarEndRange}`;
+    return calendarPage;
   }
   calculateShiftHours(startTime, endTime){
 
@@ -71,11 +84,10 @@ export default class ShiftsMonth extends React.Component {
     for(var shiftIndex=0; shiftIndex<shiftsArray.length; shiftIndex++){
       shifts[`${shiftsArray[shiftIndex].shiftDate}`] = shiftsArray[shiftIndex];
     }
-    console.log("shifts:",shifts);
     return shifts;
   }
   generateCalendarPage() {
-    var selectedDate = new Date(this.props.date);
+    var selectedDate = new Date(this.datePropToUse);
     var firstDayOfMonth = new Date(selectedDate);
     firstDayOfMonth.setDate(1);
   
@@ -183,7 +195,7 @@ export default class ShiftsMonth extends React.Component {
   render() {
     return (
       <div class ="calenderContainer">
-        <TopMenuShift title="MONTH"/>
+        <TopMenuShift title="MONTH" page='month' date={this.datePropToUse}/>
         <div class="row">
                 <div class="col col-lg-1">
                 </div>
@@ -199,8 +211,6 @@ export default class ShiftsMonth extends React.Component {
                 </div>
         </div>
     </div>
-
     )
   }
 }
-

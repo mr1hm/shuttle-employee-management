@@ -1,5 +1,4 @@
 import React from 'react';
-
 class DayOfMonth extends React.Component {
   render() {
 return (
@@ -7,5 +6,4 @@ return (
     );
 } 
 }
-
 export default DayOfMonth;

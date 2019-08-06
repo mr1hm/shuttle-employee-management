@@ -10,32 +10,52 @@ class ShiftsWeek extends React.Component {
     super(props);
     this.state = {
       data: null
-
     }
   }
 
-  componentDidMount(){
-    fetch('/api/shifts-week.php?' , {
-      method: 'GET'
-    })
-      .then(response => {
-        return response.json()
-      })
+  generateStartOfWeekTimestamp(time) {
+    const convertedDateStart = new Date(time);
+    const convertedDate = new Date(convertedDateStart);
+    const finalConvertedDate = convertedDate.getUTCDay();
+    
+    return time - finalConvertedDate * 86400000;
+  }
+
+  generateEndOfWeekTimestamp(time) {
+    const convertedDateStart = new Date(time);
+    const convertedDate = new Date(convertedDateStart);
+    const finalConvertedDate = convertedDate.getUTCDay();
+  
+    return time + (6 - finalConvertedDate) * 86400000;
+  }
+
+  getData(url, methodToUse) {
+    fetch(url, { method: methodToUse })
+      .then(response => { return response.json() })
       .then(weekShiftInfo => {
         this.setState({
           data: weekShiftInfo
         })
-      });
+      })
+  }
+
+  componentDidMount(){
+    const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.defaultDate);
+    const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.defaultDate);
+
+    this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET'); 
   }
 
   render() {
     if (!this.state.data){
       return null;
     }
+  
+    const datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
 
     return (
       <div className="masterContainerIphone">
-        <TopMenuShifts title="WEEK"/>
+        <TopMenuShifts title="WEEK" page='week' date={datePropToUse}/>
   
         <div className="subheaderContainer">
           <div className="hourWeekContainer">
