@@ -15,13 +15,7 @@ import Welcome from './welcome/welcome';
       presetDateForTesting: 1564531200000
     }
   }
-  // loginView() {
-  //   return (
-  //     <div className="container" style={{ top: "40%", left: "40%", position: "absolute" }}>
-  //       <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >Login</div>
-  //     </div>
-  //   );
-  // }
+
   render(){
     return (
         <div>
@@ -29,11 +23,12 @@ import Welcome from './welcome/welcome';
           <Route path = "/login/" render={(props) => <Login {...props} />}/>
             <Route path = "/welcome/" render={(props) => <Welcome {...props}  />}/>
             <Route path = "/myinfo/" render={(props) => <MyInfo {...props} />}/> 
-            <Route path = "/shifts/week/:date" render={(props) => <ShiftsWeek {...props} date={this.state.presetDateForTesting}  />}/>
-            <Route path = "/shifts/day/:date" render={(props) => <ShiftsDay {...props} date={this.state.presetDateForTesting}  />}/>
-            <Route path = "/shifts/month/:date" render={(props) => <ShiftsMonth {...props} date={this.state.presetDateForTesting}  />}/>
+            <Route path = "/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek {...props}  />}/>
+            <Route path = "/shifts/day/shifts-day/:date?" render={(props) => <ShiftsDay {...props} default
+            Date={this.state.presetDateForTesting} />}/>
+            <Route path = "/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting} />}/>
             <Route 
-            path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} date={this.state.presetDateForTesting} />}/>        
+            path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} defaultDate={this.state.presetDateForTesting} />}/>        
           </Switch>
         </div>
     );

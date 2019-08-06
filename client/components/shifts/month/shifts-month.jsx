@@ -66,9 +66,16 @@ export default class ShiftsMonth extends React.Component {
     return weekOutput;
   }
   render() {
+    //JPT - for routing had to alter date information
+    var defaultDate=1564531200000;
+    if (this.props.match.params.date === undefined) {
+      var dateToPass = defaultDate;
+    } else {
+      dateToPass = this.props.match.params.date;
+    }
     return (
       <div>
-        <TopMenuShift title="MONTH" page='month' date={this.props.match.params.date}/>
+        <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
         {this.bundleWeeks()}
       </div>
     )
