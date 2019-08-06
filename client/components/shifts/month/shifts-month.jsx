@@ -1,6 +1,5 @@
 import React from 'react';
 import TopMenuShift from '../../topmenu/topmenu-shift';
-
 export default class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
@@ -58,10 +57,9 @@ export default class ShiftsMonth extends React.Component {
   render() {
     return (
       <div>
-        <TopMenuShift title="MONTH"/>
+        <TopMenuShift title="MONTH" page='month' date={this.props.match.params.date}/>
         {this.generateCalendarPage()}
       </div>
     )
   }
 }
-
