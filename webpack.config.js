@@ -39,14 +39,20 @@ module.exports = {
     historyApiFallback: true,
     watchContentBase: true,
     stats: 'minimal',
+  
     proxy: {
-      '/api/**': {
-        target: 'http://anteater-express.localhost',
-        secure: false,
-        changeOrigin: true,
+      '/api': {
+        target: 'http://localhost',
         headers: {
-          Host: 'http://anteater-express.localhost'
+          Host: 'anteater-express.localhost'
         }
+      // '/api': {
+      //   target: 'http://anteater-express.localhost:80',
+      //   secure: false,
+      //   changeOrigin: true,
+      //   headers: {
+      //     Host: 'http://anteater-express.localhost/'
+      //   }
       }
     }
   }
