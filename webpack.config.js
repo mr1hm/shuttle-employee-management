@@ -39,11 +39,9 @@ module.exports = {
     historyApiFallback: true,
     watchContentBase: true,
     stats: 'minimal',
-
     proxy: {
       '/api': {
         target: 'http://localhost',
-
         headers: {
           Host: 'anteater-express.localhost'
         }

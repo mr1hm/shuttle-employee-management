@@ -12,7 +12,7 @@ import Welcome from './welcome/welcome';
   constructor(props){
     super(props);
     this.state = {
-      presetDateForTesting: 1563778800000
+      presetDateForTesting: 1564383600000
     }
   }
   // loginView() {
@@ -31,9 +31,8 @@ import Welcome from './welcome/welcome';
             <Route path = "/myinfo/" render={(props) => <MyInfo {...props} />}/> 
             <Route path = "/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/day/:date" render={(props) => <ShiftsDay {...props} date={this.state.presetDateForTesting}  />}/>
-            <Route path = "/shifts/month/:date" render={(props) => <ShiftsMonth {...props} date={this.state.presetDateForTesting}  />}/>
-            <Route 
-            path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} date={this.state.presetDateForTesting} />}/>        
+            <Route path = "/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting}  />}/>
+            <Route path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} date={this.state.presetDateForTesting} />}/>        
           </Switch>
         </div>
     );
