@@ -70,7 +70,7 @@ export default class ShiftsMonth extends React.Component {
     return shifts;
   }
   generateCalendarPage() {
-    var selectedDate = new Date();
+    var selectedDate = new Date(this.props.date);
     var firstDayOfMonth = new Date(selectedDate);
     firstDayOfMonth.setDate(1);
   
@@ -130,42 +130,46 @@ export default class ShiftsMonth extends React.Component {
 
     var displayedWeekTotalHourDiv = []
     var weekHourTotal=0;
+    var sum = 0
 
     var calendarDates = calendarPage.map(day => day.getDate())
     var bundledWeeksArray = this.chunkArray(calendarPage,7);
     var weeklyShiftsArray = []
     console.log("bundledWeeksArray: ",bundledWeeksArray)
-    for(var shiftIndex=0; shiftIndex<shiftsArray.length; shiftIndex++){
-          for(var weekIndex=0; weekIndex<bundledWeeksArray.length; weekIndex++){
+    for(var shiftIndex=0; shiftIndex<shiftsArray.length; shiftIndex++){ //loop through shifts
+// debugger
+          for(var weekIndex=0; weekIndex<bundledWeeksArray.length; weekIndex++){ //loop each week out of five in month *5
+            sum = 0
+            for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){ //loop through each day in week in month  *7
 
-            for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){
-
-              if(bundledWeeksArray[weekIndex][dateIndex].getDate() === new Date(parseInt(shiftsArray[shiftIndex].shiftDate)).getDate()){
+              if(bundledWeeksArray[weekIndex][dateIndex].getDate() === new Date(parseInt(shiftsArray[shiftIndex].shiftDate)).getDate()){ //compare date value between shift and calendar
                 weeklyShiftsArray.push(shiftsArray[shiftIndex]);
                 
-                var sum = this.calculateShiftHours((shiftsArray[shiftIndex].startTime),(shiftsArray[shiftIndex].endTime))/60
+                sum += this.calculateShiftHours((shiftsArray[shiftIndex].startTime),(shiftsArray[shiftIndex].endTime))/60
                 console.log("week", weekIndex+1 + ": totalHours: " + sum)
                 
               } 
-              else {
-                weekHourTotal = 0
-              }
 
-            }
+           }
 
-               weekHourTotal = this.calculateSumOfHoursScheduledForWeek(weeklyShiftsArray)
-
-            displayedWeekTotalHourDiv.push(weekHourTotal)
-            
+weekHourTotal = this.calculateSumOfHoursScheduledForWeek(weeklyShiftsArray)
+          displayedWeekTotalHourDiv.push(
+                    <div class = "totalHoursForWeek">Total Week Hours <br></br> 
+                      {/* {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)} */}
+                      {weekHourTotal}
+                    </div>
+              // weekHourTotal
+              )
 
           }
           console.log("calendarDates: ",calendarDates)
           console.log("calendarPage: ",calendarPage);
           console.log("shiftsArray:",shiftsArray)
+
           
     }
 console.log("displayedWeekTotalHourDiv: ",displayedWeekTotalHourDiv)
-    return weekHourTotal
+    return displayedWeekTotalHourDiv
   }
 
   calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek){
