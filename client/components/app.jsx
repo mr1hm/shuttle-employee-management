@@ -29,7 +29,7 @@ import Welcome from './welcome/welcome';
           <Route path = "/login/" render={(props) => <Login {...props} />}/>
             <Route path = "/welcome/" render={(props) => <Welcome {...props}  />}/>
             <Route path = "/myinfo/" render={(props) => <MyInfo {...props} />}/> 
-            <Route path = "/shifts/week/:date" render={(props) => <ShiftsWeek {...props} date={this.state.presetDateForTesting}  />}/>
+            <Route path = "/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/day/:date" render={(props) => <ShiftsDay {...props} date={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} date={this.state.presetDateForTesting} />}/>        
