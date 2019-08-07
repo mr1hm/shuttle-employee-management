@@ -1,11 +1,12 @@
 .calenderContainer{
     justify-content: center; 
-    padding: 2rem
+    padding: 1rem;
+    box-sizing: border-box
 }
 .wrapper {
-    border: 1px solid #f76707;
+    border: 1.5em solid rgba(white, .2);
     border-radius: 5px;
-    background-color: #fff4e6;
+    /* background-image: radial-gradient(lightgray, lightgray, white); */
     display: grid;
     grid-template-columns: repeat(7,0fr);
     grid-gap: 1.5px;
@@ -15,25 +16,69 @@
 
 .wrapper > div {
     display: flex;
-    height: 8.5rem;
-    width: 8.5rem;
-    border: 1px solid black;
+    height: 14vh;
+    width: 14vh;
+    border: 0.5px solid lightgray;
     border-radius: 5px;
     background-color: white;  
     justify-content: center;
     align-items: center;
-    color: #d9480f;
+    color: black;
+}
+
+.Title{
+  border: 1.5em solid rgba(white, .2);
+  display: grid;
+  grid-template-columns: repeat(7,0fr);
+  grid-gap: 1.5px;
+  justify-content: center;
+}
+.Title > div {
+    display: flex;
+    height: 6vh;
+    width: 14vh;
+    border-radius: 5px;
+    background-color: lightgrey;  
+    justify-content: center;
+    align-items: center;
+    color: black;
 }
 
 .totalHoursColumn{
   flex-direction: column;
   background-color: white;
-  padding: 1.5rem
+  padding-top: 1.5rem
+}
+
+.weekTotal {
+    font-size: 0.5rem;
+    display: flex;
+    height: 6vh;
+    width: 18vh;
+    border-radius: 5px;
+    background-color: lightgrey;  
+    justify-content: center;
+    align-items: center;
+    color: black;
 }
 
 .totalHoursForWeek{
   border-radius: 5px;
-  height: 8.5rem;
-  border: 1px solid #f76707;
-  margin-bottom: 1.5px
+  height: 14vh;
+  width: 18vh;
+  border: 0.5px solid lightgrey;
+  margin-bottom: 1.5px;
+  font-size: 3vh;
+  display: inline-block;
+  line-height: 14vh;
+  text-align: center;
+
+}
+.totalHoursForWeek p {
+  line-height: 1.5;
+  display: inline-block;
+  vertical-align: middle;
+}
+.row {
+  margin-top: 5%
 }

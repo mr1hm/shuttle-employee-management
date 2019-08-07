@@ -58,9 +58,8 @@ class ShiftsWeek extends React.Component {
       return null;
     }
 
-
     return (
-      <React.Fragment>
+        <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
         <div className="masterContainerIphone">
           <div className="subheaderContainer">
@@ -86,7 +85,8 @@ class ShiftsWeek extends React.Component {
         </div>
       </React.Fragment>
     );
-  };
-}
+    };
+  }
+
 
 export default ShiftsWeek;
