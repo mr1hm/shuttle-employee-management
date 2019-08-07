@@ -62,7 +62,6 @@ class ShiftsWeek extends React.Component {
     const datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
 
     return (
-
       <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
         <div className="masterContainerIphone">
