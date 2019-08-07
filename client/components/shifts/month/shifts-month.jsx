@@ -194,9 +194,8 @@ export default class ShiftsMonth extends React.Component {
 
   render() {
     //JPT - for routing had to alter date information
-    var defaultDate=1564531200000;
     if (this.props.match.params.date === undefined) {
-      var dateToPass = defaultDate;
+      var dateToPass = this.props.defaultDate;
     } else {
       dateToPass = this.props.match.params.date;
     }
