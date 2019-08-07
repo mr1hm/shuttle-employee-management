@@ -8,16 +8,6 @@ class Nav extends React.Component {
     return ('0' + number).slice(-2);
   }
 
-  convertUnixTime(time) {
-    const convertedDate = new Date(time);
-    const dateString = convertedDate.toString();
-    const arrayDateString = dateString.split(' ');
-    const dayOfWeek = arrayDateString[0];
-    const month = arrayDateString[1];
-    const date = arrayDateString[2];
-    return dayOfWeek + ', ' + month + ' ' + date;
-  }
-
   generateNextTimestamp( baseTimestamp, distance, direction ){
     const currentDateObj = new Date(baseTimestamp);
     let currentDate = currentDateObj.getDate();
@@ -28,22 +18,6 @@ class Nav extends React.Component {
       timestamp: newDateObject.getTime(),
       pathDate: `${newDateObject.getFullYear()}-${this.zeroPadNumber(newDateObject.getMonth()+1)}-${this.zeroPadNumber(newDateObject.getDate())}`
     }
-  }
-
-  generateStartOfWeekTimestamp(time) {
-    const convertedDateStart = new Date(time);
-    const convertedDate = new Date(convertedDateStart);
-    const finalConvertedDate = convertedDate.getUTCDay();
-    
-    return time - finalConvertedDate * 86400000;
-  }
-
-  generateEndOfWeekTimestamp(time) {
-    const convertedDateStart = new Date(time);
-    const convertedDate = new Date(convertedDateStart);
-    const finalConvertedDate = convertedDate.getUTCDay();
-  
-    return time + (6 - finalConvertedDate) * 86400000;
   }
 
   generateText(){
@@ -57,9 +31,18 @@ class Nav extends React.Component {
       const monthText = dateString.slice(4,-8);
       return monthText;
     } if (this.props.page === 'week') {
-      var startOfWeek = this.generateStartOfWeekTimestamp(this.props.date);
-      var endOfWeek = this.generateEndOfWeekTimestamp(this.props.date);
-      return this.convertUnixTime(startOfWeek) + ' - ' + this.convertUnixTime(endOfWeek)
+      const convertedDate = new Date( this.props.date);
+      console.log(convertedDate)
+      const numericDay = convertedDate.getDay();
+      console.log(numericDay)
+      var startDay = new Date(this.props.date);
+      startDay.setDate(startDay.getDate() - numericDay);
+      var startDayText = startDay.toDateString().slice(0, -5);
+      console.log(startDayText)
+      var endDay = new Date(this.props.date);
+      endDay.setDate(endDay.getDate() + 6 - numericDay);
+      var endDayText = endDay.toDateString().slice(0, -5);
+      return startDayText + ' - ' + endDayText;
     }
   }
 
