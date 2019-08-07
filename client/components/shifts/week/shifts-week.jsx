@@ -80,13 +80,12 @@ class ShiftsWeek extends React.Component {
             <HoursOfOperation />
           </div>
 
-          <div className="calendarContainer">
-            {this.state.data.map(day=> {
-              return (
-                <ShiftsWeekDay shifts={day} />
-              )
-            })}
-          </div>
+        <div className="calendarContainer">
+          {this.state.data.map(day=> {
+            return (
+              <ShiftsWeekDay shifts={day} defaultDay={this.props.defaultDate} />
+            )
+          })}
         </div>
       </React.Fragment>
     );
