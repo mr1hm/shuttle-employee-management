@@ -88,10 +88,10 @@
 }
 .viewHoursContainer {
     display: inline-block;
-    width: 100%;
+    width: 98%;
     top: 22%;
     position: absolute;
-    right:.5%;
+    left: -1%;
     margin-bottom: 10px;
 }
 .viewMonthLink {
@@ -143,7 +143,7 @@
     width: 100%;
 }
 .dayDataContainer {
-    width: 100%;
+    width: 98%;
     height: 100px;
 }
 

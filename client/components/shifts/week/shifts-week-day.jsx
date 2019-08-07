@@ -10,10 +10,10 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
     return ('0' + number).slice(-2);
   }
   getDateStringFromTimestamp( timestamp ){
-
     const date = new Date(parseInt(timestamp));
     return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
+
   render() {
     const dayText = convertUnixDateDay(parseInt(this.props.shifts.shiftDate));
     const dateText = convertUnixDateNumber(parseInt(this.props.shifts.shiftDate));
