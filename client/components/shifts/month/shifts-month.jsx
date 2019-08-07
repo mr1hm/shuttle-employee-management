@@ -168,8 +168,8 @@ export default class ShiftsMonth extends React.Component {
     arrayOfShiftsForWeek = []
 
     weekTotalHoursArrayToBeDisplayed.push(
-              <div class = "totalHoursForWeek">Total Week Hours <br></br> 
-                {weekHourTotal}
+              <div class = "totalHoursForWeek"> 
+                <p>{weekHourTotal}</p>
               </div>
         )
     }
@@ -200,12 +200,23 @@ export default class ShiftsMonth extends React.Component {
                 <div class="col col-lg-1">
                 </div>
                 <div class="col">
+                <div class="dayOfMonth Title">
+                  <div>SUN</div>
+                  <div>MON</div>
+                  <div>TUE</div>
+                  <div>WED</div>
+                  <div>THU</div>
+                  <div>FRI</div>
+                  <div>SAT</div>
+                  </div>
                   <div class="wrapper">
                       {this.displayCalendarPage()}
                   </div>
                 </div>
                 <div class="col col-lg-2">
+                  <div class="weekTotal">WEEK TOTAL</div>
                   <div class="totalHoursColumn">
+                    
                     {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)}
                   </div>
                 </div>
