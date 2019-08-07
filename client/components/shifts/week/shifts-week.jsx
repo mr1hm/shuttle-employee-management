@@ -46,9 +46,6 @@ class ShiftsWeek extends React.Component {
   }
 
   render() {
-    //JPT - for routing had to alter date information
-    var defaultDate=1564531200000;
-
     if (this.props.match.params.date === undefined) {
       var dateToPass = defaultDate;
     } else {
@@ -59,7 +56,6 @@ class ShiftsWeek extends React.Component {
       return null;
     }
 
-    const datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
 
     return (
       <React.Fragment>
