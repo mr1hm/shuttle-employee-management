@@ -193,11 +193,18 @@ export default class ShiftsMonth extends React.Component {
   }
 
   render() {
+    //JPT - for routing had to alter date information
+    if (this.props.match.params.date === undefined) {
+      var dateToPass = this.props.defaultDate;
+    } else {
+      dateToPass = this.props.match.params.date;
+      console.log(dateToPass)
+    }
     return (
-      <div class ="calenderContainer">
-        <TopMenuShift title="MONTH" page='month' date={this.datePropToUse}/>
-        <div class="row">
-                <div class="col col-lg-1">
+      <div className ="calenderContainer">
+        <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
+        <div className="row">
+                <div className="col col-lg-1">
                 </div>
                 <div class="col">
                 <div class="dayOfMonth Title">
