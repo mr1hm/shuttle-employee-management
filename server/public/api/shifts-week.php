@@ -35,7 +35,7 @@ $result = mysqli_query($conn, $query);
     unset($row['status']);
     $data[] = $row;
   }
-  
+
 print(json_encode($data));
 //convert the data to json
 //print the data
