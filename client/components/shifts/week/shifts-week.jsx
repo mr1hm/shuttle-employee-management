@@ -59,10 +59,10 @@ class ShiftsWeek extends React.Component {
       return null;
     }
 
-    const datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
+    // const datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
 
     return (
-      <React.Fragment>
+        <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
         <div className="masterContainerIphone">
           <div className="subheaderContainer">
@@ -85,9 +85,11 @@ class ShiftsWeek extends React.Component {
             )
           })}
         </div>
-      </React.Fragment>
+        </div>
+        </React.Fragment>
     );
-  };
-}
+    };
+  }
+
 
 export default ShiftsWeek;
