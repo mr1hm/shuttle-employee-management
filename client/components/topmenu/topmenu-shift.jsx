@@ -12,7 +12,6 @@ const TopMenuShift = (props)=> {
                 </div>
                 <div className="col-5">
                     <Nav page={props.page} date={props.date}/> 
-                    {/* pass down a prop that lets it know what the new content will be */}
                 </div>
                 <div className="col">
                     <TopMenuHamburger/>
