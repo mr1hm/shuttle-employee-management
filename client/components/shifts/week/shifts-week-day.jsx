@@ -27,7 +27,6 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
     }
 
     return (
-      <React.Fragment>
       <div className={currentDayHighlightClass}>
         <div className="dayLabelContainer">
           <div className="dayText">{dayText}</div>
@@ -42,7 +41,6 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
         </div>
         </Link>
       </div>
-      </React.Fragment>
     )
   }
 }
