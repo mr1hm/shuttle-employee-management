@@ -17,7 +17,7 @@ class ShiftsWeek extends React.Component {
     const convertedDateStart = new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
-    
+
     return time - finalConvertedDate * 86400000;
   }
 
@@ -25,7 +25,7 @@ class ShiftsWeek extends React.Component {
     const convertedDateStart = new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
-  
+
     return time + (6 - finalConvertedDate) * 86400000;
   }
 
@@ -42,21 +42,20 @@ class ShiftsWeek extends React.Component {
   componentDidMount(){
     const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.defaultDate);
     const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.defaultDate);
-
-    this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET'); 
+    this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
   }
 
   render() {
     if (!this.state.data){
       return null;
     }
-  
+
     const datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
 
     return (
       <div className="masterContainerIphone">
         <TopMenuShifts title="WEEK" page='week' date={datePropToUse}/>
-  
+
         <div className="subheaderContainer">
           <div className="hourWeekContainer">
             <div className="hourWeek">Total Hours This Week: <strong>10.5 </strong></div>
