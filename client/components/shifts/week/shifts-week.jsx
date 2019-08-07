@@ -47,9 +47,11 @@ class ShiftsWeek extends React.Component {
 
   render() {
     if (this.props.match.params.date === undefined) {
-      var dateToPass = defaultDate;
+      var dateToPass = this.props.defaultDate;
     } else {
-      dateToPass = this.props.match.params.date;
+      dateToPass = new Date(this.props.match.params.date);
+      dateToPass = dateToPass.getTime();
+
     }
 
     if (!this.state.data){
