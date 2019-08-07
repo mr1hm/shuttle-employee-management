@@ -168,7 +168,7 @@ export default class ShiftsMonth extends React.Component {
     arrayOfShiftsForWeek = []
 
     weekTotalHoursArrayToBeDisplayed.push(
-              <div class = "totalHoursForWeek">Total Week Hours <br></br> 
+              <div className = "totalHoursForWeek">Total Week Hours <br></br> 
                 {weekHourTotal}
               </div>
         )
@@ -198,20 +198,21 @@ export default class ShiftsMonth extends React.Component {
       var dateToPass = this.props.defaultDate;
     } else {
       dateToPass = this.props.match.params.date;
+      console.log(dateToPass)
     }
     return (
-      <div class ="calenderContainer">
+      <div className ="calenderContainer">
         <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
-        <div class="row">
-                <div class="col col-lg-1">
+        <div className="row">
+                <div className="col col-lg-1">
                 </div>
-                <div class="col">
-                  <div class="wrapper">
+                <div className="col">
+                  <div className="wrapper">
                       {this.displayCalendarPage()}
                   </div>
                 </div>
-                <div class="col col-lg-2">
-                  <div class="totalHoursColumn">
+                <div className="col col-lg-2">
+                  <div className="totalHoursColumn">
                     {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)}
                   </div>
                 </div>

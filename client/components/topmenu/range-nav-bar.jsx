@@ -8,6 +8,16 @@ class Nav extends React.Component {
     return ('0' + number).slice(-2);
   }
 
+  convertUnixTime(time) {
+    const convertedDate = new Date(time);
+    const dateString = convertedDate.toString();
+    const arrayDateString = dateString.split(' ');
+    const dayOfWeek = arrayDateString[0];
+    const month = arrayDateString[1];
+    const date = arrayDateString[2];
+    return dayOfWeek + ', ' + month + ' ' + date;
+  }
+
   generateNextTimestamp( baseTimestamp, distance, direction ){
     const currentDateObj = new Date(baseTimestamp);
     let currentDate = currentDateObj.getDate();
@@ -20,6 +30,22 @@ class Nav extends React.Component {
     }
   }
 
+  generateStartOfWeekTimestamp(time) {
+    const convertedDateStart = new Date(time);
+    const convertedDate = new Date(convertedDateStart);
+    const finalConvertedDate = convertedDate.getUTCDay();
+    
+    return time - finalConvertedDate * 86400000;
+  }
+
+  generateEndOfWeekTimestamp(time) {
+    const convertedDateStart = new Date(time);
+    const convertedDate = new Date(convertedDateStart);
+    const finalConvertedDate = convertedDate.getUTCDay();
+  
+    return time + (6 - finalConvertedDate) * 86400000;
+  }
+
   generateText(){
     const convertedDate = this.getDateObjFromDateString( this.props.date );
     if (this.props.page === 'day') {
@@ -27,12 +53,13 @@ class Nav extends React.Component {
       const dayText = dateString.slice(0,-5);
       return dayText;
     } if (this.props.page === 'month'){
-      const convertedDate = new Date(this.props.date);
-      const dateString = "" + convertedDate;
-      const monthText = dateString.slice(-53, -50);
+      const dateString = convertedDate.toDateString()
+      const monthText = dateString.slice(4,-8);
       return monthText;
     } if (this.props.page === 'week') {
-      
+      var startOfWeek = this.generateStartOfWeekTimestamp(this.props.date);
+      var endOfWeek = this.generateEndOfWeekTimestamp(this.props.date);
+      return this.convertUnixTime(startOfWeek) + ' - ' + this.convertUnixTime(endOfWeek)
     }
   }
 
