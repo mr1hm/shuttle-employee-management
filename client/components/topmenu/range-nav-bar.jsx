@@ -1,113 +1,105 @@
-//TODO: There is quite a bit of repeated code for date manipulation. Eventually the common code should be placed into functions.
-
 import React from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
 import './nav-styles.css';
 
 class Nav extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      date: this.props.date,
-      centerContent: null
-    }
-    this.leftArrowContent = this.leftArrowContent.bind(this);
-    this.rightArrowContent = this.rightArrowContent.bind(this);
+
+  zeroPadNumber( number ){
+    return ('0' + number).slice(-2);
   }
 
-  daysInMonth(time) {
-    var day = new Date(time);
-    var stringDay = ''+ day;
-    console.log(stringDay)
-    var month = stringDay.slice(-53, -50);
-    console.log(month)
-    if (month === "Apr" || month === "Jun" || month === "Sep" || month === "Nov") {
-    return 30;
-    }
-    //TODO: Deal with case where these is a leap year.
-    if (month === 'Feb') {
-      return 28;
-    } else {
-      return 31;
-    }
-   }
-
-  generateTextDay(incomingDate, increment) {
-    var day = new Date(incomingDate);
-    var nextDay = new Date(day);
-    nextDay.setDate(day.getDate() + increment);
-    this.setState({
-      date: nextDay.getTime()
-    })
-    const convertedDate = new Date(nextDay);
-    const dateString = "" + convertedDate;
-    const dayText = dateString.slice(-64, -47);
-    this.setState({
-      centerContent: dayText
-    })
+  convertUnixTime(time) {
+    const convertedDate = new Date(time);
+    const dateString = convertedDate.toString();
+    const arrayDateString = dateString.split(' ');
+    const dayOfWeek = arrayDateString[0];
+    const month = arrayDateString[1];
+    const date = arrayDateString[2];
+    return dayOfWeek + ', ' + month + ' ' + date;
   }
 
-  generateTextMonth(incomingDate, increment) {
-    var day = new Date(incomingDate);
-    var nextDay = new Date(day);
-    nextDay.setDate(day.getDate() + increment);
-    this.setState({
-      date: nextDay.getTime()
-    })
-    const convertedDate = new Date(nextDay);
-    const dateString = "" + convertedDate;
-    const monthText = dateString.slice(-53, -50);
-    this.setState({
-      centerContent: monthText
-    })
-  }
-
-  leftArrowContent() {
-    if (this.props.page === 'month') {
-      console.log(this.props.page);
-      var numberDays = this.daysInMonth(this.state.date);
-      console.log(numberDays);
-      this.generateTextMonth(this.state.date, - numberDays);
-
-      // } else if (this.props.page === 'week') {
-      //TODO: add week content here
-      //   })
-
-    } else if (this.props.page === 'day') {
-      this.generateTextDay(this.state.date, -1);
+  generateNextTimestamp( baseTimestamp, distance, direction ){
+    const currentDateObj = new Date(baseTimestamp);
+    let currentDate = currentDateObj.getDate();
+    currentDate += distance * direction;
+    const newDateObject = new Date(baseTimestamp);
+    newDateObject.setDate(currentDate);
+    return {
+      timestamp: newDateObject.getTime(),
+      pathDate: `${newDateObject.getFullYear()}-${this.zeroPadNumber(newDateObject.getMonth()+1)}-${this.zeroPadNumber(newDateObject.getDate())}`
     }
   }
-  rightArrowContent() {
-    if (this.props.page === 'month') {
-      var numberDays = this.daysInMonth(this.state.date);
-      this.generateTextMonth(this.state.date, numberDays);
 
-      //} else if (this.props.page === 'week') {
-      //TODO: add week content here
-      // })
+  generateStartOfWeekTimestamp(time) {
+    const convertedDateStart = new Date(time);
+    const convertedDate = new Date(convertedDateStart);
+    const finalConvertedDate = convertedDate.getUTCDay();
     
-    } else if (this.props.page === 'day') {
-        this.generateTextDay(this.state.date, 1);
-      }
+    return time - finalConvertedDate * 86400000;
   }
-  //TODO: I do not have a way of testing the routing code right now. As soon as I have functioning endpoint codes, I will debug this code.
+
+  generateEndOfWeekTimestamp(time) {
+    const convertedDateStart = new Date(time);
+    const convertedDate = new Date(convertedDateStart);
+    const finalConvertedDate = convertedDate.getUTCDay();
+  
+    return time + (6 - finalConvertedDate) * 86400000;
+  }
+
+  generateText(){
+    const convertedDate = this.getDateObjFromDateString( this.props.date );
+    if (this.props.page === 'day') {
+      const dateString = convertedDate.toDateString()
+      const dayText = dateString.slice(0,-5);
+      return dayText;
+    } if (this.props.page === 'month'){
+      const dateString = convertedDate.toDateString()
+      const monthText = dateString.slice(4,-8);
+      return monthText;
+    } if (this.props.page === 'week') {
+      var startOfWeek = this.generateStartOfWeekTimestamp(this.props.date);
+      var endOfWeek = this.generateEndOfWeekTimestamp(this.props.date);
+      return this.convertUnixTime(startOfWeek) + ' - ' + this.convertUnixTime(endOfWeek)
+    }
+  }
+
+  getDateObjFromDateString( dateString ){
+    const convertedDate = new Date();
+    if(typeof dateString === 'string'){
+      const arrayDate = dateString.split('-');
+      const dateObj = {
+        year: arrayDate[0],
+        month: arrayDate[1]-1,
+        date: arrayDate[2]
+      }
+      convertedDate.setFullYear(dateObj.year);
+      convertedDate.setMonth(dateObj.month);
+      convertedDate.setDate(dateObj.date);
+    } else {
+      convertedDate.setTime(dateString);
+    }
+    return  convertedDate;
+  }
+
   render(){
-    var linkingLocation = `../shifts/${this.props.page}`;
+    const daysInRange = {
+      'week' : { number: 7, route: '/shifts/week/shifts-week'},
+      'day': { number: 1, route: '/shifts/day/shifts-day'},
+      'month': { number: 30, route: '/shifts/months/shifts-month'}
+    }
+
+    const leftRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, -1 ).pathDate;
+
+    const rightRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, 1 ).pathDate;
+
     return (
-      <React.Fragment>
       <div className="weekSelectionContainer">
-        {/* TODO: This is leftover code -- need to change classNames to reflect more generic nav, will do later since it is CSS*/}
-        <div className="weekSelector weekDropDown weekDropDownLeft" onClick={this.leftArrowContent}><Link to={linkingLocation}></Link></div>
-        <div className="weekSelection">{this.state.centerContent}</div>
-        {/* TODO: this is leftover code -- need to change classNames to reflect more generic nav, will do later since it CSS*/}
-        <div className="weekSelector weekDropDown weekDropDownRight" onClick={this.rightArrowContent}><Link to={linkingLocation}></Link></div>
+        {/* TODO: This is leftover code --  do later since CSS*/}
+        <Link to={`${daysInRange[this.props.page].route}/${leftRoute}`}><div className="weekSelector weekDropDown weekDropDownLeft" ></div></Link>
+        <div className="weekSelection">{this.generateText()}</div>
+        {/* TODO: This is leftover code --  do later since CSS*/}
+        <Link to={`${daysInRange[this.props.page].route}/${rightRoute}`}> <div className="weekSelector weekDropDown weekDropDownRight" ></div></Link>
       </div>  
-      <Switch>
-        <Route path = "../shifts/week" render={(props) => <ShiftsWeek {...props} date={this.state.date}  />}/>
-        <Route path = "../shifts/day" render={(props) => <ShiftsDay {...props} date={this.state.date}  />}/>
-        <Route path = "../shifts/month" render={(props) => <ShiftsMonth {...props} date={this.state.date}  />}/>    
-      </Switch>
-      </React.Fragment>
     );
   }
 }
