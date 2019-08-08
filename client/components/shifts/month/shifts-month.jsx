@@ -27,20 +27,18 @@ class ShiftsMonth extends React.Component {
   }
 
   componentDidMount(){
-        const initialQuery = this.calculateQueryRange(this.props.defaultDate);
-        this.getData('/api/shifts-month.php' + initialQuery + this.id, 'GET');
+    const initialQuery = this.calculateQueryRange(this.props.defaultDate);
+    this.getData('/api/shifts-month.php' + initialQuery + this.id, 'GET');
   }
 
   componentDidUpdate(prevProps) {
-    // debugger;
     if (prevProps.match.params.date !== this.props.match.params.date) {
       const newQuery = this.calculateQueryRange(this.props.match.params.date)
       this.getData('/api/shifts-month.php' + newQuery + this.id, 'GET');
-      console.log('didUpdate: ', this.props.match.params.date);
     }
   }
+
   calculateQueryRange(dateProp) {
-    // debugger;
     var selectedDate = new Date(dateProp);
     var firstDayOfMonth = new Date(selectedDate).setDate(1);
     var previousDate = new Date(firstDayOfMonth);
@@ -74,9 +72,8 @@ class ShiftsMonth extends React.Component {
     return Math.round(shiftLengthInMinutes); 
   }
 
-  generateCalendarPage() {
-    let datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
-    var selectedDate = new Date(datePropToUse);
+  generateCalendarPage(dateProp) {
+    var selectedDate = new Date(dateProp);
     var firstDayOfMonth = new Date(selectedDate);
     firstDayOfMonth.setDate(1);
     var calendarPage = [firstDayOfMonth];
@@ -102,9 +99,9 @@ class ShiftsMonth extends React.Component {
     return calendarPage;
   }
   
-  displayCalendarPage() {
+  displayCalendarPage(dateProp) {
     var monthDivArray=[];
-    var calendarPage = this.generateCalendarPage();
+    var calendarPage = this.generateCalendarPage(dateProp);
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
       var targetUnixDate = calendarPage[dayOfCalendar].getTime();
       monthDivArray.push(
@@ -183,7 +180,6 @@ class ShiftsMonth extends React.Component {
   }
 
   render() {
-    debugger;
     if (this.props.match.params.date === undefined) {
       var dateToPass = this.props.defaultDate;
     } else {
@@ -194,7 +190,6 @@ class ShiftsMonth extends React.Component {
       <div className ="calenderContainer">
         <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
         <div className="row" class="calendarBox">
-
           <div class="monthCalendar">
             <div class="dayOfMonth Title">
               <div>SUN</div>
@@ -206,14 +201,14 @@ class ShiftsMonth extends React.Component {
               <div>SAT</div>
             </div>
             <div class="wrapper">
-                {this.displayCalendarPage()}
+                {this.displayCalendarPage(dateToPass)}
             </div>
           </div>
           <div class="weekTotalCol">
             <div class="weekTotal">WEEK TOTAL</div>
               <div class="totalHoursColumn">
                 <div class="weekTotalWrapper">
-                  {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)}
+                  {this.displayWeeklyHours(this.generateCalendarPage(dateToPass),this.state.scheduledHoursForCurrentMonth)}
                 </div>
               </div>
             </div>
