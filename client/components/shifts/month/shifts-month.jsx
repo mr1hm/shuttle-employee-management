@@ -1,7 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './shifts-month.css'
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
+import Legend from './shift-month-legends'
 
 class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -73,19 +75,24 @@ class ShiftsMonth extends React.Component {
     return calendarPage;
   }
   
-  displayCalendarPage() { // modify this method to include an array like calendar but with a way to mark each day with any combination of scheduled/posted shifts and current day
-    // need a method to go through state and grab statuses from each data point and store in object designated for each day
-    // but need a way to create an object for days without shifts as well
-    // need to also incorporate a way to mark the current day
+  displayCalendarPage() { //first we goup the shift array by date - key = month-date
+    // in displayCalendar loop through calendarPage and recompute datekey from each date in cal
+    // use the computed key to access the according shift
+    var todayBoolean = null;
+    var shiftCategory = null;
     var monthDivArray=[];
     var calendarPage = this.generateCalendarPage();
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
+      var targetUnixDate = calendarPage[dayOfCalendar].getTime();
       monthDivArray.push(
-        <DayOfMonth 
-          dayIndex={calendarPage[dayOfCalendar].getDate()} 
-          today={todayBoolean} 
-          shifts={shiftCategory} 
-        />
+        <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
+          <DayOfMonth 
+            dayIndex={calendarPage[dayOfCalendar].getDate()} 
+            shiftsArray={this.state.scheduledHoursForCurrentMonth}
+            today={todayBoolean} 
+            shifts={shiftCategory} 
+          />
+        </Link>
       );
     }
     return monthDivArray;
@@ -100,6 +107,15 @@ class ShiftsMonth extends React.Component {
         bundledWeeksArray.push(weekChunk);
     }
     return bundledWeeksArray;
+  }
+
+  getZeroPaddedNumber( number ){
+    return ('0' + number).slice(-2);
+  }
+
+  getDateStringFromTimestamp( timestamp ){
+    const date = new Date(parseInt(timestamp));
+    return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
 
   displayWeeklyHours(calendarPage,shiftsArray){
@@ -117,11 +133,14 @@ class ShiftsMonth extends React.Component {
           weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek);
         }
       }
+      var targetUnixDate = bundledWeeksArray[weekIndex][0].getTime();
       arrayOfShiftsForWeek = [];
       weekTotalHoursArrayToBeDisplayed.push(
-        <div class = "totalHoursForWeek"> 
-          <p>{weekHourTotal}</p>
-        </div>
+        <Link to={`/shifts/week/shifts-week/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
+          <div class = "totalHoursForWeek">
+            <p>{weekHourTotal}</p>
+          </div>
+        </Link>
       )
     }
     return weekTotalHoursArrayToBeDisplayed;
@@ -152,9 +171,9 @@ class ShiftsMonth extends React.Component {
     return (
       <div className ="calenderContainer">
         <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
-        <div className="row">
-          <div className="col col-lg-1"></div>
-          <div class="col">
+        <div className="row" class="calendarBox">
+
+          <div class="monthCalendar">
             <div class="dayOfMonth Title">
               <div>SUN</div>
               <div>MON</div>
@@ -168,13 +187,16 @@ class ShiftsMonth extends React.Component {
                 {this.displayCalendarPage()}
             </div>
           </div>
-          <div class="col col-lg-2">
+          <div class="weekTotalCol">
             <div class="weekTotal">WEEK TOTAL</div>
-            <div class="totalHoursColumn">
-              {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)}
+              <div class="totalHoursColumn">
+                <div class="weekTotalWrapper">
+                  {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+          <div><Legend/></div>
       </div>
     )
   }

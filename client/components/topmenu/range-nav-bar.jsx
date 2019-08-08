@@ -2,21 +2,10 @@ import React from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
 import './nav-styles.css';
 
-
 class Nav extends React.Component {
 
   zeroPadNumber( number ){
     return ('0' + number).slice(-2);
-  }
-
-  convertUnixTime(time) {
-    const convertedDate = new Date(time);
-    const dateString = convertedDate.toString();
-    const arrayDateString = dateString.split(' ');
-    const dayOfWeek = arrayDateString[0];
-    const month = arrayDateString[1];
-    const date = arrayDateString[2];
-    return dayOfWeek + ', ' + month + ' ' + date;
   }
 
   generateNextTimestamp( baseTimestamp, distance, direction ){
@@ -31,22 +20,6 @@ class Nav extends React.Component {
     }
   }
 
-  generateStartOfWeekTimestamp(time) {
-    const convertedDateStart = new Date(time);
-    const convertedDate = new Date(convertedDateStart);
-    const finalConvertedDate = convertedDate.getUTCDay();
-
-    return time - finalConvertedDate * 86400000;
-  }
-
-  generateEndOfWeekTimestamp(time) {
-    const convertedDateStart = new Date(time);
-    const convertedDate = new Date(convertedDateStart);
-    const finalConvertedDate = convertedDate.getUTCDay();
-
-    return time + (6 - finalConvertedDate) * 86400000;
-  }
-
   generateText(){
     const convertedDate = this.getDateObjFromDateString( this.props.date );
     if (this.props.page === 'day') {
@@ -58,9 +31,15 @@ class Nav extends React.Component {
       const monthText = dateString.slice(4,-8);
       return monthText;
     } if (this.props.page === 'week') {
-      var startOfWeek = this.generateStartOfWeekTimestamp(this.props.date);
-      var endOfWeek = this.generateEndOfWeekTimestamp(this.props.date);
-      return this.convertUnixTime(startOfWeek) + ' - ' + this.convertUnixTime(endOfWeek)
+      const convertedDate = new Date( this.props.date);
+      const numericDay = convertedDate.getUTCDay();
+      var startDay = new Date(this.props.date);
+      startDay.setDate(startDay.getDate() - numericDay);
+      var startDayText = startDay.toDateString().slice(0, -5);
+      var endDay = new Date(this.props.date);
+      endDay.setDate(endDay.getDate() + 6 - numericDay);
+      var endDayText = endDay.toDateString().slice(0, -5);
+      return startDayText + ' - ' + endDayText;
     }
   }
 
@@ -79,7 +58,7 @@ class Nav extends React.Component {
     } else {
       convertedDate.setTime(dateString);
     }
-    return  convertedDate;
+    return convertedDate;
   }
 
   render(){
@@ -94,13 +73,11 @@ class Nav extends React.Component {
     const rightRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, 1 ).pathDate;
 
     return (
-      <div className="weekSelectionContainer">
-        {/* TODO: This is leftover code --  do later since CSS*/}
-        <Link to={`${daysInRange[this.props.page].route}/${leftRoute}`}><div className="weekSelector weekDropDown weekDropDownLeft" ></div></Link>
-        <div className="weekSelection">{this.generateText()}</div>
-        {/* TODO: This is leftover code --  do later since CSS*/}
-        <Link to={`${daysInRange[this.props.page].route}/${rightRoute}`}> <div className="weekSelector weekDropDown weekDropDownRight" ></div></Link>
-      </div>
+      <React.Fragment>
+        <Link to={`${daysInRange[this.props.page].route}/${leftRoute}`}><div className="arrow arrowLeft" ></div></Link>
+        <div className="font-weight-bold">{this.generateText()}</div>
+        <Link to={`${daysInRange[this.props.page].route}/${rightRoute}`}> <div className="arrow arrowRight" ></div></Link>
+      </React.Fragment>
     );
   }
 }
