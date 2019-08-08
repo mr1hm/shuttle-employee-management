@@ -5,13 +5,13 @@ import HamburgerMenu from './hamburger-menu';
 
 const TopMenuHamburger = (props)=> {
     return (
-        <div className="topnav">
+        <div className="text-dark">
             <HamburgerMenu>
-                <div className="dropdown-item"><Link className="d-block text-center" to="/myinfo">MyInfo</Link></div>
-                <div className="dropdown-item"><Link className="d-block text-center" to="/shifts/day/shifts-day">Day</Link></div>
-                <div className="dropdown-item"><Link className="d-block text-center" to="/shifts/week/shifts-week">Week</Link></div>
-                <div className="dropdown-item"><Link className="d-block text-center" to="/shifts/month/shifts-month">Month</Link></div>
-                <div className="dropdown-item"><Link className="d-block text-center" to="/shifts/available/shifts-available">Available</Link></div>
+                <Link className="d-block text-center" to="/myinfo"><div className="dropdown-item">MyInfo</div></Link>
+                <Link className="d-block text-center" to="/shifts/day/shifts-day"><div className="dropdown-item">Day</div></Link>
+                <Link className="d-block text-center" to="/shifts/week/shifts-week"><div className="dropdown-item">Week</div></Link>
+                <Link className="d-block text-center" to="/shifts/month/shifts-month"><div className="dropdown-item">Month</div></Link>
+                <Link className="d-block text-center" to="/shifts/available"><div className="dropdown-item">Available</div></Link>
             </HamburgerMenu>
         </div>
     )

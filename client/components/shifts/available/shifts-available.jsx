@@ -1,5 +1,5 @@
 import React from 'react';
-import TopMenuShifts from '../../topmenu/topmenu-shift';
+import TopMenuGeneral from '../../topmenu/topmenu-general';
 
 class ShiftsAvailable extends React.Component {
   constructor(props) {
@@ -8,7 +8,7 @@ class ShiftsAvailable extends React.Component {
   render() {
     return (
       <div>
-        <TopMenuShifts title="AVAILABLE"/>
+        <TopMenuGeneral title="Shifts - AVAILABLE"/>
         <div className="container" style={{ top: "40%", left: "40%", position: "absolute" }}>
         <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >Shifts Available</div>
         </div>

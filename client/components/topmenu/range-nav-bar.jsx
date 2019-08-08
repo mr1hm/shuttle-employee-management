@@ -58,7 +58,7 @@ class Nav extends React.Component {
     } else {
       convertedDate.setTime(dateString);
     }
-    return  convertedDate;
+    return convertedDate;
   }
 
   render(){
