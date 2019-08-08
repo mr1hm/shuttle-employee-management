@@ -5,7 +5,12 @@
   width: 100%;
   flex-wrap: wrap
 }
+
+.row {
+  flex-wrap: nowrap;
+}
 .legendRow {
+  flex-direction: row;
   display: flex;
   text-align: center;
   justify-items: center;

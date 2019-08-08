@@ -49,7 +49,7 @@ renderDate(){
       );
 }
 
-  render() {
+render() {
     return ( 
       <div>
         {this.renderDate()}
