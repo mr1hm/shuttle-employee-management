@@ -16,7 +16,8 @@ export default function Legends(){
         </div>
         <div class="col-md-4">
           Scheduled & Posted <br></br>
-          <div class="blueSquare yellow circle"></div>
+          <div class="blueSquare blue circle">
+          </div>
         </div>
       </div>
     
