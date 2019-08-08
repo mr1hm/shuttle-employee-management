@@ -59,7 +59,9 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
   render() {
     const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
     const dateText = convertUnixDateNumber(parseInt(this.props.dayData.shiftDate));
-    const dayHours = this.calculateDailyWorkingTotalHours(this.props.dayData.shifts[0], this.props.dayData.shifts[0]);
+    debugger;
+    const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
+    //this.calculateDailyWorkingTotalHours(this.props.dayData.shifts[0], this.props.dayData.shifts[0]);
     const currentUnixDate = this.props.dayData.shiftDate;
 
     let currentDayHighlightClass = 'dayDataContainer';
@@ -67,13 +69,13 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
     if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.shiftDate)) {
       currentDayHighlightClass += ' currentDay';
     }
-
+    debugger;
     return (
       <div className={currentDayHighlightClass}>
         <div className="dayLabelContainer">
           <div className="dayText">{dayText}</div>
           <div className="dateText">{dateText}</div>
-          <div className="dayHours">{dayHours} Hours</div>
+          <div className="dayHours">{dayHours} {dayHours === 1 ? 'Hour' : 'Hours'}</div>
         </div>
         <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
         <div className="dayRowContainer">
