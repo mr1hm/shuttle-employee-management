@@ -99,7 +99,7 @@
     float: right;
 }
 /*////////////////////// CALENDAR ///////////////////////*/
-.calendarContainer {
+.calendarContainerWeekComponent {
     display: inline-block;
     width: 96%;
     height: 270px;
@@ -107,7 +107,6 @@
     position: absolute;
     left: 2%;
     overflow-y: scroll;
-    /* border: .25px solid gray; */
 }
 .hoursRowContainer {
     width: 100%;
