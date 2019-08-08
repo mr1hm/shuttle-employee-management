@@ -32,13 +32,10 @@ class Nav extends React.Component {
       return monthText;
     } if (this.props.page === 'week') {
       const convertedDate = new Date( this.props.date);
-      console.log(convertedDate)
-      const numericDay = convertedDate.getDay();
-      console.log(numericDay)
+      const numericDay = convertedDate.getUTCDay();
       var startDay = new Date(this.props.date);
       startDay.setDate(startDay.getDate() - numericDay);
       var startDayText = startDay.toDateString().slice(0, -5);
-      console.log(startDayText)
       var endDay = new Date(this.props.date);
       endDay.setDate(endDay.getDate() + 6 - numericDay);
       var endDayText = endDay.toDateString().slice(0, -5);

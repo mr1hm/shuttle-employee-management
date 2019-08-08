@@ -14,19 +14,23 @@ class ShiftsWeek extends React.Component {
   }
 
   generateStartOfWeekTimestamp(time) {
-    const convertedDateStart = new Date(time);
-    const convertedDate = new Date(convertedDateStart);
-    const finalConvertedDate = convertedDate.getUTCDay();
+    const convertedDate = new Date(time);
+    const numericDay = convertedDate.getDay();
+    const startDay = new Date(time);
+    startDay.setDate(startDay.getDate() - numericDay);
+    const startOfWeek = startDay.getTime();	
 
-    return time - finalConvertedDate * 86400000;
+    return startOfWeek;
   }
 
   generateEndOfWeekTimestamp(time) {
-    const convertedDateStart = new Date(time);
-    const convertedDate = new Date(convertedDateStart);
-    const finalConvertedDate = convertedDate.getUTCDay();
+    const convertedDate = new Date(time);
+    const numericDay = convertedDate.getDay();
+    const endDay = new Date(time);
+    endDay.setDate(endDay.getDate() + 6 - numericDay);
+    const endOfWeek = endDay.getTime();	
 
-    return time + (6 - finalConvertedDate) * 86400000;
+    return endOfWeek;
   }
 
   getData(url, methodToUse) {
@@ -43,19 +47,32 @@ class ShiftsWeek extends React.Component {
     const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.defaultDate);
     const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.defaultDate);
     this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
+
+    console.log('didMount: ', this.props.defaultDate);
   }
+
+  componentDidUpdate() {
+    const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.match.params.date);
+    const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.match.params.date);
+    this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
+
+    console.log('didUpdate: ', this.props.match.params.date);
+  }  
 
   render() {
     if (this.props.match.params.date === undefined) {
-      var dateToPass = this.props.defaultDate;
+      var dateToPass = this.state.date;
+      console.log('conditional check: ', dateToPass);
     } else {
       dateToPass = new Date(this.props.match.params.date);
-      dateToPass = dateToPass.getTime();
+      // dateToPass.getTime();
+      dateToPass.toDateString();
+      
 
-      const startOfTheWeek = this.generateStartOfWeekTimestamp(dateToPass);
-      const endOfTheWeek = this.generateEndOfWeekTimestamp(dateToPass);
-      this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
-    }
+    // const startOfTheWeek = this.generateStartOfWeekTimestamp(dateToPass);
+    // const endOfTheWeek = this.generateEndOfWeekTimestamp(dateToPass);
+    // this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
+
 
     if (!this.state.data){
       return null;
@@ -81,6 +98,7 @@ class ShiftsWeek extends React.Component {
         <div className="calendarContainerWeekComponent">
           {this.state.data.map(day=> {
             return (
+              
               <ShiftsWeekDay shifts={day} defaultDay={this.props.defaultDate} date={dateToPass}/>
             )
           })}
@@ -88,7 +106,8 @@ class ShiftsWeek extends React.Component {
         </div>
         </React.Fragment>
     );
-    };
-  }
+  }}
+}
+
 
 export default ShiftsWeek;
