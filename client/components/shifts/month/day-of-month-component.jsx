@@ -2,42 +2,61 @@ import React from 'react';
 import './shifts-month.css'
 
 class DayOfMonth extends React.Component {
+  
+renderDate(){
 
+  if(this.props.shiftsArray.length !== 0){
+      for(var shiftIndex=0; shiftIndex<this.props.shiftsArray.length; shiftIndex++){
+        if(new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate() === this.props.dayIndex){
+
+          switch(this.props.shiftsArray[shiftIndex].status){
+
+            case "bothScheduledAndPosted":
+                return (
+                  <div>
+                    <div class="scheduled-shift-icon">
+                      {this.props.dayIndex}
+                    </div>
+                  </div> 
+                  );
+            case "posted":
+                return (
+                  <div>
+                    <div class="posted-shift-icon">
+                      {this.props.dayIndex}
+                    </div>
+                  </div> 
+                  );
+            case "scheduled":
+                return (
+                  <div>
+                    <div class="both-shift-icon">
+                      {this.props.dayIndex}
+                    </div>
+                  </div> 
+                  );
+          }
+        }
+      }      
+    }
+    
+    return (
+      <div>
+        <div>
+          {this.props.dayIndex}
+        </div>
+      </div> 
+      );
+}
 
   render() {
+    return ( 
+      <div>
+        {this.renderDate()}
+      </div>
+    );
+  } 
+}
 
-    // if(this.props.shiftsArray.length !== 0){
-
-    //   for(var shiftIndex=0; shiftIndex<this.props.shiftsArray.length; shiftIndex++){
-    //     if(new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate() === this.props.dayIndex){
-
-    //       switch(this.props.shiftsArray[shiftIndex].status){
-
-    //         case "posted":  
-    //           console.log('a shift has been posted for', new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate());
-    //           break;
-    //         case "scheduled":
-    //           console.log('a shift has been scheduled for', new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate());
-    //           break;
-    //         case "bothScheduledAndPosted":
-    //           console.log('a shift has been scheduled and posted for', new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate());
-    //       }
-    //     } else {
-
-          return (
-            <div>
-              <div class="blue month-icon">
-                {this.props.dayIndex}
-              </div>
-            </div>
-          
-        )
-        // }
-        
-      }
-    } 
-  // }
-
-  
 
 export default DayOfMonth;

@@ -91,19 +91,43 @@
   vertical-align: middle;
 }
 
-.month-icon {
+.posted-shift-icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 2rem;
-  width: 2rem;
-  border: 2px solid;
+  height: 3rem;
+  width: 3rem;
+  background-color: gold;
   border-radius: 50%;
-  background-color: transparent
-  
 }
 
-.blue {
-  border: lightskyblue
+.scheduled-shift-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3rem;
+  width: 3rem;
+  background-color: lightskyblue;
+  border-radius: 50%;
 }
+
+.both-shift-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3.5rem;
+  width: 3.5rem;
+  background-color: lightskyblue;
+  border: 4px solid gold;
+  border-radius: 50%;
+}
+
+.todayMark {
+  height: 100%;
+  width: 50%;
+  background-color: rgba(red, .2);
+  color: red
+}
+
+
 

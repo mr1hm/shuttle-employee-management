@@ -74,10 +74,9 @@ class ShiftsMonth extends React.Component {
     return calendarPage;
   }
   
-  displayCalendarPage() { // modify this method to include an array like calendar but with a way to mark each day with any combination of scheduled/posted shifts and current day
-    // need a method to go through state and grab statuses from each data point and store in object designated for each day
-    // but need a way to create an object for days without shifts as well
-    // need to also incorporate a way to mark the current day
+  displayCalendarPage() { //first we goup the shift array by date - key = month-date
+    // in displayCalendar loop through calendarPage and recompute datekey from each date in cal
+    // use the computed key to access the according shift
     var todayBoolean = null;
     var shiftCategory = null;
     var monthDivArray=[];
