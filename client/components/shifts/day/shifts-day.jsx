@@ -18,7 +18,7 @@ function OneOfMyShifts(props) {
     return(
         <tr>
             <td> {props.shifts.lineName} / {props.shifts.busID} </td>
-            <td> {convertUnixMonthDay(parseInt(props.shifts.shiftDate))} </td>
+            {/* <td> {convertUnixMonthDay(parseInt(props.shifts.shiftDate))} </td> */}
             <td> {props.shifts.startTime} - {props.shifts.endTime} </td>
             <td> {numOfRounds.toFixed(2)} </td>
             <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td>
@@ -59,22 +59,20 @@ class ShiftsDay extends React.Component {
     this.fetchCallMethod(this.query);
   }
 
-  render(){
-    console.log("this.state.myshifsttoday:", this.state.myShiftsToday)
-    console.log("this.props.defaultDate:", this.props.defaultDate)
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.date !== this.props.match.params.date) {
+      this.fetchCallMethod(this.query);
+    }
+  
+  }
 
+  render(){
     if (this.props.match.params.date === undefined) {
     var dateToPass = parseInt(this.props.defaultDate);
-    console.log('dateToPass in if:', dateToPass);
   } else {
     dateToPass = this.props.match.params.date;
     var dateToQuery = new Date(dateToPass).getTime()+25200000;
     this.query = `?shiftDate=${dateToQuery}`;
-    // this.componentDidMount();  // THIS IS MAKING IT NONSTOP FETCH, BUT MAKES NAV WORK WITH DISPLAYING THE RIGHT SHIFTS
-    console.log('this.query:', this.query);
-    console.log('dateToQuery:', dateToQuery)
-    console.log("match.params.date:",this.props.match.params.date);
-    console.log('dateToPass in else:', dateToPass);
   }
 
   if (this.state.myShiftsToday.length === 0) {
@@ -90,12 +88,11 @@ class ShiftsDay extends React.Component {
     <div>
         <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(dateToPass)}`}> </Link></div>
     <TopMenuShift title="DAY" page='day' date={(dateToPass)}/>
-    {/* <div>Today's Date {convertUnixMonthDay(dateToPass)}</div> */}
       <table className='table table-striped'>
         <thead>
             <tr>
                 <td>Line/#</td>
-                <td>Shift Date</td>
+                {/* <td>Shift Date</td> */}
                 <td>Start-End</td>
                 <td>Rounds</td>
                 <td>Shift Hours</td>
@@ -117,7 +114,6 @@ class ShiftsDay extends React.Component {
         }
         </tbody>     
       </table>
-      {/* This is under the table section in render */}
       </div>
     );
   }

@@ -3,13 +3,13 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once 'db_connection.php';
 
-// if (!empty($_GET['startTime'])) {
-//   $startTime = $_GET['startTime'];
-//   if ($startTime < 600) {
-//     throw new Exception('start time is too early');
-//   }
-//   $startTime = intval($startTime);
-// }
+if (!empty($_GET['startTime'])) {
+  $startTime = $_GET['startTime'];
+  if ($startTime < 600) {
+    throw new Exception('start time is too early');
+  }
+  $startTime = intval($startTime);
+}
 
 // if (!empty($_GET['shiftDate'])) {
 //   $shiftDate = $_GET['shiftDate'];
@@ -22,6 +22,8 @@ require_once 'db_connection.php';
 if (!empty($_GET['shiftDate'])) {
     $shiftDate= $_GET['shiftDate'];
 } else throw new Exception('needs a date');
+
+// $shiftDate= $_GET['shiftDate'];
 
 $query = "SELECT s.`id`, s.`ownerID`, s.`shiftDate`, s.`startTime`, s.`endTime`, s.`status`, s.`routeInfoID`,
         rbd.`busID`,
