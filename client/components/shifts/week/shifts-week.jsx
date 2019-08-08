@@ -123,14 +123,14 @@ class ShiftsWeek extends React.Component {
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
         <div className="masterContainerIphone">
-          <div className="subheaderContainer">
+          {/* <div className="subheaderContainer">
             <div className="hourWeekContainer">
               <div className="hourWeek">Total Hours This Week: <strong>10.5 </strong></div>
             </div>
             <div className="hourPostContainer">
               <div className="hourPost"><em>(3 hours posted)</em></div>
             </div>
-          </div>
+          </div> */}
 
           <div className="viewHoursContainer">
             <HoursOfOperation />
