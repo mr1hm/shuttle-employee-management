@@ -73,7 +73,6 @@ class ShiftsWeek extends React.Component {
     // const endOfTheWeek = this.generateEndOfWeekTimestamp(dateToPass);
     // this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
 
-
     if (!this.state.data){
       return null;
     }
@@ -98,7 +97,6 @@ class ShiftsWeek extends React.Component {
         <div className="calendarContainerWeekComponent">
           {this.state.data.map(day=> {
             return (
-              
               <ShiftsWeekDay shifts={day} defaultDay={this.props.defaultDate} date={dateToPass}/>
             )
           })}
