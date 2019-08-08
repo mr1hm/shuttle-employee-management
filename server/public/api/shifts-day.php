@@ -19,11 +19,11 @@ if (!empty($_GET['startTime'])) {
 //   $shiftDate = intval($shiftDate);
 // }
 
-if (!empty($_GET['shiftDate'])) {
-    $shiftDate= $_GET['shiftDate'];
-} else throw new Exception('needs a date');
+// if (!empty($_GET['shiftDate'])) {
+//     $shiftDate= $_GET['shiftDate'];
+// } else throw new Exception('needs a date');
 
-// $shiftDate= $_GET['shiftDate'];
+$shiftDate= $_GET['shiftDate'];
 
 $query = "SELECT s.`id`, s.`ownerID`, s.`shiftDate`, s.`startTime`, s.`endTime`, s.`status`, s.`routeInfoID`,
         rbd.`busID`,
