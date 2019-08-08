@@ -3,6 +3,7 @@ import './shifts-week.css';
 import HoursOfOperation from './hours-of-operation';
 import ShiftsWeekDay from './shifts-week-day';
 import TopMenuShift from '../../topmenu/topmenu-shift';
+import {createDateObjFromDateString} from '../../../lib/time-functions';
 
 
 class ShiftsWeek extends React.Component {
@@ -51,30 +52,33 @@ class ShiftsWeek extends React.Component {
     console.log('didMount: ', this.props.defaultDate);
   }
 
-  componentDidUpdate() {
-    const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.match.params.date);
-    const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.match.params.date);
-    this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
+  componentDidUpdate(prevProps) {
+    if(prevProps.match.params.date !== this.props.match.params.date){
+      const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.match.params.date);
+      const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.match.params.date);
+      this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
 
-    console.log('didUpdate: ', this.props.match.params.date);
+      console.log('didUpdate: ', this.props.match.params.date);
+    }
   }  
 
   render() {
+
     if (this.props.match.params.date === undefined) {
-      var dateToPass = this.state.date;
+      var dateToPass = this.props.defaultDate;
       console.log('conditional check: ', dateToPass);
     } else {
-      dateToPass = new Date(this.props.match.params.date);
+      dateToPass = createDateObjFromDateString( this.props.match.params.date );
       // dateToPass.getTime();
-      dateToPass.toDateString();
-      
+      dateToPass = dateToPass.getTime();
+    }
 
     // const startOfTheWeek = this.generateStartOfWeekTimestamp(dateToPass);
     // const endOfTheWeek = this.generateEndOfWeekTimestamp(dateToPass);
     // this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
 
     if (!this.state.data){
-      return null;
+      return <div>no data available</div>;
     }
 
     return (
@@ -104,7 +108,7 @@ class ShiftsWeek extends React.Component {
         </div>
         </React.Fragment>
     );
-  }}
+  }
 }
 
 
