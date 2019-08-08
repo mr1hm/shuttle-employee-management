@@ -56,6 +56,22 @@ function calculateDailyWorkingHours(startTime, endTime) {
   const shiftHoursPerDay = endTimeFloat - startTimeFloat;
   return shiftHoursPerDay;
 }
+/* converts a YYYY-MM-DD date string into a js date object set to midnight on the same day LOCAL time
+params: 
+  dateString(string) : a YYYY-MM-DD formatted string
+  returns: a js date object
+*/
+function createDateObjFromDateString( dateString ){
+  const dateParams = dateString.split('-').map( segment => parseInt(segment));
+  const date = new Date();
+  date.setFullYear( dateParams[0] );
+  date.setMonth( dateParams[1] - 1);
+  date.setDate( dateParams[2]);
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+  return date;
+}
 
 function getTotalDayWorkingHours(props) {
   let hourTotal = 0;
@@ -76,4 +92,5 @@ function getTotalDayWorkingHours(props) {
 }
 
 export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours };
+  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
+  createDateObjFromDateString };
