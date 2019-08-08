@@ -14,7 +14,7 @@ renderDate(){
             case "bothScheduledAndPosted":
                 return (
                   <div>
-                    <div class="scheduled-shift-icon">
+                    <div class="calendarDay scheduled-shift-icon">
                       {this.props.dayIndex}
                     </div>
                   </div> 
@@ -22,7 +22,7 @@ renderDate(){
             case "posted":
                 return (
                   <div>
-                    <div class="posted-shift-icon">
+                    <div class="calendarDay posted-shift-icon">
                       {this.props.dayIndex}
                     </div>
                   </div> 
@@ -30,7 +30,7 @@ renderDate(){
             case "scheduled":
                 return (
                   <div>
-                    <div class="both-shift-icon">
+                    <div class="calendarDay both-shift-icon">
                       {this.props.dayIndex}
                     </div>
                   </div> 
@@ -42,7 +42,7 @@ renderDate(){
     
     return (
       <div>
-        <div>
+        <div class="calendarDay">
           {this.props.dayIndex}
         </div>
       </div> 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './shifts-month.css'
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
@@ -82,13 +83,16 @@ class ShiftsMonth extends React.Component {
     var monthDivArray=[];
     var calendarPage = this.generateCalendarPage();
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
+      var targetUnixDate = calendarPage[dayOfCalendar].getTime();
       monthDivArray.push(
-        <DayOfMonth 
-          dayIndex={calendarPage[dayOfCalendar].getDate()} 
-          shiftsArray={this.state.scheduledHoursForCurrentMonth}
-          today={todayBoolean} 
-          shifts={shiftCategory} 
-        />
+        <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
+          <DayOfMonth 
+            dayIndex={calendarPage[dayOfCalendar].getDate()} 
+            shiftsArray={this.state.scheduledHoursForCurrentMonth}
+            today={todayBoolean} 
+            shifts={shiftCategory} 
+          />
+        </Link>
       );
     }
     return monthDivArray;
@@ -103,6 +107,15 @@ class ShiftsMonth extends React.Component {
         bundledWeeksArray.push(weekChunk);
     }
     return bundledWeeksArray;
+  }
+
+  getZeroPaddedNumber( number ){
+    return ('0' + number).slice(-2);
+  }
+
+  getDateStringFromTimestamp( timestamp ){
+    const date = new Date(parseInt(timestamp));
+    return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
 
   displayWeeklyHours(calendarPage,shiftsArray){
@@ -120,11 +133,14 @@ class ShiftsMonth extends React.Component {
           weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek);
         }
       }
+      var targetUnixDate = bundledWeeksArray[weekIndex][0].getTime();
       arrayOfShiftsForWeek = [];
       weekTotalHoursArrayToBeDisplayed.push(
-        <div class = "totalHoursForWeek"> 
-          <p>{weekHourTotal}</p>
-        </div>
+        <Link to={`/shifts/week/shifts-week/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
+          <div class = "totalHoursForWeek">
+            <p>{weekHourTotal}</p>
+          </div>
+        </Link>
       )
     }
     return weekTotalHoursArrayToBeDisplayed;
