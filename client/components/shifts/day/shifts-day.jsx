@@ -78,7 +78,7 @@ class ShiftsDay extends React.Component {
   } 
 
   return (
-    <div>
+    <React.Fragment>
     <TopMenuShift title="DAY" page='day' date={dateToPass}/>
     <div>Today's Date {convertUnixMonthDay(parseInt(defaultDate))}</div>
     {/* <div>Total Hours: {totalHours} [posted: {postedHours}] </div> */}
@@ -109,7 +109,7 @@ class ShiftsDay extends React.Component {
         </tbody>     
       </table>
       This is under the table section in render
-      </div>
+      </React.Fragment>
     );
   }
 }

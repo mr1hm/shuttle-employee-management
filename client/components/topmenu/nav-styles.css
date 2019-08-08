@@ -1,4 +1,4 @@
-.weekSelectionContainer {
+.topNavContainer {
   font-size: 18px;
   font-weight: bold;
   display: flex;
@@ -6,33 +6,16 @@
   flex-direction: row
 }
 
-.weekSelector {
-  height: 10px;
-  width: 10px;
-  position: absolute;
-}
-
-.weekDropDown {
-  width: 0;
-  height: 0;
+.arrow {
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
-  display: flex;
-  justify-content: space-between
 }
 
-.weekDropDownLeft {
-  top: 15%;
-  left: 10%;
+.arrowLeft {
   border-right: 16px solid lightgray;
-  display: flex;
-  justify-content: flex-start
 }
 
-.weekDropDownRight {
-  top: 15%;
-  left: 83%;
+.arrowRight {
   border-left: 16px solid lightgray;
-  display: flex;
-  justify-content: flex-end
 }
+
