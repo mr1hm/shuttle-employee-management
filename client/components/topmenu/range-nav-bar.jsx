@@ -65,7 +65,7 @@ class Nav extends React.Component {
     const daysInRange = {
       'week' : { number: 7, route: '/shifts/week/shifts-week'},
       'day': { number: 1, route: '/shifts/day/shifts-day'},
-      'month': { number: 30, route: '/shifts/months/shifts-month'}
+      'month': { number: 30, route: '/shifts/month/shifts-month'}
     }
 
     const leftRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, -1 ).pathDate;

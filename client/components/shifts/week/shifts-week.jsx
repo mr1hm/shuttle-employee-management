@@ -27,7 +27,6 @@ class ShiftsWeek extends React.Component {
     const friday = time - (finalConvertedDate - 5) * 86400000;
     const saturday = time - (finalConvertedDate - 6) * 86400000;
 
-    //create object with these shiftDates
     var daysObject = { };
     function addDayObject( timestamp ){
       daysObject[timestamp] = {
