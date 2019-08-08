@@ -1,4 +1,6 @@
-
+.dropdown-item {
+    color: black;
+}
 .dropdown-menu {
     background-color: white;
 }

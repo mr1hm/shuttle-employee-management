@@ -13,7 +13,6 @@ class ShiftsWeek extends React.Component {
     }
   }
 
-<<<<<<< HEAD
   generateFullWeekOfTimestamps(time) {
     const convertedDateStart = new Date(time);
     const convertedDate = new Date(convertedDateStart);
@@ -151,3 +150,4 @@ class ShiftsWeek extends React.Component {
 }
 
 export default ShiftsWeek;
+
