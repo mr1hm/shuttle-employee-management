@@ -3,8 +3,8 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
 
-$lowerDateRange = intval($_GET['unixstart']);
-$upperDateRange = intval($_GET['unixend']);
+// $lowerDateRange = intval($_GET['unixstart']);
+// $upperDateRange = intval($_GET['unixend']);
 
 if (!empty($_GET['id'])) {
     $ownerID = intval($_GET['id']);

@@ -4,18 +4,12 @@ import './shifts-month.css'
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends'
+import {createDateObjFromDateString} from '../../../lib/time-functions';
 
 class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
-    // this.query = '';
     this.id = '&id=1';
-    this.datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
-    this.calculateShiftHours = this.calculateShiftHours.bind(this);
-    this.displayCalendarPage = this.displayCalendarPage.bind(this);
-    this.displayWeeklyHours = this.displayWeeklyHours.bind(this);
-    this.chunkArray = this.chunkArray.bind(this);
-    this.calculateSumOfHoursScheduledForWeek = this.calculateSumOfHoursScheduledForWeek.bind(this);   
     this.state = {
       scheduledHoursForCurrentMonth: []
     }
@@ -38,9 +32,9 @@ class ShiftsMonth extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    // debugger;
     if (prevProps.match.params.date !== this.props.match.params.date) {
-      let datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
-      const newQuery = this.calculateQueryRange(datePropToUse)
+      const newQuery = this.calculateQueryRange(this.props.match.params.date)
       this.getData('/api/shifts-month.php' + newQuery + this.id, 'GET');
       console.log('didUpdate: ', this.props.match.params.date);
     }
@@ -60,14 +54,12 @@ class ShiftsMonth extends React.Component {
     };
     var lastDate = new Date(dateProp);
     lastDate.setDate(lastDayOfMonth(selectedDate.getMonth()+1, selectedDate.getFullYear()));
-    while (lastDate.getDay() !== 0) {
+    while (lastDate.getDay() !== 6) {
       lastDate = new Date(lastDate);
       lastDate.setDate(lastDate.getDate() + 1);
     }
     const unixCalendarEndRange = lastDate.getTime();
     const query = `?unixstart=${unixCalendarStartRange}&unixend=${unixCalendarEndRange}`;
-    console.log("unix range start:", unixCalendarStartRange);
-    console.log("unix range end:", unixCalendarEndRange);
     return query;
   }
 
@@ -107,9 +99,6 @@ class ShiftsMonth extends React.Component {
       dayOfNextMonth = new Date(dayOfNextMonth);
       dayOfNextMonth.setDate(dayOfNextMonth.getDate() + 1);
     }
-    // const unixCalendarStartRange = new Date(calendarPage[0].toDateString()).getTime();
-    // const unixCalendarEndRange = new Date(calendarPage[calendarPage.length - 1].toDateString()).getTime();
-    // this.query = `?unixstart=${unixCalendarStartRange}&unixend=${unixCalendarEndRange}`;
     return calendarPage;
   }
   
@@ -194,11 +183,12 @@ class ShiftsMonth extends React.Component {
   }
 
   render() {
+    debugger;
     if (this.props.match.params.date === undefined) {
       var dateToPass = this.props.defaultDate;
     } else {
-      dateToPass = this.props.match.params.date;
-      console.log(dateToPass);
+      dateToPass = createDateObjFromDateString( this.props.match.params.date );
+      dateToPass = dateToPass.getTime();
     }
     return (
       <div className ="calenderContainer">
