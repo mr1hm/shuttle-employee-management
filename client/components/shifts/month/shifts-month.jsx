@@ -86,7 +86,7 @@ class ShiftsMonth extends React.Component {
       monthDivArray.push(
         <DayOfMonth 
           dayIndex={calendarPage[dayOfCalendar].getDate()} 
-          shiftStatus={this.state.scheduledHoursForCurrentMonth}
+          shiftsArray={this.state.scheduledHoursForCurrentMonth}
           today={todayBoolean} 
           shifts={shiftCategory} 
         />
