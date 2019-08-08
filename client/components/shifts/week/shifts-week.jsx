@@ -52,9 +52,6 @@ class ShiftsWeek extends React.Component {
       dateToPass = new Date(this.props.match.params.date);
       dateToPass = dateToPass.getTime();
 
-      const startOfTheWeek = this.generateStartOfWeekTimestamp(dateToPass);
-      const endOfTheWeek = this.generateEndOfWeekTimestamp(dateToPass);
-      this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
     }
 
     if (!this.state.data){
@@ -78,17 +75,18 @@ class ShiftsWeek extends React.Component {
             <HoursOfOperation />
           </div>
 
-        <div className="calendarContainerWeekComponent">
+        <div className="calendarContainer">
           {this.state.data.map(day=> {
             return (
-              <ShiftsWeekDay shifts={day} defaultDay={this.props.defaultDate} date={dateToPass}/>
+              <ShiftsWeekDay shifts={day} defaultDay={this.props.defaultDate} />
             )
           })}
         </div>
         </div>
-        </React.Fragment>
+      </React.Fragment>
     );
     };
   }
+
 
 export default ShiftsWeek;

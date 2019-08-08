@@ -26,7 +26,7 @@ import Welcome from './welcome/welcome';
             <Route path="/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/day/shifts-day/:date?" render={(props) => <ShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting} />}/>
-            <Route path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} defaultDate={this.state.presetDateForTesting} />}/>
+            <Route path = "/shifts/available/" render={(props) => <ShiftsAvailable {...props} />}/>
           </Switch>
         </React.Fragment>
     );
