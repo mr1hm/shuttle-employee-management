@@ -90,3 +90,20 @@
   display: inline-block;
   vertical-align: middle;
 }
+
+.month-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2rem;
+  width: 2rem;
+  border: 2px solid;
+  border-radius: 50%;
+  background-color: transparent
+  
+}
+
+.blue {
+  border: lightskyblue
+}
+
