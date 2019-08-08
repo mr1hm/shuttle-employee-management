@@ -12,7 +12,7 @@ import Welcome from './welcome/welcome';
   constructor(props){
     super(props);
     this.state = {
-      presetDateForTesting: 1565395200000
+      presetDateForTesting: 1563951600000
     }
   }
 

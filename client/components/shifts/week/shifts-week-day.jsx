@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import IndividualShift from './individual-shift';
 import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours } from '../../../lib/time-functions';
+  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, getTotalDayWorkingHours } from '../../../lib/time-functions';
 
 
   class ShiftsWeekDay extends React.Component {
@@ -10,22 +10,63 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
     return ('0' + number).slice(-2);
   }
   getDateStringFromTimestamp( timestamp ){
-
     const date = new Date(parseInt(timestamp));
     return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
+  calculateDailyWorkingTotalHours(startTime, endTime) {
+  if (!startTime && !endTime) {
+     return 0;
+  }
+  let startHour, startMinute, startMinutesAsRatio, startTimeFloat;
+  let endHour, endMinute, endMinutesAsRatio, endTimeFloat;
+  let shiftHoursPerDay;
+    if (!startTime){
+    return;
+    } else if (startTime.startTime.length < 4 ) {
+          startTime = "0" + startTime.startTime;
+          parseInt(startTime);
+          startHour = startTime.slice(0, 2);
+          startMinute = startTime.slice(2);
+          startMinutesAsRatio = parseFloat(startMinute) / 60;
+          startTimeFloat = parseInt(startHour) + startMinutesAsRatio;
+    } else {
+          startHour = startTime.startTime.slice(0, 2);
+          startMinute = startTime.startTime.slice(2);
+          startMinutesAsRatio = parseFloat(startMinute) / 60;
+          startTimeFloat = parseInt(startHour) + startMinutesAsRatio;
+    }
+    if (!endTime) {
+      return;
+    } else if (endTime.endTime.length < 4) {
+       endTime = "0" + endTime.endTime;
+       parseInt(endTime);
+       endHour = endTime.slice(0, 2);
+       endMinute = endTime.slice(2);
+       endMinutesAsRatio = parseFloat(endMinute) / 60;
+       endTimeFloat = parseInt(endHour) + endMinutesAsRatio;
+       shiftHoursPerDay = endTimeFloat - startTimeFloat;
+        return shiftHoursPerDay;
+     } else {
+       endHour = endTime.endTime.slice(0, 2);
+       endMinute = endTime.endTime.slice(2);
+       endMinutesAsRatio = parseFloat(endMinute) / 60;
+       endTimeFloat = parseInt(endHour) + endMinutesAsRatio;
+       shiftHoursPerDay = endTimeFloat - startTimeFloat;
+       return shiftHoursPerDay;
+      }
+
+}
   render() {
-    debugger;
     const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
     const dateText = convertUnixDateNumber(parseInt(this.props.dayData.shiftDate));
-    const dayHours = 0//calculateDailyWorkingHours(this.props.shifts.startTime, this.props.shifts.endTime);
+    const dayHours = this.calculateDailyWorkingTotalHours(this.props.dayData.shifts[0], this.props.dayData.shifts[0]);
     const currentUnixDate = this.props.dayData.shiftDate;
 
     let currentDayHighlightClass = 'dayDataContainer';
 
-    // if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.shiftDate)) {
-    //   currentDayHighlightClass += ' currentDay';
-    // }
+    if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.shiftDate)) {
+      currentDayHighlightClass += ' currentDay';
+    }
 
     return (
       <div className={currentDayHighlightClass}>

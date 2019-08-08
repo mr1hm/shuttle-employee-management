@@ -25,16 +25,10 @@ class ShiftsWeek extends React.Component {
     const wednesday = time - (finalConvertedDate - 3) * 86400000;
     const thursday = time - (finalConvertedDate - 4) * 86400000;
     const friday = time - (finalConvertedDate - 5) * 86400000;
-    const saturday = time - (finalConvertedDate - 6) * 86400000; //save as object with
-    // shiftDate
-    //const sunday = new Date();
-    // sundayObject.setDate(sundayObject.getDate() - finalConvertedDate);
-    // sundayObject.setHours(0);
-    // sundayObject.setMinutes(0);
-    // sundayObject.setHours(0);
-    var daysObject = {
+    const saturday = time - (finalConvertedDate - 6) * 86400000;
 
-    }
+    //create object with these shiftDates
+    var daysObject = { };
     function addDayObject( timestamp ){
       daysObject[timestamp] = {
         shiftDate: timestamp,
@@ -45,10 +39,6 @@ class ShiftsWeek extends React.Component {
     timeArray.map( shiftDate => {
       addDayObject( shiftDate );
     })
-    // for(let dayBaseIndex = 0; dayBaseIndex < 7; dayBaseIndex++){
-    //   sundayObject.setDate(sundayObject.getDate() + dayBaseIndex);
-    //   timeArray.push(sundayObject.getTime());
-    // }
     return daysObject;
 
   }
@@ -56,7 +46,6 @@ class ShiftsWeek extends React.Component {
     const convertedDateStart = new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
-
     return time - finalConvertedDate * 86400000;
   }
 
@@ -64,7 +53,6 @@ class ShiftsWeek extends React.Component {
     const convertedDateStart = new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
-
     return time + (6 - finalConvertedDate) * 86400000;
   }
 
@@ -72,36 +60,6 @@ class ShiftsWeek extends React.Component {
     if(this.state.data===null){
       return;
     }
-    //const weekData = this.generateFullWeekOfTimestamps(dateToPass);
-    /*
-    [
-      {
-        shiftDate: 025235234,  //timestamp for this past sunday
-        shifts: []
-      },
-      {
-        shiftDate: 025235234, //timestamp for this past monday
-        shifts: []
-      }
-    ]
-    */
-      //     <ShiftsWeekDay shifts={day} defaultDay={this.props.defaultDate} />
-/*
-thisShift:  {
-	"id": "13",
-	"startTime": "730",
-	"endTime": "930",
-	"routeInfoID": "2",
-	"authorID": "2",
-	"sessionID": "1",
-	"ownerID": "1",
-	"shiftDate": "1564297200000",
-	"posted": false
-}
-weekData[someDay]
-{shiftDate: 1564876800000
-shifts: []}
-*/
 
 //at the end of the array we will have 7 objects with shifts arrays in them, some
 //with shifts in them and some without
@@ -167,14 +125,9 @@ shifts: []}
         <div className="calendarContainer">
             {weekDayShiftArray.map(dayData => {
               return (
-                <ShiftsWeekDay dayData={ dayData } +-shifts={dayData.shifts} defaultDay={this.props.defaultDate} />
+                <ShiftsWeekDay dayData={ dayData } shifts={dayData.shifts} defaultDay={this.props.defaultDate} />
                 )
             })}
-          {/* {this.state.data.map(day=> {
-            return (
-              <ShiftsWeekDay shifts={day} defaultDay={this.props.defaultDate} />
-            )
-          })} */}
         </div>
         </div>
       </React.Fragment>
