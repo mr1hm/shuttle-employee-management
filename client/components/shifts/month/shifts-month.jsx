@@ -8,8 +8,8 @@ import Legend from './shift-month-legends'
 class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
-    this.query = ``;
-    this.id = `&id=1`;
+    // this.query = '';
+    this.id = '&id=1';
     this.datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
     this.calculateShiftHours = this.calculateShiftHours.bind(this);
     this.displayCalendarPage = this.displayCalendarPage.bind(this);
@@ -20,18 +20,55 @@ class ShiftsMonth extends React.Component {
       scheduledHoursForCurrentMonth: []
     }
   }
- 
-  fetchCallMethod(query, id, methodToUse) {
-    fetch(`/api/shifts-month.php` + query + id, {method: methodToUse})
-      .then(res => {return res.json()})
-      .then(jsonRes => {this.setState({
-        scheduledHoursForCurrentMonth: jsonRes
-      })})
+
+  getData(url, methodToUse) {
+    fetch(url, { method: methodToUse })
+      .then(response => { return response.json() })
+      .then(monthShiftInfo => {
+        this.setState({
+          scheduledHoursForCurrentMonth: monthShiftInfo
+        })
+      })
       .catch(error => {throw(error)});
   }
 
   componentDidMount(){
-    this.fetchCallMethod(this.query, this.id, 'GET');
+        const initialQuery = this.calculateQueryRange(this.props.defaultDate);
+        this.getData('/api/shifts-month.php' + initialQuery + this.id, 'GET');
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.date !== this.props.match.params.date) {
+      let datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
+      const newQuery = this.calculateQueryRange(datePropToUse)
+      this.getData('/api/shifts-month.php' + newQuery + this.id, 'GET');
+      console.log('didUpdate: ', this.props.match.params.date);
+    }
+  }
+  calculateQueryRange(dateProp) {
+    // debugger;
+    var selectedDate = new Date(dateProp);
+    var firstDayOfMonth = new Date(selectedDate).setDate(1);
+    var previousDate = new Date(firstDayOfMonth);
+    while (previousDate.getDay() > 0) {
+      previousDate = new Date(previousDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+    }
+    const unixCalendarStartRange = previousDate.getTime();
+    var lastDayOfMonth = function(month,year) {
+     return new Date(year, month, 0).getDate();
+    };
+    var lastDate = new Date(dateProp);
+    lastDate.setDate(lastDayOfMonth(selectedDate.getMonth()+1, selectedDate.getFullYear()));
+    while (lastDate.getDay() !== 0) {
+      lastDate = new Date(lastDate);
+      lastDate.setDate(lastDate.getDate() + 1);
+    }
+    const unixCalendarEndRange = lastDate.getTime();
+    const query = `?unixstart=${unixCalendarStartRange}&unixend=${unixCalendarEndRange}`;
+    console.log("unix range start:", unixCalendarStartRange);
+    console.log("unix range end:", unixCalendarEndRange);
+    return query;
   }
 
   calculateShiftHours(startTime, endTime){
@@ -46,7 +83,8 @@ class ShiftsMonth extends React.Component {
   }
 
   generateCalendarPage() {
-    var selectedDate = new Date(this.datePropToUse);
+    let datePropToUse = this.props.match.params.date ? this.props.match.params.date : this.props.defaultDate;
+    var selectedDate = new Date(datePropToUse);
     var firstDayOfMonth = new Date(selectedDate);
     firstDayOfMonth.setDate(1);
     var calendarPage = [firstDayOfMonth];
@@ -69,17 +107,13 @@ class ShiftsMonth extends React.Component {
       dayOfNextMonth = new Date(dayOfNextMonth);
       dayOfNextMonth.setDate(dayOfNextMonth.getDate() + 1);
     }
-    const unixCalendarStartRange = new Date(calendarPage[0].toDateString()).getTime();
-    const unixCalendarEndRange = new Date(calendarPage[calendarPage.length - 1].toDateString()).getTime();
-    this.query = `?unixstart=${unixCalendarStartRange}&unixend=${unixCalendarEndRange}`;
+    // const unixCalendarStartRange = new Date(calendarPage[0].toDateString()).getTime();
+    // const unixCalendarEndRange = new Date(calendarPage[calendarPage.length - 1].toDateString()).getTime();
+    // this.query = `?unixstart=${unixCalendarStartRange}&unixend=${unixCalendarEndRange}`;
     return calendarPage;
   }
   
-  displayCalendarPage() { //first we goup the shift array by date - key = month-date
-    // in displayCalendar loop through calendarPage and recompute datekey from each date in cal
-    // use the computed key to access the according shift
-    var todayBoolean = null;
-    var shiftCategory = null;
+  displayCalendarPage() {
     var monthDivArray=[];
     var calendarPage = this.generateCalendarPage();
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
@@ -89,8 +123,6 @@ class ShiftsMonth extends React.Component {
           <DayOfMonth 
             dayIndex={calendarPage[dayOfCalendar].getDate()} 
             shiftsArray={this.state.scheduledHoursForCurrentMonth}
-            today={todayBoolean} 
-            shifts={shiftCategory} 
           />
         </Link>
       );
