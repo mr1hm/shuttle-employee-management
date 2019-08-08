@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
 import './nav-styles.css';
 
+
 class Nav extends React.Component {
 
   zeroPadNumber( number ){
@@ -34,7 +35,7 @@ class Nav extends React.Component {
     const convertedDateStart = new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
-    
+
     return time - finalConvertedDate * 86400000;
   }
 
@@ -42,7 +43,7 @@ class Nav extends React.Component {
     const convertedDateStart = new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
-  
+
     return time + (6 - finalConvertedDate) * 86400000;
   }
 
@@ -99,7 +100,7 @@ class Nav extends React.Component {
         <div className="weekSelection">{this.generateText()}</div>
         {/* TODO: This is leftover code --  do later since CSS*/}
         <Link to={`${daysInRange[this.props.page].route}/${rightRoute}`}> <div className="weekSelector weekDropDown weekDropDownRight" ></div></Link>
-      </div>  
+      </div>
     );
   }
 }

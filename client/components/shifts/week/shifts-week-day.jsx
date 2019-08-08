@@ -15,28 +15,31 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
     return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
   render() {
-    const dayText = convertUnixDateDay(parseInt(this.props.shifts));
-    const dateText = convertUnixDateNumber(parseInt(this.props.shifts));
-    // const dayHours = calculateDailyWorkingHours(this.props.shifts.startTime, this.props.shifts.endTime);
-    const currentUnixDate = this.props.shifts;
+    debugger;
+    const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
+    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.shiftDate));
+    const dayHours = 0//calculateDailyWorkingHours(this.props.shifts.startTime, this.props.shifts.endTime);
+    const currentUnixDate = this.props.dayData.shiftDate;
 
     let currentDayHighlightClass = 'dayDataContainer';
 
-    if (parseInt(this.props.defaultDay) === parseInt(this.props.shifts)) {
-      currentDayHighlightClass += ' currentDay';
-    }
+    // if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.shiftDate)) {
+    //   currentDayHighlightClass += ' currentDay';
+    // }
 
     return (
       <div className={currentDayHighlightClass}>
         <div className="dayLabelContainer">
           <div className="dayText">{dayText}</div>
           <div className="dateText">{dateText}</div>
-          {/* <div className="dayHours">{dayHours} Hours</div> */}
+          <div className="dayHours">{dayHours} Hours</div>
         </div>
         <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
         <div className="dayRowContainer">
           <div className="dayRowFill">
-            {/* <IndividualShift shiftInfo={this.props.shifts} /> */}
+            {
+                this.props.dayData.shifts.map(shiftData => <IndividualShift shiftInfo={shiftData} />)
+            }
           </div>
         </div>
         </Link>
