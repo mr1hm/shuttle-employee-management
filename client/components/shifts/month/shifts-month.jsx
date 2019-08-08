@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './shifts-month.css'
+import './shifts-month.css';
+import '../../app.css';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends'
@@ -105,7 +106,7 @@ class ShiftsMonth extends React.Component {
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
       var targetUnixDate = calendarPage[dayOfCalendar].getTime();
       monthDivArray.push(
-        <Link className= {calendarPage[dayOfCalendar].getMonth() + "-" + calendarPage[dayOfCalendar].getDate() === new Date().getMonth() +"-"+ new Date().getDate()? "today day-of-month-link " : "day-of-month-link"} to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
+        <Link className= {calendarPage[dayOfCalendar].getMonth() + "-" + calendarPage[dayOfCalendar].getDate() === new Date().getMonth() +"-"+ new Date().getDate()? "today-mark link-style " : "link-style"} to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
           <DayOfMonth 
             dayIndex={calendarPage[dayOfCalendar].getDate()} 
             shiftsArray={this.state.scheduledHoursForCurrentMonth}
@@ -154,9 +155,9 @@ class ShiftsMonth extends React.Component {
       var targetUnixDate = bundledWeeksArray[weekIndex][0].getTime();
       arrayOfShiftsForWeek = [];
       weekTotalHoursArrayToBeDisplayed.push(
-        <Link to={`/shifts/week/shifts-week/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
+        <Link className="link-style" to={`/shifts/week/shifts-week/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
           <div class = "totalHoursForWeek">
-            <p>{weekHourTotal}</p>
+            <div>{weekHourTotal}</div>
           </div>
         </Link>
       )
@@ -186,6 +187,10 @@ class ShiftsMonth extends React.Component {
       dateToPass = createDateObjFromDateString( this.props.match.params.date );
       dateToPass = dateToPass.getTime();
     }
+    if (!this.state.scheduledHoursForCurrentMonth){
+      return <div>no month available</div>;
+    }
+
     return (
       <div className ="calenderContainer">
         <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
@@ -205,7 +210,7 @@ class ShiftsMonth extends React.Component {
             </div>
           </div>
           <div class="weekTotalCol">
-            <div class="weekTotal">WEEK TOTAL</div>
+            <div class="weekTotal">TOTAL</div>
               <div class="totalHoursColumn">
                 <div class="weekTotalWrapper">
                   {this.displayWeeklyHours(this.generateCalendarPage(dateToPass),this.state.scheduledHoursForCurrentMonth)}
