@@ -76,13 +76,11 @@ class Nav extends React.Component {
     const rightRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, 1 ).pathDate;
 
     return (
-      <div className="weekSelectionContainer">
-        {/* TODO: This is leftover code --  do later since CSS*/}
-        <Link to={`${daysInRange[this.props.page].route}/${leftRoute}`}><div className="weekSelector weekDropDown weekDropDownLeft" ></div></Link>
-        <div className="weekSelection">{this.generateText()}</div>
-        {/* TODO: This is leftover code --  do later since CSS*/}
-        <Link to={`${daysInRange[this.props.page].route}/${rightRoute}`}> <div className="weekSelector weekDropDown weekDropDownRight" ></div></Link>
-      </div>  
+      <React.Fragment>
+        <Link to={`${daysInRange[this.props.page].route}/${leftRoute}`}><div className="arrow arrowLeft" ></div></Link>
+        <div className="font-weight-bold">{this.generateText()}</div>
+        <Link to={`${daysInRange[this.props.page].route}/${rightRoute}`}> <div className="arrow arrowRight" ></div></Link>
+      </React.Fragment>
     );
   }
 }
