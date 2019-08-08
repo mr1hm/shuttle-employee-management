@@ -2,6 +2,7 @@ import React from 'react';
 import './shifts-month.css'
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
+import Legend from './shift-month-legends'
 
 class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -77,12 +78,15 @@ class ShiftsMonth extends React.Component {
     // need a method to go through state and grab statuses from each data point and store in object designated for each day
     // but need a way to create an object for days without shifts as well
     // need to also incorporate a way to mark the current day
+    var todayBoolean = null;
+    var shiftCategory = null;
     var monthDivArray=[];
     var calendarPage = this.generateCalendarPage();
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
       monthDivArray.push(
         <DayOfMonth 
           dayIndex={calendarPage[dayOfCalendar].getDate()} 
+          shiftStatus={this.state.scheduledHoursForCurrentMonth}
           today={todayBoolean} 
           shifts={shiftCategory} 
         />
@@ -152,9 +156,9 @@ class ShiftsMonth extends React.Component {
     return (
       <div className ="calenderContainer">
         <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
-        <div className="row">
-          <div className="col col-lg-1"></div>
-          <div class="col">
+        <div className="row" class="calendarBox">
+
+          <div class="monthCalendar">
             <div class="dayOfMonth Title">
               <div>SUN</div>
               <div>MON</div>
@@ -168,13 +172,16 @@ class ShiftsMonth extends React.Component {
                 {this.displayCalendarPage()}
             </div>
           </div>
-          <div class="col col-lg-2">
+          <div class="weekTotalCol">
             <div class="weekTotal">WEEK TOTAL</div>
-            <div class="totalHoursColumn">
-              {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)}
+              <div class="totalHoursColumn">
+                <div class="weekTotalWrapper">
+                  {this.displayWeeklyHours(this.generateCalendarPage(),this.state.scheduledHoursForCurrentMonth)}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+          <div><Legend/></div>
       </div>
     )
   }
