@@ -13,7 +13,7 @@
     border-radius: 5px;
     display: grid;
     grid-template-columns: repeat(7,0fr);
-    grid-gap: 1.5px;
+    grid-gap: 1vh;
     justify-content: center;
     padding: 0.5rem
 }
@@ -32,13 +32,12 @@
   border: 1.5em solid rgba(white, .2);
   display: grid;
   grid-template-columns: repeat(7,0fr);
-  grid-gap: 1.5px;
   justify-content: center;
 }
 .Title > div {
     display: flex;
     height: 6vh;
-    width: 16vh;
+    width: 15vh;
     border-radius: 5px;
     background-color: lightgrey;  
     justify-content: center;
@@ -58,7 +57,7 @@
     font-size: 2vh;
     display: flex;
     height: 6vh;
-    width: 18vh;
+    width: 20vh;
     border-radius: 5px;
     background-color: lightgrey;  
     justify-content: center;
@@ -68,18 +67,18 @@
 .totalHoursForWeek{
   border-radius: 5px;
   height: 14vh;
-  width: 18vh;
+  width: 20vh;
   border: 0.5px solid lightgrey;
-  margin-bottom: 1.5px;
+  margin-bottom: 0.5vh;
+  margin-top: 0.5vh;
   font-size: 3vh;
   display: inline-block;
   line-height: 14vh;
   text-align: center;
-
+  flex-wrap: wrap
 }
 .totalHoursForWeek p {
   font-size: 1rem;
-  line-height: 1.5;
   display: inline-block;
   vertical-align: middle;
 }
@@ -87,9 +86,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 3rem;
-  width: 3rem;
-  border-radius: 50%;
+  height: 14vh;
+  width: 14vh;
+  border-radius: 50%
 }
 .posted-shift-icon {
   background-color: gold;
@@ -108,5 +107,14 @@
   color: red
 }
 
+.day-of-month-link {
+  color: black;
+}
+.day-of-month-link:hover {
+  font-weight: bold;
+}
 
+.today {
+  color: red;
+}
 
