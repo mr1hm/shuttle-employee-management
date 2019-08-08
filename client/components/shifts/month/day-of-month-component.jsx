@@ -14,7 +14,9 @@ renderDate(){
             case "bothScheduledAndPosted":
                 return (
                   <div>
+
                     <div class="calendarDay scheduled-and-posted-shift-color">
+
                       {this.props.dayIndex}
                     </div>
                   </div> 
