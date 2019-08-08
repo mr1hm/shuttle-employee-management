@@ -18,7 +18,7 @@ import Welcome from './welcome/welcome';
 
   render(){
     return (
-        <div>
+        <React.Fragment>
           <Switch>
           <Route path = "/login/" render={(props) => <Login {...props} />}/>
             <Route exact path = {['/','/welcome/']} render={(props) => <Welcome {...props}  />}/>
@@ -28,7 +28,7 @@ import Welcome from './welcome/welcome';
             <Route path = "/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/available" render={(props) => <ShiftsAvailable {...props} defaultDate={this.state.presetDateForTesting} />}/>
           </Switch>
-        </div>
+        </React.Fragment>
     );
   }
 }
