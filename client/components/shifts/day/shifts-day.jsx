@@ -56,7 +56,7 @@ class ShiftsDay extends React.Component {
   }
 
   componentDidMount(){
-    this.fetchCallMethod(this.query);
+    this.fetchCallMethod('?shiftDate='+this.props.defaultDate);
   }
 
   componentDidUpdate(prevProps) {
