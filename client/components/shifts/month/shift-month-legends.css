@@ -26,7 +26,7 @@
   background-color: lightskyblue;
 }
 .yellow {
-  background-color: goldenrod;
+  background-color: gold;
 }
 
 .blueSquare {
@@ -34,6 +34,6 @@
   justify-content: center;
   height: 2rem;
   width: 2rem;
-  border: 5px solid lightskyblue;
+  border: 5px solid gold;
   margin: auto
 }
