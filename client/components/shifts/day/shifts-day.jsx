@@ -13,6 +13,7 @@ function convertUnixMonthDay(time) {
 
 function OneOfMyShifts(props) {
     let shiftButton = (props.shifts.status === 'posted') ? "Cancel Post" : "Details";
+    let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
     let numOfRounds = (props.shifts.endTime-props.shifts.startTime)/(props.shifts.legDuration);
     
     return(
@@ -22,7 +23,7 @@ function OneOfMyShifts(props) {
             <td> {props.shifts.startTime} - {props.shifts.endTime} </td>
             <td> {numOfRounds.toFixed(2)} </td>
             <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td>
-            <td> {props.shifts.status} </td>
+            <td className={statusColor}> {props.shifts.status} </td>
             <td> <input type="button" value={shiftButton} /> </td> 
         </tr>          
     )
