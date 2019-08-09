@@ -1,54 +1,42 @@
 import React from 'react';
 import './shifts-month.css'
+import {createDateObjFromDateString} from '../../../lib/time-functions';
 
 class DayOfMonth extends React.Component {
   
 renderDate(){
 
   if(this.props.shiftsArray.length !== 0){
-      for(var shiftIndex=0; shiftIndex<this.props.shiftsArray.length; shiftIndex++){
-        if(new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate() === this.props.dayIndex){
-
-          switch(this.props.shiftsArray[shiftIndex].status){
-
-            case "bothScheduledAndPosted":
-                return (
-                  <div>
-
-                    <div class="calendarDay scheduled-and-posted-shift-color">
-
-                      {this.props.dayIndex}
-                    </div>
-                  </div> 
-                  );
-            case "posted":
-                return (
-                  <div>
-                    <div class="calendarDay posted-shift-color">
-                      {this.props.dayIndex}
-                    </div>
-                  </div> 
-                  );
-            case "scheduled":
-                return (
-                  <div>
-                    <div class="calendarDay scheduled-shift-color">
-                      {this.props.dayIndex}
-                    </div>
-                  </div> 
-                  );
-          }
-        }
-      }      
+    let dayTypeClasses = {
+      posted: false,
+      scheduled: false
     }
-    
+    for(var shiftIndex=0; shiftIndex<this.props.shiftsArray.length; shiftIndex++){
+      let baseDate = createDateObjFromDateString(parseInt(this.props.shiftsArray[shiftIndex].shiftDate));
+      debugger;
+      if( baseDate.getTime() === this.props.dayObj.getTime()){
+      //if(new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate() === this.props.dayIndex){
+        dayTypeClasses[this.props.shiftsArray[shiftIndex].status]=true;
+      }
+    }   
+    let postedClasses = 'calendarDay';
+    for( let key in dayTypeClasses){
+      postedClasses += dayTypeClasses[key] ? ` ${key}-shift-color` : ''
+    }
     return (
-      <div>
-        <div class="calendarDay">
-          {this.props.dayIndex}
-        </div>
-      </div> 
-      );
+      <div class={ postedClasses}>
+        {this.props.dayIndex}
+      </div>
+    )   
+  }
+  
+  return (
+    <div>
+      <div class="calendarDay">
+        {this.props.dayIndex}
+      </div>
+    </div> 
+    );
 }
 
 render() {
