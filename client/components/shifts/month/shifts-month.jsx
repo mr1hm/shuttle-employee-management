@@ -139,9 +139,6 @@ class ShiftsMonth extends React.Component {
     var bundledWeeksArray = this.chunkArray(calendarPage,7);
     var weekHourTotal=0;
     for(var weekIndex=0; weekIndex<bundledWeeksArray.length; weekIndex++){
-      if (weekIndex === 4) {
-        debugger;
-      }
       for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){
         for(var shiftIndex=0 ; shiftIndex<shiftsArray.length; shiftIndex++){
           if(bundledWeeksArray[weekIndex][dateIndex].getTime() === new Date(parseInt(shiftsArray[shiftIndex].shiftDate)).getTime()){
