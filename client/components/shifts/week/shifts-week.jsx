@@ -14,7 +14,7 @@ class ShiftsWeek extends React.Component {
   }
 
   generateFullWeekOfTimestamps(time) {
-    const convertedDateStart = new Date(time);
+    const convertedDateStart = createDateObjFromDateString(time)//new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
 
@@ -73,6 +73,9 @@ class ShiftsWeek extends React.Component {
     for( let shiftI = 0; shiftI < this.state.data.length; shiftI++){
       let thisShift = this.state.data[shiftI];
       let shiftTimestamp = thisShift.shiftDate
+      if (shiftTimestamp ==1565395200000){
+        debugger;
+      }
       if( weekData[ shiftTimestamp] !== undefined ){
         weekData[ shiftTimestamp].shifts.push( thisShift );
       }
@@ -118,7 +121,7 @@ class ShiftsWeek extends React.Component {
     if (!this.state.data){
       return <div>no data available</div>;
     }
-
+debugger;
     return (
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>

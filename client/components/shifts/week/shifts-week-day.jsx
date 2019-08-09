@@ -59,7 +59,6 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
   render() {
     const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
     const dateText = convertUnixDateNumber(parseInt(this.props.dayData.shiftDate));
-    debugger;
     const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
     //this.calculateDailyWorkingTotalHours(this.props.dayData.shifts[0], this.props.dayData.shifts[0]);
     const currentUnixDate = this.props.dayData.shiftDate;
@@ -69,7 +68,6 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
     if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.shiftDate)) {
       currentDayHighlightClass += ' currentDay';
     }
-    debugger;
     return (
       <div className={currentDayHighlightClass}>
         <div className="dayLabelContainer">
