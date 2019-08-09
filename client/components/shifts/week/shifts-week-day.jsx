@@ -60,7 +60,6 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
     const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
     const dateText = convertUnixDateNumber(parseInt(this.props.dayData.shiftDate));
     const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
-    //this.calculateDailyWorkingTotalHours(this.props.dayData.shifts[0], this.props.dayData.shifts[0]);
     const currentUnixDate = this.props.dayData.shiftDate;
 
     let currentDayHighlightClass = 'dayDataContainer';
@@ -79,7 +78,7 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
         <div className="dayRowContainer">
           <div className="dayRowFill">
             {
-                this.props.dayData.shifts.map(shiftData => <IndividualShift shiftInfo={shiftData} />)
+                this.props.dayData.shifts.map((shiftData, index) => <IndividualShift key={index} shiftInfo={shiftData} />)
             }
           </div>
         </div>
