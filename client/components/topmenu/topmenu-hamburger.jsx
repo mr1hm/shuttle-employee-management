@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './topmenu.css';
 import HamburgerMenu from './hamburger-menu';
 
-const TopMenuHamburger = (props)=> {
+const TopMenuHamburger = ()=> {
     return (
         <div className="text-dark">
             <HamburgerMenu>
@@ -16,6 +16,5 @@ const TopMenuHamburger = (props)=> {
         </div>
     )
 }
+
 export default TopMenuHamburger;
-
-

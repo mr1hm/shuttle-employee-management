@@ -10,13 +10,11 @@ class HamburgerMenu extends React.Component {
     }
     this.toggleOpen = this.toggleOpen.bind(this);
   }
-
   toggleOpen() {
     this.setState({
       open: !this.state.open
     });
   }
-
   render() {
     return (
       <div className = "container d-flex flex-row-reverse">

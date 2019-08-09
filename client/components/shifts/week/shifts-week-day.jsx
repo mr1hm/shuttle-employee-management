@@ -1,11 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import IndividualShift from './individual-shift';
-import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, getTotalDayWorkingHours } from '../../../lib/time-functions';
+import { convertUnixDateDay, convertUnixDateNumber } from '../../../lib/time-functions';
 
-
-  class ShiftsWeekDay extends React.Component {
+class ShiftsWeekDay extends React.Component {
   getZeroPaddedNumber( number ){
     return ('0' + number).slice(-2);
   }
@@ -54,16 +52,13 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
        shiftHoursPerDay = endTimeFloat - startTimeFloat;
        return shiftHoursPerDay;
       }
-
-}
+  }
   render() {
     const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
     const dateText = convertUnixDateNumber(parseInt(this.props.dayData.shiftDate));
     const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
     const currentUnixDate = this.props.dayData.shiftDate;
-
     let currentDayHighlightClass = 'dayDataContainer';
-
     if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.shiftDate)) {
       currentDayHighlightClass += ' currentDay';
     }
@@ -77,9 +72,7 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
         <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
         <div className="dayRowContainer">
           <div className="dayRowFill">
-            {
-                this.props.dayData.shifts.map((shiftData, index) => <IndividualShift key={index} shiftInfo={shiftData} />)
-            }
+            {this.props.dayData.shifts.map((shiftData, index) => <IndividualShift key={index} shiftInfo={shiftData} />)}
           </div>
         </div>
         </Link>
@@ -87,4 +80,5 @@ import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftSta
     )
   }
 }
+
 export default ShiftsWeekDay;

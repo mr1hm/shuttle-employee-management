@@ -11,18 +11,6 @@ if (!empty($_GET['startTime'])) {
   $startTime = intval($startTime);
 }
 
-// if (!empty($_GET['shiftDate'])) {
-//   $shiftDate = $_GET['shiftDate'];
-//   if ($shiftDate < 600) { ????? fix 
-//     throw new Exception('start time is too early');
-//   }
-//   $shiftDate = intval($shiftDate);
-// }
-
-// if (!empty($_GET['shiftDate'])) {
-//     $shiftDate= $_GET['shiftDate'];
-// } else throw new Exception('needs a date');
-
 $shiftDate= $_GET['shiftDate'];
 
 $query = "SELECT s.`id`, s.`ownerID`, s.`shiftDate`, s.`startTime`, s.`endTime`, s.`status`, s.`routeInfoID`,

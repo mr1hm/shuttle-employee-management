@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours
-} from '../../../lib/time-functions';
+import { calculateDailyWorkingHours } from '../../../lib/time-functions';
 
 class IndividualShift extends React.Component {
   render() {
