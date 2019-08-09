@@ -1,7 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours } from '../../../lib/time-functions';
+import { calculateDailyWorkingHours } from '../../../lib/time-functions';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 
 function convertUnixMonthDay(time) {
@@ -15,11 +14,9 @@ function OneOfMyShifts(props) {
     let shiftButton = (props.shifts.status === 'posted') ? "Cancel Post" : "Details";
     let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
     let numOfRounds = (props.shifts.endTime-props.shifts.startTime)/(props.shifts.legDuration);
-    
     return(
         <tr>
             <td> {props.shifts.lineName} / {props.shifts.busID} </td>
-            {/* <td> {convertUnixMonthDay(parseInt(props.shifts.shiftDate))} </td> */}
             <td> {props.shifts.startTime} - {props.shifts.endTime} </td>
             <td> {numOfRounds.toFixed(2)} </td>
             <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td>
@@ -38,14 +35,11 @@ class ShiftsDay extends React.Component {
       myShiftsToday: []
     }
   }
-
-
   fetchCallMethod(query){
     fetch(`/api/shifts-day.php` + query, {
       method: 'GET'
     })
       .then(response => {
-        console.log("res:", response)
         return response.json()
       })
       .then(myJson => {
@@ -55,7 +49,6 @@ class ShiftsDay extends React.Component {
       })
       .catch(error => {throw(error)});
   }
-
   componentDidMount(){
     this.fetchCallMethod('?shiftDate='+this.props.defaultDate);
   }
@@ -66,55 +59,51 @@ class ShiftsDay extends React.Component {
     }
   
   }
-
   render(){
     if (this.props.match.params.date === undefined) {
     var dateToPass = parseInt(this.props.defaultDate);
-  } else {
+    } else {
     dateToPass = this.props.match.params.date;
     var dateToQuery = new Date(dateToPass).getTime()+25200000;
     this.query = `?shiftDate=${dateToQuery}`;
-  }
-
-  if (this.state.myShiftsToday.length === 0) {
+    }
+    if (this.state.myShiftsToday.length === 0) {
       return (
       <div>
       <TopMenuShift title="DAY" page='day' date={dateToPass}/>
       <div>You have no shifts scheduled today.</div>
       </div>
       );
-  } 
-
-  return (
-    <div>
-        <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(dateToPass)}`}> </Link></div>
-    <TopMenuShift title="DAY" page='day' date={(dateToPass)}/>
-      <table className='table table-striped'>
-        <thead>
-            <tr>
-                <td>Line/#</td>
-                {/* <td>Shift Date</td> */}
-                <td>Start-End</td>
-                <td>Rounds</td>
-                <td>Shift Hours</td>
-                <td>Post Status</td>
-                <td>Action</td>
-            </tr>
-        </thead>
-        <tbody>
-        {
-          this.state.myShiftsToday.map(shifts => {
-            return (
-              
-                < OneOfMyShifts
-                  key = { shifts.id }
-                  shifts = { shifts }
-                />                              
-            );
-          })
-        }
-        </tbody>     
-      </table>
+    } 
+    return (
+      <div>
+          <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(dateToPass)}`}> </Link></div>
+      <TopMenuShift title="DAY" page='day' date={(dateToPass)}/>
+        <table className='table table-striped'>
+          <thead>
+              <tr>
+                  <td>Line/#</td>
+                  {/* <td>Shift Date</td> */}
+                  <td>Start-End</td>
+                  <td>Rounds</td>
+                  <td>Shift Hours</td>
+                  <td>Post Status</td>
+                  <td>Action</td>
+              </tr>
+          </thead>
+          <tbody>
+          {
+            this.state.myShiftsToday.map(shifts => {
+              return ( 
+                  < OneOfMyShifts
+                    key = { shifts.id }
+                    shifts = { shifts }
+                  />                              
+              );
+            })
+          }
+          </tbody>     
+        </table>
       </div>
     );
   }

@@ -5,16 +5,13 @@
   justify-content: center;
   flex-direction: row
 }
-
 .arrow {
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
 }
-
 .arrowLeft {
   border-right: 16px solid lightgray;
 }
-
 .arrowRight {
   border-left: 16px solid lightgray;
 }

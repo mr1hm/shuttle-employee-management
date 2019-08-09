@@ -10,6 +10,5 @@ const TopMenuGeneral = (props)=> {
         </div>
     );
 }
+
 export default TopMenuGeneral;
-
-

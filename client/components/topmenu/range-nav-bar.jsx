@@ -1,13 +1,11 @@
 import React from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './nav-styles.css';
 
 class Nav extends React.Component {
-
   zeroPadNumber( number ){
     return ('0' + number).slice(-2);
   }
-
   generateNextTimestamp( baseTimestamp, distance, direction ){
     const currentDateObj = new Date(baseTimestamp);
     let currentDate = currentDateObj.getDate();
@@ -19,7 +17,6 @@ class Nav extends React.Component {
       pathDate: `${newDateObject.getFullYear()}-${this.zeroPadNumber(newDateObject.getMonth()+1)}-${this.zeroPadNumber(newDateObject.getDate())}`
     }
   }
-
   generateText(){
     const convertedDate = this.getDateObjFromDateString( this.props.date );
     if (this.props.page === 'day') {
@@ -43,7 +40,6 @@ class Nav extends React.Component {
       return startDayText + ' - ' + endDayText;
     }
   }
-
   getDateObjFromDateString( dateString ){
     const convertedDate = new Date();
     if(typeof dateString === 'string'){
@@ -61,18 +57,14 @@ class Nav extends React.Component {
     }
     return convertedDate;
   }
-
   render(){
     const daysInRange = {
       'week' : { number: 7, route: '/shifts/week/shifts-week'},
       'day': { number: 1, route: '/shifts/day/shifts-day'},
       'month': { number: 30, route: '/shifts/month/shifts-month'}
     }
-
     const leftRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, -1 ).pathDate;
-
     const rightRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, 1 ).pathDate;
-
     return (
       <React.Fragment>
         <Link to={`${daysInRange[this.props.page].route}/${leftRoute}`}><div className="arrow arrowLeft" ></div></Link>
