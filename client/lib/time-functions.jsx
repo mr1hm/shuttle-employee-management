@@ -91,6 +91,29 @@ function getTotalDayWorkingHours(props) {
   }
 }
 
+
+
+function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
+
+  function calcShiftHours(startTime, endTime){
+    let startHourDigits = Math.trunc(startTime/100);
+    let startMinuteDigits = startTime/100 - Math.floor(startTime/100);
+    let endHourDigits = Math.trunc(endTime/100);
+    let endMinuteDigits = endTime/100 - Math.floor(endTime/100);
+    let startTimeInMinutes = startHourDigits*60 + startMinuteDigits;
+    let endTimeInMinutes = endHourDigits*60 + endMinuteDigits;
+    let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
+    return Math.round(shiftLengthInMinutes); 
+  }
+
+    let totalShiftLengthForWeek = 0
+    let hoursForShift = calcShiftHours(startOfShift,endOfShift);
+    totalShiftLengthForWeek += hoursForShift;
+    let totalHours = Math.floor(totalShiftLengthForWeek/60);
+    let totalMinutes = totalShiftLengthForWeek%60;
+    return (totalHours + "h " + totalMinutes + "m");
+}
+
 export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
-  createDateObjFromDateString };
+  createDateObjFromDateString, calcShiftLenghtInHourMinFormat };

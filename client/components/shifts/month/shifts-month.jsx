@@ -175,9 +175,9 @@ class ShiftsMonth extends React.Component {
     }
       let totalHours = Math.floor(totalShiftLengthForWeek/60);
       let totalMinutes = totalShiftLengthForWeek%60;
-      return (totalHours + "h " + totalMinutes + "min");
+      return (totalHours + "h " + totalMinutes + "m");
     }
-    return "0h 0min";
+    return <div style={{"color" : "lightgrey"} }>No Shifts</div>;
   }
 
   render() {
@@ -188,7 +188,7 @@ class ShiftsMonth extends React.Component {
       dateToPass = dateToPass.getTime();
     }
     if (!this.state.scheduledHoursForCurrentMonth){
-      return <div>no month available</div>;
+      return <div>No Shifts Available</div>;
     }
 
     return (
