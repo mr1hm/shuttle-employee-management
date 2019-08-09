@@ -43,9 +43,9 @@ class ShiftsWeek extends React.Component {
   }
 
   generateStartOfWeekTimestamp(time) {
-    const convertedDate = new Date(time);
+    const convertedDate = createDateObjFromDateString(time);//new Date(time);
     const numericDay = convertedDate.getDay();
-    const startDay = new Date(time);
+    const startDay = createDateObjFromDateString(time);//new Date(time);
     startDay.setDate(startDay.getDate() - numericDay);
     const startOfWeek = startDay.getTime();
 
@@ -53,9 +53,9 @@ class ShiftsWeek extends React.Component {
   }
 
   generateEndOfWeekTimestamp(time) {
-    const convertedDate = new Date(time);
+    const convertedDate = createDateObjFromDateString(time);//new Date(time);
     const numericDay = convertedDate.getDay();
-    const endDay = new Date(time);
+    const endDay = createDateObjFromDateString(time);//new Date(time);
     endDay.setDate(endDay.getDate() + 6 - numericDay);
     const endOfWeek = endDay.getTime();
 
@@ -149,4 +149,3 @@ class ShiftsWeek extends React.Component {
 }
 
 export default ShiftsWeek;
-
