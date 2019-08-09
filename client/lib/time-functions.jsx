@@ -92,7 +92,7 @@ function getTotalDayWorkingHours(props) {
 }
 
 
-
+//calculates total shift duration and formats it in XXh YYmin
 function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
 
   function calcShiftHours(startTime, endTime){
