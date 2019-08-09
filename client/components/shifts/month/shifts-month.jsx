@@ -108,6 +108,7 @@ class ShiftsMonth extends React.Component {
       monthDivArray.push(
         <Link className= {calendarPage[dayOfCalendar].getMonth() + "-" + calendarPage[dayOfCalendar].getDate() === new Date().getMonth() +"-"+ new Date().getDate()? "today-mark link-style " : "link-style"} to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
           <DayOfMonth 
+            dayObj={ calendarPage[dayOfCalendar]}
             dayIndex={calendarPage[dayOfCalendar].getDate()} 
             shiftsArray={this.state.scheduledHoursForCurrentMonth}
           />

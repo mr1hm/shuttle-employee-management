@@ -11,7 +11,7 @@
   background-color: rgb(8,25,114);
   color: white
 }
-.scheduled-and-posted-shift-color {
+.posted-shift-color.scheduled-shift-color {
   background-color: rgb(8,25,114);
   border: 4px solid rgb(248,195,10);
 }
