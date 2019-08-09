@@ -17,9 +17,9 @@ class IndividualShift extends React.Component {
     const shiftStartPosition = widthPerSlot *  leftStartTimeSimpleHours + '%';
     let shiftType = null;
     if (this.props.shiftInfo.posted === false){
-      shiftType = "scheduled"
+      shiftType = "scheduled scheduled-shift-color" 
     } else {
-      shiftType = "posted";
+      shiftType = "posted posted-shift-color";
     }
     return (
       <div

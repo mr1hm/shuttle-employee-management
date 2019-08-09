@@ -147,7 +147,7 @@
 }
 
 .currentDay {
-    border: 3px solid rgb(4, 4, 51);
+    border: 3px solid red;
     background-color: rgba(211, 211, 211, 0.3);
 }
 

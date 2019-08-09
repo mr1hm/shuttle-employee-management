@@ -14,7 +14,7 @@ class ShiftsWeek extends React.Component {
   }
 
   generateFullWeekOfTimestamps(time) {
-    const convertedDateStart = new Date(time);
+    const convertedDateStart = createDateObjFromDateString(time)//new Date(time);
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
 
@@ -43,9 +43,9 @@ class ShiftsWeek extends React.Component {
   }
 
   generateStartOfWeekTimestamp(time) {
-    const convertedDate = new Date(time);
+    const convertedDate = createDateObjFromDateString(time);//new Date(time);
     const numericDay = convertedDate.getDay();
-    const startDay = new Date(time);
+    const startDay = createDateObjFromDateString(time);//new Date(time);
     startDay.setDate(startDay.getDate() - numericDay);
     const startOfWeek = startDay.getTime();
 
@@ -53,9 +53,9 @@ class ShiftsWeek extends React.Component {
   }
 
   generateEndOfWeekTimestamp(time) {
-    const convertedDate = new Date(time);
+    const convertedDate = createDateObjFromDateString(time);//new Date(time);
     const numericDay = convertedDate.getDay();
-    const endDay = new Date(time);
+    const endDay = createDateObjFromDateString(time);//new Date(time);
     endDay.setDate(endDay.getDate() + 6 - numericDay);
     const endOfWeek = endDay.getTime();
 
@@ -72,6 +72,8 @@ class ShiftsWeek extends React.Component {
     for( let shiftI = 0; shiftI < this.state.data.length; shiftI++){
       let thisShift = this.state.data[shiftI];
       let shiftTimestamp = thisShift.shiftDate
+      if (shiftTimestamp ==1565395200000){
+      }
       if( weekData[ shiftTimestamp] !== undefined ){
         weekData[ shiftTimestamp].shifts.push( thisShift );
       }
@@ -117,7 +119,6 @@ class ShiftsWeek extends React.Component {
     if (!this.state.data){
       return <div>no data available</div>;
     }
-
     return (
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
@@ -149,4 +150,3 @@ class ShiftsWeek extends React.Component {
 }
 
 export default ShiftsWeek;
-

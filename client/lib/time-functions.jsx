@@ -57,19 +57,26 @@ function calculateDailyWorkingHours(startTime, endTime) {
   return shiftHoursPerDay;
 }
 /* converts a YYYY-MM-DD date string into a js date object set to midnight on the same day LOCAL time
-params: 
+params:
   dateString(string) : a YYYY-MM-DD formatted string
   returns: a js date object
 */
-function createDateObjFromDateString( dateString ){
-  const dateParams = dateString.split('-').map( segment => parseInt(segment));
-  const date = new Date();
-  date.setFullYear( dateParams[0] );
-  date.setMonth( dateParams[1] - 1);
-  date.setDate( dateParams[2]);
-  date.setHours(0);
-  date.setMinutes(0);
-  date.setSeconds(0);
+function createDateObjFromDateString( dateString, setToMidnight=true ){
+  let date = new Date();
+  if( typeof dateString === 'number'){ //the dateString is actually a timestamp
+    date.setTime(dateString);
+  } else if(typeof dateString==='string'){
+    const dateParams = dateString.split('-').map( segment => parseInt(segment));
+    date.setFullYear( dateParams[0] );
+    date.setMonth( dateParams[1] - 1);
+    date.setDate( dateParams[2]);
+  }
+  if(setToMidnight){
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+  }
   return date;
 }
 
@@ -91,6 +98,29 @@ function getTotalDayWorkingHours(props) {
   }
 }
 
+
+//calculates total shift duration and formats it in XXh YYmin
+function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
+
+  function calcShiftHours(startTime, endTime){
+    let startHourDigits = Math.trunc(startTime/100);
+    let startMinuteDigits = startTime/100 - Math.floor(startTime/100);
+    let endHourDigits = Math.trunc(endTime/100);
+    let endMinuteDigits = endTime/100 - Math.floor(endTime/100);
+    let startTimeInMinutes = startHourDigits*60 + startMinuteDigits;
+    let endTimeInMinutes = endHourDigits*60 + endMinuteDigits;
+    let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
+    return Math.round(shiftLengthInMinutes); 
+  }
+
+    let totalShiftLengthForWeek = 0
+    let hoursForShift = calcShiftHours(startOfShift,endOfShift);
+    totalShiftLengthForWeek += hoursForShift;
+    let totalHours = Math.floor(totalShiftLengthForWeek/60);
+    let totalMinutes = totalShiftLengthForWeek%60;
+    return (totalHours + "h " + totalMinutes + "m");
+}
+
 export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
-  createDateObjFromDateString };
+  createDateObjFromDateString, calcShiftLenghtInHourMinFormat };
