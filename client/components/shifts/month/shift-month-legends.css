@@ -9,6 +9,7 @@
   flex-wrap: nowrap;
 }
 .legendRow {
+  margin-bottom: 2%;
   flex-direction: row;
   display: flex;
   text-align: center;
