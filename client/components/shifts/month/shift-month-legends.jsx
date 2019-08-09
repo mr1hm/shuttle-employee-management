@@ -16,11 +16,10 @@ export default function Legends(){
         </div>
         <div class="col-md-4">
           Scheduled & Posted <br></br>
-          <div class="scheduled-and-posted-shift-color circle">
+          <div class="scheduled-shift-color posted-shift-color circle">
           </div>
         </div>
       </div>
-    
     </div>
   )
 }
