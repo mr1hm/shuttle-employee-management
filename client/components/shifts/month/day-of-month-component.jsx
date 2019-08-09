@@ -1,5 +1,6 @@
 import React from 'react';
 import './shifts-month.css'
+import {createDateObjFromDateString} from '../../../lib/time-functions';
 
 class DayOfMonth extends React.Component {
   
@@ -11,7 +12,10 @@ renderDate(){
       scheduled: false
     }
     for(var shiftIndex=0; shiftIndex<this.props.shiftsArray.length; shiftIndex++){
-      if(new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate() === this.props.dayIndex){
+      let baseDate = createDateObjFromDateString(parseInt(this.props.shiftsArray[shiftIndex].shiftDate));
+      debugger;
+      if( baseDate.getTime() === this.props.dayObj.getTime()){
+      //if(new Date(parseInt(this.props.shiftsArray[shiftIndex].shiftDate)).getDate() === this.props.dayIndex){
         dayTypeClasses[this.props.shiftsArray[shiftIndex].status]=true;
       }
     }   
