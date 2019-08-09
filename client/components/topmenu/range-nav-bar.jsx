@@ -27,11 +27,12 @@ class Nav extends React.Component {
       const dayText = dateString.slice(0,-5);
       return dayText;
     } if (this.props.page === 'month'){
+      const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       const dateString = convertedDate.toDateString()
-      const monthText = dateString.slice(4,-8);
-      return monthText;
+      const year = dateString.slice(11); 
+      return month[convertedDate.getMonth()] + ' ' + year;
     } if (this.props.page === 'week') {
-      const convertedDate = new Date( this.props.date);
+      const convertedDate = new Date(this.props.date);
       const numericDay = convertedDate.getUTCDay();
       var startDay = new Date(this.props.date);
       startDay.setDate(startDay.getDate() - numericDay);
@@ -46,7 +47,7 @@ class Nav extends React.Component {
   getDateObjFromDateString( dateString ){
     const convertedDate = new Date();
     if(typeof dateString === 'string'){
-      const arrayDate = dateString.split('-');
+      const arrayDate = dateString.split('-'); 
       const dateObj = {
         year: arrayDate[0],
         month: arrayDate[1]-1,
