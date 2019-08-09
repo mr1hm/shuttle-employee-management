@@ -74,7 +74,6 @@ class ShiftsWeek extends React.Component {
       let thisShift = this.state.data[shiftI];
       let shiftTimestamp = thisShift.shiftDate
       if (shiftTimestamp ==1565395200000){
-        debugger;
       }
       if( weekData[ shiftTimestamp] !== undefined ){
         weekData[ shiftTimestamp].shifts.push( thisShift );
@@ -121,7 +120,6 @@ class ShiftsWeek extends React.Component {
     if (!this.state.data){
       return <div>no data available</div>;
     }
-debugger;
     return (
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
