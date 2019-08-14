@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
-  getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours
-} from '../../../lib/time-functions';
+import { calculateDailyWorkingHours } from '../../../lib/time-functions';
 
 class IndividualShift extends React.Component {
   render() {
@@ -17,9 +14,9 @@ class IndividualShift extends React.Component {
     const shiftStartPosition = widthPerSlot *  leftStartTimeSimpleHours + '%';
     let shiftType = null;
     if (this.props.shiftInfo.posted === false){
-      shiftType = "scheduled"
+      shiftType = "scheduled scheduled-shift-color" 
     } else {
-      shiftType = "posted";
+      shiftType = "posted posted-shift-color";
     }
     return (
       <div

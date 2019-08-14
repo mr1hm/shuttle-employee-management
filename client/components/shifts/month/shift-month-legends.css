@@ -1,31 +1,26 @@
 .legend-container{
   display: flex;
-  justify-content: center
-}
-.scheduled{
-  justify-content: flex-start
-}
-.posted{
   justify-content: center;
+  height: 30%;
+  width: 100%;
+  flex-wrap: wrap
 }
-.scheduledposted{
-  justify-content: flex-end;
+.row {
+  flex-wrap: nowrap;
 }
-.scheduled-icon{
-  background-color: blue;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%
+.legendRow {
+  margin-bottom: 2%;
+  flex-direction: row;
+  display: flex;
+  text-align: center;
+  justify-items: center;
+  width: 100%
 }
-.posted-icon{
-  background-color:goldenrod;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%
-}
-.both-icon{
-  background-color: transparent;
-  border: 2px solid goldenrod;
-  height: 22px;
-  width: 22px;
+.circle{
+  display: flex;
+  justify-content: center;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  margin: auto
 }

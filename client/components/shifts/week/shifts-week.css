@@ -1,7 +1,3 @@
-.masterContainerIphone {
-    /* position: relative; */
-}
-/*////////////////////// Header ///////////////////////*/
 .headerContainer {
     display: inline-block;
     width: 100%;
@@ -11,17 +7,14 @@
 .headerElement {
     width: 33%;
     display: inline-block;
-    /* float: left; */
     position: relative
 }
 .pageTitleContainer {
-    /* border: 1px solid blue; */
     font-size: 25px;
     font-weight: bold;
     left: 2%;
 }
 .weekSelectionContainer {
-    /* border: 1px solid green; */
     font-size: 18px;
     font-weight: bold;
     text-align: center;
@@ -61,7 +54,6 @@
     font-size: 10px;
     background-color: grey;
 }
-/*////////////////////// SUBHEADER ///////////////////////*/
 .subheaderContainer {
     display: inline-block;
     width: 50%;
@@ -88,18 +80,17 @@
 }
 .viewHoursContainer {
     display: inline-block;
-    width: 100%;
-    top: 22%;
+    width: 98%;
+    top: 21%;
     position: absolute;
-    right:.5%;
+    left: -1%;
     margin-bottom: 10px;
 }
 .viewMonthLink {
     position: relative;
     float: right;
 }
-/*////////////////////// CALENDAR ///////////////////////*/
-.calendarContainer {
+.calendarContainerWeekComponent {
     display: inline-block;
     width: 96%;
     height: 270px;
@@ -107,7 +98,6 @@
     position: absolute;
     left: 2%;
     overflow-y: scroll;
-    /* border: .25px solid gray; */
 }
 .hoursRowContainer {
     width: 100%;
@@ -143,12 +133,12 @@
     width: 100%;
 }
 .dayDataContainer {
-    width: 100%;
+    width: 98%;
     height: 100px;
 }
 
 .currentDay {
-    border: 3px solid rgb(4, 4, 51);
+    border: 3px solid red;
     background-color: rgba(211, 211, 211, 0.3);
 }
 
