@@ -1,0 +1,61 @@
+{
+  "startDate": 1563692400000,
+  "endDate": 1564210800000,
+  "userID": 60,
+  "userScheduleShiftID": 308,
+  "scheduleID": 8,
+  "week": [
+    [
+      {
+        "startTime": "0600",
+        "endTime": "0730",
+        "date": 1563704640000,
+        "posted": false,
+        "restricted": false
+      }
+    ],
+    [
+      {
+        "startTime": "1700",
+        "endTime": "2000",
+        "date": 1563778800000,
+        "posted": false,
+        "restricted": false
+      },
+      {
+        "startTime": "1100",
+        "endTime": "1345",
+        "date": 1563778800000,
+        "posted": true,
+        "restricted": false
+      }
+    ],
+    [
+      {
+        "startTime": "0900",
+        "endTime": "1200",
+        "date": 1563865200000,
+        "posted": false,
+        "restricted": false
+      },
+      {
+        "startTime": "1200",
+        "endTime": "1400",
+        "date": 1563865200000,
+        "posted": true,
+        "restricted": false
+      },
+      {
+        "startTime": "1600",
+        "endTime": "1930",
+        "date": 1563865200000,
+        "posted": true,
+        "restricted": false
+      }
+    ]
+  ],
+  "rules": {
+    "maxWeeklyHours": "19.5",
+    "maxShiftHours": 5
+  }
+}

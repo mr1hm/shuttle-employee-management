@@ -1,0 +1,84 @@
+.calenderContainer{
+    justify-content: center; 
+    padding: 1rem;
+    box-sizing: border-box
+}
+.wrapper {
+    border: 1.5em solid rgba(white, .2);
+    border-radius: 5px;
+    /* background-image: radial-gradient(lightgray, lightgray, white); */
+    display: grid;
+    grid-template-columns: repeat(7,0fr);
+    grid-gap: 1.5px;
+    justify-content: center;
+    padding: 1.5rem
+}
+
+.wrapper > div {
+    display: flex;
+    height: 14vh;
+    width: 14vh;
+    border: 0.5px solid lightgray;
+    border-radius: 5px;
+    background-color: white;  
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+
+.Title{
+  border: 1.5em solid rgba(white, .2);
+  display: grid;
+  grid-template-columns: repeat(7,0fr);
+  grid-gap: 1.5px;
+  justify-content: center;
+}
+.Title > div {
+    display: flex;
+    height: 6vh;
+    width: 14vh;
+    border-radius: 5px;
+    background-color: lightgrey;  
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+
+.totalHoursColumn{
+  flex-direction: column;
+  background-color: white;
+  padding-top: 1.5rem
+}
+
+.weekTotal {
+    font-size: 0.5rem;
+    display: flex;
+    height: 6vh;
+    width: 18vh;
+    border-radius: 5px;
+    background-color: lightgrey;  
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+
+.totalHoursForWeek{
+  border-radius: 5px;
+  height: 14vh;
+  width: 18vh;
+  border: 0.5px solid lightgrey;
+  margin-bottom: 1.5px;
+  font-size: 3vh;
+  display: inline-block;
+  line-height: 14vh;
+  text-align: center;
+
+}
+.totalHoursForWeek p {
+  line-height: 1.5;
+  display: inline-block;
+  vertical-align: middle;
+}
+.row {
+  margin-top: 5%
+}
