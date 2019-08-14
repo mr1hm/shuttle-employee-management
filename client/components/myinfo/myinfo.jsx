@@ -5,7 +5,6 @@ class MyInfo extends React.Component {
   constructor(props) {
     super(props);
   }
-
   render() {
     return (
       <React.Fragment>
@@ -14,8 +13,8 @@ class MyInfo extends React.Component {
           <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >MY INFO</div>
         </div>
       </React.Fragment>
-
     );
   }
 }
+
 export default MyInfo;

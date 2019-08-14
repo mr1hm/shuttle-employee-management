@@ -1,9 +1,5 @@
-.topnav{
-    position:relative;
-}
-
-.container {
-    z-index:10;
+.dropdown-item {
+    color: black;
 }
 .dropdown-menu {
     background-color: white;

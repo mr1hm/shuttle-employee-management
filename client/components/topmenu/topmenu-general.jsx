@@ -4,20 +4,11 @@ import TopMenuHamburger from './topmenu-hamburger';
 
 const TopMenuGeneral = (props)=> {
     return (
-        <div className="topnav">
-            <div className="row">
-                <div className="col">
-                    <h3>{props.title}</h3>
-                </div>
-                <div className="col-5">
-
-                </div>
-                <div className="col">
-                    <TopMenuHamburger/>
-                </div>
-            </div>  
+        <div className="container-fluid d-flex justify-content-between align-items-center mt-2">
+            <h3>{props.title}</h3>
+            <TopMenuHamburger/>
         </div>
-    )
+    );
 }
-export default TopMenuGeneral;
 
+export default TopMenuGeneral;

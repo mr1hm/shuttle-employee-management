@@ -5,18 +5,10 @@ import Nav from './range-nav-bar';
 
 const TopMenuShift = (props)=> {
     return (
-        <div className="topnav">
-            <div className="row">
-                <div className="col">
-                    <h3>Shifts - {props.title}</h3>
-                </div>
-                <div className="col-5">
-                    <Nav page={props.page} date={props.date}/> 
-                </div>
-                <div className="col">
-                    <TopMenuHamburger/>
-                </div>
-            </div>  
+        <div className="container-fluid d-flex justify-content-between align-items-center mt-2 mb-2">
+            <h3 className="m-0">Shifts - {props.title}</h3>
+            <Nav page={props.page} date={props.date}/> 
+            <TopMenuHamburger/>
         </div>
     )
 }
