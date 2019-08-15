@@ -120,8 +120,8 @@ class ShiftsDay extends React.Component {
           </tbody>
         </table>
         <Modal open={this.state.isModalOpen}>
-          <h1> PLEASE CONFIRM: Do you really want to post this shift?</h1>
-          <p><button onClick= {() => this.closeModal()}>Cancel</button></p>
+          <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
+          <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
           <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
         </Modal>
 

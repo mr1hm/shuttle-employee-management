@@ -19,16 +19,14 @@ body{
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-}
-.modalClose{
-  position: absolute;
-  right: 0;
-  top: 0;
-  color: white;
-  background-color: black;
   text-align: center;
-  cursor: pointer;
 }
+
+.modalCancelButton{
+  margin: 5%;
+
+}
+
 
 /* .modal {
   position: fixed;
