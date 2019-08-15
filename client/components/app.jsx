@@ -7,6 +7,8 @@ import ShiftsMonth from './shifts/month/shifts-month';
 import ShiftsAvailable from './shifts/available/shifts-available';
 import Login from './login/login';
 import Welcome from './welcome/welcome';
+import Modal from './post-modal';
+import './post-modal.css';
 
 class App extends React.Component {
   constructor(props){
