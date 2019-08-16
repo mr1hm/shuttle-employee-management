@@ -70,6 +70,17 @@ class ShiftsWeek extends React.Component {
     fetch(url, { method: methodToUse })
       .then(response => { return response.json() })
       .then(weekShiftInfo => {
+        // weekShiftInfo = [{
+        //   "id": "8",
+        //   "startTime": "600",
+        //   "endTime": "1000",
+        //   "routeInfoID": "1",
+        //   "authorID": "2",
+        //   "sessionID": "1",
+        //   "ownerID": "1",
+        //   "shiftDate": "1563692400000",
+        //   "posted": false
+        // }]
         this.setState({
           data: weekShiftInfo
         })
