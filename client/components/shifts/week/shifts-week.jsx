@@ -5,6 +5,7 @@ import ShiftsWeekDay from './shifts-week-day';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import {createDateObjFromDateString} from '../../../lib/time-functions';
 
+
 class ShiftsWeek extends React.Component {
   constructor(props){
     super(props);
@@ -102,6 +103,7 @@ class ShiftsWeek extends React.Component {
     return (
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
+
         <div className="masterContainerIphone">
           <div className="viewHoursContainer">
             <HoursOfOperation />
@@ -114,6 +116,7 @@ class ShiftsWeek extends React.Component {
               })}
           </div>
         </div>
+
         </React.Fragment>
     );
   }
