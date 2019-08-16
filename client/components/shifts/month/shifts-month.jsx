@@ -6,6 +6,7 @@ import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends'
 import {createDateObjFromDateString} from '../../../lib/time-functions';
+import RouteBusDisplay from '../../route-bus-display';
 
 class ShiftsMonth extends React.Component {
   constructor(props) {
@@ -189,6 +190,8 @@ class ShiftsMonth extends React.Component {
     return (
       <div className ="calenderContainer">
         <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
+        {/* line 219 is for testing only. CSS styling is not complete */}
+        <RouteBusDisplay bus='1' route='H'/> 
         <div className="row" class="calendarBox">
           <div class="monthCalendar">
             <div class="dayOfMonth Title">
