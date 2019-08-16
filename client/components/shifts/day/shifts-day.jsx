@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import { calculateDailyWorkingHours } from '../../../lib/time-functions';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import Modal from '../../post-modal';
+import RouteBusDisplay from '../../route-bus-display';
 
 function convertUnixMonthDay(time) {
   const getTheDate = new Date(time);
@@ -93,6 +94,7 @@ class ShiftsDay extends React.Component {
       <div>
           <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(dateToPass)}`}> </Link></div>
       <TopMenuShift title="DAY" page='day' date={(dateToPass)}/>
+      <RouteBusDisplay bus='1' route='H'/>
         <table className='table table-striped'>
           <thead>
               <tr>
