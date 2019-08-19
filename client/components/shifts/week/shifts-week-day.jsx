@@ -59,7 +59,6 @@ class ShiftsWeekDay extends React.Component {
     console.log('day data: ', this.props.dayData);  /*---  this needs to be changed so that the 'posted' key changes to 'status'*/
     console.log('shift data: ', this.props.shifts);
 
-
     const range = { min: 6, max: 24 };
     const startAndEndTimes = {start: 6, end: 24};
     const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
@@ -92,16 +91,7 @@ class ShiftsWeekDay extends React.Component {
           <div className="dayHours">{dayHours} {dayHours === 1 ? 'Hour' : 'Hours'}</div>
         </div>
         <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
-        
-
-
         <div className="shiftRowContainer">
-            {/* <IndividualShift 
-              shift={this.props.shifts}
-              range={range}
-              shiftType={'scheduled'}
-              children={this.props.shifts}
-            /> */}
             <ShiftDisplayComponent 
               test='1'
               type='active'
@@ -110,10 +100,6 @@ class ShiftsWeekDay extends React.Component {
               children={convertedShifts}
             />
         </div>
-
-
-
-
         </Link>
       </div>
     )
