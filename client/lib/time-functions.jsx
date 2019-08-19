@@ -61,6 +61,17 @@ params:
   dateString(string) : a YYYY-MM-DD formatted string
   returns: a js date object
 */
+function convertMilitaryTimeStringToMilitaryTimeFloat( time ){
+  //converts '1430' to 14.5
+  // '1245' to 12.75
+  while( time.length < 4){
+    time = '0'+time;
+  }
+  const hour = parseInt(time.slice(0,2));
+  const minutes = parseInt(time.slice(2)) / 60;
+  return hour+minutes;
+
+}
 function createDateObjFromDateString( dateString, setToMidnight=true ){
   let date = new Date();
   if( typeof dateString === 'number'){ //the dateString is actually a timestamp
@@ -123,4 +134,4 @@ function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
 
 export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
-  createDateObjFromDateString, calcShiftLenghtInHourMinFormat };
+  createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat };
