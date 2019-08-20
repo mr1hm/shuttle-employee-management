@@ -11,13 +11,13 @@ require_once('db_connection.php');
 //   $timestamp = intval($timestamp);
 // }
 
-$query = "SELECT rt.line, bi.bus_number, 
+$query = "SELECT rt.line, bi.bus_number, rd.status,
   rd.start_time AS round_start, 
   rd.end_time AS round_end 
   FROM route AS rt 
   JOIN bus_info AS bi ON bi.route_id = rt.id 
   JOIN round AS rd ON rd.bus_id = bi.id
-  WHERE rd.round_date = 1566172800000";
+  WHERE rd.round_date = 1566172886400";
 
 $result = mysqli_query($conn, $query);
 
