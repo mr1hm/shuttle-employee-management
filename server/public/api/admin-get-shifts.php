@@ -11,13 +11,19 @@ require_once('db_connection.php');
 //   $timestamp = intval($timestamp);
 // }
 
-$query = "SELECT rt.line, bi.bus_number, rd.status,
+//Change the 1566172886400 on line 22 to {$timestamp} when you are ready to connect.
+
+//Will be adding additional query functionality so the drive name populates.
+
+$query = "SELECT rt.line, bi.bus_number, rd.status, us.last_name, us.first_name,
   rd.start_time AS round_start, 
   rd.end_time AS round_end 
   FROM route AS rt 
   JOIN bus_info AS bi ON bi.route_id = rt.id 
   JOIN round AS rd ON rd.bus_id = bi.id
-  WHERE rd.round_date = 1566172886400";
+  JOIN user AS us ON us.id = rd.user_id 
+  WHERE rd.round_date = 1566172886400
+  AND rd.status = 'scheduled'";
 
 $result = mysqli_query($conn, $query);
 
