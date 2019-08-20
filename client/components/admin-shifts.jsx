@@ -30,7 +30,6 @@ class AdminShiftsDay extends React.Component {
     render() {
         const range = { min: 6, max: 24 };
         const dateToPass = parseInt(this.props.defaultDate);
-        console.log(this.state.shiftsAdmin);
 
         return(
         <div>
