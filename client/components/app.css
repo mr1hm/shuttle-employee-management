@@ -24,3 +24,12 @@
 .today-mark {
   color: red;
 }
+.adminShiftsDayView {
+  display: inline-block;
+  width: 96%;
+  height: 100vh;
+  top: 28%;
+  position: absolute;
+  left: 2%;
+  overflow-y: scroll;
+}
