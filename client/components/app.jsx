@@ -8,6 +8,7 @@ import ShiftsAvailable from './shifts/available/shifts-available';
 import Login from './login/login';
 import Welcome from './welcome/welcome';
 import Modal from './post-modal';
+import AdminShiftsDay from './admin-shifts';
 import './post-modal.css';
 
 class App extends React.Component {
@@ -28,6 +29,7 @@ class App extends React.Component {
             <Route path = "/shifts/day/shifts-day/:date?" render={(props) => <ShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/available/" render={(props) => <ShiftsAvailable {...props} />}/>
+            <Route path = "/admin-day/" render={(props) => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
           </Switch>
         </React.Fragment>
     );
