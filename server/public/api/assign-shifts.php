@@ -3,19 +3,21 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
 
-// $output = file_get_contents('dummy-data-assign-shifts.json');
-// print($output);
+// if(!empty($_GET['unix_timestamp'])){
+//   $timestamp = $_GET['unix_timestamp'];
+//   if (!is_numeric($timestamp)) {
+//     throw new Exception('This is not a unix timestamp. Please enter a valid unix timestamp.');
+//   }
+//   $timestamp = intval($timestamp);
+// }
 
-if(!empty($_GET['unix_timestamp'])){
-  $timestamp = $_GET['unix_timestamp'];
-  if (!is_numeric($timestamp)) {
-    throw new Exception('This is not a unix timestamp. Please enter a valid unix_timestamp');
-  };
-  $timestamp = intval($timestamp);
-}
-
-//create query
-//$query=
+$query = "SELECT rt.line, bi.bus_number, 
+  rd.start_time AS round_start, 
+  rd.end_time AS round_end 
+  FROM route AS rt 
+  JOIN bus_info AS bi ON bi.route_id = rt.id 
+  JOIN round AS rd ON rd.bus_id = bi.id
+  WHERE rd.round_date = 1566172800000";
 
 $result = mysqli_query($conn, $query);
 
@@ -25,7 +27,9 @@ if(!$result){
 
 $data = [];
 
-//generate output
+while ($row = mysqli_fetch_assoc($result)) {
+    $data[] = $row;
+}
 
 print(json_encode($data));
 ?>
