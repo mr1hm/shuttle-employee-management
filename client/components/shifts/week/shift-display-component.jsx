@@ -22,9 +22,10 @@ class ShiftDisplayComponent extends React.Component {
         {this.props.children.map((data, index) => (
           <ShiftDisplayComponent
             test={data.test}
+            key={index}
             type={data.type}
-            range={{ min: data.range.min, max: data.range.max }}
-            shiftData={ {start: data.shiftData.start, end: data.shiftData.end} } 
+            range={{ min: data.shiftStartTime, max: data.shiftEndTime }}
+            shiftData={ {start: data.start, end: data.end} } 
             children={[]}
           />
         ))}

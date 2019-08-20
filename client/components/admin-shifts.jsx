@@ -27,57 +27,43 @@ class AdminShiftsDay extends React.Component {
             .catch(error => {throw(error)});
     }
 
-    // componentDidUpdate() {
-
-    // }
-
-
     render() {
         const range = { min: 6, max: 24 };
-        const startAndEndTimes = {start: this.state.shiftsAdmin.startTime, end: this.state.shiftsAdmin.endTime};
-        if (startAndEndTimes === undefined) {
-            return <div>no data available</div>;
-        }
-        var dateToPass = parseInt(this.props.defaultDate);
+        const dateToPass = parseInt(this.props.defaultDate);
+        console.log(this.state.shiftsAdmin);
 
-        console.log(this.state.shiftsAdmin);        
         return(
         <div>
             <TopMenuShift title="Admin" page='day' date={dateToPass}/>
-            <HoursOfOperation />
-            {
-            this.state.shiftsAdmin.map(index => {
-              return (
-                < RouteBusDisplay
-                  key={index}
-                  bus={index.route}
-                  route={index.line}
-                />
-              );
-                })
-            }
-
-            {
-            this.state.shiftsAdmin.map(index => {
-              return (
-                < ShiftDisplayComponent
-                  key={index}
-                  range={range}
-                  shiftData={startAndEndTimes}
-
-                />
-              );
-                })
-            }
-        
+            <div className="viewHoursContainer">
+                <HoursOfOperation />
+            </div>
+            <div className="adminShiftsDayView">
+              {this.state.shiftsAdmin.map((index) => {
+                return (
+                    <div className="dayDataContainer">
+                        <div className="dayLabelContainer">
+                            < RouteBusDisplay
+                            key={index}
+                            bus={index.route}
+                            route={index.line}
+                            />
+                        </div>
+                        <div className="shiftRowContainer">
+                            < ShiftDisplayComponent
+                            key={index}
+                            range={range}
+                            shiftData={{start: index.startTime/100, end: index.endTime/100}}
+                            children={index.alert}
+                            type={'active'}
+                            />
+                        </div>
+                    </div>
+                  )
+              })}
+          </div> 
         </div>
         )
-           
     }
-
-
-
-
 }
-
 export default AdminShiftsDay;

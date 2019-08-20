@@ -2,97 +2,129 @@
   {
   "route": 1,
   "line": "M",
-  "start time": 1100,
-  "end time":1300,
+  "startTime": 600,
+  "endTime":1330,
   "shifts": [  1,4,5   ],
-  "alert": []
+  
+  "alert": [
+    {"start": 600,
+      "end": 900,
+      "type": "alertShift",
+      "shiftStartTime": 600,
+      "shiftEndTime": 1330
+    }]
   },
   {
   "route": 2,
   "line": "M",
-  "start time": 1130,
-  "end time":1400,
+  "startTime": 800,
+  "endTime":1600,
   "shifts": [ 3 ],
-  "alert": [ 2 ]
+  "alert": [ ]
   },
   {
   "route": 3,
   "line": "M",
-  "start time": 1145,
-  "end time":1515,
+  "startTime": 1400,
+  "endTime":2400,
   "shifts": [  6,7,8  ],
   "alert": []
   },
   {
   "route": 1,
-  "line": "L",
-  "start time": 1200,
-  "end time":1315,
+  "line": "C",
+  "startTime": 1000,
+  "endTime":2000,
   "shifts": [  9,10  ],
   "alert": []
   },
   {
   "route": 2,
-  "line": "L",
-  "start time": 1230,
-  "end time":1600,
+  "line": "C",
+  "startTime": 1130,
+  "endTime":2200,
   "shifts": [ 11 ],
-  "alert": []
+  "alert": [
+    {"start": 1200,
+      "end": 1300,
+      "type": "alertShift",
+      "shiftStartTime": 1130,
+      "shiftEndTime": 2200
+    }
+  ]
   },
   {
   "route": 3,
-  "line": "L",
-  "start time": 1300,
-  "end time": 1355,
+  "line": "C",
+  "startTime": 1300,
+  "endTime": 2200,
   "shifts": [ 13 ],
   "alert": [12]
   },
   {
   "route": 1,
   "line": "H",
-  "start time": 1315,
-  "end time":1700,
+  "startTime": 600,
+  "endTime":1400,
   "shifts": [  14,16,17 ],
-  "alert": [15]
+  "alert": [
+    {"start": 1100,
+      "end": 1300,
+      "type": "alertShift",
+      "shiftStartTime": 600,
+      "shiftEndTime": 1400
+    }]
   },
   {
   "route": 2,
   "line": "H",
-  "start time": 1500,
-  "end time":1700,
+  "startTime": 1300,
+  "endTime":1700,
   "shifts": [  18,19,20  ],
   "alert": []
   },
   {
   "route": 1,
-  "line": "J",
-  "start time": 1500,
-  "end time": 1800,
+  "line": "D",
+  "startTime": 600,
+  "endTime": 1800,
   "shifts": [ 21 ],
   "alert": []
   },
   {
   "route": 2,
-  "line": "J",
-  "start time": 1515,
-  "end time": 1745,
+  "line": "D",
+  "startTime": 1000,
+  "endTime": 1600,
   "shifts": [ 23 ],
   "alert": [22]
   },
   {
   "route": 3,
-  "line": "J",
-  "start time": 1545,
-  "end time": 1700,
+  "line": "D",
+  "startTime": 1115,
+  "endTime": 1700,
   "shifts": [  23  ],
   "alert": []
   },
   {
   "route": 4,
-  "line": "J",
-  "start time": 1700,
-  "end time": 1915,
+  "line": "D",
+  "startTime": 800,
+  "endTime": 2400,
   "shifts": [ 24,25,26,27 ],
-  "alert": []
+  "alert": [
+    {"start": 1200,
+      "end": 1400,
+      "type": "alertShift",
+      "shiftStartTime": 800,
+      "shiftEndTime": 2400
+    },
+    {"start": 2000,
+      "end": 2200,
+      "type": "alertShift",
+      "shiftStartTime": 800,
+      "shiftEndTime": 2400
+    }]
   }
   ]
