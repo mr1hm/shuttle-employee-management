@@ -59,7 +59,7 @@ class ShiftsWeek extends React.Component {
     }
     for( let shiftI = 0; shiftI < this.state.data.length; shiftI++){
       let thisShift = this.state.data[shiftI];
-      let shiftTimestamp = thisShift.shiftDate
+      let shiftTimestamp = thisShift.round_date;
       if( weekData[ shiftTimestamp] !== undefined ){
         weekData[ shiftTimestamp].shifts.push( thisShift );
       }
@@ -109,8 +109,9 @@ class ShiftsWeek extends React.Component {
     const weekArray = this.generateFullWeekOfTimestamps(dateToPass);
     const weekDayShiftArray = this.generateArrayOfFullWeek(weekArray);
     if (!this.state.data){
-      return <div>no data available</div>;
+      return <div>No Data Available</div>;
     }
+    console.log('shift array:', weekDayShiftArray)
     return (
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
@@ -121,6 +122,7 @@ class ShiftsWeek extends React.Component {
           </div>
           <div className="calendarContainerWeekComponent">
               {weekDayShiftArray.map((dayData, index) => {
+                console.log('daydata: ', dayData);
                 return (
                   <ShiftsWeekDay key={index} dayData={dayData} shifts={dayData.shifts} defaultDay={this.props.defaultDate} date={dateToPass} />
                   )
