@@ -45,8 +45,8 @@ class ShiftsDetails extends React.Component {
                                             <thead>
                                                 <tr>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck0"></input>
-                                                        <label class="custom-control-label" for="customCheck0">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckT0"></input>
+                                                        <label class="custom-control-label" for="customCheckT0">{""}</label>
                                                     </div>
                                                     <th scope="col">Start</th>
                                                     <th scope="col">End</th>
@@ -56,8 +56,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck1"></input>
-                                                        <label class="custom-control-label" for="customCheck1"></label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckT1"></input>
+                                                        <label class="custom-control-label" for="customCheckT1"></label>
                                                     </div>
                                                     </td>
                                                     <td>6:30 AM</td>
@@ -66,8 +66,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck2"></input>
-                                                        <label class="custom-control-label" for="customCheck2">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckT2"></input>
+                                                        <label class="custom-control-label" for="customCheckT2">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>6:45 AM</td>
@@ -76,8 +76,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck3"></input>
-                                                        <label class="custom-control-label" for="customCheck3">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckT3"></input>
+                                                        <label class="custom-control-label" for="customCheckT3">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>7:00 AM</td>
@@ -86,8 +86,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck4"></input>
-                                                        <label class="custom-control-label" for="customCheck4">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckT4"></input>
+                                                        <label class="custom-control-label" for="customCheckT4">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>7:15 AM</td>
@@ -111,8 +111,8 @@ class ShiftsDetails extends React.Component {
                                             <thead>
                                                 <tr>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck0"></input>
-                                                        <label class="custom-control-label" for="customCheck0">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD0"></input>
+                                                        <label class="custom-control-label" for="customCheckD0">{""}</label>
                                                     </div>
                                                     <th scope="col">Dates</th>
                                                 </tr>
@@ -121,8 +121,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck1"></input>
-                                                        <label class="custom-control-label" for="customCheck1"></label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD1"></input>
+                                                        <label class="custom-control-label" for="customCheckD1"></label>
                                                     </div>
                                                     </td>
                                                     <td>07/23/2019</td>
@@ -130,8 +130,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck2"></input>
-                                                        <label class="custom-control-label" for="customCheck2">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD2"></input>
+                                                        <label class="custom-control-label" for="customCheckD2">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>07/30/2019</td>
@@ -139,8 +139,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck3"></input>
-                                                        <label class="custom-control-label" for="customCheck3">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD3"></input>
+                                                        <label class="custom-control-label" for="customCheckD3">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>08/06/2019</td>
@@ -148,8 +148,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck4"></input>
-                                                        <label class="custom-control-label" for="customCheck4">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD4"></input>
+                                                        <label class="custom-control-label" for="customCheckD4">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>08/13/2019</td>
@@ -157,8 +157,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck5"></input>
-                                                        <label class="custom-control-label" for="customCheck5">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD5"></input>
+                                                        <label class="custom-control-label" for="customCheckD5">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>08/20/2019</td>
@@ -166,8 +166,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck6"></input>
-                                                        <label class="custom-control-label" for="customCheck6">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD6"></input>
+                                                        <label class="custom-control-label" for="customCheckD6">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>08/27/2019</td>
@@ -175,8 +175,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck7"></input>
-                                                        <label class="custom-control-label" for="customCheck7">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD7"></input>
+                                                        <label class="custom-control-label" for="customCheckD7">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>09/03/2019</td>
@@ -184,8 +184,8 @@ class ShiftsDetails extends React.Component {
                                                 <tr>
                                                     <td>
                                                     <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheck8"></input>
-                                                        <label class="custom-control-label" for="customCheck8">{""}</label>
+                                                        <input type="checkbox" class="custom-control-input" id="customCheckD8"></input>
+                                                        <label class="custom-control-label" for="customCheckD8">{""}</label>
                                                     </div>
                                                     </td>
                                                     <td>09/10/2019</td>
