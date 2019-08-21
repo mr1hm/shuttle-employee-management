@@ -3,7 +3,9 @@
   "route": 1,
   "line": "M",
   "startTime": 600,
+  "startTime2": 1900,
   "endTime":1330,
+  "endTime2":2300,
   "shifts": [  1,4,5   ],
   
   "alert": [
