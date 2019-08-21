@@ -33,10 +33,10 @@ class ShiftsDetails extends React.Component {
                 </div>
                 <div className="details mainContainer">
                     <Grid container className="flex-section">
-                        <Grid 
-                            item 
-                            xs={6} 
-                            className={"flex-col-scroll"} 
+                        <Grid
+                            item
+                            xs={6}
+                            className={"flex-col-scroll"}
                         >
                             <div class="container">
                                 <div class="row">
@@ -99,10 +99,10 @@ class ShiftsDetails extends React.Component {
                                 </div>
                             </div>
                         </Grid>
-                        <Grid 
-                            item 
-                            xs={6} 
-                            className={"flex-col-scroll"} 
+                        <Grid
+                            item
+                            xs={6}
+                            className={"flex-col-scroll"}
                         >
                             <div class="container">
                                 <div class="row">
@@ -203,7 +203,7 @@ class ShiftsDetails extends React.Component {
                         <button type="button" class="btn btn-outline-dark btn-block">My Shifts</button>
                     </div>
                 </div>
-            </React.Fragment>            
+            </React.Fragment>
         )
     }
 }
