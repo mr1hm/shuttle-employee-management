@@ -116,7 +116,7 @@
     display: inline-block;
     text-align: left;
 }
-.dayRowContainer {
+.shiftRowContainer {
     height: 75%;
     width: 83%;
     float: left;
@@ -128,7 +128,12 @@
     margin-top: 10px;
 }
 .dayRowFill {
-    background-color: lightgrey;
+    background-color: rgb(255, 255, 255);
+    height: 100%;
+    width: 100%;
+}
+.shiftRowFill {
+    background-color: rgb(41, 245, 0);
     height: 100%;
     width: 100%;
 }
@@ -136,12 +141,10 @@
     width: 98%;
     height: 100px;
 }
-
 .currentDay {
     border: 3px solid red;
     background-color: rgba(211, 211, 211, 0.3);
 }
-
 .dayLabelContainer {
     height: 75%;
     width: 14%;
@@ -180,4 +183,10 @@
 }
 .posted {
     background-color: rgb(238, 204, 13);
+}
+.active {
+    background-color: lightgrey;
+}
+.alertShift {
+    background-color: red;
 }
