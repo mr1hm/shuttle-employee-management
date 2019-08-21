@@ -3,9 +3,7 @@
   "route": 1,
   "line": "M",
   "startTime": 600,
-  "startTime2": 1900,
   "endTime":1330,
-  "endTime2":2300,
   "shifts": [  1,4,5   ],
   
   "alert": [
@@ -21,8 +19,15 @@
   "line": "M",
   "startTime": 800,
   "endTime":1600,
+
   "shifts": [ 3 ],
-  "alert": [ ]
+  "alert": [
+    {"start": 1900,
+      "end": 2330,
+      "type": "active",
+      "shiftStartTime": 800,
+      "shiftEndTime": 1600
+    }]
   },
   {
   "route": 3,
@@ -30,7 +35,19 @@
   "startTime": 1400,
   "endTime":2400,
   "shifts": [  6,7,8  ],
-  "alert": []
+  "alert": [
+    {"start": 800,
+      "end": 1200,
+      "type": "active",
+      "shiftStartTime": 1400,
+      "shiftEndTime": 2400
+    },
+    {"start": 1600,
+      "end": 1800,
+      "type": "alertShift",
+      "shiftStartTime": 1400,
+      "shiftEndTime": 2400
+    }]
   },
   {
   "route": 1,
