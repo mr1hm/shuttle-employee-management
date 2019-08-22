@@ -42,14 +42,13 @@ class AdminShiftsDay extends React.Component {
                 return (
                     <div className="dayDataContainer">
                         <div className="dayLabelContainer">
-                            <div className="adminShiftsDayBusLine">
+                            <div className="adminShiftsDayBusLine">                              
                                 < RouteBusDisplay
                                 key={index}
                                 bus={index.route}
                                 route={index.line}
                                 />
-                            </div>
-                            
+                            </div>                            
                         </div>
                         <div className="shiftRowContainer">
                             < ShiftDisplayComponent

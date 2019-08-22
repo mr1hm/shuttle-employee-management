@@ -16,7 +16,9 @@ class ShiftDisplayComponent extends React.Component {
         className={`shift shiftBase ${this.props.type}`}
         style={{
           width: widthPercent + "%",
-          left: startPercent + "%"
+          left: startPercent + "%",
+          borderLeft: "1px solid black",
+          borderRight: "1px solid black"
         }}
       >
         {this.props.children.map((data, index) => (
