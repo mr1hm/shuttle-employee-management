@@ -13,10 +13,23 @@ class ShiftsDetails extends React.Component {
         super(props);
         this.state = {
             isModalOpen: false,
-
+            shiftsDetailsInfo: []
         }
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+    }
+    getData(url, methodToUse) {
+        fetch(url, { method: methodToUse })
+          .then(response => { return response.json() })
+          .then(details => {
+            this.setState({
+              shiftsDetailsInfo: details
+            })
+          })
+          .catch(error => {throw(error)});
+    }
+    componentDidMount(){
+        this.getData('/api/dummy-data/shift-detail.json', 'GET');
     }
     openModal() {
         this.setState({
@@ -37,6 +50,9 @@ class ShiftsDetails extends React.Component {
         //     dateToPass = createDateObjFromDateString( this.props.match.params.date );
         //     dateToPass = dateToPass.getTime();
         // }
+        if (!this.state.shiftsDetailsInfo){
+            return <div>No Shift Details Available</div>;
+        }
         return (
             <React.Fragment>
                 {/* <TopMenuShift title="DETAILS" page='details' date={dateToPass}/> */}
