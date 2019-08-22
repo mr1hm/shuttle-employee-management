@@ -61,13 +61,13 @@ class ShiftsWeekDay extends React.Component {
 
     const range = { min: 6, max: 24 };
     const startAndEndTimes = {start: 6, end: 24};
-    const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
-    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.shiftDate));
+    const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));
+    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));
     const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
-    const currentUnixDate = this.props.dayData.shiftDate;
+    const currentUnixDate = this.props.dayData.round_date;
     let currentDayHighlightClass = 'dayDataContainer';
 
-    if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.shiftDate)) {
+    if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.round_date)) {
       currentDayHighlightClass += ' currentDay';
     }
     const convertedShifts = this.props.shifts.map( (data,index) => ({

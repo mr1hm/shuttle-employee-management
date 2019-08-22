@@ -24,7 +24,7 @@
 
 //     return (
 //       <div
-//         key={this.props.shiftInfo.shiftDate + this.props.shiftInfo.startTime + this.props.shiftInfo.endTime}
+//         key={this.props.shiftInfo.round_date + this.props.shiftInfo.startTime + this.props.shiftInfo.endTime}
 //       className={`shift ${shiftType}`}
 //         style={{
 //           left: shiftStartPosition,
