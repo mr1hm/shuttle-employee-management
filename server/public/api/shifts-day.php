@@ -11,17 +11,19 @@ if (!empty($_GET['startTime'])) {
   $startTime = intval($startTime);
 }
 
-$round_date= $_GET['round_date'];
+// $round_date= $_GET['round_date'];
 
-$query = "SELECT s.`id`, s.`ownerID`, s.`round_date`, s.`startTime`, s.`endTime`, s.`status`, s.`routeInfoID`,
-        rbd.`busID`,
-        rmd.`lineName`,
-        rmd.`legDuration`
-        FROM `shift`
-        AS s INNER JOIN `routeBusDayInfo` AS rbd ON s.routeInfoID = rbd.id
-        INNER JOIN routeMetaData rmd
-        ON rbd.routeID = rmd.id
-        WHERE `round_date` = {$round_date}";
+// $query = "SELECT s.`id`, s.`ownerID`, s.`round_date`, s.`startTime`, s.`endTime`, s.`status`, s.`routeInfoID`,
+//         rbd.`busID`,
+//         rmd.`lineName`,
+//         rmd.`legDuration`
+//         FROM `shift`
+//         AS s INNER JOIN `routeBusDayInfo` AS rbd ON s.routeInfoID = rbd.id
+//         INNER JOIN routeMetaData rmd
+//         ON rbd.routeID = rmd.id
+//         WHERE `round_date` = {$round_date}";
+
+$query = "SELECT * FROM `round`";
 
 $result = mysqli_query($conn, $query);
 if (!$result) {
