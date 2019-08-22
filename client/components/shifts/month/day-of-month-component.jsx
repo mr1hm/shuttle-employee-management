@@ -10,7 +10,7 @@ class DayOfMonth extends React.Component {
         scheduled: false
       }
       for(var shiftIndex=0; shiftIndex<this.props.shiftsArray.length; shiftIndex++){
-        let baseDate = createDateObjFromDateString(parseInt(this.props.shiftsArray[shiftIndex].shiftDate));
+        let baseDate = createDateObjFromDateString(parseInt(this.props.shiftsArray[shiftIndex].round_date));
         if( baseDate.getTime() === this.props.dayObj.getTime()){
           dayTypeClasses[this.props.shiftsArray[shiftIndex].status]=true;
         }

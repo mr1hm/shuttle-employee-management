@@ -27,13 +27,13 @@ class ShiftsWeek extends React.Component {
     var daysObject = { };
     function addDayObject( timestamp ){
       daysObject[timestamp] = {
-        shiftDate: timestamp,
+        round_date: timestamp,
         shifts: []
       }
     }
     const timeArray = [sunday, monday, tuesday, wednesday, thursday, friday, saturday];
-    timeArray.map( shiftDate => {
-      addDayObject( shiftDate );
+    timeArray.map( round_date => {
+      addDayObject( round_date );
     })
     return daysObject;
   }
@@ -79,7 +79,7 @@ class ShiftsWeek extends React.Component {
         //   "authorID": "2",
         //   "sessionID": "1",
         //   "ownerID": "1",
-        //   "shiftDate": "1563692400000",
+        //   "round_date": "1563692400000",
         //   "posted": false
         // }]
         this.setState({
