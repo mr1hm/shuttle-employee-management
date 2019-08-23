@@ -1,10 +1,7 @@
 import React from 'react';
 import './shifts-details.css';
-import { Link } from 'react-router-dom';
-import TopMenuShift from '../../topmenu/topmenu-shift';
 import TopMenuGeneral from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
-import {createDateObjFromDateString} from '../../../lib/time-functions';
 import {Grid} from '@material-ui/core';
 import Modal from '../../post-modal';
 
@@ -13,7 +10,7 @@ class ShiftsDetails extends React.Component {
         super(props);
         this.state = {
             isModalOpen: false,
-            shiftsDetailsInfo: []
+            shiftsDetailsInfo: null
         }
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -29,41 +26,55 @@ class ShiftsDetails extends React.Component {
           .catch(error => {throw(error)});
     }
     componentDidMount(){
-        this.getData('/api/dummy-data/shift-detail.json', 'GET');
+        this.getData('/api/dummy-data-shift-details-modal.json', 'GET');
     }
     openModal() {
         this.setState({
             isModalOpen: true,
-
         })
     }
     closeModal() {
         this.setState({
             isModalOpen: false,
-
         })
     }
+    convertMilitaryTime(militaryTime) {
+        let hour = parseInt(militaryTime.slice(0,2));
+        const minute = militaryTime.slice(2);
+        let meridiem;
+        if (hour < 12) {
+            meridiem = "AM";
+        } else {
+            meridiem = "PM";
+            if (hour > 12) {
+                hour -= 12;
+            }
+        }
+        return hour + ":" + minute + " " + meridiem;
+    }
+    createSubHeaderTimeFrame() {
+        const shiftDuration = this.state.shiftsDetailsInfo.shiftDetails[0].shiftDuration;
+        const startTime = shiftDuration.startTime;
+        const endTime = shiftDuration.endTime;
+        return (
+            <div className="shiftTimeSpan">{this.convertMilitaryTime(startTime)} - {this.convertMilitaryTime(endTime)}</div>
+        )
+    }
     render() {
-        // if (this.props.match.params.date === undefined) {
-        //     var dateToPass = this.props.defaultDate;
-        // } else {
-        //     dateToPass = createDateObjFromDateString( this.props.match.params.date );
-        //     dateToPass = dateToPass.getTime();
-        // }
         if (!this.state.shiftsDetailsInfo){
             return <div>No Shift Details Available</div>;
         }
+        const shiftDetails = this.state.shiftsDetailsInfo.shiftDetails[0];
         return (
             <React.Fragment>
-                {/* <TopMenuShift title="DETAILS" page='details' date={dateToPass}/> */}
                 <TopMenuGeneral title="Shifts - DETAILS"/>
                 <div className="details subHeader">
                     <div className="busRouteIconContainer">
-                        <RouteBusDisplay bus='1' route='H'/>
+                        <RouteBusDisplay bus={shiftDetails.busNum} route={shiftDetails.line}/>
                     </div>
                     <div className="subHeaderInfoContainer">
-                        <div className="shiftTimeSpan">6:30 AM - 7:30 AM</div>
-                        <div className="recurringAndRoundCount">Every Tuesday Recurring | Rounds: 4</div>
+                        {this.createSubHeaderTimeFrame()}
+                        <div className="recurringAndRoundCount">Every Tuesday Recurring | Rounds: {shiftDetails.numRounds}</div>
                     </div>
                 </div>
                 <div className="details mainContainer">
@@ -79,55 +90,28 @@ class ShiftsDetails extends React.Component {
                                         <table className="table table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <div className="custom-control custom-checkbox">
+                                                    <div></div>
+                                                    {/* <div className="custom-control custom-checkbox">
                                                         <input type="checkbox" className="custom-control-input" id="customCheckT0"></input>
                                                         <label className="custom-control-label" htmlFor="customCheckT0">{""}</label>
-                                                    </div>
+                                                    </div> */}
                                                     <th scope="col">Start</th>
                                                     <th scope="col">End</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckT1"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckT1"></label>
-                                                    </div>
-                                                    </td>
-                                                    <td>6:30 AM</td>
-                                                    <td>6:45 AM</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckT2"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckT2">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>6:45 AM</td>
-                                                    <td>7:00 AM</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckT3"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckT3">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>7:00 AM</td>
-                                                    <td>7:15 AM</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckT4"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckT4">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>7:15 AM</td>
-                                                    <td>7:30 AM</td>
-                                                </tr>
+                                                {shiftDetails.shiftRounds.map(roundObject => {return (
+                                                    <tr>
+                                                        <td>
+                                                        <div className="custom-control custom-checkbox">
+                                                            <input type="checkbox" className="custom-control-input" id={roundObject.startTime+roundObject.endTime}></input>
+                                                            <label className="custom-control-label" htmlFor={roundObject.startTime+roundObject.endTime}></label>
+                                                        </div>
+                                                        </td>
+                                                        <td>{this.convertMilitaryTime(roundObject.startTime)}</td>
+                                                        <td>{this.convertMilitaryTime(roundObject.endTime)}</td>
+                                                    </tr>
+                                                )})}
                                             </tbody>
                                         </table>
                                     </div>
@@ -145,86 +129,26 @@ class ShiftsDetails extends React.Component {
                                         <table className="table table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <div className="custom-control custom-checkbox">
+                                                    <div></div>
+                                                    {/* <div className="custom-control custom-checkbox">
                                                         <input type="checkbox" className="custom-control-input" id="customCheckD0"></input>
                                                         <label className="custom-control-label" htmlFor="customCheckD0">{""}</label>
-                                                    </div>
-                                                    <th scope="col">Dates</th>
+                                                    </div> */}
+                                                    <th scope="col">Recurring Dates</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckD1"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckD1"></label>
-                                                    </div>
-                                                    </td>
-                                                    <td>07/23/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckD2"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckD2">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>07/30/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckD3"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckD3">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>08/06/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckD4"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckD4">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>08/13/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckD5"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckD5">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>08/20/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckD6"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckD6">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>08/27/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckD7"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckD7">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>09/03/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div className="custom-control custom-checkbox">
-                                                        <input type="checkbox" className="custom-control-input" id="customCheckD8"></input>
-                                                        <label className="custom-control-label" htmlFor="customCheckD8">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>09/10/2019</td>
-                                                </tr>
+                                            {shiftDetails.shiftDates.map(shiftDate => {return (
+                                                    <tr>
+                                                        <td>
+                                                        <div className="custom-control custom-checkbox">
+                                                            <input type="checkbox" className="custom-control-input" id={shiftDate}></input>
+                                                            <label className="custom-control-label" htmlFor={shiftDate}></label>
+                                                        </div>
+                                                        </td>
+                                                        <td>{shiftDate}</td>
+                                                    </tr>
+                                                )})}
                                             </tbody>
                                         </table>
                                     </div>

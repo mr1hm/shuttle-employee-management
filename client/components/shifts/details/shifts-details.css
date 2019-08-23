@@ -28,6 +28,9 @@
 .col-12 {
     padding-left: 0;
 }
+.custom-checkbox {
+    padding-left: 30px;
+}
 .buttonContainer {
     padding: 0 2%;
 }
