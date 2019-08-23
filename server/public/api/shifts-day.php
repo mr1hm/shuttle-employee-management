@@ -23,7 +23,22 @@ if (!empty($_GET['startTime'])) {
 //         ON rbd.routeID = rmd.id
 //         WHERE `round_date` = {$round_date}";
 
-$query = "SELECT * FROM `round`";
+$query = "SELECT
+            rd.`bus_info_id`,
+            rd.`user_id`,
+            rd.`start_time`,
+            rd.`end_time`,
+            rd.`date`,
+            rd.`status`,
+            rt.line_name,
+            rt.id
+          FROM
+            `round` AS rd
+          INNER JOIN
+            `route` AS rt
+          ON
+            rd.bus_info_id = rt.id";
+
 
 $result = mysqli_query($conn, $query);
 if (!$result) {
