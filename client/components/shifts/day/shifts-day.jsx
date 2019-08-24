@@ -4,6 +4,7 @@ import { calculateDailyWorkingHours } from '../../../lib/time-functions';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
+import ShiftsDetails from '../details/shifts-details';
 
 function convertUnixMonthDay(time) {
   const getTheDate = new Date(time);
@@ -34,9 +35,11 @@ class ShiftsDay extends React.Component {
     this.query = ``;
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
     this.state = {
       myShiftsToday: [],
-      isModalOpen: false
+      isModalOpen: false,
+
     }
   }
   fetchCallMethod(query){
@@ -64,14 +67,15 @@ class ShiftsDay extends React.Component {
 
   }
   openModal(){
-    debugger;
     this.setState({
-      isModalOpen: true
+      isModalOpen: true,
+
     })
   }
   closeModal(){
     this.setState({
-      isModalOpen: false
+      isModalOpen: false,
+
     })
   }
   render(){
@@ -121,10 +125,13 @@ class ShiftsDay extends React.Component {
       }
           </tbody>
         </table>
-        <Modal open={this.state.isModalOpen}>
+        {/* <Modal open={this.state.isModalOpen}>
           <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
           <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
           <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
+        </Modal> */}
+        <Modal open={this.state.isModalOpen}  className="modalShiftDetails">
+          <ShiftsDetails goBack={this.closeModal}> </ShiftsDetails>
         </Modal>
 
       </div>
