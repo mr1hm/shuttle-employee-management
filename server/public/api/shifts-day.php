@@ -11,9 +11,9 @@ if (!empty($_GET['startTime'])) {
   $startTime = intval($startTime);
 }
 
-$shiftDate= $_GET['shiftDate'];
+$round_date= $_GET['round_date'];
 
-$query = "SELECT s.`id`, s.`ownerID`, s.`shiftDate`, s.`startTime`, s.`endTime`, s.`status`, s.`routeInfoID`,
+$query = "SELECT s.`id`, s.`ownerID`, s.`round_date`, s.`startTime`, s.`endTime`, s.`status`, s.`routeInfoID`,
         rbd.`busID`,
         rmd.`lineName`,
         rmd.`legDuration`
@@ -21,7 +21,7 @@ $query = "SELECT s.`id`, s.`ownerID`, s.`shiftDate`, s.`startTime`, s.`endTime`,
         AS s INNER JOIN `routeBusDayInfo` AS rbd ON s.routeInfoID = rbd.id
         INNER JOIN routeMetaData rmd
         ON rbd.routeID = rmd.id
-        WHERE `shiftDate` = {$shiftDate}";
+        WHERE `round_date` = {$round_date}";
 
 $result = mysqli_query($conn, $query);
 if (!$result) {

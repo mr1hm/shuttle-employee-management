@@ -22,23 +22,23 @@ class ShiftsWeekDay extends React.Component {
   let shiftHoursPerDay;
     if (!startTime){
     return;
-    } else if (startTime.startTime.length < 4 ) {
-          startTime = "0" + startTime.startTime;
+    } else if (startTime.start_time.length < 4 ) {
+          startTime = "0" + startTime.start_time;
           parseInt(startTime);
           startHour = startTime.slice(0, 2);
           startMinute = startTime.slice(2);
           startMinutesAsRatio = parseFloat(startMinute) / 60;
           startTimeFloat = parseInt(startHour) + startMinutesAsRatio;
     } else {
-          startHour = startTime.startTime.slice(0, 2);
-          startMinute = startTime.startTime.slice(2);
+          startHour = startTime.start_time.slice(0, 2);
+          startMinute = startTime.start_time.slice(2);
           startMinutesAsRatio = parseFloat(startMinute) / 60;
           startTimeFloat = parseInt(startHour) + startMinutesAsRatio;
     }
     if (!endTime) {
       return;
-    } else if (endTime.endTime.length < 4) {
-       endTime = "0" + endTime.endTime;
+    } else if (endTime.end_time.length < 4) {
+       endTime = "0" + endTime.end_time;
        parseInt(endTime);
        endHour = endTime.slice(0, 2);
        endMinute = endTime.slice(2);
@@ -47,8 +47,8 @@ class ShiftsWeekDay extends React.Component {
        shiftHoursPerDay = endTimeFloat - startTimeFloat;
         return shiftHoursPerDay;
      } else {
-       endHour = endTime.endTime.slice(0, 2);
-       endMinute = endTime.endTime.slice(2);
+       endHour = endTime.end_time.slice(0, 2);
+       endMinute = endTime.end_time.slice(2);
        endMinutesAsRatio = parseFloat(endMinute) / 60;
        endTimeFloat = parseInt(endHour) + endMinutesAsRatio;
        shiftHoursPerDay = endTimeFloat - startTimeFloat;
@@ -56,18 +56,18 @@ class ShiftsWeekDay extends React.Component {
       }
   }
   render() {
-    console.log('day data: ', this.props.dayData);  /*---  this needs to be changed so that the 'posted' key changes to 'status'*/
-    console.log('shift data: ', this.props.shifts);
+    // console.log('day data: ', this.props.dayData); 
+    // console.log('shift data: ', this.props.shifts);
 
     const range = { min: 6, max: 24 };
     const startAndEndTimes = {start: 6, end: 24};
-    const dayText = convertUnixDateDay(parseInt(this.props.dayData.shiftDate));
-    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.shiftDate));
+    const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));
+    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));
     const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
-    const currentUnixDate = this.props.dayData.shiftDate;
+    const currentUnixDate = this.props.dayData.round_date;
     let currentDayHighlightClass = 'dayDataContainer';
 
-    if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.shiftDate)) {
+    if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.round_date)) {
       currentDayHighlightClass += ' currentDay';
     }
     const convertedShifts = this.props.shifts.map( (data,index) => ({
@@ -78,10 +78,10 @@ class ShiftsWeekDay extends React.Component {
         max: range.max
       },
       shiftData: { 
-        start: convertMilitaryTimeStringToMilitaryTimeFloat(data.startTime),
-        end: convertMilitaryTimeStringToMilitaryTimeFloat(data.endTime)
+        start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time),
+        end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time)
       },
-      children: []
+      children: [data]
     }));
     return (
       <div className={currentDayHighlightClass}>
