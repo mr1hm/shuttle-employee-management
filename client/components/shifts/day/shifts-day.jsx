@@ -57,7 +57,7 @@ class ShiftsDay extends React.Component {
       .catch(error => {throw(error)});
   }
   componentDidMount(){
-    this.fetchCallMethod('?round_date='+this.props.defaultDate);
+    this.fetchCallMethod('?date='+this.props.defaultDate);
   }
 
   componentDidUpdate(prevProps) {
@@ -82,7 +82,7 @@ class ShiftsDay extends React.Component {
     } else {
     dateToPass = this.props.match.params.date;
     var dateToQuery = new Date(dateToPass).getTime()+25200000;
-    this.query = `?round_date=${dateToQuery}`;
+    this.query = `?round=${dateToQuery}`;
     }
     if (this.state.myShiftsToday.length === 0) {
       return (
