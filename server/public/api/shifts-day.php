@@ -11,17 +11,7 @@ require_once 'db_connection.php';
 //   $startTime = intval($startTime);
 // }
 
-// $round_date= $_GET['round_date'];
-
-// $query = "SELECT s.`id`, s.`ownerID`, s.`round_date`, s.`startTime`, s.`endTime`, s.`status`, s.`routeInfoID`,
-//         rbd.`busID`,
-//         rmd.`lineName`,
-//         rmd.`legDuration`
-//         FROM `shift`
-//         AS s INNER JOIN `routeBusDayInfo` AS rbd ON s.routeInfoID = rbd.id
-//         INNER JOIN routeMetaData rmd
-//         ON rbd.routeID = rmd.id
-//         WHERE `round_date` = {$round_date}";
+$round_date= $_GET['round_date'];
 
 $query = "SELECT
             rd.`bus_info_id`,
