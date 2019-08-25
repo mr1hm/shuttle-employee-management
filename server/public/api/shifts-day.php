@@ -11,7 +11,7 @@ require_once 'db_connection.php';
 //   $startTime = intval($startTime);
 // }
 
-$round_date= $_GET['round_date'];
+// $round_date= $_GET['round_date'];
 
 $query = "SELECT
             rd.`bus_info_id`,
