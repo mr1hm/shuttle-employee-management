@@ -15,13 +15,16 @@ function convertUnixMonthDay(time) {
 function OneOfMyShifts(props) {
     let shiftButton = (props.shifts.status === 'posted') ? "Cancel Post" : "Details";
     let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
-    let numOfRounds = (props.shifts.endTime-props.shifts.startTime)/(props.shifts.legDuration);
+    // let numOfRounds = (props.shifts.end_time-props.shifts.start_time)/(props.shifts.legDuration);
     return(
         <tr>
-            <td> {props.shifts.lineName} / {props.shifts.busID} </td>
-            <td> {props.shifts.startTime} - {props.shifts.endTime} </td>
-            <td> {numOfRounds.toFixed(2)} </td>
-            <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td>
+            {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
+            <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name}/> </td>
+            <td> {props.shifts.start_time} - {props.shifts.end_time} </td>
+            <td> #rd </td>
+            {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
+            <td> #hrs </td>
+
             <td className={statusColor}> {props.shifts.status} </td>
         <td> <input type="button" value={shiftButton} onClick={props.clickHandler} /> </td>
         </tr>
@@ -58,13 +61,12 @@ class ShiftsDay extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.match.params.date !== this.props.match.params.date) {
+    if (prevProps.match.params.date === undefined || prevProps.match.params.date !== this.props.match.params.date) {
       this.fetchCallMethod(this.query);
     }
 
   }
   openModal(){
-    debugger;
     this.setState({
       isModalOpen: true
     })
@@ -94,7 +96,6 @@ class ShiftsDay extends React.Component {
       <div>
           <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(dateToPass)}`}> </Link></div>
       <TopMenuShift title="DAY" page='day' date={(dateToPass)}/>
-      <RouteBusDisplay bus='1' route='H'/>
         <table className='table table-striped'>
           <thead>
               <tr>
