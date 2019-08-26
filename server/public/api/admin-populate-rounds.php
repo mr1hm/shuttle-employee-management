@@ -27,9 +27,9 @@ while ($row = mysqli_fetch_assoc($result)) {
     $rounds[] = $row;
 }
 
-$rounds = json_encode($rounds);
+// $rounds = json_encode($rounds);
 
-print($rounds);
+// print($rounds);
 
 //only includes user info and route preferences
 $query2 = "SELECT orp.user_id, us.last_name, us.first_name, GROUP_CONCAT(rt.line_name) AS `lines`
@@ -48,34 +48,49 @@ if(!$result2){
 $operators = [];
 
 while ($row = mysqli_fetch_assoc($result2)) {
-    $operators[] = $row;
+  $row['lines'] = explode(",", $row['lines']);
+  $operators[] = $row;
 }
 
-$operators = json_encode($operators);
+$operatorsForTesting = json_encode($operators);
 
-print($operators);
+print("operatorsForTesting: ".$operatorsForTesting);
 
 //population 3 round for each user, no line or availability preferences
 $lengthOperatorsArray = count($operators);
+print("number of operators: ".$lengthOperatorsArray) ;
 $lengthRoundsArray = count($rounds);
+print("number of rounds: ".$lengthRoundsArray) ;
 
-for ($i = 0; $i < $lengthOperatorsArray; $i++) {
-  for ($j = $i * 3; $j < $i * 3 + 3; $j++) {
-    if ($j < $lengthRoundsArray) {
-    $rounds[$j]['user_id'] = $operators[$i]['user_id'];
-    $rounds[$j]['last_name'] = $operators[$i]['last_name'];
-    $rounds[$j]['first_name'] = $operators[$i]['first_name'];
-    } else {
-      break;
+// for($roundIndex=0 ; $roundIndex < 3; $roundIndex++){
+for ($operatorIndex = 0; $operatorIndex < $lengthOperatorsArray; $operatorIndex++) {
+  
+  // print("operators: ".$operatorsForTesting[$operatorIndex]);
+
+
+  for ($roundIndex = $operatorIndex * 3; $roundIndex < $operatorIndex * 3 + 3; $roundIndex++) {
+    
+    // if ($roundIndex < $lengthRoundsArray) {
+    // echo "rounds j" . $rounds[$roundIndex];
+    // print ('\n');
+    $rounds[$roundIndex]['user_id'] = $operators[$operatorIndex]['user_id'];
+    $rounds[$roundIndex]['last_name'] = $operators[$operatorIndex]['last_name'];
+    $rounds[$roundIndex]['first_name'] = $operators[$operatorIndex]['first_name'];
+    // } else {
+      // break;
     }
   }
-  if ($i === $lengthOperatorsArray - 1) {
-    $i = -1; 
-    continue;
-}
   
-print($rounds);
-
+  // print("lengthOperatorsArray" . $lengthOperatorsArray);
+  // print('i' . $operatorIndex . "\r");
+  // if ($operatorIndex === $lengthOperatorsArray - 1) {
+  //   $operatorIndex = -1;
+      //  continue;
+  // }
+  // }
+// }
+$rounds = json_encode($rounds);
+print("\n". $rounds);
 //PSEUDOCODE AND DUMMY ARRAY WORK
 
 //QUERY to obtain operator route preference (lines he/she won't work) and availability based on a particular session
