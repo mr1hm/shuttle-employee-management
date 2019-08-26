@@ -59,7 +59,7 @@ class ShiftsWeek extends React.Component {
     }
     for( let shiftI = 0; shiftI < this.state.data.length; shiftI++){
       let thisShift = this.state.data[shiftI];
-      let shiftTimestamp = thisShift.round_date;
+      let shiftTimestamp = thisShift.date;
       if( weekData[ shiftTimestamp] !== undefined ){
         weekData[ shiftTimestamp].shifts.push( thisShift );
       }
@@ -82,9 +82,11 @@ class ShiftsWeek extends React.Component {
         //   "round_date": "1563692400000",
         //   "posted": false
         // }]
+        console.log('Week Shift Info: ', weekShiftInfo);
         this.setState({
           data: weekShiftInfo
         })
+        console.log('this.state.data ', this.state.data);
       })
   }
   componentDidMount(){
