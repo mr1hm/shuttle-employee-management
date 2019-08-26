@@ -52,43 +52,32 @@ while ($row = mysqli_fetch_assoc($result2)) {
   $operators[] = $row;
 }
 
-$operatorsForTesting = json_encode($operators);
+// $operatorsForTesting = json_encode($operators);
 
-print("operatorsForTesting: ".$operatorsForTesting);
+// print("operatorsForTesting: ".$operatorsForTesting);
 
 //population 3 round for each user, no line or availability preferences
 $lengthOperatorsArray = count($operators);
-print("number of operators: ".$lengthOperatorsArray) ;
 $lengthRoundsArray = count($rounds);
-print("number of rounds: ".$lengthRoundsArray) ;
 
-// for($roundIndex=0 ; $roundIndex < 3; $roundIndex++){
-for ($operatorIndex = 0; $operatorIndex < $lengthOperatorsArray; $operatorIndex++) {
-  
-  // print("operators: ".$operatorsForTesting[$operatorIndex]);
+$numberOfShiftsAssigned = 0;
+$operatorIndex = 0;
 
-
-  for ($roundIndex = $operatorIndex * 3; $roundIndex < $operatorIndex * 3 + 3; $roundIndex++) {
-    
-    // if ($roundIndex < $lengthRoundsArray) {
-    // echo "rounds j" . $rounds[$roundIndex];
-    // print ('\n');
-    $rounds[$roundIndex]['user_id'] = $operators[$operatorIndex]['user_id'];
+for ($roundIndex = 0; $roundIndex < $lengthRoundsArray ; $roundIndex++) {
+    $rounds[$roundIndex]['user_id'] = $operators[$operatorIndex]['user_id']; 
     $rounds[$roundIndex]['last_name'] = $operators[$operatorIndex]['last_name'];
     $rounds[$roundIndex]['first_name'] = $operators[$operatorIndex]['first_name'];
-    // } else {
-      // break;
-    }
-  }
-  
-  // print("lengthOperatorsArray" . $lengthOperatorsArray);
-  // print('i' . $operatorIndex . "\r");
-  // if ($operatorIndex === $lengthOperatorsArray - 1) {
-  //   $operatorIndex = -1;
-      //  continue;
-  // }
-  // }
-// }
+    
+    $numberOfShiftsAssigned++;
+
+    if ( $numberOfShiftsAssigned === 3){
+      $numberOfShiftsAssigned =0;
+      $operatorIndex++;
+      if($operatorIndex === $lengthOperatorsArray){
+      $operatorIndex = 0;
+      }  
+    }  
+}
 $rounds = json_encode($rounds);
 print("\n". $rounds);
 //PSEUDOCODE AND DUMMY ARRAY WORK
