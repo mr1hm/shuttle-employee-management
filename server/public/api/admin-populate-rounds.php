@@ -31,45 +31,50 @@ $rounds = json_encode($rounds);
 
 print($rounds);
 
-//commenting for lines 36 - 72 can be removed as soon as the query is added on line 36. Then the code can be tested and debugged.
+//only includes user info and route preferences
+$query2 = "SELECT orp.user_id, us.last_name, us.first_name, GROUP_CONCAT(rt.line_name) AS `lines`
+FROM operator_route_preference AS orp
+JOIN route AS rt ON orp.route_id = rt.id 
+JOIN user AS us ON orp.user_id = us.id 
+WHERE orp.session_id = 1
+GROUP BY orp.user_id";
 
-//the operators query
+$result2 = mysqli_query($conn, $query2);
 
-// $result = mysqli_query($conn, $query);
+if(!$result2){
+  throw new Exception('MySQL error: '.mysqli_error($conn));
+}
 
-// if(!$result){
-//   throw new Exception('MySQL error: '.mysqli_error($conn));
-// }
+$operators = [];
 
-// $operators = [];
+while ($row = mysqli_fetch_assoc($result2)) {
+    $operators[] = $row;
+}
 
-// while ($row = mysqli_fetch_assoc($result)) {
-//     $operators[] = $row;
-// }
+$operators = json_encode($operators);
 
-// $operators = json_encode($operators);
+print($operators);
 
-// print($operators);
+//population 3 round for each user, no line or availability preferences
+$lengthOperatorsArray = count($operators);
+$lengthRoundsArray = count($rounds);
 
-// $lengthOperatorsArray = count($operators);
-// $lengthRoundsArray = count($rounds);
-
-// for ($i = 0; $i < $lengthOperatorsArray; $i++) {
-//   for ($j = $i * 3; $j < $i * 3 + 3; $j++) {
-//     if ($j < $lengthRoundsArray) {
-//     $rounds[$j]['user_id'] = $operators[$i]['user_id'];
-//     $rounds[$j]['last_name'] = $operators[$i]['last_name'];
-//     $rounds[$j]['first_name'] = $operators[$i]['first_name'];
-//     } else {
-//       break;
-//     }
-//   }
-//   if ($i === $lengthOperatorsArray - 1) {
-//     $i = -1; 
-//     continue;
-// }
+for ($i = 0; $i < $lengthOperatorsArray; $i++) {
+  for ($j = $i * 3; $j < $i * 3 + 3; $j++) {
+    if ($j < $lengthRoundsArray) {
+    $rounds[$j]['user_id'] = $operators[$i]['user_id'];
+    $rounds[$j]['last_name'] = $operators[$i]['last_name'];
+    $rounds[$j]['first_name'] = $operators[$i]['first_name'];
+    } else {
+      break;
+    }
+  }
+  if ($i === $lengthOperatorsArray - 1) {
+    $i = -1; 
+    continue;
+}
   
-// print($rounds);
+print($rounds);
 
 //PSEUDOCODE AND DUMMY ARRAY WORK
 
@@ -125,13 +130,13 @@ print($rounds);
 //repeat for each round
 
 //before any assignments are made
-//$operatorAvailability = [{"user_id"=> 2345, "last_name"=> "Smith", "first_name"=> "Fred", "no_route_preference"=> [4,6], "availability"=> [{"day"=> "mon", "start_time"=>0600, "end_time" => 1000}, {"day"=> "wed", "start_time"=>1400, "end_time"=> 1800}, {"day"=> "fri", "start_time"=>1400, "end_time"=> 1800}]}, {"user_id"=> 1234, "last_name"=> "Wu", "first_name"=> "Vicky", "no_route_preference"=> [1,3], "availability"=> [{day=> sat, "start_time"=>0900, "end_time"=> 1300}, {"day"=> sat, "start_time"=>1500, "end_time"=> 1800}, {"day"=> tue, "start_time"=>1400, "end_time"=> 1800}]}]
+//$operatorAvailability = [{"user_id"=> 2345, "last_name"=> "Smith", "first_name"=> "Fred", "route_preference"=> [4,6], "availability"=> [{"day"=> "mon", "start_time"=>0600, "end_time" => 1000}, {"day"=> "wed", "start_time"=>1400, "end_time"=> 1800}, {"day"=> "fri", "start_time"=>1400, "end_time"=> 1800}]}, {"user_id"=> 1234, "last_name"=> "Wu", "first_name"=> "Vicky", "no_route_preference"=> [1,3], "availability"=> [{day=> sat, "start_time"=>0900, "end_time"=> 1300}, {"day"=> sat, "start_time"=>1500, "end_time"=> 1800}, {"day"=> tue, "start_time"=>1400, "end_time"=> 1800}]}]
 
 //during assigning process (computer has only made it through first three rounds of D line for Mondays)
 //$roundAssignment = [{"line": "D", "bus_number": "1", "day_of_week": "mon", "start_time" 0610: "end_time": 0630, "user_id": 2345, "first_name": "Fred", "last_name": "Smith"}, {"line": "D", "bus_number": "1", "day_of_week": "mon", "start_time" 0630: "end_time": 0650, "user_id": 2345, "first_name": "Fred", "last_name": "Smith"}, {"line": "D", "bus_number": "1", "day_of_week": "mon", "start_time" 0650: "end_time": 0710, "user_id": 2345, "first_name": "Fred", "last_name": "Smith"}, {"line": "D", "bus_number": "1", "day_of_week": "mon", "start_time" 0710: "end_time": 0730, "user_id": null, "first_name": null, "last_name": null}, {"line": "D", "bus_number": "1", "day_of_week": "mon", "start_time" 0730: "end_time": 0750, "user_id": null, "first_name": null, "last_name": null}, {"line": "D", "bus_number": "1", "day_of_week": "mon", "start_time" 0750: "end_time": 0810, "user_id": null, "first_name": null, "last_name": null}];
 
 //after the first three rounds on Monday have been assigned to Fred Smith.
-//$operatorAvailability = [{"user_id": 2345, "last_name": "Smith", "first_name": "Fred", "no_route_preference": [4,6], "availability": [{"day": "mon", "start_time":0710, "end_time:" 1000}, {"day": "wed", "start_time":1400, "end_time": 1800}, {"day": "fri", "start_time":1400, "end_time": 1800}]}, {"user_id": 1234, "last_name": "Wu", "first_name": "Vicky", "no_route_preference": [1,3], "availability": [{day: sat, "start_time":0900, "end_time": 1300}, {"day": sat, "start_time":1500, "end_time": 1800}, {"day": tue, "start_time":1400, "end_time": 1800}]}];
+//$operatorAvailability = [{"user_id": 2345, "last_name": "Smith", "first_name": "Fred", "route_preference": [4,6], "availability": [{"day": "mon", "start_time":0710, "end_time:" 1000}, {"day": "wed", "start_time":1400, "end_time": 1800}, {"day": "fri", "start_time":1400, "end_time": 1800}]}, {"user_id": 1234, "last_name": "Wu", "first_name": "Vicky", "no_route_preference": [1,3], "availability": [{day: sat, "start_time":0900, "end_time": 1300}, {"day": sat, "start_time":1500, "end_time": 1800}, {"day": tue, "start_time":1400, "end_time": 1800}]}];
 
 
 //$availableOperators = [];
