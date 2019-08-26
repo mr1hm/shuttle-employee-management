@@ -18,7 +18,7 @@ $query = "SELECT
             rd.`user_id`,
             rd.`start_time`,
             rd.`end_time`,
-            rd.`round_date`,
+            rd.`date`,
             rd.`status`,
             rt.`line_name`,
             rt.`id`
