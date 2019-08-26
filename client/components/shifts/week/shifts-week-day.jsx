@@ -5,7 +5,7 @@ import ShiftDisplayComponent from './shift-display-component';
 import { convertMilitaryTimeStringToMilitaryTimeFloat, convertUnixDateDay, convertUnixDateNumber } from '../../../lib/time-functions';
 
 class ShiftsWeekDay extends React.Component {
-  
+
   getZeroPaddedNumber( number ){
     return ('0' + number).slice(-2);
   }
@@ -56,14 +56,14 @@ class ShiftsWeekDay extends React.Component {
       }
   }
   render() {
-    // console.log('day data: ', this.props.dayData); 
+    // console.log('day data: ', this.props.dayData);
     // console.log('shift data: ', this.props.shifts);
-
     const range = { min: 6, max: 24 };
     const startAndEndTimes = {start: 6, end: 24};
     const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));
     const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));
     const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
+    const dayHoursRounded = dayHours.toFixed(2);
     const currentUnixDate = this.props.dayData.round_date;
     let currentDayHighlightClass = 'dayDataContainer';
 
@@ -77,7 +77,7 @@ class ShiftsWeekDay extends React.Component {
         min: range.min,
         max: range.max
       },
-      shiftData: { 
+      shiftData: {
         start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time),
         end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time)
       },
@@ -88,11 +88,11 @@ class ShiftsWeekDay extends React.Component {
         <div className="dayLabelContainer">
           <div className="dayText">{dayText}</div>
           <div className="dateText">{dateText}</div>
-          <div className="dayHours">{dayHours} {dayHours === 1 ? 'Hour' : 'Hours'}</div>
+          <div className="dayHours">{dayHoursRounded} {dayHoursRounded === 1 ? 'Hour' : 'Hours'}</div>
         </div>
         <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
         <div className="shiftRowContainer">
-            <ShiftDisplayComponent 
+            <ShiftDisplayComponent
               test='1'
               type='active'
               range={range}
