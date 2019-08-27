@@ -11,7 +11,7 @@ require_once 'db_connection.php';
 //   $startTime = intval($startTime);
 // }
 
-// $round_date= $_GET['round_date'];
+$date= $_GET['date'];
 
 $query = "SELECT
             rd.`bus_info_id`,
@@ -29,7 +29,8 @@ $query = "SELECT
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            rd.`status`= 'scheduled' || rd.`status` = 'posted'";
+            -- rd.`status`= 'scheduled' || rd.`status` = 'posted'
+            rd.`date`= {$date} AND rd.`user_id` = 1";
 
 
 $result = mysqli_query($conn, $query);
