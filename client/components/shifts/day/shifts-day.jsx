@@ -65,7 +65,7 @@ class ShiftsDay extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.date === undefined || prevProps.match.params.date !== this.props.match.params.date) {
-      this.fetchCallMethod(this.query);
+      // this.fetchCallMethod(this.query); not currently being used for this
     }
 
   }
@@ -133,7 +133,7 @@ class ShiftsDay extends React.Component {
           <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
         </Modal> */}
         <Modal open={this.state.isModalOpen}  className="modalShiftDetails">
-          <ShiftsDetails goBack={this.closeModal}> </ShiftsDetails>
+          <ShiftsDetails goBack={this.closeModal} fetchCall ={this.fetchCallMethod}> </ShiftsDetails>
         </Modal>
 
       </div>

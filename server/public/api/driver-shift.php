@@ -27,7 +27,7 @@ if ($method === 'PATCH') { //make sure it's patch request
   mysqli_stmt_execute($statement);
   $affectedRows = mysqli_stmt_affected_rows($statement);
   if (!$affectedRows) {
-    throw new Exception('this is ');
+    throw new Exception('this is already the status selected');
   }
   //if the affectedRows is 0 throw exception that this is an invalid id
   print($affectedRows);
