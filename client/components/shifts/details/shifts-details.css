@@ -1,0 +1,36 @@
+.details {
+    display: flex;
+}
+.subHeader {
+    height: 15vh;
+}
+.busRouteIconContainer {
+    display: inline-block;
+}
+.mainContainer {
+    height: 75vh;
+    padding-right: 2vmin;
+    padding-bottom: 5vmin;
+}
+.flex-section {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    min-height: 0;
+    margin-left: 2%;
+    border: 2px solid black;
+}
+.flex-col-scroll {
+    flex-grow: 1;
+    overflow: auto;
+    min-height: 100%;
+}
+.col-12 {
+    padding-left: 0;
+}
+.custom-checkbox {
+    padding-left: 30px;
+}
+.buttonContainer {
+    padding: 0 2%;
+}

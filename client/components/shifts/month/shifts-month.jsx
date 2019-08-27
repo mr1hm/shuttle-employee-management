@@ -136,21 +136,22 @@ class ShiftsMonth extends React.Component {
   }
   displayWeeklyHours(calendarPage,shiftsArray){
     var weekTotalHoursArrayToBeDisplayed = [];
-    var arrayOfShiftsForWeek = [];
+    var arrayOfRoundsForWeek = [];
     var bundledWeeksArray = this.chunkArray(calendarPage,7);
     var weekHourTotal=0;
     for(var weekIndex=0; weekIndex<bundledWeeksArray.length; weekIndex++){
       for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){
-        for(var shiftIndex=0 ; shiftIndex<shiftsArray.length; shiftIndex++){
-          if(bundledWeeksArray[weekIndex][dateIndex].getTime() === new Date(parseInt(shiftsArray[shiftIndex].shiftDate)).getTime()){
-            arrayOfShiftsForWeek.push(shiftsArray[shiftIndex]);
-            weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek);
+        for(var roundIndex=0 ; roundIndex<shiftsArray.length; roundIndex++){
+          if(bundledWeeksArray[weekIndex][dateIndex].getTime() === new Date(parseInt(shiftsArray[roundIndex].date)).getTime()){
+            arrayOfRoundsForWeek.push(shiftsArray[roundIndex]);
+            console.log("array of rounds per week: ",arrayOfRoundsForWeek)
+            weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
           } 
-          weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek);
+          weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
         }
       }
       var targetUnixDate = bundledWeeksArray[weekIndex][0].getTime();
-      arrayOfShiftsForWeek = [];
+      arrayOfRoundsForWeek = [];
       weekTotalHoursArrayToBeDisplayed.push(
         <Link key={bundledWeeksArray[weekIndex][0].getTime()} 
           className="link-style" 
@@ -161,14 +162,15 @@ class ShiftsMonth extends React.Component {
         </Link>
       )
     }
+    console.log("array of rounds per week: ",arrayOfRoundsForWeek)
     return weekTotalHoursArrayToBeDisplayed;
   }
-  calculateSumOfHoursScheduledForWeek(arrayOfShiftsForWeek){
-    if(arrayOfShiftsForWeek.length){
+  calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek){
+    if(arrayOfRoundsForWeek.length){
       let totalShiftLengthForWeek = 0;
-    for(let shiftIndex=0; shiftIndex<arrayOfShiftsForWeek.length; shiftIndex++){
-      let shiftToCalculate = arrayOfShiftsForWeek[shiftIndex];
-      let hoursForShift = this.calculateShiftHours(shiftToCalculate.startTime, shiftToCalculate.endTime);
+    for(let roundIndex=0; roundIndex<arrayOfRoundsForWeek.length; roundIndex++){
+      let roundToCalculate = arrayOfRoundsForWeek[roundIndex];
+      let hoursForShift = this.calculateShiftHours(roundToCalculate.start_time, roundToCalculate.end_time);
       totalShiftLengthForWeek += hoursForShift;
     }
       let totalHours = Math.floor(totalShiftLengthForWeek/60);

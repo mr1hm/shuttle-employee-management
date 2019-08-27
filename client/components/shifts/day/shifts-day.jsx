@@ -4,6 +4,7 @@ import { calculateDailyWorkingHours } from '../../../lib/time-functions';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
+import ShiftsDetails from '../details/shifts-details';
 
 function convertUnixMonthDay(time) {
   const getTheDate = new Date(time);
@@ -15,13 +16,16 @@ function convertUnixMonthDay(time) {
 function OneOfMyShifts(props) {
     let shiftButton = (props.shifts.status === 'posted') ? "Cancel Post" : "Details";
     let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
-    let numOfRounds = (props.shifts.endTime-props.shifts.startTime)/(props.shifts.legDuration);
+    // let numOfRounds = (props.shifts.end_time-props.shifts.start_time)/(props.shifts.legDuration);
     return(
         <tr>
-            <td> {props.shifts.lineName} / {props.shifts.busID} </td>
-            <td> {props.shifts.startTime} - {props.shifts.endTime} </td>
-            <td> {numOfRounds.toFixed(2)} </td>
-            <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td>
+            {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
+            <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name}/> </td>
+            <td> {props.shifts.start_time} - {props.shifts.end_time} </td>
+            <td> #rd </td>
+            {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
+            <td> #hrs </td>
+
             <td className={statusColor}> {props.shifts.status} </td>
         <td> <input type="button" value={shiftButton} onClick={props.clickHandler} /> </td>
         </tr>
@@ -34,9 +38,11 @@ class ShiftsDay extends React.Component {
     this.query = ``;
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
     this.state = {
       myShiftsToday: [],
-      isModalOpen: false
+      isModalOpen: false,
+
     }
   }
   fetchCallMethod(query){
@@ -54,24 +60,25 @@ class ShiftsDay extends React.Component {
       .catch(error => {throw(error)});
   }
   componentDidMount(){
-    this.fetchCallMethod('?shiftDate='+this.props.defaultDate);
+    this.fetchCallMethod('?date='+this.props.defaultDate);
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.match.params.date !== this.props.match.params.date) {
+    if (prevProps.match.params.date === undefined || prevProps.match.params.date !== this.props.match.params.date) {
       this.fetchCallMethod(this.query);
     }
 
   }
   openModal(){
-    debugger;
     this.setState({
-      isModalOpen: true
+      isModalOpen: true,
+
     })
   }
   closeModal(){
     this.setState({
-      isModalOpen: false
+      isModalOpen: false,
+
     })
   }
   render(){
@@ -80,7 +87,7 @@ class ShiftsDay extends React.Component {
     } else {
     dateToPass = this.props.match.params.date;
     var dateToQuery = new Date(dateToPass).getTime()+25200000;
-    this.query = `?shiftDate=${dateToQuery}`;
+    this.query = `?round=${dateToQuery}`;
     }
     if (this.state.myShiftsToday.length === 0) {
       return (
@@ -94,7 +101,6 @@ class ShiftsDay extends React.Component {
       <div>
           <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(dateToPass)}`}> </Link></div>
       <TopMenuShift title="DAY" page='day' date={(dateToPass)}/>
-      <RouteBusDisplay bus='1' route='H'/>
         <table className='table table-striped'>
           <thead>
               <tr>
@@ -121,10 +127,13 @@ class ShiftsDay extends React.Component {
       }
           </tbody>
         </table>
-        <Modal open={this.state.isModalOpen}>
+        {/* <Modal open={this.state.isModalOpen}>
           <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
           <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
           <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
+        </Modal> */}
+        <Modal open={this.state.isModalOpen}  className="modalShiftDetails">
+          <ShiftsDetails goBack={this.closeModal}> </ShiftsDetails>
         </Modal>
 
       </div>
