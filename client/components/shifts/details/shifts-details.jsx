@@ -165,15 +165,7 @@ class ShiftsDetails extends React.Component {
                 <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status} >
           <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
           <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
-          <p><button onClick={() => this.closeModal();
-            this.setState(
-                {
-                    shiftDetailsInfo:{
-                        status: "posted"
-                    }
-                }
-            )
-        }>Yes, I want to post</button></p>
+          <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
         </Modal>
             </React.Fragment>
         )
