@@ -142,7 +142,7 @@ class ShiftsMonth extends React.Component {
     for(var weekIndex=0; weekIndex<bundledWeeksArray.length; weekIndex++){
       for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){
         for(var roundIndex=0 ; roundIndex<shiftsArray.length; roundIndex++){
-          if(bundledWeeksArray[weekIndex][dateIndex].getTime() === new Date(parseInt(shiftsArray[roundIndex].round_date)).getTime()){
+          if(bundledWeeksArray[weekIndex][dateIndex].getTime() === new Date(parseInt(shiftsArray[roundIndex].date)).getTime()){
             arrayOfRoundsForWeek.push(shiftsArray[roundIndex]);
             console.log("array of rounds per week: ",arrayOfRoundsForWeek)
             weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
