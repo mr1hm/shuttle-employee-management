@@ -86,8 +86,18 @@ class ShiftsDay extends React.Component {
     var dateToPass = parseInt(this.props.defaultDate);
     } else {
     dateToPass = this.props.match.params.date;
-    var dateToQuery = new Date(dateToPass).getTime()+25200000;
-    this.query = `?round=${dateToQuery}`;
+    var dateToQuery = new Date(dateToPass).getTime()+25200000; //figure this shit out right here
+    console.log("dateToQuery:",dateToQuery);
+    // right now it's looking for 1563951600000 (jul 24 midnihgt local (17 hours ahead of gmt), 7am gmt)
+    // ^-- is app.jsx presetDataForTesting
+
+    //db is 1560409200000 (jun 13 at mindnight local)
+    //when going to jun13 it is looking for 1560384000000 (jun 12 midnight local)
+    // 1560409200000 - 1560384000000  and add that to getTime()
+    //now is asking for 1560409200000
+    // debugger;
+    
+    this.query = `?date=${dateToQuery}`;
     }
     if (this.state.myShiftsToday.length === 0) {
       return (
