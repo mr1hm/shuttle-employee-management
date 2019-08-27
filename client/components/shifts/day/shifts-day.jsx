@@ -42,6 +42,7 @@ class ShiftsDay extends React.Component {
     this.state = {
       myShiftsToday: [],
       isModalOpen: false,
+      view: "myShifts"
 
     }
   }
@@ -96,6 +97,10 @@ class ShiftsDay extends React.Component {
       <div>You have no shifts scheduled today.</div>
       </div>
       );
+    }
+    if (this.state.view === "availableShifts" && this.state.isModalOpen === false){
+      console.log("this will be the information rendered for the available shifts view")
+      //change data information to match the available shifts
     }
     return (
       <div>
