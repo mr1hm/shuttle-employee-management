@@ -30,7 +30,7 @@ $query = "SELECT
             rd.`bus_info_id` = rt.`id`
           WHERE
             -- rd.`status`= 'scheduled' || rd.`status` = 'posted'
-            rd.`date`= {$date}";
+            rd.`date`= {$date} AND rd.`user_id` = 1";
 
 
 $result = mysqli_query($conn, $query);
