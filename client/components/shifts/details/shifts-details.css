@@ -26,11 +26,16 @@
     min-height: 100%;
 }
 .col-12 {
-    padding-left: 0;
+    padding: 0;
 }
 .custom-checkbox {
     padding-left: 30px;
 }
 .buttonContainer {
     padding: 0 2%;
+}
+.inactive {
+  background-color: grey;
+  opacity: 0.8;
+  height: 100%;
 }
