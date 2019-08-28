@@ -88,6 +88,7 @@ class ShiftsDay extends React.Component {
     })
   }
   render() {
+    debugger;
     if (this.props.match.params.date === undefined) {
       var dateToPass = parseInt(this.props.defaultDate);
     } else {
@@ -108,6 +109,36 @@ class ShiftsDay extends React.Component {
     if (this.state.view === "availableShifts" && this.state.isModalOpen === false){
       console.log("this will be the information rendered for the available shifts view")
       //change data information to match the available shifts
+      return (
+        <div>
+        <table className='table table-striped'>
+          <thead>
+            <tr>
+              <td>Line/#</td>
+              <td>Start-End</td>
+              <td>Rounds</td>
+              <td>Shift Hours</td>
+              <td>Post Status</td>
+              <td>Action</td>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              this.state.myShiftsToday.map(shifts => {
+                return (
+                  < OneOfMyShifts
+                    key={shifts.start_time}
+                    shifts={shifts}
+                    clickHandler={this.openModal}
+                  />
+                );
+              })
+            }
+          </tbody>
+        </table>
+        </div>
+
+      )
     }
 
     let shiftMin = Math.min.apply(null, this.state.myShiftsToday.map(index => index.start_time));
