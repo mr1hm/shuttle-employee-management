@@ -2,7 +2,6 @@
 require_once('functions.php');
 set_exception_handler('error_handler');
 require_once 'db_connection.php';
-
 // if (!empty($_GET['startTime'])) {
 //   $startTime = $_GET['startTime'];
 //   if ($startTime < 600) {
@@ -10,9 +9,7 @@ require_once 'db_connection.php';
 //   }
 //   $startTime = intval($startTime);
 // }
-
-// $round_date= $_GET['round_date'];
-
+$date= $_GET['date'];
 $query = "SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
@@ -29,9 +26,8 @@ $query = "SELECT
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            rd.`status`= 'scheduled' || rd.`status` = 'posted'";
-
-
+            -- rd.`status`= 'scheduled' || rd.`status` = 'posted'
+            rd.`date`= {$date} AND rd.`user_id` = 1";
 $result = mysqli_query($conn, $query);
 if (!$result) {
     throw new Exception('mysql error ' . mysqli_error($conn));
@@ -41,5 +37,4 @@ while ($row = mysqli_fetch_assoc($result)) {
     $data[] = $row;
 }
 print(json_encode($data));
-
 ?>
