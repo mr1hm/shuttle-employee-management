@@ -68,6 +68,7 @@ class ShiftsWeek extends React.Component {
     return weekDataArray;
   }
   getData(url, methodToUse) {
+    debugger;
     fetch(url, { method: methodToUse })
       .then(response => { return response.json() })
       .then(weekShiftInfo => {
