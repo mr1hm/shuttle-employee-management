@@ -5,6 +5,7 @@ import TopMenuShift from '../../topmenu/topmenu-shift';
 import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
 import ShiftsDetails from '../details/shifts-details';
+import ShiftsAvailable from '../available/shifts-available';
 
 function convertUnixMonthDay(time) {
   const getTheDate = new Date(time);
@@ -40,15 +41,16 @@ class ShiftsDay extends React.Component {
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    const defaultDate = parseInt(this.props.defaultDate)
     this.state = {
       myShiftsToday: [],
       isModalOpen: false,
-      view: "myShifts"
-
+      queryString: `?date=${defaultDate}&type=${this.props.view || 'myShifts'}`,
+      dateToPass: defaultDate
     }
   }
   fetchCallMethod(query) {
-    fetch(`/api/shifts-day.php` + query, {
+    fetch(`/api/shifts-day.php` + this.state.queryString, {
       method: 'GET'
     })
       .then(response => {
@@ -69,8 +71,21 @@ class ShiftsDay extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     // debugger;
+    let updateState = {};
+    let dateToQuery;
+    if (this.state.dateToQuery!=prevState.dateToQuery && this.props.match.params.date ){
+      dateToPass = this.props.match.params.date;
+      dateToQuery = new Date(dateToPass).getTime() + 25200000;
+      updateState.dateToQuery = dateToQuery;
+      this.setState({
+        dateToQuery: dateToQuery,
+        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
+      });
+    }
+    //this.query = `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`;
+
     if (prevProps.match.params.date !== this.props.match.params.date) {
       this.fetchCallMethod(this.query);
     }
@@ -87,69 +102,26 @@ class ShiftsDay extends React.Component {
 
     })
   }
+
   render() {
-    debugger;
-    if (this.props.match.params.date === undefined) {
-      var dateToPass = parseInt(this.props.defaultDate);
-    } else {
-      dateToPass = this.props.match.params.date;
-      var dateToQuery = new Date(dateToPass).getTime() + 25200000;
-      console.log("dateToQuery:", dateToQuery);
-      this.query = `?date=${dateToQuery}`;
-    }
+
     if (this.state.myShiftsToday.length === 0) {
       return (
         <div>
-          <TopMenuShift title="DAY" page='day' date={dateToPass} />
+          <TopMenuShift title="DAY" page='day' date={this.state.dateToPass} />
           <div>You have no shifts scheduled today.</div>
         </div>
       );
     }
 
-    if (this.state.view === "availableShifts" && this.state.isModalOpen === false){
-      console.log("this will be the information rendered for the available shifts view")
-      //change data information to match the available shifts
-      return (
-        <div>
-        <table className='table table-striped'>
-          <thead>
-            <tr>
-              <td>Line/#</td>
-              <td>Start-End</td>
-              <td>Rounds</td>
-              <td>Shift Hours</td>
-              <td>Post Status</td>
-              <td>Action</td>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              this.state.myShiftsToday.map(shifts => {
-                return (
-                  < OneOfMyShifts
-                    key={shifts.start_time}
-                    shifts={shifts}
-                    clickHandler={this.openModal}
-                  />
-                );
-              })
-            }
-          </tbody>
-        </table>
-        </div>
-
-      )
-    }
-
     let shiftMin = Math.min.apply(null, this.state.myShiftsToday.map(index => index.start_time));
     let shiftMax = Math.max.apply(null, this.state.myShiftsToday.map(index => index.end_time));
-    console.log('shiftMin:', shiftMin); // returns 600
-    console.log('shiftMax', shiftMax); // returns 1100
+
 
     return (
       <div>
-        <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(dateToPass)}`}> </Link></div>
-        <TopMenuShift title="DAY" page='day' date={(dateToPass)} />
+        <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link></div>
+        <TopMenuShift title="DAY" page='day' date={(this.state.dateToPass)} />
         <table className='table table-striped'>
           <thead>
             <tr>

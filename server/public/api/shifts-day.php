@@ -29,10 +29,14 @@ $query = "SELECT
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            -- rd.`status`= 'scheduled' || rd.`status` = 'posted'
-            rd.`date`= {$date} AND rd.`user_id` = 1";
+            rd.`date`= {$date} ";
 
-
+if(!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
+  print('oh gee whiz');
+  $query .=" AND rd.`user_id` = 1";
+} else {
+  $query .= " AND rd.`status` = 'posted' AND rd.user_id != 1";
+}
 $result = mysqli_query($conn, $query);
 if (!$result) {
     throw new Exception('mysql error ' . mysqli_error($conn));
