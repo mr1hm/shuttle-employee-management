@@ -31,13 +31,19 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 // print($rounds);
 
-//only includes user info and route preferences
-$query2 = "SELECT orp.user_id, us.last_name, us.first_name, GROUP_CONCAT(rt.line_name) AS `lines`
-FROM operator_route_preference AS orp
-JOIN route AS rt ON orp.route_id = rt.id 
-JOIN user AS us ON orp.user_id = us.id 
-WHERE orp.session_id = 1
-GROUP BY orp.user_id";
+// only includes user info and route preferences
+$query2 ="SELECT us.id,
+                us.last_name,
+                us.first_name,
+                GROUP_CONCAT(rt.line_name) AS `lines`,
+                GROUP_CONCAT(JSON_OBJECT('day', oa.day_of_week, 'start_time', oa.start_time, 'stop_time', oa.end_time)) AS `availability`
+          FROM user AS us 
+
+          JOIN operator_route_preference AS orp ON us.id = orp.user_id
+          JOIN operator_availability AS oa ON us.id = oa.user_id
+          JOIN route AS rt ON orp.route_id = rt.id
+          WHERE orp.session_id = 1
+          GROUP BY us.id";
 
 $result2 = mysqli_query($conn, $query2);
 
@@ -49,72 +55,82 @@ $operators = [];
 
 while ($row = mysqli_fetch_assoc($result2)) {
   $row['lines'] = explode(",", $row['lines']);
+  $row['lines'] = array_unique($row['lines']);  
+  // $row['lines'] = implode(",", $row['lines']);
+  $row['availability'] = explode("},", $row['availability']);
+  $row['availability'] = array_unique($row['availability']); 
+  $row['availability'] = implode("},", $row['availability']);
+
+  $row['availability'] = explode(",{", $row['availability']);
+  $row['availability'] = array_unique($row['availability']);
+  $row['availability'] = implode(",{", $row['availability']);
+  $mod = $row['availability'];
+  $row['availability'] = str_replace("", '', $mod);
   $operators[] = $row;
 }
 
-// $operatorsForTesting = json_encode($operators);
+$operatorsForTesting = json_encode($operators);
+print($operatorsForTesting);
 
-// print($operatorsForTesting);
+//population 3 rounds for each user with line preference
+//require 3 line preferences for each operator
+//does not handle assignments with block is less than 3 rounds
+// $lengthOperatorsArray = count($operators);
+// $lengthRoundsArray = count($rounds);
 
-// population 3 rounds for each user with line preference
-// require 3 line preferences for each operator
-// does not handle assignments with block is less than 3 rounds
-$lengthOperatorsArray = count($operators);
-$lengthRoundsArray = count($rounds);
+// for($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
+//   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray ; $roundsIndex++) {
+//     if ($roundsIndex === $lengthRoundsArray -2) {
+//       break;
+//     }
+//     else if ($rounds[$roundsIndex]['user_id'] === '1' and $rounds[$roundsIndex + 1]['user_id'] === '1' and $rounds[$roundsIndex + 2]['user_id'] === '1') {    
+//       if ($rounds[$roundsIndex]['line_name'] === $rounds[$roundsIndex + 1]['line_name'] and $rounds[$roundsIndex + 1]['line_name'] === $rounds[$roundsIndex + 2]['line_name']) {
+//         if ($operators[$operatorsIndex]['lines'][0] === $rounds[$roundsIndex]['line_name']){
+//           for ($i  = 0; $i < 3; $i++) {
+//             $rounds[$roundsIndex + $i]['user_id'] = $operators[$operatorsIndex]['user_id'];
+//             $rounds[$roundsIndex + $i]['last_name'] = $operators[$operatorsIndex]['last_name'];
+//             $rounds[$roundsIndex + $i]['first_name'] = $operators[$operatorsIndex]['first_name'];
+//           }
+//           if ($operatorsIndex === $lengthOperatorsArray - 1) {
+//             $operatorsIndex = -1;
+//           }
+//           break;
+//         } else if ($operators[$operatorsIndex]['lines'][1] === $rounds[$roundsIndex]['line_name']){
+//             for ($i  = 0; $i < 3; $i++) {
+//               $rounds[$roundsIndex + $i]['user_id'] = $operators[$operatorsIndex]['user_id'];
+//               $rounds[$roundsIndex + $i]['last_name'] = $operators[$operatorsIndex]['last_name'];
+//               $rounds[$roundsIndex + $i]['first_name'] = $operators[$operatorsIndex]['first_name'];
+//             }
+//             if ($operatorsIndex === $lengthOperatorsArray - 1) {
+//               $operatorsIndex = -1;
+//             }
+//             break;
+//         } else if ($operators[$operatorsIndex]['lines'][2] === $rounds[$roundsIndex]['line_name']){
+//             for ($i  = 0; $i < 3; $i++) {
+//               $rounds[$roundsIndex + $i]['user_id'] = $operators[$operatorsIndex]['user_id'];
+//               $rounds[$roundsIndex + $i]['last_name'] = $operators[$operatorsIndex]['last_name'];
+//               $rounds[$roundsIndex + $i]['first_name'] = $operators[$operatorsIndex]['first_name'];
+//             }
+//             if ($operatorsIndex === $lengthOperatorsArray - 1) {
+//               $operatorsIndex = -1;
+//             }
+//             break;
+//         } else {
+//           if ($operatorsIndex === $lengthOperatorsArray - 1) {
+//             $operatorsIndex = -1;
+//           }
+//           break;
+//         }
+//       } else {
+//         if ($operatorsIndex === $lengthOperatorsArray - 1) {
+//           $operatorsIndex = -1;
+//         }
+//       }
+//     }
+//   }
+// }
 
-for($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
-  for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray ; $roundsIndex++) {
-    if ($roundsIndex === $lengthRoundsArray -2) {
-      break;
-    }
-    else if ($rounds[$roundsIndex]['user_id'] === '1' and $rounds[$roundsIndex + 1]['user_id'] === '1' and $rounds[$roundsIndex + 2]['user_id'] === '1') {    
-      if ($rounds[$roundsIndex]['line_name'] === $rounds[$roundsIndex + 1]['line_name'] and $rounds[$roundsIndex + 1]['line_name'] === $rounds[$roundsIndex + 2]['line_name']) {
-        if ($operators[$operatorsIndex]['lines'][0] === $rounds[$roundsIndex]['line_name']){
-          for ($i  = 0; $i < 3; $i++) {
-            $rounds[$roundsIndex + $i]['user_id'] = $operators[$operatorsIndex]['user_id'];
-            $rounds[$roundsIndex + $i]['last_name'] = $operators[$operatorsIndex]['last_name'];
-            $rounds[$roundsIndex + $i]['first_name'] = $operators[$operatorsIndex]['first_name'];
-          }
-          if ($operatorsIndex === $lengthOperatorsArray - 1) {
-            $operatorsIndex = -1;
-          }
-          break;
-        } else if ($operators[$operatorsIndex]['lines'][1] === $rounds[$roundsIndex]['line_name']){
-            for ($i  = 0; $i < 3; $i++) {
-              $rounds[$roundsIndex + $i]['user_id'] = $operators[$operatorsIndex]['user_id'];
-              $rounds[$roundsIndex + $i]['last_name'] = $operators[$operatorsIndex]['last_name'];
-              $rounds[$roundsIndex + $i]['first_name'] = $operators[$operatorsIndex]['first_name'];
-            }
-            if ($operatorsIndex === $lengthOperatorsArray - 1) {
-              $operatorsIndex = -1;
-            }
-            break;
-        } else if ($operators[$operatorsIndex]['lines'][2] === $rounds[$roundsIndex]['line_name']){
-            for ($i  = 0; $i < 3; $i++) {
-              $rounds[$roundsIndex + $i]['user_id'] = $operators[$operatorsIndex]['user_id'];
-              $rounds[$roundsIndex + $i]['last_name'] = $operators[$operatorsIndex]['last_name'];
-              $rounds[$roundsIndex + $i]['first_name'] = $operators[$operatorsIndex]['first_name'];
-            }
-            if ($operatorsIndex === $lengthOperatorsArray - 1) {
-              $operatorsIndex = -1;
-            }
-            break;
-        } else {
-          if ($operatorsIndex === $lengthOperatorsArray - 1) {
-            $operatorsIndex = -1;
-          }
-          break;
-        }
-      } else {
-        if ($operatorsIndex === $lengthOperatorsArray - 1) {
-          $operatorsIndex = -1;
-        }
-      }
-    }
-  }
-}
-
-$rounds = json_encode($rounds);
-print("\n". $rounds);
+// $rounds = json_encode($rounds);
+// print("\n". $rounds);
 
 ?>
