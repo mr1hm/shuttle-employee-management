@@ -72,7 +72,7 @@ class ShiftsDay extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // debugger;
+
     let updateState = {};
     let dateToQuery;
     if (this.state.dateToQuery!=prevState.dateToQuery && this.props.match.params.date ){
@@ -84,6 +84,7 @@ class ShiftsDay extends React.Component {
         queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
       });
     }
+
     //this.query = `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`;
 
     if (prevProps.match.params.date !== this.props.match.params.date) {
