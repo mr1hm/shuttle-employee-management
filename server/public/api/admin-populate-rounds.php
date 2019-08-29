@@ -64,8 +64,6 @@ while ($row = mysqli_fetch_assoc($result2)) {
   $row['availability'] = explode(",{", $row['availability']);
   $row['availability'] = array_unique($row['availability']);
   $row['availability'] = implode(",{", $row['availability']);
-  $mod = $row['availability'];
-  $row['availability'] = str_replace("", '', $mod);
   $operators[] = $row;
 }
 
