@@ -72,10 +72,10 @@ class ShiftsDay extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-
     let updateState = {};
     let dateToQuery;
-    if (this.state.dateToQuery!=prevState.dateToQuery && this.props.match.params.date ){
+    let dateToPass;
+    if ( this.props.match.params.date ){
       dateToPass = this.props.match.params.date;
       dateToQuery = new Date(dateToPass).getTime() + 25200000;
       updateState.dateToQuery = dateToQuery;
