@@ -67,29 +67,53 @@ class ShiftsDay extends React.Component {
     if (!this.query.length) {
       this.fetchCallMethod('?date=' + this.props.defaultDate);
     } else {
+      console.log("this.query from componentdidmount: ", this.query )
       this.fetchCallMethod(this.query);
     }
   }
-
   componentDidUpdate(prevProps, prevState) {
     let updateState = {};
     let dateToQuery;
-    let dateToPass;
-    if ( this.props.match.params.date ){
+    console.log("Date to Query: ", dateToQuery);
+    if (this.state.dateToQuery != prevState.dateToQuery && this.props.match.params.date) {
       dateToPass = this.props.match.params.date;
       dateToQuery = new Date(dateToPass).getTime() + 25200000;
       updateState.dateToQuery = dateToQuery;
       this.setState({
         dateToQuery: dateToQuery,
-        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
+        queryString: `?date=${dateToQuery.dateToQuery}&type=${this.props.view || 'myShifts'}`
       });
     }
+       if (prevProps.match.params.date !== this.props.match.params.date) {
+          this.fetchCallMethod(this.query);
+        }
+
+
+  // componentDidUpdate(prevProps, prevState) {
+  //   let updateState = {};
+  //   let dateToQuery;
+  //   let dateToPass;
+  //   if ( this.props.match.params.date ){
+  //     console.log("this.props.match.params.date: ", this.props.match.params.date)
+  //     dateToPass = this.props.match.params.date;
+  //     dateToQuery = new Date(dateToPass).getTime() + 25200000;
+  //     updateState.dateToQuery = dateToQuery;
+  //     this.setState({
+  //       dateToQuery: dateToQuery,
+  //       queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
+  //     });
+
+
+  //   if (prevProps.match.params.date !== this.props.match.params.date) {
+  //     console.log("this.state.dateToQuery: ", this.state.dateToQuery);
+  //         this.fetchCallMethod(this.state.dateToQuery);
+  //       }
+
+  //   }
 
     //this.query = `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`;
 
-    if (prevProps.match.params.date !== this.props.match.params.date) {
-      this.fetchCallMethod(this.query);
-    }
+
   }
   openModal() {
     this.setState({
@@ -117,9 +141,10 @@ class ShiftsDay extends React.Component {
 
     let shiftMin = Math.min.apply(null, this.state.myShiftsToday.map(index => index.start_time));
     let shiftMax = Math.max.apply(null, this.state.myShiftsToday.map(index => index.end_time));
-
+    console.log("date to pass in link: ", this.state.dateToPass);
 
     return (
+
       <div>
         <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link></div>
         <TopMenuShift title={this.props.view === 'myShifts' ? "DAY" : "AVAILABLE"} page='day' date={(this.state.dateToPass)} />
@@ -148,11 +173,7 @@ class ShiftsDay extends React.Component {
             }
           </tbody>
         </table>
-        {/* <Modal open={this.state.isModalOpen}>
-          <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
-          <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
-          <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
-        </Modal> */}
+
         <Modal open={this.state.isModalOpen} className="modalShiftDetails">
           <ShiftsDetails goBack={this.closeModal}> </ShiftsDetails>
         </Modal>
@@ -162,9 +183,5 @@ class ShiftsDay extends React.Component {
   }
 
 }
-/*
-  key={shifts.id},
-                shifts = { shifts },
-                clickHandler = {()=> {}}
-                */
+
 export default ShiftsDay;

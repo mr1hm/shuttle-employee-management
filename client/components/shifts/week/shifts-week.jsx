@@ -71,22 +71,10 @@ class ShiftsWeek extends React.Component {
     fetch(url, { method: methodToUse })
       .then(response => { return response.json() })
       .then(weekShiftInfo => {
-        // weekShiftInfo = [{
-        //   "id": "8",
-        //   "startTime": "600",
-        //   "endTime": "1000",
-        //   "routeInfoID": "1",
-        //   "authorID": "2",
-        //   "sessionID": "1",
-        //   "ownerID": "1",
-        //   "round_date": "1563692400000",
-        //   "posted": false
-        // }]
-        console.log('Week Shift Info: ', weekShiftInfo);
         this.setState({
           data: weekShiftInfo
         })
-        console.log('this.state.data ', this.state.data);
+
       })
   }
   componentDidMount(){
@@ -113,7 +101,7 @@ class ShiftsWeek extends React.Component {
     if (!this.state.data){
       return <div>No Data Available</div>;
     }
-    console.log('shift array:', weekDayShiftArray)
+
     return (
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
@@ -124,7 +112,7 @@ class ShiftsWeek extends React.Component {
           </div>
           <div className="calendarContainerWeekComponent">
               {weekDayShiftArray.map((dayData, index) => {
-                console.log('daydata: ', dayData);
+
                 return (
                   <ShiftsWeekDay key={index} dayData={dayData} shifts={dayData.shifts} defaultDay={this.props.defaultDate} date={dateToPass} />
                   )
