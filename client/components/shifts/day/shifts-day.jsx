@@ -66,7 +66,8 @@ class ShiftsDay extends React.Component {
   }
   componentDidMount() {
     if (!this.query.length) {
-      this.fetchCallMethod('?date=' + this.props.defaultDate);
+
+      this.fetchCallMethod(this.state.queryString);
     } else {
 
       this.fetchCallMethod(this.state.queryString);
@@ -82,7 +83,8 @@ class ShiftsDay extends React.Component {
         queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
         dateToPass: this.props.match.params.date
       })
-      this.fetchCallMethod('?date=' + this.props.defaultDate);
+      this.fetchCallMethod(this.state.queryString);
+      // this.fetchCallMethod('?date=' + this.props.defaultDate);
     }
 
     // let updateState = {};
@@ -99,7 +101,8 @@ class ShiftsDay extends React.Component {
     //   });
     // }
        if (prevProps.match.params.date !== this.props.match.params.date) {
-         this.fetchCallMethod(this.query);
+         console.log(this.state.queryString);
+         this.fetchCallMethod(this.state.queryString);
         }
   }
   openModal() {
