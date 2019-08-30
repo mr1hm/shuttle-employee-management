@@ -15,8 +15,11 @@ function convertUnixMonthDay(time) {
 }
 
 function OneOfMyShifts(props) {
-  let shiftButton = (props.shifts.status === 'posted') ? "Cancel Post" : "Details";
+  let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
   let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
+  if (props.view === 'availableShifts'){
+     shiftButton = "Take Shift";
+  }
   // let numOfRounds = (props.shifts.end_time-props.shifts.start_time)/(props.shifts.legDuration);
   return (
     <tr>
@@ -73,38 +76,41 @@ class ShiftsDay extends React.Component {
       this.fetchCallMethod(this.state.queryString);
     }
   }
+  //getting a 500 server error
   componentDidUpdate(prevProps, prevState) {
-    console.log( "prevProps: ", prevProps);
-    console.log("prevState: " , prevState);
-    if (prevProps.match.params.date !== this.props.match.params.date) {
-      var dateToQuery = new Date(this.state.dateToPass).getTime() + 25200000;
+    let updateState = {};
+    let dateToQuery;
+    console.log("Date to Query: ", dateToQuery);
+    if (this.state.dateToQuery != prevState.dateToQuery && this.props.match.params.date) {
+      dateToPass = this.props.match.params.date;
+      dateToQuery = new Date(dateToPass).getTime() + 25200000;
+      updateState.dateToQuery = dateToQuery;
       this.setState({
         dateToQuery: dateToQuery,
-        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
-        dateToPass: this.props.match.params.date
-      })
-      this.fetchCallMethod(this.state.queryString);
-      // this.fetchCallMethod('?date=' + this.props.defaultDate);
+        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
+      });
     }
-
-    // let updateState = {};
-    // let dateToQuery;
-    // console.log("Date to Query: ", dateToQuery);
-
-    // if (this.state.dateToQuery != prevState.dateToQuery && this.props.match.params.date) {
-    //   dateToPass = this.props.match.params.date;
-    //   dateToQuery = new Date(dateToPass).getTime() + 25200000;
-    //   updateState.dateToQuery = dateToQuery;
-    //   this.setState({
-    //     dateToQuery: dateToQuery,
-    //     queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
-    //   });
-    // }
-       if (prevProps.match.params.date !== this.props.match.params.date) {
-         console.log(this.state.queryString);
-         this.fetchCallMethod(this.state.queryString);
-        }
+    if (prevProps.match.params.date !== this.props.match.params.date) {
+      this.fetchCallMethod(this.query);
+    }
   }
+
+
+  //My try at revamping
+  // componentDidUpdate(prevProps, prevState) {
+  //   console.log( "prevProps: ", prevProps);
+  //   console.log("prevState: " , prevState);
+  //   if (prevProps.match.params.date !== this.props.match.params.date) {
+  //     var dateToQuery = new Date(this.state.dateToPass).getTime() + 25200000;
+  //     this.setState({
+  //       dateToQuery: dateToQuery,
+  //       queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
+  //       dateToPass: this.props.match.params.date
+  //     })
+  //     this.fetchCallMethod(this.state.queryString);
+  //     commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
+  //   }
+  // }
   openModal() {
     this.setState({
       isModalOpen: true,
@@ -157,6 +163,7 @@ class ShiftsDay extends React.Component {
                     key={shifts.start_time}
                     shifts={shifts}
                     clickHandler={this.openModal}
+                    view = {this.props.view}
                   />
                 );
               })
