@@ -142,7 +142,16 @@ class ShiftsDay extends React.Component {
           <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
         </Modal> */}
         <Modal open={this.state.isModalOpen} className="modalShiftDetails">
-          <ShiftsDetails goBack={this.closeModal}> </ShiftsDetails>
+          <ShiftsDetails 
+            goBack={this.closeModal} 
+            unixDate={this.props.match.params.date} 
+            blockStartTime={}   // the start time (military 4-digit) of the first round in the block clicked
+            bockEndTime={}      // the end time (military 4-digit) of the last round of the block clicked
+            userID={}           // the user's ID number
+            busLine={}          // the letter representing the line (route) of the selected round or block
+            busNumber={}        // the number of the bus for the selected round or block
+            >       
+          </ShiftsDetails>
         </Modal>
 
       </div>

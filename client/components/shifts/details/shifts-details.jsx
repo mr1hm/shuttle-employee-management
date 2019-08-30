@@ -96,7 +96,7 @@ class ShiftsDetails extends React.Component {
         <TopMenuGeneral title="Shifts - DETAILS"/>
         <div className="details subHeader">
           <div className="busRouteIconContainer">
-              <RouteBusDisplay bus={shiftDetails.busNum} route={shiftDetails.line}/>
+              <RouteBusDisplay route={this.props.busLine} bus={this.props.busNumber}/>
           </div>
             {this.createSubHeaderTimeFrame()}
         </div>
