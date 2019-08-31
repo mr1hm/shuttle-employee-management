@@ -62,6 +62,10 @@ class ShiftsDay extends React.Component {
         return response.json()
       })
       .then(myJson => {
+        // if(myJson.success===false){
+        //   console.log('error: ' + myJson.error);
+        //   return false;
+        // }
         this.setState({
           myShiftsToday: myJson
         })
@@ -102,10 +106,9 @@ class ShiftsDay extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     // console.log( "prevProps: ", prevProps);
     // console.log("prevState: " , prevState);
-    if (prevProps.match.params.date !== this.props.match.params.date) {
+    if (prevProps.match.params.date !== this.props.match.params.date || this.props.view !== prevProps.view) {
       debugger;
-      let targetDateObject = createDateObjFromDateString(this.props.match.params.date);
-      let dateToQuery = targetDateObject.getTime()
+      let dateToQuery = createDateObjFromDateString( (this.props.match.params.date ? this.props.match.params.date : this.state.dateToPass )).getTime();
       //dateToQuery += 25200000; //need to convert this, this is +7 hours for showing accurate time in Pacific Time
       //this shouldn't happen here because the backend expects things to be at midnight, not offset.  if any offset would be used
       //it would be in the display of the time, not the passing of the time, at least with the present system.
@@ -114,7 +117,7 @@ class ShiftsDay extends React.Component {
         queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
         dateToPass: this.props.match.params.date
       })
-      console.log(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`)
+      console.log(`update query string ?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`)
       this.fetchCallMethod(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`);
       // commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
     }
@@ -143,10 +146,8 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
-
     let shiftMin = Math.min.apply(null, this.state.myShiftsToday.map(index => index.start_time));
     let shiftMax = Math.max.apply(null, this.state.myShiftsToday.map(index => index.end_time));
-
 
     return (
 

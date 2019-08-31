@@ -72,21 +72,31 @@ function convertMilitaryTimeStringToMilitaryTimeFloat( time ){
   return hour+minutes;
 
 }
+function zeroPadNumber( number, length=2){
+  number += '';
+  while(number.length < length){
+    number = '0' + number;
+  }
+  return number;
+}
+function createDateStringFromDateObject( dateObject ){
+  if(typeof dateObject==='number'){
+    dateObject= new Date(dateObject);
+  }
+  debugger;
+  const stringDate = `${dateObject.getFullYear()}-${zeroPadNumber(dateObject.getMonth()+1)}-${zeroPadNumber(dateObject.getDate())}`;
+  return stringDate;
+}
 function createDateObjFromDateString( dateString, setToMidnight=true ){
   let date = new Date();
   if( typeof dateString === 'number'){ //the dateString is actually a timestamp
     date.setTime(dateString);
   } else if(typeof dateString==='string'){
     const dateParams = dateString.split('-').map( segment => parseInt(segment));
-    date.setFullYear( dateParams[0] );
-    date.setDate(dateParams[2]);
-    date.setMonth( dateParams[1] - 1);
+    date.setFullYear(dateParams[0], dateParams[1] - 1, dateParams[2] );
   }
   if (setToMidnight) {
-    date.setHours(0);
-    date.setMinutes(0);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
+    date.setHours(0, 0, 0, 0);
   }
   return date;
 }
@@ -134,4 +144,5 @@ function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
 
 export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
-  createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat };
+  createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
+  createDateStringFromDateObject, zeroPadNumber };

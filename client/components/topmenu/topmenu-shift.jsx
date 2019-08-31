@@ -7,11 +7,9 @@ const TopMenuShift = (props)=> {
     return (
         <div className="container-fluid d-flex justify-content-between align-items-center mt-2 mb-2">
             <h3 className="m-0">Shifts - {props.title}</h3>
-            <Nav page={props.page} date={props.date}/> 
-            <TopMenuHamburger/>
+            <Nav page={props.page} date={props.date}/>
+            <TopMenuHamburger date={props.date}/>
         </div>
     )
 }
 export default TopMenuShift;
-
-
