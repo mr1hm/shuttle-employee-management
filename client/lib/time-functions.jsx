@@ -83,7 +83,6 @@ function createDateStringFromDateObject( dateObject ){
   if(typeof dateObject==='number'){
     dateObject= new Date(dateObject);
   }
-  debugger;
   const stringDate = `${dateObject.getFullYear()}-${zeroPadNumber(dateObject.getMonth()+1)}-${zeroPadNumber(dateObject.getDate())}`;
   return stringDate;
 }

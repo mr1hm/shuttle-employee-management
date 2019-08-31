@@ -30,7 +30,7 @@ class App extends React.Component {
             <Route path = "/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/day/shifts-day/:date?" render={(props) => <ShiftsDay {...props} view="myShifts" defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting} />}/>
-            <Route path="/shifts/available/" render = {(props) => <ShiftsDay {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />}/>
+            <Route path=  "/shifts/available/:date?" render = {(props) => <ShiftsDay {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/details/" render={(props) => <ShiftsDetails {...props} />}/>
             <Route path = "/admin-day/" render={(props) => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
           </Switch>
