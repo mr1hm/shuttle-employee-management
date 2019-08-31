@@ -24,9 +24,9 @@ class App extends React.Component {
     return (
         <React.Fragment>
           <Switch>
-            <Route path = "/login/" render={(props) => <Login {...props} />}/>
-            <Route exact path = {['/','/welcome/']} render={(props) => <Welcome {...props}  />}/>
-            <Route path = "/myinfo/" render={(props) => <MyInfo {...props} />}/>
+          <Route path="/login/" render={(props) => <Login {...props}   />}/>
+          <Route exact path={['/', '/welcome/']} render={(props) => <Welcome {...props} d  />}/>
+          <Route path="/myinfo/" render={(props) => <MyInfo {...props}  />}/>
             <Route path = "/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/day/shifts-day/:date?" render={(props) => <ShiftsDay {...props} view="myShifts" defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting} />}/>

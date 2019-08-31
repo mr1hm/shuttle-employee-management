@@ -80,7 +80,10 @@ function zeroPadNumber( number, length=2){
   return number;
 }
 function createDateStringFromDateObject( dateObject ){
-  if(typeof dateObject==='number'){
+  // if (!dateObject){
+  //   return;
+  // }
+  if (typeof dateObject === 'number'){
     dateObject= new Date(dateObject);
   }
   const stringDate = `${dateObject.getFullYear()}-${zeroPadNumber(dateObject.getMonth()+1)}-${zeroPadNumber(dateObject.getDate())}`;
