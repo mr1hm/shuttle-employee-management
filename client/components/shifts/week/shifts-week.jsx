@@ -95,15 +95,18 @@ class ShiftsWeek extends React.Component {
       var dateToPass = this.props.defaultDate;
     } else {
       dateToPass = createDateObjFromDateString( this.props.match.params.date );
+      console.log("date to pass before getTime: ", dateToPass);
       dateToPass = dateToPass.getTime();
+      console.log("date to pass after getTime: ", dateToPass);
     }
     const weekArray = this.generateFullWeekOfTimestamps(dateToPass);
     const weekDayShiftArray = this.generateArrayOfFullWeek(weekArray);
     if (!this.state.data){
       return <div>No Data Available</div>;
     }
-
+    console.log("Week dateToPass: ", dateToPass);
     return (
+
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
 

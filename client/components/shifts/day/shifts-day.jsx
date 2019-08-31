@@ -6,6 +6,8 @@ import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
 import ShiftsDetails from '../details/shifts-details';
 import ShiftsAvailable from '../available/shifts-available';
+import { createDateObjFromDateString } from '../../../lib/time-functions';
+
 
 function convertUnixMonthDay(time) {
   const getTheDate = new Date(time);
@@ -44,16 +46,15 @@ class ShiftsDay extends React.Component {
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    const defaultDate = parseInt(this.props.defaultDate)
+    const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );
     this.state = {
       myShiftsToday: [],
       isModalOpen: false,
       queryString: `?date=${defaultDate}&type=${this.props.view || 'myShifts'}`,
-      dateToPass: defaultDate,
+      dateToPass:  defaultDate,
     }
   }
   fetchCallMethod(query) {
-    debugger;
     fetch(`/api/shifts-day.php` + query, {
       method: 'GET'
     })
@@ -68,49 +69,56 @@ class ShiftsDay extends React.Component {
       .catch(error => { throw (error) });
   }
   componentDidMount() {
-    if (!this.query.length) {
+    this.fetchCallMethod(this.state.queryString);
+  //   if (!this.query.length) {
 
-      this.fetchCallMethod(this.state.queryString);
-    } else {
+  //     this.fetchCallMethod(this.state.queryString);
+  //   } else {
 
-      this.fetchCallMethod(this.state.queryString);
-    }
-  }
+  //     this.fetchCallMethod(this.state.queryString);
+  //   }
+  // }
   //getting a 500 server error
-  componentDidUpdate(prevProps, prevState) {
-    let updateState = {};
-    let dateToQuery;
-    console.log("Date to Query: ", dateToQuery);
-    if (this.state.dateToQuery != prevState.dateToQuery && this.props.match.params.date) {
-      dateToPass = this.props.match.params.date;
-      dateToQuery = new Date(dateToPass).getTime() + 25200000;
-      updateState.dateToQuery = dateToQuery;
-      this.setState({
-        dateToQuery: dateToQuery,
-        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
-      });
-    }
-    if (prevProps.match.params.date !== this.props.match.params.date) {
-      this.fetchCallMethod(this.query);
-    }
+  // componentDidUpdate(prevProps, prevState) {
+  //   let updateState = {};
+  //   let dateToQuery;
+  //   console.log("Date to Query: ", dateToQuery);
+  //   if (this.state.dateToQuery != prevState.dateToQuery && this.props.match.params.date) {
+  //     dateToPass = this.props.match.params.date;
+  //     dateToQuery = new Date(dateToPass).getTime() + 25200000;
+  //     updateState.dateToQuery = dateToQuery;
+  //     this.setState({
+  //       dateToQuery: dateToQuery,
+  //       queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
+  //     });
+  //   }
+  //   if (prevProps.match.params.date !== this.props.match.params.date) {
+  //     this.fetchCallMethod(this.query);
+  //   }
   }
 
 
   //My try at revamping
-  // componentDidUpdate(prevProps, prevState) {
-  //   console.log( "prevProps: ", prevProps);
-  //   console.log("prevState: " , prevState);
-  //   if (prevProps.match.params.date !== this.props.match.params.date) {
-  //     var dateToQuery = new Date(this.state.dateToPass).getTime() + 25200000;
-  //     this.setState({
-  //       dateToQuery: dateToQuery,
-  //       queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
-  //       dateToPass: this.props.match.params.date
-  //     })
-  //     this.fetchCallMethod(this.state.queryString);
-  //     commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
-  //   }
-  // }
+  componentDidUpdate(prevProps, prevState) {
+    // console.log( "prevProps: ", prevProps);
+    // console.log("prevState: " , prevState);
+    if (prevProps.match.params.date !== this.props.match.params.date) {
+      debugger;
+      let targetDateObject = createDateObjFromDateString(this.props.match.params.date);
+      let dateToQuery = targetDateObject.getTime()
+      //dateToQuery += 25200000; //need to convert this, this is +7 hours for showing accurate time in Pacific Time
+      //this shouldn't happen here because the backend expects things to be at midnight, not offset.  if any offset would be used
+      //it would be in the display of the time, not the passing of the time, at least with the present system.
+      this.setState({
+        dateToQuery: dateToQuery,
+        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
+        dateToPass: this.props.match.params.date
+      })
+      console.log(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`)
+      this.fetchCallMethod(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`);
+      // commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
+    }
+  }
   openModal() {
     this.setState({
       isModalOpen: true,
@@ -125,11 +133,12 @@ class ShiftsDay extends React.Component {
   }
 
   render() {
-
+    let dateToPass = this.state.dateToPass;
+    dateToPass = createDateObjFromDateString(dateToPass);
     if (this.state.myShiftsToday.length === 0) {
       return (
         <div>
-          <TopMenuShift title="DAY" page='day' date={this.state.dateToPass} />
+          <TopMenuShift title="DAY" page='day' date={dateToPass} />
           <div>You have no shifts scheduled today.</div>
         </div>
       );
@@ -137,13 +146,13 @@ class ShiftsDay extends React.Component {
 
     let shiftMin = Math.min.apply(null, this.state.myShiftsToday.map(index => index.start_time));
     let shiftMax = Math.max.apply(null, this.state.myShiftsToday.map(index => index.end_time));
-    console.log("date to pass in link: ", this.state.dateToPass);
+
 
     return (
 
       <div>
         <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link></div>
-        <TopMenuShift title={this.props.view === 'myShifts' ? "DAY" : "AVAILABLE"} page='day' date={(this.state.dateToPass)} />
+        <TopMenuShift title={this.props.view === 'myShifts' ? "DAY" : "AVAILABLE"} page='day' date={(dateToPass)} />
         <table className='table table-striped'>
           <thead>
             <tr>

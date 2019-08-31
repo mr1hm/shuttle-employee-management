@@ -79,10 +79,10 @@ function createDateObjFromDateString( dateString, setToMidnight=true ){
   } else if(typeof dateString==='string'){
     const dateParams = dateString.split('-').map( segment => parseInt(segment));
     date.setFullYear( dateParams[0] );
+    date.setDate(dateParams[2]);
     date.setMonth( dateParams[1] - 1);
-    date.setDate( dateParams[2]);
   }
-  if(setToMidnight){
+  if (setToMidnight) {
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -121,7 +121,7 @@ function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
     let startTimeInMinutes = startHourDigits*60 + startMinuteDigits;
     let endTimeInMinutes = endHourDigits*60 + endMinuteDigits;
     let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
-    return Math.round(shiftLengthInMinutes); 
+    return Math.round(shiftLengthInMinutes);
   }
 
     let totalShiftLengthForWeek = 0
