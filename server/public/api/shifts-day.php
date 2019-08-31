@@ -13,10 +13,9 @@ $date= $_GET['date'];
 $query = "SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
-            rd.`start_time`,
-            rd.`end_time`,
+            MIN(`start_time`),
+            MAX(`end_time`),
             rd.`date`,
-            rd.`status`,
             rt.`line_name`,
             rt.`id`
           FROM
@@ -26,8 +25,13 @@ $query = "SELECT
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            -- rd.`status`= 'scheduled' || rd.`status` = 'posted'
-            rd.`date`= {$date} AND rd.`user_id` = 1";
+            rd.`date`= {$date} AND rd.`user_id` = 1 
+          GROUP BY
+            rd.`bus_info_id`,
+            rd.`user_id`,
+            rd.`date`,
+            rt.`line_name`,
+            rt.`id`";
 $result = mysqli_query($conn, $query);
 if (!$result) {
     throw new Exception('mysql error ' . mysqli_error($conn));
