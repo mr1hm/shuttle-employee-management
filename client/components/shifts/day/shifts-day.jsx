@@ -107,7 +107,6 @@ class ShiftsDay extends React.Component {
     // console.log( "prevProps: ", prevProps);
     // console.log("prevState: " , prevState);
     if (prevProps.match.params.date !== this.props.match.params.date || this.props.view !== prevProps.view) {
-      debugger;
       let dateToQuery = createDateObjFromDateString( (this.props.match.params.date ? this.props.match.params.date : this.state.dateToPass )).getTime();
       //dateToQuery += 25200000; //need to convert this, this is +7 hours for showing accurate time in Pacific Time
       //this shouldn't happen here because the backend expects things to be at midnight, not offset.  if any offset would be used
