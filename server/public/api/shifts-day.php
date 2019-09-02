@@ -9,7 +9,11 @@ require_once 'db_connection.php';
 //   }
 //   $startTime = intval($startTime);
 // }
+
+
 $date= $_GET['date'];
+
+
 $query = "SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
@@ -25,13 +29,23 @@ $query = "SELECT
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            rd.`date`= {$date} AND rd.`user_id` = 1 
-          GROUP BY
+
+            rd.`date`= {$date} 
+            
+         GROUP BY
             rd.`bus_info_id`,
             rd.`user_id`,
             rd.`date`,
             rt.`line_name`,
             rt.`id`";
+
+if(!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
+  $query .=" AND rd.`user_id` = 1";
+} else {
+  $query .= " AND rd.`status` = 'posted' AND rd.user_id != 1";
+}
+ 
+          
 $result = mysqli_query($conn, $query);
 if (!$result) {
     throw new Exception('mysql error ' . mysqli_error($conn));

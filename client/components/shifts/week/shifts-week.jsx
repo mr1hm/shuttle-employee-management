@@ -68,25 +68,14 @@ class ShiftsWeek extends React.Component {
     return weekDataArray;
   }
   getData(url, methodToUse) {
+    debugger;
     fetch(url, { method: methodToUse })
       .then(response => { return response.json() })
       .then(weekShiftInfo => {
-        // weekShiftInfo = [{
-        //   "id": "8",
-        //   "startTime": "600",
-        //   "endTime": "1000",
-        //   "routeInfoID": "1",
-        //   "authorID": "2",
-        //   "sessionID": "1",
-        //   "ownerID": "1",
-        //   "round_date": "1563692400000",
-        //   "posted": false
-        // }]
-        console.log('Week Shift Info: ', weekShiftInfo);
         this.setState({
           data: weekShiftInfo
         })
-        console.log('this.state.data ', this.state.data);
+
       })
   }
   componentDidMount(){
@@ -106,15 +95,18 @@ class ShiftsWeek extends React.Component {
       var dateToPass = this.props.defaultDate;
     } else {
       dateToPass = createDateObjFromDateString( this.props.match.params.date );
+      console.log("date to pass before getTime: ", dateToPass);
       dateToPass = dateToPass.getTime();
+      console.log("date to pass after getTime: ", dateToPass);
     }
     const weekArray = this.generateFullWeekOfTimestamps(dateToPass);
     const weekDayShiftArray = this.generateArrayOfFullWeek(weekArray);
     if (!this.state.data){
       return <div>No Data Available</div>;
     }
-    console.log('shift array:', weekDayShiftArray)
+    console.log("Week dateToPass: ", dateToPass);
     return (
+
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
 
@@ -124,7 +116,7 @@ class ShiftsWeek extends React.Component {
           </div>
           <div className="calendarContainerWeekComponent">
               {weekDayShiftArray.map((dayData, index) => {
-                console.log('daydata: ', dayData);
+
                 return (
                   <ShiftsWeekDay key={index} dayData={dayData} shifts={dayData.shifts} defaultDay={this.props.defaultDate} date={dateToPass} />
                   )
