@@ -17,18 +17,20 @@ function convertUnixMonthDay(time) {
 }
 
 function OneOfMyShifts(props) {
+
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
   let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
   if (props.view === 'availableShifts'){
      shiftButton = "Take Shift";
   }
+
   // let numOfRounds = (props.shifts.end_time-props.shifts.start_time)/(props.shifts.legDuration);
   return (
     <tr>
       {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
       <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name} /> </td>
-      {/* <td> {props.shifts.start_time} - {props.shifts.end_time} </td> */}
-      <td> {props.shifts.start_time} - {props.shifts.end_time} </td>
+
+      <td> {props.shifts["MIN(`start_time`)"]} - {props.shifts["MAX(`end_time`)"]} </td>
       <td> #rd </td>
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
       <td> #hrs </td>
@@ -74,33 +76,7 @@ class ShiftsDay extends React.Component {
   }
   componentDidMount() {
     this.fetchCallMethod(this.state.queryString);
-  //   if (!this.query.length) {
-
-  //     this.fetchCallMethod(this.state.queryString);
-  //   } else {
-
-  //     this.fetchCallMethod(this.state.queryString);
-  //   }
-  // }
-  //getting a 500 server error
-  // componentDidUpdate(prevProps, prevState) {
-  //   let updateState = {};
-  //   let dateToQuery;
-  //   console.log("Date to Query: ", dateToQuery);
-  //   if (this.state.dateToQuery != prevState.dateToQuery && this.props.match.params.date) {
-  //     dateToPass = this.props.match.params.date;
-  //     dateToQuery = new Date(dateToPass).getTime() + 25200000;
-  //     updateState.dateToQuery = dateToQuery;
-  //     this.setState({
-  //       dateToQuery: dateToQuery,
-  //       queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`
-  //     });
-  //   }
-  //   if (prevProps.match.params.date !== this.props.match.params.date) {
-  //     this.fetchCallMethod(this.query);
-  //   }
   }
-
 
   //My try at revamping
   componentDidUpdate(prevProps, prevState) {
@@ -137,6 +113,7 @@ class ShiftsDay extends React.Component {
   render() {
     let dateToPass = this.state.dateToPass;
     dateToPass = createDateObjFromDateString(dateToPass);
+
     if (this.state.myShiftsToday.length === 0) {
       return (
         <div>
@@ -145,14 +122,22 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
-    let shiftMin = Math.min.apply(null, this.state.myShiftsToday.map(index => index.start_time));
-    let shiftMax = Math.max.apply(null, this.state.myShiftsToday.map(index => index.end_time));
+
+    let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)"]).toString();
+    let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"]).toString();
+    let shiftUserId = this.state.myShiftsToday.map(index => index.user_id).toString();
+    let shiftBusLine = this.state.myShiftsToday.map(index => index.line_name).toString();
+    let shiftBusNum = this.state.myShiftsToday.map(index => index.bus_info_id).toString();
+  
+
 
     return (
 
       <div>
+
         <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link></div>
         <TopMenuShift title={this.props.view === 'myShifts' ? "DAY" : "AVAILABLE"} page='day' date={(dateToPass)} />
+
         <table className='table table-striped'>
           <thead>
             <tr>
@@ -169,10 +154,11 @@ class ShiftsDay extends React.Component {
               this.state.myShiftsToday.map(shifts => {
                 return (
                   < OneOfMyShifts
-                    key={shifts.start_time}
+                    key={shifts.index}
                     shifts={shifts}
                     clickHandler={this.openModal}
                     view = {this.props.view}
+
                   />
                 );
               })
@@ -180,14 +166,28 @@ class ShiftsDay extends React.Component {
           </tbody>
         </table>
 
+        {/* <Modal open={this.state.isModalOpen}>
+          <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
+          <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
+          <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
+        </Modal> */}
         <Modal open={this.state.isModalOpen} className="modalShiftDetails">
-          <ShiftsDetails goBack={this.closeModal}> </ShiftsDetails>
+        <ShiftsDetails 
+            goBack={this.closeModal} 
+            unixDate={this.props.match.params.date} 
+            blockStartTime={shiftBlockStart}   // the start time (military 4-digit) of the first round in the block clicked
+            bockEndTime={shiftBlockEnd}      // the end time (military 4-digit) of the last round of the block clicked
+            userID={shiftUserId}           // the user's ID number
+            busLine={shiftBusLine}          // the letter representing the line (route) of the selected round or block
+            busNumber={shiftBusNum}        // the number of the bus for the selected round or block
+            >       
+          </ShiftsDetails>
+
         </Modal>
 
       </div>
     );
   }
-
 }
 
 export default ShiftsDay;

@@ -37,7 +37,8 @@
       "numRounds": 4,
       "shiftId": 338,
       "recurring": true,
-      "posted": false
+      "posted": false,
+      "status": "scheduled"
     }
   ]
 
