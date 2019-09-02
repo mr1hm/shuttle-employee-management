@@ -13,8 +13,8 @@ require_once 'db_connection.php';
 
 $date= $_GET['date'];
 
-
-$query = "SELECT
+if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
+  $query = "SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
             MIN(`start_time`),
@@ -30,22 +30,38 @@ $query = "SELECT
             rd.`bus_info_id` = rt.`id`
           WHERE
 
-            rd.`date`= {$date} 
-            
-         GROUP BY
+            rd.`date`= {$date}
+            GROUP BY
             rd.`bus_info_id`,
             rd.`user_id`,
             rd.`date`,
             rt.`line_name`,
-            rt.`id`";
-
-if(!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
-  $query .=" AND rd.`user_id` = 1";
+            rt.`id`
+            AND rd.`user_id` = 1";
 } else {
-  $query .= " AND rd.`status` = 'posted' AND rd.user_id != 1";
+  $query = " SELECT
+            rd.`bus_info_id`,
+            rd.`user_id`,
+            rd.`start_time`,
+            rd.`end_time`,
+            rd.`date`,
+            rt.`line_name`,
+            rt.`id`
+          FROM
+            `round` AS rd
+          INNER JOIN
+            `route` AS rt
+          ON
+            rd.`bus_info_id` = rt.`id`
+          WHERE
+
+            rd.`date`= {$date}
+
+
+  AND rd.`status` = 'posted' AND rd.`user_id` != 1";
 }
- 
-          
+
+
 $result = mysqli_query($conn, $query);
 if (!$result) {
     throw new Exception('mysql error ' . mysqli_error($conn));
