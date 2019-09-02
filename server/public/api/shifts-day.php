@@ -45,6 +45,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
             rd.`start_time`,
             rd.`end_time`,
             rd.`date`,
+            rd. `status`,
             rt.`line_name`,
             rt.`id`
           FROM

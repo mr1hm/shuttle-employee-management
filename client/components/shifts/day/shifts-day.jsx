@@ -30,7 +30,7 @@ function OneOfMyShifts(props) {
       {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
       <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name} /> </td>
 
-      <td> {props.shifts["MIN(`start_time`)"]} - {props.shifts["MAX(`end_time`)"]} </td>
+      <td> {props.shifts["MIN(`start_time`)"] || props.shifts.start_time} - {props.shifts["MAX(`end_time`)"] || props.shifts.end_time} </td>
       <td> #rd </td>
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
       <td> #hrs </td>
@@ -122,9 +122,9 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
-
-    let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)" ]).toString();
-    let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"]).toString();
+    console.log("this.state.myShiftsToday start time: ", this.state.myShiftsToday[0].start_time);
+    let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)"] || index.start_time).toString();
+    let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"] || index.end_time).toString();
     let shiftUserId = this.state.myShiftsToday.map(index => index.user_id).toString();
     let shiftBusLine = this.state.myShiftsToday.map(index => index.line_name).toString();
     let shiftBusNum = this.state.myShiftsToday.map(index => index.bus_info_id).toString();
