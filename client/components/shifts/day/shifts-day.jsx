@@ -177,7 +177,7 @@ class ShiftsDay extends React.Component {
             goBack={this.closeModal}
             unixDate={this.props.match.params.date}
             blockStartTime={shiftBlockStart}   // the start time (military 4-digit) of the first round in the block clicked
-            bockEndTime={shiftBlockEnd}      // the end time (military 4-digit) of the last round of the block clicked
+            blockEndTime={shiftBlockEnd}      // the end time (military 4-digit) of the last round of the block clicked
             userID={shiftUserId}           // the user's ID number
             busLine={shiftBusLine}          // the letter representing the line (route) of the selected round or block
             busNumber={shiftBusNum}        // the number of the bus for the selected round or block
