@@ -4,6 +4,7 @@ import TopMenuGeneral from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
 import {Grid} from '@material-ui/core';
 import Modal from '../../post-modal';
+import {createDateObjFromDateString} from '../../../lib/time-functions';
 
 class ShiftsDetails extends React.Component {
   constructor(props) {
@@ -38,7 +39,7 @@ class ShiftsDetails extends React.Component {
       .catch(error => {throw(error)});
   }
   componentDidMount(){
-    let date = this.props.unixDate ? this.props.unixDate : 1560409200000;
+    let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();
     let shiftStart = this.props.blockStartTime ? this.props.blockStartTime : 600;
     let shiftEnd = this.props.blockEndTime ? this.props.blockEndTime : 1100;
     let user = this.props.userID ? this.props.userID : 1;
@@ -78,7 +79,7 @@ class ShiftsDetails extends React.Component {
   }
   createSubHeaderTimeFrame() {
     const shiftDetails = this.state.shiftsDetailsInfo;
-    let date = this.props.unixDate ? new Date(this.props.unixDate) : new Date(1560409200000);
+    let date = new Date(createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime());
     const daysArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const monthsArray = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const year = date.getFullYear();
