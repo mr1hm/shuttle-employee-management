@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { calculateDailyWorkingHours } from '../../../lib/time-functions';
+import { calcShiftLenghtInHourMinFormat } from '../../../lib/time-functions';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
@@ -24,16 +24,18 @@ function OneOfMyShifts(props) {
      shiftButton = "Take Shift";
   }
 
-  // let numOfRounds = (props.shifts.end_time-props.shifts.start_time)/(props.shifts.legDuration);
+  let numOfRounds = props.shifts["COUNT(`start_time`)"];
+  let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"],props.shifts["MAX(`end_time`)"]);
+  // debugger;
   return (
     <tr>
       {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
       <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name} /> </td>
 
       <td> {props.shifts["MIN(`start_time`)"] || props.shifts.start_time} - {props.shifts["MAX(`end_time`)"] || props.shifts.end_time} </td>
-      <td> #rd </td>
+      <td> {numOfRounds} </td>
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
-      <td> #hrs </td>
+      <td> {shiftHours} </td>
 
       <td className={statusColor}> {props.shifts.status} </td>
       <td> <input type="button" value={shiftButton} onClick={props.clickHandler} /> </td>
@@ -122,13 +124,12 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
-    console.log("this.state.myShiftsToday start time: ", this.state.myShiftsToday[0].start_time);
     let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)"] || index.start_time).toString();
     let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"] || index.end_time).toString();
     let shiftUserId = this.state.myShiftsToday.map(index => index.user_id).toString();
     let shiftBusLine = this.state.myShiftsToday.map(index => index.line_name).toString();
     let shiftBusNum = this.state.myShiftsToday.map(index => index.bus_info_id).toString();
-
+    // debugger;
 
 
     return (

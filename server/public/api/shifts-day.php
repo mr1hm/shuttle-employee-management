@@ -10,7 +10,7 @@ require_once 'db_connection.php';
 //   $startTime = intval($startTime);
 // }
 
-
+// $userID = $_GET['user_id'];
 $date= $_GET['date'];
 
 if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
@@ -21,7 +21,8 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
             MAX(`end_time`),
             rd.`date`,
             rt.`line_name`,
-            rt.`id`
+            rt.`id`,
+            COUNT(`start_time`)
           FROM
             `round` AS rd
           INNER JOIN
@@ -29,15 +30,13 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-
-            rd.`date`= {$date}
-            GROUP BY
+            rd.`date`= {$date} AND rd.`user_id` = 1
+          GROUP BY
             rd.`bus_info_id`,
             rd.`user_id`,
             rd.`date`,
             rt.`line_name`,
-            rt.`id`
-            AND rd.`user_id` = 1";
+            rt.`id`";
 } else {
   $query = " SELECT
             rd.`bus_info_id`,
@@ -55,11 +54,8 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-
             rd.`date`= {$date}
-
-
-  AND rd.`status` = 'posted' AND rd.`user_id` != 1";
+            AND rd.`status` = 'posted' AND rd.`user_id` != 1";
 }
 
 
