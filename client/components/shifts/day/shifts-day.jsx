@@ -30,7 +30,7 @@ function OneOfMyShifts(props) {
       {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
       <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name} /> </td>
 
-      <td> {props.shifts["MIN(`start_time`)"]} - {props.shifts["MAX(`end_time`)"]} </td>
+      <td> {props.shifts["MIN(`start_time`)"] || props.shifts.start_time} - {props.shifts["MAX(`end_time`)"] || props.shifts.end_time} </td>
       <td> #rd </td>
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
       <td> #hrs </td>
@@ -122,13 +122,13 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
-
-    let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)"]).toString();
-    let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"]).toString();
+    console.log("this.state.myShiftsToday start time: ", this.state.myShiftsToday[0].start_time);
+    let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)"] || index.start_time).toString();
+    let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"] || index.end_time).toString();
     let shiftUserId = this.state.myShiftsToday.map(index => index.user_id).toString();
     let shiftBusLine = this.state.myShiftsToday.map(index => index.line_name).toString();
     let shiftBusNum = this.state.myShiftsToday.map(index => index.bus_info_id).toString();
-  
+
 
 
     return (
@@ -172,15 +172,15 @@ class ShiftsDay extends React.Component {
           <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
         </Modal> */}
         <Modal open={this.state.isModalOpen} className="modalShiftDetails">
-        <ShiftsDetails 
-            goBack={this.closeModal} 
-            unixDate={this.props.match.params.date} 
+        <ShiftsDetails
+            goBack={this.closeModal}
+            unixDate={this.props.match.params.date}
             blockStartTime={shiftBlockStart}   // the start time (military 4-digit) of the first round in the block clicked
             bockEndTime={shiftBlockEnd}      // the end time (military 4-digit) of the last round of the block clicked
             userID={shiftUserId}           // the user's ID number
             busLine={shiftBusLine}          // the letter representing the line (route) of the selected round or block
             busNumber={shiftBusNum}        // the number of the bus for the selected round or block
-            >       
+            >
           </ShiftsDetails>
 
         </Modal>
