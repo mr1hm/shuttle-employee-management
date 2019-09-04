@@ -20,13 +20,14 @@ function convertUnixMonthDay(time) {
 function OneOfMyShifts(props) {
 
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
-  let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
+  // let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
   if (props.view === 'availableShifts'){
      shiftButton = "Take Shift";
   }
 
   let numOfRounds = props.shifts["COUNT(`start_time`)"];
   let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"],props.shifts["MAX(`end_time`)"]);
+  let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"])>1) ? "Scheduled/Posted" : props.shifts.status; 
   // debugger;
   return (
     <tr>
@@ -38,7 +39,7 @@ function OneOfMyShifts(props) {
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
       <td> {shiftHours} </td>
 
-      <td className={statusColor}> {props.shifts.status} </td>
+      <td /*className={statusColor}*/> {statusIndicator} </td>
       <td> <input type="button" value={shiftButton} onClick={props.clickHandler} /> </td>
     </tr>
   )

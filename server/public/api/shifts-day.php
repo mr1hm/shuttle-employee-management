@@ -22,7 +22,8 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
             rd.`date`,
             rt.`line_name`,
             rt.`id`,
-            COUNT(`start_time`)
+            COUNT(`start_time`),
+            COUNT(DISTINCT rd.`status`)
           FROM
             `round` AS rd
           INNER JOIN
