@@ -7,6 +7,7 @@ import RouteBusDisplay from '../../route-bus-display';
 import ShiftsDetails from '../details/shifts-details';
 import ShiftsAvailable from '../available/shifts-available';
 import { createDateObjFromDateString } from '../../../lib/time-functions';
+import { Minimatch } from 'minimatch';
 
 
 function convertUnixMonthDay(time) {
@@ -155,7 +156,7 @@ class ShiftsDay extends React.Component {
               this.state.myShiftsToday.map(shifts => {
                 return (
                   < OneOfMyShifts
-                    key={shifts.index}
+                    key={shifts.date + shifts['MIN(`start_time`)']}
                     shifts={shifts}
                     clickHandler={this.openModal}
                     view = {this.props.view}
