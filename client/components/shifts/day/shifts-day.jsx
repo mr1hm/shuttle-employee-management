@@ -2,6 +2,8 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import { calculateDailyWorkingHours } from '../../../lib/time-functions';
 import TopMenuShift from '../../topmenu/topmenu-shift';
+import Modal from '../../post-modal';
+import RouteBusDisplay from '../../route-bus-display';
 
 function convertUnixMonthDay(time) {
   const getTheDate = new Date(time);
@@ -21,8 +23,8 @@ function OneOfMyShifts(props) {
             <td> {numOfRounds.toFixed(2)} </td>
             <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td>
             <td className={statusColor}> {props.shifts.status} </td>
-            <td> <input type="button" value={shiftButton} /> </td> 
-        </tr>          
+        <td> <input type="button" value={shiftButton} onClick={props.clickHandler} /> </td>
+        </tr>
     )
 }
 
@@ -31,8 +33,10 @@ class ShiftsDay extends React.Component {
     super(props);
     this.query = ``;
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
+    this.openModal = this.openModal.bind(this);
     this.state = {
-      myShiftsToday: []
+      myShiftsToday: [],
+      isModalOpen: false
     }
   }
   fetchCallMethod(query){
@@ -50,14 +54,25 @@ class ShiftsDay extends React.Component {
       .catch(error => {throw(error)});
   }
   componentDidMount(){
-    this.fetchCallMethod('?shiftDate='+this.props.defaultDate);
+    this.fetchCallMethod('?round_date='+this.props.defaultDate);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.date !== this.props.match.params.date) {
       this.fetchCallMethod(this.query);
     }
-  
+
+  }
+  openModal(){
+    debugger;
+    this.setState({
+      isModalOpen: true
+    })
+  }
+  closeModal(){
+    this.setState({
+      isModalOpen: false
+    })
   }
   render(){
     if (this.props.match.params.date === undefined) {
@@ -65,7 +80,7 @@ class ShiftsDay extends React.Component {
     } else {
     dateToPass = this.props.match.params.date;
     var dateToQuery = new Date(dateToPass).getTime()+25200000;
-    this.query = `?shiftDate=${dateToQuery}`;
+    this.query = `?round_date=${dateToQuery}`;
     }
     if (this.state.myShiftsToday.length === 0) {
       return (
@@ -74,11 +89,12 @@ class ShiftsDay extends React.Component {
       <div>You have no shifts scheduled today.</div>
       </div>
       );
-    } 
+    }
     return (
       <div>
           <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(dateToPass)}`}> </Link></div>
       <TopMenuShift title="DAY" page='day' date={(dateToPass)}/>
+      <RouteBusDisplay bus='1' route='H'/>
         <table className='table table-striped'>
           <thead>
               <tr>
@@ -94,19 +110,31 @@ class ShiftsDay extends React.Component {
           <tbody>
           {
             this.state.myShiftsToday.map(shifts => {
-              return ( 
-                  < OneOfMyShifts
-                    key = { shifts.id }
-                    shifts = { shifts }
-                  />                              
-              );
-            })
-          }
-          </tbody>     
+              return (
+                < OneOfMyShifts
+                  key={shifts.id}
+                  shifts={shifts}
+                  clickHandler = {this.openModal }
+                />
+          );
+        })
+      }
+          </tbody>
         </table>
+        <Modal open={this.state.isModalOpen}>
+          <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
+          <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
+          <p><button onClick={() => this.closeModal()}>Yes, I want to post</button></p>
+        </Modal>
+
       </div>
     );
   }
-}
 
+}
+/*
+  key={shifts.id},
+                shifts = { shifts },
+                clickHandler = {()=> {}}
+                */
 export default ShiftsDay;

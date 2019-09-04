@@ -5,6 +5,7 @@ import ShiftsWeekDay from './shifts-week-day';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import {createDateObjFromDateString} from '../../../lib/time-functions';
 
+
 class ShiftsWeek extends React.Component {
   constructor(props){
     super(props);
@@ -26,13 +27,13 @@ class ShiftsWeek extends React.Component {
     var daysObject = { };
     function addDayObject( timestamp ){
       daysObject[timestamp] = {
-        shiftDate: timestamp,
+        round_date: timestamp,
         shifts: []
       }
     }
     const timeArray = [sunday, monday, tuesday, wednesday, thursday, friday, saturday];
-    timeArray.map( shiftDate => {
-      addDayObject( shiftDate );
+    timeArray.map( round_date => {
+      addDayObject( round_date );
     })
     return daysObject;
   }
@@ -58,7 +59,7 @@ class ShiftsWeek extends React.Component {
     }
     for( let shiftI = 0; shiftI < this.state.data.length; shiftI++){
       let thisShift = this.state.data[shiftI];
-      let shiftTimestamp = thisShift.shiftDate
+      let shiftTimestamp = thisShift.round_date;
       if( weekData[ shiftTimestamp] !== undefined ){
         weekData[ shiftTimestamp].shifts.push( thisShift );
       }
@@ -70,6 +71,17 @@ class ShiftsWeek extends React.Component {
     fetch(url, { method: methodToUse })
       .then(response => { return response.json() })
       .then(weekShiftInfo => {
+        // weekShiftInfo = [{
+        //   "id": "8",
+        //   "startTime": "600",
+        //   "endTime": "1000",
+        //   "routeInfoID": "1",
+        //   "authorID": "2",
+        //   "sessionID": "1",
+        //   "ownerID": "1",
+        //   "round_date": "1563692400000",
+        //   "posted": false
+        // }]
         this.setState({
           data: weekShiftInfo
         })
@@ -97,23 +109,27 @@ class ShiftsWeek extends React.Component {
     const weekArray = this.generateFullWeekOfTimestamps(dateToPass);
     const weekDayShiftArray = this.generateArrayOfFullWeek(weekArray);
     if (!this.state.data){
-      return <div>no data available</div>;
+      return <div>No Data Available</div>;
     }
+    console.log('shift array:', weekDayShiftArray)
     return (
         <React.Fragment>
         <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
+
         <div className="masterContainerIphone">
           <div className="viewHoursContainer">
             <HoursOfOperation />
           </div>
           <div className="calendarContainerWeekComponent">
               {weekDayShiftArray.map((dayData, index) => {
+                console.log('daydata: ', dayData);
                 return (
                   <ShiftsWeekDay key={index} dayData={dayData} shifts={dayData.shifts} defaultDay={this.props.defaultDate} date={dateToPass} />
                   )
               })}
           </div>
         </div>
+
         </React.Fragment>
     );
   }
