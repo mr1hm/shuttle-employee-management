@@ -12,7 +12,7 @@ if ($method === 'PATCH') { //make sure it's patch request
     throw new Exception('request body needs an id ');
   }
   $user_id = $body['user_id'];
-  if (!is_numeric($id)) { //checking to make sure it is a number
+  if (!is_numeric($user_id)) { //checking to make sure it is a number
     throw new Exception('id needs to be a number');
   }
   if (empty($body['id'])) {
@@ -30,7 +30,7 @@ if ($method === 'PATCH') { //make sure it's patch request
   $query = " UPDATE `round` SET `status` = ? WHERE `user_id` = ? AND `id` = ? ";
   $statement = mysqli_stmt_init($conn);
   mysqli_stmt_prepare($statement, $query);
-  mysqli_stmt_bind_param($statement, 'sii', $status, $user_id, $id ); //avoiding SQL injection (keeping our information safe)//'si' = string and integer
+  mysqli_stmt_bind_param($statement, 'sii', $status, $user_id, $id ); //avoiding SQL injection (keeping our information safe)//'sii' = string,integer, integer
   mysqli_stmt_execute($statement);
   $affectedRows = mysqli_stmt_affected_rows($statement);
   if (!$affectedRows) {
