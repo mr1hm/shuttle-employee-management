@@ -185,15 +185,21 @@ function populateSchedule($operators, $rounds)  {
     $madeAssignment = false;
 
     //check to make sure we have times available, if not remove that person
-    //ERROR IN THIS CODE due to an undefined array item (for some reason we are removing an item, but the index is not adjusting -- array_splice should be the right solution)
-    for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
-      $availableTimesArrayLength = count($operators[$operatorsIndex]['available_times']);
-      if (!$availableTimesArrayLength){
-        array_splice($operators, $operatorsIndex, 1);
+    for ($operatorsIndex = $lengthOperatorsArray -1; 0 <=$operatorsIndex; $operatorsIndex--) {
+      if (empty ($operators[$operatorsIndex]['available_times'])){
+        unset($operators[$operatorsIndex]);
       }
     }
+    array_values($operators);
+
+    echo '<pre>';
+    print_r($operators);
+    echo '</pre>';
+
+  
     //sort the operator array, put operator with fewest weekly hours at the top
     uasort($operators, 'sundayOperatorsSort'); 
+    $operators = array_values($operators);
 
     //check to make sure we have three unassigned rounds
     if ($rounds[$roundsIndex]['user_id'] === '1' and $rounds[$roundsIndex + 1]['user_id'] === '1' and $rounds[$roundsIndex + 2]['user_id'] === '1') {  
@@ -298,6 +304,7 @@ function populateSchedule($operators, $rounds)  {
 }
 
 uasort($sundayOperators, 'sundayOperatorsSort');
+$sundayOperators = array_values($sundayOperators);
 populateSchedule($sundayOperators, $rounds);
 
 //add similar functionality for other days of week.
@@ -307,5 +314,27 @@ populateSchedule($sundayOperators, $rounds);
 // print_r($sundayOperators);
 // echo '</pre>';
 // exit();
+
+   //ERROR IN THIS CODE due to an undefined array item 
+    // echo '<pre>';
+    // print_r($operators);
+    // echo '</pre>';
+
+    //long version to see if I can get around constant erring based on no content
+    // $indexesToDelete = [];
+    // for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
+    //   if (empty ($operators[$operatorsIndex]['available_times'])){
+    //     array_push($indexesToDelete, $operatorsIndex);
+    //   }
+    // }
+  
+    // $lengthIndexesToDelete = count($indexesToDelete);
+    // if ($indexesToDelete) {
+    //   for ($deleteIndex = 0; $deleteIndex < $lengthIndexesToDelete; $deleteIndex++) {
+    //     array_splice($operators, $deleteIndex, 1);
+    //   }
+    // }
+
+    // //shorter version
 ?>
 
