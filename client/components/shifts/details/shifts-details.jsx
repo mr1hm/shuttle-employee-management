@@ -117,6 +117,19 @@ class ShiftsDetails extends React.Component {
       );
     }
   }
+  generateCheckboxElements(object) {
+    return (
+      <div className="custom-control custom-checkbox">
+      <input 
+        type="checkbox" 
+        className="custom-control-input" 
+        id={object.id} 
+        onChange={() => this.pushRoundIDsToArray(object.id)}
+        ></input>
+      <label className="custom-control-label" htmlFor={object.id}></label>
+    </div>
+    );
+  }
   render() {
     if (!this.state.shiftsDetailsInfo){
       return <div>No Shift Details Available</div>;
@@ -144,7 +157,7 @@ class ShiftsDetails extends React.Component {
                     <table className="table table-bordered">
                       <thead>
                         <tr>
-                          <div></div>
+                          <th></th>
                           {/* <div className="custom-control custom-checkbox">
                             <input type="checkbox" className="custom-control-input" id="customCheckT0"></input>
                             <label className="custom-control-label" htmlFor="customCheckT0">{""}</label>
@@ -157,15 +170,7 @@ class ShiftsDetails extends React.Component {
                         {shiftDetails.map(object => { return (
                           <tr key={object.id}>
                             <td>
-                            <div className="custom-control custom-checkbox">
-                              <input 
-                                type="checkbox" 
-                                className="custom-control-input" 
-                                id={object.id} 
-                                onChange={() => this.pushRoundIDsToArray(object.id)}
-                                ></input>
-                              <label className="custom-control-label" htmlFor={object.id}></label>
-                            </div>
+                            {this.generateCheckboxElements(object)}
                             </td>
                             <td>{this.convertMilitaryTime(object.start_time)}</td>
                             <td>{this.convertMilitaryTime(object.end_time)}</td>
@@ -188,7 +193,7 @@ class ShiftsDetails extends React.Component {
                     <table className="table table-bordered">
                       <thead>
                         <tr>
-                          <div></div>
+                          {/* <th></th> */}
                           {/* <div className="custom-control custom-checkbox">
                             <input type="checkbox" className="custom-control-input" id="customCheckD0"></input>
                             <label className="custom-control-label" htmlFor="customCheckD0">{""}</label>
