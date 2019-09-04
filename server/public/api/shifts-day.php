@@ -20,6 +20,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
             MIN(`start_time`),
             MAX(`end_time`),
             rd.`date`,
+            rd. `status`,
             rt.`line_name`,
             rt.`id`,
             COUNT(`start_time`)
@@ -30,11 +31,12 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            rd.`date`= {$date} AND rd.`user_id` = 1
+            rd.`date`= {$date} AND rd.`user_id` = 1 AND rd. `status` = 'scheduled' OR 'posted'
           GROUP BY
             rd.`bus_info_id`,
             rd.`user_id`,
             rd.`date`,
+            rd.`status`,
             rt.`line_name`,
             rt.`id`";
 } else {

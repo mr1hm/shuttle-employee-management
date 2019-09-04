@@ -181,6 +181,7 @@ class ShiftsDay extends React.Component {
             userID={shiftUserId}           // the user's ID number
             busLine={shiftBusLine}          // the letter representing the line (route) of the selected round or block
             busNumber={shiftBusNum}        // the number of the bus for the selected round or block
+
             >
           </ShiftsDetails>
 
