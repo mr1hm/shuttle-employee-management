@@ -11,15 +11,14 @@ class ShiftsDetails extends React.Component {
     super(props);
       this.state = {
         isModalOpen: false,
-        shiftsDetailsInfo: [],
-        checkedItems: new Map()
+        shiftsDetailsInfo: []
       }
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.createSubHeaderTimeFrame = this.createSubHeaderTimeFrame.bind(this);
     this.postShift = this.postShift.bind(this);
-    // this.handleChange = this.handleChange.bind(this);
     this.pushRoundIDsToArray = this.pushRoundIDsToArray.bind(this);
+    this.handlePostButtonConfirmation = this.handlePostButtonConfirmation.bind(this);
     this.checkedRoundIDs = [];
   }
   getData(url, methodToUse) {
@@ -39,14 +38,12 @@ class ShiftsDetails extends React.Component {
         'Content-Type': 'application/json'
       },
       method: 'PATCH',
-      body: JSON.stringify({ status: status,
-                            user_id: userID,
-                            id: roundID})
+      body: JSON.stringify({ 
+        status: status,
+        user_id: userID,
+        id: roundID})
     })
       .then(response => { return response.json()} )
-      .then(
-
-      )
       .catch(error => {throw(error)});
   }
   componentDidMount(){
@@ -71,24 +68,16 @@ class ShiftsDetails extends React.Component {
       isModalOpen: false,
     })
   }
-  // handleChange(event) {
-  //   const round = event.target.id;
-  //   const isChecked = event.target.checked;
-  //   this.setState(prevState => ({
-  //     checkedItems: prevState.checkedItems.set(
-  //       round, isChecked
-  //     )
-  //   }), console.log("checkbox state:", this.state.checkedItems));
-  // }
-  // matchIDwithArrayElement(element, number) {
-  //   return element === number;
-  // }
   pushRoundIDsToArray(number) {
     const index = this.checkedRoundIDs.findIndex(element => element === number); // findIndex returns index of matching element if it exists in array, otherwise returns -1.
     if (index < 0) {  // if index doesnt exist,
       this.checkedRoundIDs.push(number);  // push the element id into the array
     } else this.checkedRoundIDs.splice(index, 1);   // otherwise, the element is already in the array and clicking again must remove, so splicing.
-    console.log("checkedRoundIDs", this.checkedRoundIDs);
+  }
+  handlePostButtonConfirmation() {
+    this.checkedRoundIDs.map(element => this.postShift('posted', this.props.userID, element))
+    this.closeModal()
+    this.props.goBack()
   }
   convertMilitaryTime(militaryTime) {
     if (militaryTime.length < 4){
@@ -173,10 +162,8 @@ class ShiftsDetails extends React.Component {
                                 type="checkbox" 
                                 className="custom-control-input" 
                                 id={object.id} 
-                                checked={this.state.checkedItems.get(object.id)} 
                                 onChange={() => this.pushRoundIDsToArray(object.id)}
                                 ></input>
-                              {/* <input type="checkbox" className="custom-control-input" id={object.id} checked={this.state.checkedItems.get(object.id)} onChange={this.handleChange}></input> */}
                               <label className="custom-control-label" htmlFor={object.id}></label>
                             </div>
                             </td>
@@ -237,8 +224,7 @@ class ShiftsDetails extends React.Component {
         <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
           <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
           <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
-          {/* <p><button  onClick={() => this.postShift('scheduled', 1, 1)} >Yes, I want to post</button></p> Need to make fetch call to hit driver-shift endpoint to switch shifts from scheduled to posted */}
-          <p><button onClick={this.checkedRoundIDs.map(element => this.postShift('posted', this.props.userID, element)), () => this.closeModal(), () => this.props.goBack()} >Yes, I want to post</button></p> 
+          <p><button onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p> 
         </Modal>
       </React.Fragment>
     )
