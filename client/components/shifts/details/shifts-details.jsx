@@ -207,7 +207,7 @@ class ShiftsDetails extends React.Component {
         <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
           <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
           <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
-          <p><button  onClick={() => this.postShift('unscheduled', 1, 1)} >Yes, I want to post</button></p> {/* Need to make fetch call to hit driver-shift endpoint to switch shifts from scheduled to posted*/}
+          <p><button  onClick={() => this.postShift('scheduled', 1, 1)} >Yes, I want to post</button></p> {/* Need to make fetch call to hit driver-shift endpoint to switch shifts from scheduled to posted*/}
         </Modal>
       </React.Fragment>
     )
