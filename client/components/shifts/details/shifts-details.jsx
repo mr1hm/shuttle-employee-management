@@ -17,6 +17,8 @@ class ShiftsDetails extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.createSubHeaderTimeFrame = this.createSubHeaderTimeFrame.bind(this);
     this.postShift = this.postShift.bind(this);
+    this.pushRoundIDsToArray = this.pushRoundIDsToArray.bind(this);
+    this.checkedRoundIDs = [];
   }
   getData(url, methodToUse) {
     fetch(url, { method: methodToUse })
@@ -66,6 +68,10 @@ class ShiftsDetails extends React.Component {
     this.setState({
       isModalOpen: false,
     })
+  }
+  pushRoundIDsToArray(number) {
+    this.checkedRoundIDs.push(number);
+    console.log("checkedRoundIDs", this.checkedRoundIDs);
   }
   convertMilitaryTime(militaryTime) {
     if (militaryTime.length < 4){
@@ -146,8 +152,8 @@ class ShiftsDetails extends React.Component {
                           <tr>
                             <td>
                             <div className="custom-control custom-checkbox">
-                              <input type="checkbox" className="custom-control-input" id={object.date + object.start_time}></input>
-                              <label className="custom-control-label" htmlFor={object.date + object.start_time}></label>
+                              <input type="checkbox" className="custom-control-input" id={object.id} onChange={() => this.pushRoundIDsToArray(object.id)}></input>
+                              <label className="custom-control-label" htmlFor={object.id}></label>
                             </div>
                             </td>
                             <td>{this.convertMilitaryTime(object.start_time)}</td>
