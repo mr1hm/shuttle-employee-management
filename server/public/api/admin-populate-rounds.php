@@ -314,27 +314,5 @@ populateSchedule($sundayOperators, $rounds);
 // print_r($sundayOperators);
 // echo '</pre>';
 // exit();
-
-   //ERROR IN THIS CODE due to an undefined array item 
-    // echo '<pre>';
-    // print_r($operators);
-    // echo '</pre>';
-
-    //long version to see if I can get around constant erring based on no content
-    // $indexesToDelete = [];
-    // for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
-    //   if (empty ($operators[$operatorsIndex]['available_times'])){
-    //     array_push($indexesToDelete, $operatorsIndex);
-    //   }
-    // }
-  
-    // $lengthIndexesToDelete = count($indexesToDelete);
-    // if ($indexesToDelete) {
-    //   for ($deleteIndex = 0; $deleteIndex < $lengthIndexesToDelete; $deleteIndex++) {
-    //     array_splice($operators, $deleteIndex, 1);
-    //   }
-    // }
-
-    // //shorter version
 ?>
 
