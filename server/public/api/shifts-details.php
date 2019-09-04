@@ -19,9 +19,10 @@ if (!empty($_GET['end_time'])) {
   $shiftEndTime = intval($_GET['end_time']);
 } else throw new Exception('need the shift block end time for query');
 
-$query = "SELECT * FROM `round` WHERE `user_id` = {$userID} 
-  AND `date` = {$unixDate} 
-  AND (`start_time` >= {$shiftStartTime} AND `end_time` <= {$shiftEndTime}) 
+$query = "SELECT * FROM `round` WHERE `user_id` = {$userID}
+  AND `date` = {$unixDate}
+  AND (`start_time` >= {$shiftStartTime} AND `end_time` <= {$shiftEndTime})
+  AND `status` = 'scheduled'
   ORDER BY `start_time` ASC";
 
 $result = mysqli_query($conn, $query);
