@@ -74,7 +74,7 @@ echo '</pre>';
 //   WHERE session_id = 1 
 //   GROUP BY user_id, day_of_week";
 
-$operatorAvailabilityQuery = "SELECT user_id, day_of_week, CONCAT('[',GROUP_CONCAT(CONCAT('[',start_time,',', end_time,']')),']') AS available_times FROM `operator_availability` WHERE session_id = 1 GROUP BY user_id, day_of_week";
+$operatorAvailabilityQuery = "SELECT user_id, day_of_week, CONCAT('[',GROUP_CONCAT(CONCAT('[',start_time,'-', end_time,']')),']') AS available_times FROM `operator_availability` WHERE session_id = 1 GROUP BY user_id, day_of_week";
 
 $resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
 
@@ -110,6 +110,10 @@ for ($i = 0; $i < $lengthOperatorsDetails; $i++) {
 
       $operatorsDetails[$i]['availabile_times'] = [];
       
+
+      $explodedOperatorAvailability = explode(",",$operatorAvailability[$k]['available_times']);
+      // print_r('explodedOperatorAvailability'.$explodedOperatorAvailability[0]);
+
       array_push($operatorsDetails[$i]['availabile_times'], $operatorAvailability[$k]['available_times']);
       
 
