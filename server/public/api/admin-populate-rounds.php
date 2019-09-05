@@ -35,7 +35,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 // print($rounds);
 
-$userQuery = "
+$operatorsUserDetailsQuery = "
   SELECT 
   id AS user_id, 
   last_name, 
@@ -43,38 +43,38 @@ $userQuery = "
   FROM user 
   WHERE role = 'operator' AND status = 'active'";
 
-$resultUserQuery = mysqli_query($conn, $userQuery);
+$resultOperatorsUserDetailsQuery = mysqli_query($conn, $operatorsUserDetailsQuery);
 
-if(!$resultUserQuery){
+if(!$resultOperatorsUserDetailsQuery){
   throw new Exception('MySQL error: '.mysqli_error($conn));
 }
 
-$operatorsDetails = [];
+$operatorsUserDetails = [];
+$fetchedUserIDs = [];
+$baseDayStructure = [
+  'available_times'=>[],
+  'times_assigned'=>[],
+  'continuous_hours_assigned'=>0,
+  'total_daily_hours'=>0
+];
 
-while ($row = mysqli_fetch_assoc($resultUserQuery)) {
-  $row['times_assigned'] = [];
+while ($row = mysqli_fetch_assoc($resultOperatorsUserDetailsQuery)) {
   $row['total_weekly_hours'] = 0;
-  $operatorsDetails[] = $row;
+  $row['assignment_details']=[
+    'Sun'=>$baseDayStructure,
+    'Mon'=>$baseDayStructure,
+    'Tue'=>$baseDayStructure,
+    'Wed'=>$baseDayStructure,
+    'Thu'=>$baseDayStructure,
+    'Fri'=>$baseDayStructure,
+    'Sat'=>$baseDayStructure,
+  ];
+  $fetchedUserIDs[] = $row['user_id'];
+  $operatorsUserDetails[$row['user_id']] = $row;
 }
 
-
-echo '<pre>';
-print_r($operatorsDetails);
-echo '</pre>';
-// $operatorsDetails = json_encode($operatorsDetails);
-
-// print($operatorsDetails);
-
-// $operatorAvailabilityQuery = "
-//   SELECT 
-//   user_id, 
-//   day_of_week, 
-//   CONCAT('[',GROUP_CONCAT(CONCAT('[',start_time,',', end_time,']'))']') AS available_times 
-//   FROM `operator_availability` 
-//   WHERE session_id = 1 
-//   GROUP BY user_id, day_of_week";
-
-$operatorAvailabilityQuery = "SELECT user_id, day_of_week, CONCAT('[',GROUP_CONCAT(CONCAT('[',start_time,',', end_time,']')),']') AS available_times FROM `operator_availability` WHERE session_id = 1 GROUP BY user_id, day_of_week";
+$operatorCSV = implode(',', $fetchedUserIDs);
+$operatorAvailabilityQuery = "SELECT user_id, day_of_week, CONCAT(start_time, ' , ', end_time) AS availability FROM `operator_availability` WHERE session_id = 1 AND user_id IN ({$operatorCSV})";
 
 $resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
 
@@ -82,57 +82,72 @@ if(!$resultAvailabilityQuery){
   throw new Exception('MySQL error: '.mysqli_error($conn));
 }
 
+//array of operator's availabilities
 $operatorAvailability = [];
 
 while ($row = mysqli_fetch_assoc($resultAvailabilityQuery)) {
-  $row['times_assigned'] = [];
-  $row['continuous_hours_assigned'] = 0;
-  $row['total_daily_hours'] = 0;
   $operatorAvailability[] = $row;
 }
 
-    echo '<pre>';
-    print_r($operatorAvailability);
-    echo '</pre>';
-
-// $operatorAvailability = json_encode($operatorAvailability);
-
-// print($operatorAvailability);
-$lengthOperatorsDetails = count($operatorsDetails);
-print($lengthOperatorsDetails);
 $lengthOperatorAvailability = count($operatorAvailability);
-print($lengthOperatorAvailability);
-for ($i = 0; $i < $lengthOperatorsDetails; $i++) {
-  for ($k = 0; $k < $lengthOperatorAvailability; $k++) {
-    if ($operatorAvailability[$k]['user_id'] === $operatorsDetails[$i]['user_id']) {
-      // print_r("hello");
-
-
-      $operatorsDetails[$i]['availabile_times'] = [];
-      
-      array_push($operatorsDetails[$i]['availabile_times'], $operatorAvailability[$k]['available_times']);
-      
-
-    }
-  }
+for ($j = 0; $j < $lengthOperatorAvailability; $j++) {
+  $operatorAvailability[$j]['availability'] = explode (',', $operatorAvailability[$j]['availability']);
 }
 
-echo '<pre>';
-print_r($operatorsDetails);
-echo '</pre>';
+function array_group_by(array $array, $key)
+{
+  if (!is_string($key) && !is_int($key) && !is_float($key) && !is_callable($key) ) {
+    trigger_error('array_group_by(): The key should be a string, an integer, or a callback', E_USER_ERROR);
+    return null;
+  }
+  $func = (!is_string($key) && is_callable($key) ? $key : null);
+  $_key = $key;
+  // Load the new array, splitting by the target key
+  $grouped = [];
+  foreach ($array as $value) {
+    $key = null;
+    if (is_callable($func)) {
+      $key = call_user_func($func, $value);
+    } elseif (is_object($value) && property_exists($value, $_key)) {
+      $key = $value->{$_key};
+    } elseif (isset($value[$_key])) {
+      $key = $value[$_key];
+    }
+    if ($key === null) {
+      continue;
+    }
+    $grouped[$key][] = $value;
+  }
+  // Recursively build a nested grouping if more parameters are supplied
+  // Each grouped array value is grouped according to the next sequential key
+  if (func_num_args() > 2) {
+    $args = func_get_args();
+    foreach ($grouped as $key => $value) {
+      $params = array_merge([ $value ], array_slice($args, 2, func_num_args()));
+      $grouped[$key] = call_user_func_array('array_group_by', $params);
+    }
+  }
+  return $grouped;
+}
 
-//check user id
-//compare to stored user if
-//if they match 
-//push to individual operator array
-//
+$groupedAvailabilityArray = array_group_by($operatorAvailability,'user_id');
+
+foreach($groupedAvailabilityArray as $userID=>$userAvailability){
+  //for each record that has that user_id
+  $userAvailabilityLength = count($userAvailability);
+
+  for ($availabilityIndex = 0; $availabilityIndex < $userAvailabilityLength; $availabilityIndex++) {
+    
+    $currentDay = $userAvailability[$availabilityIndex]['day_of_week'];
+
+    $operatorsUserDetails[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
+
+  }
+
+}
 
 
-// $result = mysqli_query($conn, $operatorQuery);
-
-// $userQuery
-// print($userQuery);
-exit();
+$operators = [];
 
 //dummy data to use while the operators query is being built
 $operators = [ 
@@ -246,7 +261,12 @@ $operators = [
     ]
   ]
 ];
-
+// print_r($operators);
+// print("***************");
+echo 'OPERATORDETAILS FROM DB<pre>';
+print_r($operatorsUserDetails);
+echo '</pre>';
+exit();
 //this eventually needs to go into a function
 //leave it as is for now.
 $sundayOperators = [];
@@ -293,11 +313,6 @@ function populateSchedule($operators, $rounds)  {
     }
     array_values($operators);
 
-    // echo '<pre>';
-    // print_r($operators);
-    // echo '</pre>';
-
-  
     //sort the operator array, put operator with fewest weekly hours at the top
     uasort($operators, 'sundayOperatorsSort'); 
     $operators = array_values($operators);
@@ -312,19 +327,6 @@ function populateSchedule($operators, $rounds)  {
         $shiftEndTime = intval($rounds[$roundsIndex + 2]['round_end']);
         $lengthOperatorsArray = count($operators);
         //PSEUDOCODE FOR CONTINUOUS BLOCKS, HOURS PER WEEK
-        // for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++){
-        //   remove anyone who will exceed the total_weekly_hours
-        //   if ($operators[$operatorsIndex]['total_weekly_hours'] > 29 - $shiftTime) {
-        //     unset($operators[$operatorsIndex]);  
-        //     // $operators = array_values($operators); 
-        //   }
-        //   remove anyone who will exceed the total_daily_hours
-        //   if ($operators[$operatorsIndex]['total_daily_hours'] > 8 - $shiftTime) {
-        //    unset($operators[$operatorsIndex]);  
-        //    $operators = array_values($operators); 
-        //   }
-        //   need to add logic eventually to remove anyone who has exceeded the max continuous hours
-        // }
 
         //iterate through each operator
         for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
@@ -415,5 +417,7 @@ populateSchedule($sundayOperators, $rounds);
 // print_r($sundayOperators);
 // echo '</pre>';
 // exit();
+
+// "SELECT user_id, day_of_week, CONCAT('[',GROUP_CONCAT(CONCAT('[',start_time,',', end_time,']')),']') AS available_times FROM `operator_availability` WHERE session_id = 1 GROUP BY user_id, day_of_week";
 ?>
 
