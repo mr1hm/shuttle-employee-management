@@ -3,6 +3,7 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
 
+
 $query = "SELECT rt.line_name, bi.bus_number, 
 rd.start_time AS round_start, 
 rd.end_time AS round_end,
@@ -29,9 +30,109 @@ while ($row = mysqli_fetch_assoc($result)) {
   $rounds[] = $row;
 }
 
+
 // $rounds = json_encode($rounds);
 
 // print($rounds);
+
+$userQuery = "
+  SELECT 
+  id AS user_id, 
+  last_name, 
+  first_name 
+  FROM user 
+  WHERE role = 'operator' AND status = 'active'";
+
+$resultUserQuery = mysqli_query($conn, $userQuery);
+
+if(!$resultUserQuery){
+  throw new Exception('MySQL error: '.mysqli_error($conn));
+}
+
+$operatorsDetails = [];
+
+while ($row = mysqli_fetch_assoc($resultUserQuery)) {
+  $row['times_assigned'] = [];
+  $row['total_weekly_hours'] = 0;
+  $operatorsDetails[] = $row;
+}
+
+
+echo '<pre>';
+print_r($operatorsDetails);
+echo '</pre>';
+// $operatorsDetails = json_encode($operatorsDetails);
+
+// print($operatorsDetails);
+
+// $operatorAvailabilityQuery = "
+//   SELECT 
+//   user_id, 
+//   day_of_week, 
+//   CONCAT('[',GROUP_CONCAT(CONCAT('[',start_time,',', end_time,']'))']') AS available_times 
+//   FROM `operator_availability` 
+//   WHERE session_id = 1 
+//   GROUP BY user_id, day_of_week";
+
+$operatorAvailabilityQuery = "SELECT user_id, day_of_week, CONCAT('[',GROUP_CONCAT(CONCAT('[',start_time,',', end_time,']')),']') AS available_times FROM `operator_availability` WHERE session_id = 1 GROUP BY user_id, day_of_week";
+
+$resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
+
+if(!$resultAvailabilityQuery){
+  throw new Exception('MySQL error: '.mysqli_error($conn));
+}
+
+$operatorAvailability = [];
+
+while ($row = mysqli_fetch_assoc($resultAvailabilityQuery)) {
+  $row['times_assigned'] = [];
+  $row['continuous_hours_assigned'] = 0;
+  $row['total_daily_hours'] = 0;
+  $operatorAvailability[] = $row;
+}
+
+    echo '<pre>';
+    print_r($operatorAvailability);
+    echo '</pre>';
+
+// $operatorAvailability = json_encode($operatorAvailability);
+
+// print($operatorAvailability);
+$lengthOperatorsDetails = count($operatorsDetails);
+print($lengthOperatorsDetails);
+$lengthOperatorAvailability = count($operatorAvailability);
+print($lengthOperatorAvailability);
+for ($i = 0; $i < $lengthOperatorsDetails; $i++) {
+  for ($k = 0; $k < $lengthOperatorAvailability; $k++) {
+    if ($operatorAvailability[$k]['user_id'] === $operatorsDetails[$i]['user_id']) {
+      // print_r("hello");
+
+
+      $operatorsDetails[$i]['availabile_times'] = [];
+      
+      array_push($operatorsDetails[$i]['availabile_times'], $operatorAvailability[$k]['available_times']);
+      
+
+    }
+  }
+}
+
+echo '<pre>';
+print_r($operatorsDetails);
+echo '</pre>';
+
+//check user id
+//compare to stored user if
+//if they match 
+//push to individual operator array
+//
+
+
+// $result = mysqli_query($conn, $operatorQuery);
+
+// $userQuery
+// print($userQuery);
+exit();
 
 //dummy data to use while the operators query is being built
 $operators = [ 
@@ -192,9 +293,9 @@ function populateSchedule($operators, $rounds)  {
     }
     array_values($operators);
 
-    echo '<pre>';
-    print_r($operators);
-    echo '</pre>';
+    // echo '<pre>';
+    // print_r($operators);
+    // echo '</pre>';
 
   
     //sort the operator array, put operator with fewest weekly hours at the top
