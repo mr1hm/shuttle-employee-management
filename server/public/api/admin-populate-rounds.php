@@ -35,7 +35,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 // print($rounds);
 
-$operatorsUserDetailsQuery = "
+$operatorsQuery = "
   SELECT 
   id AS user_id, 
   last_name, 
@@ -43,13 +43,13 @@ $operatorsUserDetailsQuery = "
   FROM user 
   WHERE role = 'operator' AND status = 'active'";
 
-$resultOperatorsUserDetailsQuery = mysqli_query($conn, $operatorsUserDetailsQuery);
+$resultoperatorsQuery = mysqli_query($conn, $operatorsQuery);
 
-if(!$resultOperatorsUserDetailsQuery){
+if(!$resultoperatorsQuery){
   throw new Exception('MySQL error: '.mysqli_error($conn));
 }
 
-$operatorsUserDetails = [];
+$operators = [];
 $fetchedUserIDs = [];
 $baseDayStructure = [
   'available_times'=>[],
@@ -58,7 +58,7 @@ $baseDayStructure = [
   'total_daily_hours'=>0
 ];
 
-while ($row = mysqli_fetch_assoc($resultOperatorsUserDetailsQuery)) {
+while ($row = mysqli_fetch_assoc($resultoperatorsQuery)) {
   $row['total_weekly_hours'] = 0;
   $row['assignment_details']=[
     'Sun'=>$baseDayStructure,
@@ -70,7 +70,7 @@ while ($row = mysqli_fetch_assoc($resultOperatorsUserDetailsQuery)) {
     'Sat'=>$baseDayStructure,
   ];
   $fetchedUserIDs[] = $row['user_id'];
-  $operatorsUserDetails[$row['user_id']] = $row;
+  $operators[$row['user_id']] = $row;
 }
 
 $operatorCSV = implode(',', $fetchedUserIDs);
@@ -140,150 +140,166 @@ foreach($groupedAvailabilityArray as $userID=>$userAvailability){
     
     $currentDay = $userAvailability[$availabilityIndex]['day_of_week'];
 
-    $operatorsUserDetails[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
+    $operators[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
 
   }
 
 }
 
 
-$operators = [];
+// $operators = [];
 
 //dummy data to use while the operators query is being built
-$operators = [ 
-  ["user_id"=> 2345, "last_name"=> "Smith",  "first_name"=> "Fred", "total_weekly_hours"=> 12,
-  "assignment_details" => [
-    'Sun' => [
-      "available_times"=> [
-        [1600, 1700],
-        [1800, 1900]
-      ], 
-      "times_assigned"=> [
-        [1300, 1600], 
-        [1700, 1800]
-      ], 
-      "continuous_hours_assigned"=> 3,
-      "total_daily_hours"=> 4
-      ],
-      "Mon" => [
-        "available_times"=> [
-          [1600, 1700],
-          [1800, 1900]
-        ], 
-        "times_assigned"=> [
-          [1300, 1600], 
-          [1700, 1800]
-        ], 
-        "continuous_hours_assigned"=> 3,
-        "total_daily_hours"=> 4
-      ], 
-      "Tue" => [],
-      "Wed" => [
-        "available_times"=> [[1000, 1500]], 
-        "times_assigned"=> [], 
-        "continuous_hours_assigned"=> 0,
-        "total_daily_hours"=> 0
-      ],  
-      "Thu" => [
-        "available_times"=> [[1000, 1200]],
-        "times_assigned"=> [
-          [800, 1000], 
-          [1200, 1400]
-        ], 
-        "continuous_hours_assigned"=> 2,
-        "total_daily_hours"=> 4
-      ], 
-      'Fri' => [],
-      'Sat' => []
-    ]
-  ], 
-  ["user_id" => 4560, "last_name"=> "Wu", "first_name"=> "Vicky", "total_weekly_hours"=> 7, "assignment_details" => [
-      "Sun" => [
-        "available_times"=> [
-          [600, 800],
-          [900, 1000]
-        ], 
-        "times_assigned"=> [[800, 900]], 
-        "continuous_hours_assigned"=> 1,
-        "total_daily_hours"=> 1
-      ],
-      "Mon" => [], 
-      "Tue" => [],
-      "Wed" => [
-        "available_times"=> [[1800,2000]], 
-        "times_assigned"=> [[2000, 2200]], 
-        "continuous_hours_assigned"=> 2,
-        "total_daily_hours"=> 0
-      ],
-      "Thu" => [
-        "available_times"=> [
-        ], 
-        "times_assigned"=> [[600, 1000]], 
-        "continuous_hours_assigned"=> 4,
-        "total_daily_hours"=> 0
-      ], 
-      'Fri' => [],
-      'Sat' => []
-    ]
-  ],
-  ["user_id" => 4560, "last_name"=> "Jones", "first_name"=> "Sarah", "total_weekly_hours"=> 5, "assignment_details" => [
-      'Sun' => [],
-      "Mon" => [
-        "available_times"=> [
-          [700, 800],
-          [900, 1000]
-        ], 
-        "times_assigned"=> [
-          [600, 700], 
-          [800, 900]
-        ], 
-        "continuous_hours_assigned"=> 1,
-        "total_daily_hours"=> 2
-      ], 
-      "Tue" => [],
-      "Wed" => [
-        "available_times"=> [[600, 1000]], 
-        "times_assigned"=> [], 
-        "continuous_hours_assigned"=> 0,
-        "total_daily_hours"=> 0
-      ],  
-      "Thu" => [
-        "available_times"=> [[1300,1600]],
-        "times_assigned"=> [
-          [1100, 1300], 
-          [1600, 1700]
-        ], 
-        "continuous_hours_assigned"=> 2,
-        "total_daily_hours"=> 3
-      ], 
-      'Fri' => [],
-      'Sat' => []
-    ]
-  ]
-];
+// $operators = [ 
+//   ["user_id"=> 2345, "last_name"=> "Smith",  "first_name"=> "Fred", "total_weekly_hours"=> 12,
+//   "assignment_details" => [
+//     'Sun' => [
+//       "available_times"=> [
+//         [1600, 1700],
+//         [1800, 1900]
+//       ], 
+//       "times_assigned"=> [
+//         [1300, 1600], 
+//         [1700, 1800]
+//       ], 
+//       "continuous_hours_assigned"=> 3,
+//       "total_daily_hours"=> 4
+//       ],
+//       "Mon" => [
+//         "available_times"=> [
+//           [1600, 1700],
+//           [1800, 1900]
+//         ], 
+//         "times_assigned"=> [
+//           [1300, 1600], 
+//           [1700, 1800]
+//         ], 
+//         "continuous_hours_assigned"=> 3,
+//         "total_daily_hours"=> 4
+//       ], 
+//       "Tue" => [],
+//       "Wed" => [
+//         "available_times"=> [[1000, 1500]], 
+//         "times_assigned"=> [], 
+//         "continuous_hours_assigned"=> 0,
+//         "total_daily_hours"=> 0
+//       ],  
+//       "Thu" => [
+//         "available_times"=> [[1000, 1200]],
+//         "times_assigned"=> [
+//           [800, 1000], 
+//           [1200, 1400]
+//         ], 
+//         "continuous_hours_assigned"=> 2,
+//         "total_daily_hours"=> 4
+//       ], 
+//       'Fri' => [],
+//       'Sat' => []
+//     ]
+//   ], 
+//   ["user_id" => 4560, "last_name"=> "Wu", "first_name"=> "Vicky", "total_weekly_hours"=> 7, "assignment_details" => [
+//       "Sun" => [
+//         "available_times"=> [
+//           [600, 800],
+//           [900, 1000]
+//         ], 
+//         "times_assigned"=> [[800, 900]], 
+//         "continuous_hours_assigned"=> 1,
+//         "total_daily_hours"=> 1
+//       ],
+//       "Mon" => [], 
+//       "Tue" => [],
+//       "Wed" => [
+//         "available_times"=> [[1800,2000]], 
+//         "times_assigned"=> [[2000, 2200]], 
+//         "continuous_hours_assigned"=> 2,
+//         "total_daily_hours"=> 0
+//       ],
+//       "Thu" => [
+//         "available_times"=> [
+//         ], 
+//         "times_assigned"=> [[600, 1000]], 
+//         "continuous_hours_assigned"=> 4,
+//         "total_daily_hours"=> 0
+//       ], 
+//       'Fri' => [],
+//       'Sat' => []
+//     ]
+//   ],
+//   ["user_id" => 4560, "last_name"=> "Jones", "first_name"=> "Sarah", "total_weekly_hours"=> 5, "assignment_details" => [
+//       'Sun' => [],
+//       "Mon" => [
+//         "available_times"=> [
+//           [700, 800],
+//           [900, 1000]
+//         ], 
+//         "times_assigned"=> [
+//           [600, 700], 
+//           [800, 900]
+//         ], 
+//         "continuous_hours_assigned"=> 1,
+//         "total_daily_hours"=> 2
+//       ], 
+//       "Tue" => [],
+//       "Wed" => [
+//         "available_times"=> [[600, 1000]], 
+//         "times_assigned"=> [], 
+//         "continuous_hours_assigned"=> 0,
+//         "total_daily_hours"=> 0
+//       ],  
+//       "Thu" => [
+//         "available_times"=> [[1300,1600]],
+//         "times_assigned"=> [
+//           [1100, 1300], 
+//           [1600, 1700]
+//         ], 
+//         "continuous_hours_assigned"=> 2,
+//         "total_daily_hours"=> 3
+//       ], 
+//       'Fri' => [],
+//       'Sat' => []
+//     ]
+//   ]
+// ];
 // print_r($operators);
 // print("***************");
-echo 'OPERATORDETAILS FROM DB<pre>';
-print_r($operatorsUserDetails);
-echo '</pre>';
-exit();
+// echo 'OPERATORDETAILS FROM DB<pre>';
+// print_r($operators);
+// echo '</pre>';
+// exit();
+// $operators = $operators;
 //this eventually needs to go into a function
 //leave it as is for now.
 $sundayOperators = [];
 
-for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
-  if(count($operators[$operatorsIndex]['assignment_details']['Sun'])) {
-    $content['user_id'] = $operators[$operatorsIndex]['user_id'];
-    $content['last_name'] = $operators[$operatorsIndex]['last_name'];
-    $content['first_name'] = $operators[$operatorsIndex]['first_name'];
-    $content['total_weekly_hours'] = $operators[$operatorsIndex]['total_weekly_hours'];
-    $content['available_times'] = $operators[$operatorsIndex]['assignment_details']['Sun']['available_times'];
-    $content['times_assigned'] = $operators[$operatorsIndex]['assignment_details']['Sun']['times_assigned'];
-    $content['continuous_hours_assigned'] = $operators[$operatorsIndex]['assignment_details']['Sun']['continuous_hours_assigned'];
-    $content['total_daily_hours'] = $operators[$operatorsIndex]['assignment_details']['Sun']['total_daily_hours'];
-    array_push($sundayOperators, $content);
-  }
+foreach ($operators as &$operator) {
+    if(!empty($operator['assignment_details']['Sun']['available_times'])){
+      $content['user_id'] = $operator['user_id'];
+      $content['last_name'] = $operator['last_name'];
+      $content['first_name'] = $operator['first_name'];
+      $content['total_weekly_hours'] = $operator['total_weekly_hours'];
+      $content['available_times'] = $operator['assignment_details']['Sun']['available_times'];
+      $content['times_assigned'] = $operator['assignment_details']['Sun']['times_assigned'];
+      $content['continuous_hours_assigned'] = $operator['assignment_details']['Sun']['continuous_hours_assigned'];
+      $content['total_daily_hours'] = $operator['assignment_details']['Sun']['total_daily_hours'];
+      array_push($sundayOperators, $content);
+    }
 }
+
+// for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
+//   if(!empty($operators[$operatorsIndex]['assignment_details']['Sun'])) {
+    
+    
+  // }
+// }
+
+
+
+echo 'SUNDAY OPERATORS ARRAY<pre>';
+print_r($operators[4]['assignment_details']['Sun']['available_times']);
+print(count($operators[4]['assignment_details']['Sun']['available_times']));
+echo '</pre>';
+// exit();
 
 function sundayOperatorsSort($a, $b) {
   if ($a['total_weekly_hours'] == $b['total_weekly_hours']) {
