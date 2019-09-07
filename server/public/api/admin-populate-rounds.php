@@ -75,18 +75,22 @@ while ($row = mysqli_fetch_assoc($resultoperatorsQuery)) {
     'Fri'=>$assignment_details,
     'Sat'=>$assignment_details,
   ];
-  // $fetchedUserIDs[] = $row['user_id'];
-  // $operators[$row['user_id']] = $row;
+  $fetchedUserIDs[] = $row['user_id'];
+  $operators[$row['user_id']] = $row;
   array_push($operators, $row);
 }
 
-echo '<pre>';
-print_r($operators);
-echo'</pre>';
-exit();
+// echo '<pre>';
+// print_r($operators);
+// echo'</pre>';
+// exit();
 
-$operatorCSV = implode(',', $fetchedUserIDs);
-$operatorAvailabilityQuery = "SELECT user_id, day_of_week, CONCAT(start_time, ' , ', end_time) AS availability FROM `operator_availability` WHERE session_id = 1 AND user_id IN ({$operatorCSV})";
+$operatorCommaSeparatedValues = implode(',', $fetchedUserIDs);
+$operatorAvailabilityQuery = "SELECT user_id, 
+                                     day_of_week, 
+                                     CONCAT(start_time, ' , ', end_time) AS availability 
+                              FROM `operator_availability` 
+                              WHERE session_id = 1 AND user_id IN ({$operatorCommaSeparatedValues})";
 
 $resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
 
@@ -101,13 +105,19 @@ while ($row = mysqli_fetch_assoc($resultAvailabilityQuery)) {
   $operatorAvailability[] = $row;
 }
 
+//puts comma separated times into availabile times into arrays
 $lengthOperatorAvailability = count($operatorAvailability);
-for ($j = 0; $j < $lengthOperatorAvailability; $j++) {
-  $operatorAvailability[$j]['availability'] = explode (',', $operatorAvailability[$j]['availability']);
+for ($operatorAvailabilityIndex = 0; $operatorAvailabilityIndex < $lengthOperatorAvailability; $operatorAvailabilityIndex++) {
+  $operatorAvailability[$operatorAvailabilityIndex]['availability'] = explode (',', $operatorAvailability[$operatorAvailabilityIndex]['availability']);
 }
 
-function array_group_by(array $array, $key)
-{
+print('operator availability: ');
+echo '<pre>';
+print_r($operatorAvailability);
+echo '</pre>';
+
+
+function array_group_by(array $array, $key){ //takes in an array $array and groups each element by $key
   if (!is_string($key) && !is_int($key) && !is_float($key) && !is_callable($key) ) {
     trigger_error('array_group_by(): The key should be a string, an integer, or a callback', E_USER_ERROR);
     return null;
@@ -143,6 +153,11 @@ function array_group_by(array $array, $key)
 }
 
 $groupedAvailabilityArray = array_group_by($operatorAvailability,'user_id');
+print('grouped availability: ');
+echo '<pre>';
+print_r($groupedAvailabilityArray);
+echo '</pre>';
+exit();
 
 foreach($groupedAvailabilityArray as $userID=>$userAvailability){
   $userAvailabilityLength = count($userAvailability);
@@ -152,9 +167,9 @@ foreach($groupedAvailabilityArray as $userID=>$userAvailability){
   }
 }
 
-foreach($sundayOperators as &$value){
-  array_push($operators, $value);
-}
+// foreach($sundayOperators as &$value){
+//   array_push($operators, $value);
+// }
 
 $sundayOperators = [];
 
@@ -171,16 +186,6 @@ foreach ($operators as &$operator) {
       array_push($sundayOperators, $content);
     }
 }
-
-$operators = [];
-
-
-
-// echo 'SUNDAY OPERATORS ARRAY<pre>';
-// print_r($operators[4]['assignment_details']['Sun']['available_times']);
-// print(count($operators[4]['assignment_details']['Sun']['available_times']));
-// echo '</pre>';
-// exit();
 
 function sundayOperatorsSort($a, $b) {
   if ($a['total_weekly_hours'] == $b['total_weekly_hours']) {
