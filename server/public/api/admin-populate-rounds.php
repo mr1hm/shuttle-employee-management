@@ -3,19 +3,21 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
 
-
+//gets all the rounds 
 $query = "SELECT rt.line_name, bi.bus_number, 
-rd.start_time AS round_start, 
-rd.end_time AS round_end,
-us.id AS user_id, 
-us.last_name, 
-us.first_name,
-rd.date
-FROM route AS rt 
-JOIN bus_info AS bi ON bi.route_id = rt.id 
-JOIN round AS rd ON rd.bus_info_id = bi.id 
-JOIN user AS us ON rd.user_id = us.id
-WHERE rd.session_id = 1";
+                 rd.start_time AS round_start, 
+                 rd.end_time AS round_end,
+                 us.id AS user_id, 
+                 us.last_name, 
+                 us.first_name,
+                 rd.date
+                 FROM route AS rt 
+                 JOIN bus_info AS bi ON bi.route_id = rt.id 
+                 JOIN round AS rd ON rd.bus_info_id = bi.id 
+                 JOIN user AS us ON rd.user_id = us.id
+                 WHERE rd.session_id = 1";
+
+
 
 $result = mysqli_query($conn, $query);
 
@@ -24,24 +26,25 @@ if(!$result){
 }
 
 $rounds = [];
-
+//unassigned rounds - will assign operators to this array
 while ($row = mysqli_fetch_assoc($result)) {
   $row['day'] = date('D', $row['date']);
   $rounds[] = $row;
 }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// $rounds = json_encode($rounds);
 
-// print($rounds);
 
-$operatorsQuery = "
-  SELECT 
-  id AS user_id, 
-  last_name, 
-  first_name 
-  FROM user 
-  WHERE role = 'operator' AND status = 'active'";
+
+
+//gets all user info of each operator
+$operatorsQuery = "SELECT 
+                   id AS user_id, 
+                   last_name, 
+                   first_name 
+                   FROM user 
+                   WHERE role = 'operator' AND status = 'active'";
 
 $resultoperatorsQuery = mysqli_query($conn, $operatorsQuery);
 
@@ -49,9 +52,12 @@ if(!$resultoperatorsQuery){
   throw new Exception('MySQL error: '.mysqli_error($conn));
 }
 
+
+
+//making array of operator objects
 $operators = [];
 $fetchedUserIDs = [];
-$baseDayStructure = [
+$assignment_details = [
   'available_times'=>[],
   'times_assigned'=>[],
   'continuous_hours_assigned'=>0,
@@ -61,17 +67,23 @@ $baseDayStructure = [
 while ($row = mysqli_fetch_assoc($resultoperatorsQuery)) {
   $row['total_weekly_hours'] = 0;
   $row['assignment_details']=[
-    'Sun'=>$baseDayStructure,
-    'Mon'=>$baseDayStructure,
-    'Tue'=>$baseDayStructure,
-    'Wed'=>$baseDayStructure,
-    'Thu'=>$baseDayStructure,
-    'Fri'=>$baseDayStructure,
-    'Sat'=>$baseDayStructure,
+    'Sun'=>$assignment_details,
+    'Mon'=>$assignment_details,
+    'Tue'=>$assignment_details,
+    'Wed'=>$assignment_details,
+    'Thu'=>$assignment_details,
+    'Fri'=>$assignment_details,
+    'Sat'=>$assignment_details,
   ];
-  $fetchedUserIDs[] = $row['user_id'];
-  $operators[$row['user_id']] = $row;
+  // $fetchedUserIDs[] = $row['user_id'];
+  // $operators[$row['user_id']] = $row;
+  array_push($operators, $row);
 }
+
+echo '<pre>';
+print_r($operators);
+echo'</pre>';
+exit();
 
 $operatorCSV = implode(',', $fetchedUserIDs);
 $operatorAvailabilityQuery = "SELECT user_id, day_of_week, CONCAT(start_time, ' , ', end_time) AS availability FROM `operator_availability` WHERE session_id = 1 AND user_id IN ({$operatorCSV})";
@@ -133,143 +145,17 @@ function array_group_by(array $array, $key)
 $groupedAvailabilityArray = array_group_by($operatorAvailability,'user_id');
 
 foreach($groupedAvailabilityArray as $userID=>$userAvailability){
-  //for each record that has that user_id
   $userAvailabilityLength = count($userAvailability);
-
-  for ($availabilityIndex = 0; $availabilityIndex < $userAvailabilityLength; $availabilityIndex++) {
-    
+  for($availabilityIndex = 0; $availabilityIndex < $userAvailabilityLength; $availabilityIndex++) {
     $currentDay = $userAvailability[$availabilityIndex]['day_of_week'];
-
     $operators[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
-
   }
-
 }
 
+foreach($sundayOperators as &$value){
+  array_push($operators, $value);
+}
 
-// $operators = [];
-
-//dummy data to use while the operators query is being built
-// $operators = [ 
-//   ["user_id"=> 2345, "last_name"=> "Smith",  "first_name"=> "Fred", "total_weekly_hours"=> 12,
-//   "assignment_details" => [
-//     'Sun' => [
-//       "available_times"=> [
-//         [1600, 1700],
-//         [1800, 1900]
-//       ], 
-//       "times_assigned"=> [
-//         [1300, 1600], 
-//         [1700, 1800]
-//       ], 
-//       "continuous_hours_assigned"=> 3,
-//       "total_daily_hours"=> 4
-//       ],
-//       "Mon" => [
-//         "available_times"=> [
-//           [1600, 1700],
-//           [1800, 1900]
-//         ], 
-//         "times_assigned"=> [
-//           [1300, 1600], 
-//           [1700, 1800]
-//         ], 
-//         "continuous_hours_assigned"=> 3,
-//         "total_daily_hours"=> 4
-//       ], 
-//       "Tue" => [],
-//       "Wed" => [
-//         "available_times"=> [[1000, 1500]], 
-//         "times_assigned"=> [], 
-//         "continuous_hours_assigned"=> 0,
-//         "total_daily_hours"=> 0
-//       ],  
-//       "Thu" => [
-//         "available_times"=> [[1000, 1200]],
-//         "times_assigned"=> [
-//           [800, 1000], 
-//           [1200, 1400]
-//         ], 
-//         "continuous_hours_assigned"=> 2,
-//         "total_daily_hours"=> 4
-//       ], 
-//       'Fri' => [],
-//       'Sat' => []
-//     ]
-//   ], 
-//   ["user_id" => 4560, "last_name"=> "Wu", "first_name"=> "Vicky", "total_weekly_hours"=> 7, "assignment_details" => [
-//       "Sun" => [
-//         "available_times"=> [
-//           [600, 800],
-//           [900, 1000]
-//         ], 
-//         "times_assigned"=> [[800, 900]], 
-//         "continuous_hours_assigned"=> 1,
-//         "total_daily_hours"=> 1
-//       ],
-//       "Mon" => [], 
-//       "Tue" => [],
-//       "Wed" => [
-//         "available_times"=> [[1800,2000]], 
-//         "times_assigned"=> [[2000, 2200]], 
-//         "continuous_hours_assigned"=> 2,
-//         "total_daily_hours"=> 0
-//       ],
-//       "Thu" => [
-//         "available_times"=> [
-//         ], 
-//         "times_assigned"=> [[600, 1000]], 
-//         "continuous_hours_assigned"=> 4,
-//         "total_daily_hours"=> 0
-//       ], 
-//       'Fri' => [],
-//       'Sat' => []
-//     ]
-//   ],
-//   ["user_id" => 4560, "last_name"=> "Jones", "first_name"=> "Sarah", "total_weekly_hours"=> 5, "assignment_details" => [
-//       'Sun' => [],
-//       "Mon" => [
-//         "available_times"=> [
-//           [700, 800],
-//           [900, 1000]
-//         ], 
-//         "times_assigned"=> [
-//           [600, 700], 
-//           [800, 900]
-//         ], 
-//         "continuous_hours_assigned"=> 1,
-//         "total_daily_hours"=> 2
-//       ], 
-//       "Tue" => [],
-//       "Wed" => [
-//         "available_times"=> [[600, 1000]], 
-//         "times_assigned"=> [], 
-//         "continuous_hours_assigned"=> 0,
-//         "total_daily_hours"=> 0
-//       ],  
-//       "Thu" => [
-//         "available_times"=> [[1300,1600]],
-//         "times_assigned"=> [
-//           [1100, 1300], 
-//           [1600, 1700]
-//         ], 
-//         "continuous_hours_assigned"=> 2,
-//         "total_daily_hours"=> 3
-//       ], 
-//       'Fri' => [],
-//       'Sat' => []
-//     ]
-//   ]
-// ];
-// print_r($operators);
-// print("***************");
-// echo 'OPERATORDETAILS FROM DB<pre>';
-// print_r($operators);
-// echo '</pre>';
-// exit();
-// $operators = $operators;
-//this eventually needs to go into a function
-//leave it as is for now.
 $sundayOperators = [];
 
 foreach ($operators as &$operator) {
@@ -286,19 +172,14 @@ foreach ($operators as &$operator) {
     }
 }
 
-// for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
-//   if(!empty($operators[$operatorsIndex]['assignment_details']['Sun'])) {
-    
-    
-  // }
-// }
+$operators = [];
 
 
 
-echo 'SUNDAY OPERATORS ARRAY<pre>';
-print_r($operators[4]['assignment_details']['Sun']['available_times']);
-print(count($operators[4]['assignment_details']['Sun']['available_times']));
-echo '</pre>';
+// echo 'SUNDAY OPERATORS ARRAY<pre>';
+// print_r($operators[4]['assignment_details']['Sun']['available_times']);
+// print(count($operators[4]['assignment_details']['Sun']['available_times']));
+// echo '</pre>';
 // exit();
 
 function sundayOperatorsSort($a, $b) {
@@ -381,6 +262,9 @@ function populateSchedule($operators, $rounds)  {
 
               //yes, add the time added to the master schedule to the assigned times for the operator
               array_push($operators[$operatorsIndex]['times_assigned'], [$shiftStartTime, $shiftEndTime]);
+
+
+
 
               //yes, adjust available times
               //shift is exactly the same as the available time
