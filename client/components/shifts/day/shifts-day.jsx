@@ -18,13 +18,13 @@ function convertUnixMonthDay(time) {
 }
 
 function OneOfMyShifts(props) {
-
+  console.log("data from oneofmyshifts: ", props.shifts);
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
   // let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
   if (props.view === 'availableShifts'){
      shiftButton = "Take Shift";
   }
-  debugger;
+
   let numOfRounds = props.shifts["COUNT(`start_time`)"];
   let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"],props.shifts["MAX(`end_time`)"]);
   let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"])>1) ? "Scheduled/Posted" : props.shifts.status;
@@ -40,7 +40,7 @@ function OneOfMyShifts(props) {
       <td> {shiftHours} </td>
 
       <td /*className={statusColor}*/> {statusIndicator} </td>
-      <td> <input type="button" value={shiftButton} onClick={ props.openDetails} /> </td>
+      <td> <input type="button" value={shiftButton} onClick={ props.openDetails} accessKey = {props.shifts.roundID}/> </td>
     </tr>
   )
 }
@@ -58,7 +58,8 @@ class ShiftsDay extends React.Component {
       isModalOpen: false,
       queryString: `?date=${defaultDate}&type=${this.props.view || 'myShifts'}`,
       dateToPass:  defaultDate,
-      view: null
+      roundID: null
+
     }
   }
   fetchCallMethod(query) {
@@ -105,18 +106,21 @@ class ShiftsDay extends React.Component {
   openModal() {
     this.setState({
       isModalOpen: true,
-      view: "availableShifts"
+      view: "availableShifts",
+      roundID: parseInt(event.currentTarget.activeElement.accessKey)
 
     })
   }
   closeModal() {
     this.setState({
       isModalOpen: false,
-      view: "myShifts"
+      view: "myShifts",
+      roundID: null
 
     })
   }
-  takeShift(status, userID, roundID) {
+  handleTakeShift(status, userID, roundID) {
+    console.log (this.state.myShiftsToday);
     fetch('/api/driver-shift.php' + '?status=' + status + '&user_id=' + userID + '&id=' + roundID, {
       headers: {
         'Accept': 'application/json',
@@ -131,9 +135,9 @@ class ShiftsDay extends React.Component {
     })
       .then(response => { return response.json() })
       .catch(error => { throw (error) });
+      this.closeModal();
+      this.componentDidMount();
   }
-
-
 
 
   render() {
@@ -148,11 +152,14 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
+
     let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)"] || index.start_time).toString();
     let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"] || index.end_time).toString();
     let shiftUserId = this.state.myShiftsToday.map(index => index.user_id).toString();
     let shiftBusLine = this.state.myShiftsToday.map(index => index.line_name).toString();
     let shiftBusNum = this.state.myShiftsToday.map(index => index.bus_info_id).toString();
+    let shiftRoundID = this.state.myShiftsToday.map(roundID => roundID.roundID);
+
 
 
     if (this.props.view === "myShifts"){
@@ -177,6 +184,7 @@ class ShiftsDay extends React.Component {
           <tbody>
             {
               this.state.myShiftsToday.map((shifts, index) => {
+
                 return (
                   < OneOfMyShifts
                     key={index}
@@ -226,6 +234,7 @@ class ShiftsDay extends React.Component {
             <tbody>
               {
                 this.state.myShiftsToday.map((shifts, index) => {
+
                   return (
                     < OneOfMyShifts
                       key={index}
@@ -242,7 +251,7 @@ class ShiftsDay extends React.Component {
           <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view}>
             <h2> PLEASE CONFIRM: <br></br>Do you really want to TAKE this shift?</h2>
             <p><button className="modalCancelButton" onClick={() => this.closeModal()}>Cancel</button></p>
-            <p><button onClick={() => this.closeModal()}>Yes, I want to TAKE this shift</button></p>
+            <p><button onClick={() => { this.handleTakeShift("scheduled", 1, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
           </Modal>
 
         </div>

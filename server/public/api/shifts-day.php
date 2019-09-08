@@ -40,6 +40,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
             rt.`id`";
 } else {
   $query = " SELECT
+            rd.`id` AS roundID,
             rd.`bus_info_id`,
             rd.`user_id`,
             rd.`start_time`,
