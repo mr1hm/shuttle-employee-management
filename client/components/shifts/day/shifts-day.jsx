@@ -110,6 +110,14 @@ class ShiftsDay extends React.Component {
     })
   }
   closeModal() {
+    this.setState({
+      isModalOpen: false,
+      view: "myShifts",
+      roundID: null,
+    })
+
+  }
+  closeTakeShiftsModal() {
     let updatedShifts = this.state.myShiftsToday.filter(shift => (shift.roundID != this.state.roundID));
     this.setState({
       isModalOpen: false,
@@ -136,7 +144,7 @@ class ShiftsDay extends React.Component {
       .then(response => { return response.json() })
       .catch(error => { throw (error) });
 
-      this.closeModal();
+      this.closeTakeShiftsModal();
 
   }
 
