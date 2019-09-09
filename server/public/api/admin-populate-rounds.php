@@ -29,233 +29,244 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 // $rounds = json_encode($rounds);
 // print($rounds);
-// $operatorsUserDetailsQuery = "SELECT 
-//                               id AS user_id, 
-//                               last_name, 
-//                               first_name 
-//                               FROM user 
-//                               WHERE role = 'operator' AND status = 'active'";
+$operatorsUserDetailsQuery = "SELECT 
+                              id AS user_id, 
+                              last_name, 
+                              first_name 
+                              FROM user 
+                              WHERE role = 'operator' AND status = 'active'";
 
-// $resultOperatorsUserDetailsQuery = mysqli_query($conn, $operatorsUserDetailsQuery);
-// if(!$resultOperatorsUserDetailsQuery){
-//   throw new Exception('MySQL error: '.mysqli_error($conn));
-// }
+$resultOperatorsUserDetailsQuery = mysqli_query($conn, $operatorsUserDetailsQuery);
+if(!$resultOperatorsUserDetailsQuery){
+  throw new Exception('MySQL error: '.mysqli_error($conn));
+}
 
-// $operatorsUserDetails = [];
-// $fetchedUserIDs = [];
+$operatorsUserDetails = [];
+$fetchedUserIDs = [];
 
-// $baseDayStructure = [
-//   'available_times'=>[],
-//   'times_assigned'=>[],
-//   'continuous_hours_assigned'=>0,
-//   'total_daily_hours'=>0
-// ];
+$baseDayStructure = [
+  'available_times'=>[],
+  'times_assigned'=>[],
+  'continuous_hours_assigned'=>0,
+  'total_daily_hours'=>0
+];
 
-// while ($row = mysqli_fetch_assoc($resultOperatorsUserDetailsQuery)) {
-//   $row['total_weekly_hours'] = 0;
-//   $row['assignment_details']=[
-//     'Sun'=>$baseDayStructure,
-//     'Mon'=>$baseDayStructure,
-//     'Tue'=>$baseDayStructure,
-//     'Wed'=>$baseDayStructure,
-//     'Thu'=>$baseDayStructure,
-//     'Fri'=>$baseDayStructure,
-//     'Sat'=>$baseDayStructure,
-//   ];
-//   $fetchedUserIDs[] = $row['user_id'];
-//   $operatorsUserDetails[$row['user_id']] = $row;
-// }
+while ($row = mysqli_fetch_assoc($resultOperatorsUserDetailsQuery)) {
+  $row['total_weekly_hours'] = 0;
+  $row['assignment_details']=[
+    'Sun'=>$baseDayStructure,
+    'Mon'=>$baseDayStructure,
+    'Tue'=>$baseDayStructure,
+    'Wed'=>$baseDayStructure,
+    'Thu'=>$baseDayStructure,
+    'Fri'=>$baseDayStructure,
+    'Sat'=>$baseDayStructure,
+  ];
+  $fetchedUserIDs[] = $row['user_id'];
+  $operatorsUserDetails[$row['user_id']] = $row;
+}
 
-// $operatorCSV = implode(',', $fetchedUserIDs);
+$operatorCSV = implode(',', $fetchedUserIDs);
 
-// $operatorAvailabilityQuery = "SELECT 
-//                               user_id, 
-//                               day_of_week, 
-//                               CONCAT(start_time, ' , ', end_time) AS availability 
-//                               FROM `operator_availability` 
-//                               WHERE session_id = 1 AND user_id IN ({$operatorCSV})";
+$operatorAvailabilityQuery = "SELECT 
+                              user_id, 
+                              day_of_week, 
+                              CONCAT(start_time, ' , ', end_time) AS availability 
+                              FROM `operator_availability` 
+                              WHERE session_id = 1 AND user_id IN ({$operatorCSV})";
 
-// $resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
+$resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
 
-// if(!$resultAvailabilityQuery){
-//   throw new Exception('MySQL error: '.mysqli_error($conn));
-// }
+if(!$resultAvailabilityQuery){
+  throw new Exception('MySQL error: '.mysqli_error($conn));
+}
 
-// //array of operator's availabilities
-// $operatorAvailability = [];
+//array of operator's availabilities
+$operatorAvailability = [];
 
-// while ($row = mysqli_fetch_assoc($resultAvailabilityQuery)) {
-//   $operatorAvailability[] = $row;
-// }
+while ($row = mysqli_fetch_assoc($resultAvailabilityQuery)) {
+  $operatorAvailability[] = $row;
+}
 
-// $lengthOperatorAvailability = count($operatorAvailability);
+$lengthOperatorAvailability = count($operatorAvailability);
 
-// for ($j = 0; $j < $lengthOperatorAvailability; $j++) {
-//   $operatorAvailability[$j]['availability'] = explode (',', $operatorAvailability[$j]['availability']);
-// }
+//put all the availability information into arrays (came in as strings)
+for ($j = 0; $j < $lengthOperatorAvailability; $j++) {
+  $operatorAvailability[$j]['availability'] = explode (',', $operatorAvailability[$j]['availability']);
+}
 
-// function array_group_by(array $array, $key)
-// {
-//   if (!is_string($key) && !is_int($key) && !is_float($key) && !is_callable($key) ) {
-//     trigger_error('array_group_by(): The key should be a string, an integer, or a callback', E_USER_ERROR);
-//     return null;
-//   }
-//   $func = (!is_string($key) && is_callable($key) ? $key : null);
-//   $_key = $key;
-//   // Load the new array, splitting by the target key
-//   $grouped = [];
-//   foreach ($array as $value) {
-//     $key = null;
-//     if (is_callable($func)) {
-//       $key = call_user_func($func, $value);
-//     } elseif (is_object($value) && property_exists($value, $_key)) {
-//       $key = $value->{$_key};
-//     } elseif (isset($value[$_key])) {
-//       $key = $value[$_key];
-//     }
-//     if ($key === null) {
-//       continue;
-//     }
-//     $grouped[$key][] = $value;
-//   }
-//   // Recursively build a nested grouping if more parameters are supplied
-//   // Each grouped array value is grouped according to the next sequential key
-//   if (func_num_args() > 2) {
-//     $args = func_get_args();
-//     foreach ($grouped as $key => $value) {
-//       $params = array_merge([ $value ], array_slice($args, 2, func_num_args()));
-//       $grouped[$key] = call_user_func_array('array_group_by', $params);
-//     }
-//   }
-//   return $grouped;
-// }
+function array_group_by(array $array, $key)
+{
+  if (!is_string($key) && !is_int($key) && !is_float($key) && !is_callable($key) ) {
+    trigger_error('array_group_by(): The key should be a string, an integer, or a callback', E_USER_ERROR);
+    return null;
+  }
+  $func = (!is_string($key) && is_callable($key) ? $key : null);
+  $_key = $key;
+  // Load the new array, splitting by the target key
+  $grouped = [];
+  foreach ($array as $value) {
+    $key = null;
+    if (is_callable($func)) {
+      $key = call_user_func($func, $value);
+    } elseif (is_object($value) && property_exists($value, $_key)) {
+      $key = $value->{$_key};
+    } elseif (isset($value[$_key])) {
+      $key = $value[$_key];
+    }
+    if ($key === null) {
+      continue;
+    }
+    $grouped[$key][] = $value;
+  }
+  // Recursively build a nested grouping if more parameters are supplied
+  // Each grouped array value is grouped according to the next sequential key
+  if (func_num_args() > 2) {
+    $args = func_get_args();
+    foreach ($grouped as $key => $value) {
+      $params = array_merge([ $value ], array_slice($args, 2, func_num_args()));
+      $grouped[$key] = call_user_func_array('array_group_by', $params);
+    }
+  }
+  return $grouped;
+}
 
-// $groupedAvailabilityArray = array_group_by($operatorAvailability,'user_id');
+$groupedAvailabilityArray = array_group_by($operatorAvailability,'user_id');
 
-// foreach($groupedAvailabilityArray as $userID=>$userAvailability){
-//   //for each record that has that user_id
-//   $userAvailabilityLength = count($userAvailability);
-//   for ($availabilityIndex = 0; $availabilityIndex < $userAvailabilityLength; $availabilityIndex++) {
+foreach($groupedAvailabilityArray as $userID=>$userAvailability){
+  //for each record that has that user_id
+  $userAvailabilityLength = count($userAvailability);
+  for ($availabilityIndex = 0; $availabilityIndex < $userAvailabilityLength; $availabilityIndex++) {
     
-//     $currentDay = $userAvailability[$availabilityIndex]['day_of_week'];
-//     $operatorsUserDetails[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
-//   }
-// }
+    $currentDay = $userAvailability[$availabilityIndex]['day_of_week'];
+    $operatorsUserDetails[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
+  }
+}
 
-// $operators = [];
+$operators =[];
+
+foreach($operatorsUserDetails as $value) {
+  $operators[] = $value;
+}
+
+// echo '<pre>';
+// print_r($operators);
+// echo '</pre>';
+// exit();
+
 
 //dummy data to use while the operators query is being built
-$operators = [ 
-  ["user_id"=> 2345, "last_name"=> "Smith",  "first_name"=> "Fred", "total_weekly_hours"=> 12,
-  "assignment_details" => [
-    'Sun' => [
-      "available_times"=> [
-        [1600, 1700],
-        [1800, 1900]
-      ], 
-      "times_assigned"=> [
-        [1300, 1600], 
-        [1700, 1800]
-      ], 
-      "continuous_hours_assigned"=> 3,
-      "total_daily_hours"=> 4
-      ],
-      "Mon" => [
-        "available_times"=> [
-          [1600, 1700],
-          [1800, 1900]
-        ], 
-        "times_assigned"=> [
-          [1300, 1600], 
-          [1700, 1800]
-        ], 
-        "continuous_hours_assigned"=> 3,
-        "total_daily_hours"=> 4
-      ], 
-      "Tue" => [],
-      "Wed" => [
-        "available_times"=> [[1000, 1500]], 
-        "times_assigned"=> [], 
-        "continuous_hours_assigned"=> 0,
-        "total_daily_hours"=> 0
-      ],  
-      "Thu" => [
-        "available_times"=> [[1000, 1200]],
-        "times_assigned"=> [
-          [800, 1000], 
-          [1200, 1400]
-        ], 
-        "continuous_hours_assigned"=> 2,
-        "total_daily_hours"=> 4
-      ], 
-      'Fri' => [],
-      'Sat' => []
-    ]
-  ], 
-  ["user_id" => 4560, "last_name"=> "Wu", "first_name"=> "Vicky", "total_weekly_hours"=> 7, "assignment_details" => [
-      "Sun" => [
-        "available_times"=> [
-          [600, 800],
-          [900, 1000]
-        ], 
-        "times_assigned"=> [[800, 900]], 
-        "continuous_hours_assigned"=> 1,
-        "total_daily_hours"=> 1
-      ],
-      "Mon" => [], 
-      "Tue" => [],
-      "Wed" => [
-        "available_times"=> [[1800,2000]], 
-        "times_assigned"=> [[2000, 2200]], 
-        "continuous_hours_assigned"=> 2,
-        "total_daily_hours"=> 0
-      ],
-      "Thu" => [
-        "available_times"=> [
-        ], 
-        "times_assigned"=> [[600, 1000]], 
-        "continuous_hours_assigned"=> 4,
-        "total_daily_hours"=> 0
-      ], 
-      'Fri' => [],
-      'Sat' => []
-    ]
-  ],
-  ["user_id" => 4560, "last_name"=> "Jones", "first_name"=> "Sarah", "total_weekly_hours"=> 5, "assignment_details" => [
-      'Sun' => [],
-      "Mon" => [
-        "available_times"=> [
-          [700, 800],
-          [900, 1000]
-        ], 
-        "times_assigned"=> [
-          [600, 700], 
-          [800, 900]
-        ], 
-        "continuous_hours_assigned"=> 1,
-        "total_daily_hours"=> 2
-      ], 
-      "Tue" => [],
-      "Wed" => [
-        "available_times"=> [[600, 1000]], 
-        "times_assigned"=> [], 
-        "continuous_hours_assigned"=> 0,
-        "total_daily_hours"=> 0
-      ],  
-      "Thu" => [
-        "available_times"=> [[1300,1600]],
-        "times_assigned"=> [
-          [1100, 1300], 
-          [1600, 1700]
-        ], 
-        "continuous_hours_assigned"=> 2,
-        "total_daily_hours"=> 3
-      ], 
-      'Fri' => [],
-      'Sat' => []
-    ]
-  ]
-];
+// $operators = [ 
+//   ["user_id"=> 2345, "last_name"=> "Smith",  "first_name"=> "Fred", "total_weekly_hours"=> 12,
+//   "assignment_details" => [
+//     'Sun' => [
+//       "available_times"=> [
+//         [1600, 1700],
+//         [1800, 1900]
+//       ], 
+//       "times_assigned"=> [
+//         [1300, 1600], 
+//         [1700, 1800]
+//       ], 
+//       "continuous_hours_assigned"=> 3,
+//       "total_daily_hours"=> 4
+//       ],
+//       "Mon" => [
+//         "available_times"=> [
+//           [1600, 1700],
+//           [1800, 1900]
+//         ], 
+//         "times_assigned"=> [
+//           [1300, 1600], 
+//           [1700, 1800]
+//         ], 
+//         "continuous_hours_assigned"=> 3,
+//         "total_daily_hours"=> 4
+//       ], 
+//       "Tue" => [],
+//       "Wed" => [
+//         "available_times"=> [[1000, 1500]], 
+//         "times_assigned"=> [], 
+//         "continuous_hours_assigned"=> 0,
+//         "total_daily_hours"=> 0
+//       ],  
+//       "Thu" => [
+//         "available_times"=> [[1000, 1200]],
+//         "times_assigned"=> [
+//           [800, 1000], 
+//           [1200, 1400]
+//         ], 
+//         "continuous_hours_assigned"=> 2,
+//         "total_daily_hours"=> 4
+//       ], 
+//       'Fri' => [],
+//       'Sat' => []
+//     ]
+//   ], 
+//   ["user_id" => 4560, "last_name"=> "Wu", "first_name"=> "Vicky", "total_weekly_hours"=> 7, "assignment_details" => [
+//       "Sun" => [
+//         "available_times"=> [
+//           [600, 800],
+//           [900, 1000]
+//         ], 
+//         "times_assigned"=> [[800, 900]], 
+//         "continuous_hours_assigned"=> 1,
+//         "total_daily_hours"=> 1
+//       ],
+//       "Mon" => [], 
+//       "Tue" => [],
+//       "Wed" => [
+//         "available_times"=> [[1800,2000]], 
+//         "times_assigned"=> [[2000, 2200]], 
+//         "continuous_hours_assigned"=> 2,
+//         "total_daily_hours"=> 0
+//       ],
+//       "Thu" => [
+//         "available_times"=> [
+//         ], 
+//         "times_assigned"=> [[600, 1000]], 
+//         "continuous_hours_assigned"=> 4,
+//         "total_daily_hours"=> 0
+//       ], 
+//       'Fri' => [],
+//       'Sat' => []
+//     ]
+//   ],
+//   ["user_id" => 4560, "last_name"=> "Jones", "first_name"=> "Sarah", "total_weekly_hours"=> 5, "assignment_details" => [
+//       'Sun' => [],
+//       "Mon" => [
+//         "available_times"=> [
+//           [700, 800],
+//           [900, 1000]
+//         ], 
+//         "times_assigned"=> [
+//           [600, 700], 
+//           [800, 900]
+//         ], 
+//         "continuous_hours_assigned"=> 1,
+//         "total_daily_hours"=> 2
+//       ], 
+//       "Tue" => [],
+//       "Wed" => [
+//         "available_times"=> [[600, 1000]], 
+//         "times_assigned"=> [], 
+//         "continuous_hours_assigned"=> 0,
+//         "total_daily_hours"=> 0
+//       ],  
+//       "Thu" => [
+//         "available_times"=> [[1300,1600]],
+//         "times_assigned"=> [
+//           [1100, 1300], 
+//           [1600, 1700]
+//         ], 
+//         "continuous_hours_assigned"=> 2,
+//         "total_daily_hours"=> 3
+//       ], 
+//       'Fri' => [],
+//       'Sat' => []
+//     ]
+//   ]
+// ];
 // echo '<pre>';
 // print_r($operators);
 // echo '</pre>';
@@ -267,7 +278,7 @@ $operators = [
 //leave it as is for now.
 $sundayOperators = [];
 for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
-  if(count($operators[$operatorsIndex]['assignment_details']['Sun'])) {
+  if(count($operators[$operatorsIndex]['assignment_details']['Sun']['available_times'])) {
     $content['user_id'] = $operators[$operatorsIndex]['user_id'];
     $content['last_name'] = $operators[$operatorsIndex]['last_name'];
     $content['first_name'] = $operators[$operatorsIndex]['first_name'];
