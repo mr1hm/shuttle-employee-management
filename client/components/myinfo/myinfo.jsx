@@ -24,7 +24,6 @@ class MyInfo extends React.Component {
         return response.json()
       })
       .then(response => {
-        console.log("dummy data from fetch call",response)
         this.setState({
           userInfo: response
         })
