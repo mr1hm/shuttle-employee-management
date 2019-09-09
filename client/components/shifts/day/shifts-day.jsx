@@ -18,7 +18,6 @@ function convertUnixMonthDay(time) {
 }
 
 function OneOfMyShifts(props) {
-  console.log("data from oneofmyshifts: ", props.shifts);
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
   // let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
   if (props.view === 'availableShifts'){
@@ -40,7 +39,7 @@ function OneOfMyShifts(props) {
       <td> {shiftHours} </td>
 
       <td /*className={statusColor}*/> {statusIndicator} </td>
-      <td> <input type="button" value={shiftButton} onClick={ props.openDetails} accessKey = {props.shifts.roundID}/> </td>
+      <td> <input type="button" value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID)} /> </td>
     </tr>
   )
 }
@@ -84,7 +83,6 @@ class ShiftsDay extends React.Component {
     this.fetchCallMethod(this.state.queryString);
   }
 
-  //My try at revamping
   componentDidUpdate(prevProps, prevState) {
     // console.log( "prevProps: ", prevProps);
     // console.log("prevState: " , prevState);
@@ -103,24 +101,26 @@ class ShiftsDay extends React.Component {
       // commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
     }
   }
-  openModal() {
+  openModal(roundID) {
     this.setState({
       isModalOpen: true,
       view: "availableShifts",
-      roundID: parseInt(event.currentTarget.activeElement.accessKey)
+      roundID: parseInt(roundID)
 
     })
   }
   closeModal() {
+    let updatedShifts = this.state.myShiftsToday.filter(shift => (shift.roundID != this.state.roundID));
     this.setState({
       isModalOpen: false,
       view: "myShifts",
-      roundID: null
+      roundID: null,
+      myShiftsToday: updatedShifts
 
     })
+
   }
   handleTakeShift(status, userID, roundID) {
-    console.log (this.state.myShiftsToday);
     fetch('/api/driver-shift.php' + '?status=' + status + '&user_id=' + userID + '&id=' + roundID, {
       headers: {
         'Accept': 'application/json',
@@ -135,8 +135,9 @@ class ShiftsDay extends React.Component {
     })
       .then(response => { return response.json() })
       .catch(error => { throw (error) });
+
       this.closeModal();
-      this.componentDidMount();
+
   }
 
 
