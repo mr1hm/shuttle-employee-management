@@ -1,0 +1,36 @@
+.container{
+    width: 36%;
+}
+input{
+  display: list-item;
+}
+button{
+  float: left;
+  margin-left: 70%;
+}
+.form-control{
+  margin-left: -30%;
+  width: 80%;
+}
+.save{
+  margin-left: 25%;
+}
+.imageHolder{
+    background-color: purple;
+    height: 184px;
+    width: 200px;
+    margin-top: 17%;
+    margin-left: 10%;
+}
+.upload{
+    margin-top: 96%;
+    height: 15%;
+    width: 101%;
+    margin-left: 0%;
+}
+.profileName{
+    float: left;
+    margin-left: 10%;
+    margin-top: 15%;
+    font-size: 20px;
+}
