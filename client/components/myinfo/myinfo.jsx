@@ -53,7 +53,7 @@ class MyInfo extends React.Component {
         <React.Fragment>
           <TopMenuGeneral title="MY INFO" />
           <div className="container" className="col" style={{ top: "40%", left: "40%", position: "absolute" }}>
-            <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >MY INFO
+            <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >
               <form action="/api/my-info-update.php" method="POST">
                 <input type="hidden" name="id" value="20"/>
                 <div className="form-group row">
@@ -93,10 +93,10 @@ class MyInfo extends React.Component {
         <TopMenuGeneral title="MY INFO" />
         <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
         <div className="imageHolder">
-          <button className="upload">Upload Photo ></button>
+          <button className="upload" >Upload Photo ></button>
         </div>
-        <div className="container" style={{ top: "40%", left: "40%", position: "absolute" }}>
-          <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >MY INFO
+        <div className="container con" style={{ top: "25%", left: "40%", position: "absolute" }}>
+          <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >
             <div className="row">
               <div className="col">UCINetID</div>
               <div className="w-0"></div>
@@ -122,7 +122,7 @@ class MyInfo extends React.Component {
               <div className="w-0"></div>
               <div className="col">{stateUserInfo[0].shirt_size}</div>
             </div>
-            <button onClick={this.handleEditButton} className="btn btn-primary">Edit Info</button>
+            <button onClick={this.handleEditButton} className="btn btn-primary but">Edit Info</button>
           </div>
         </div>
 

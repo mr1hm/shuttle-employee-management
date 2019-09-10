@@ -1,12 +1,10 @@
-.container{
-    width: 36%;
+.con{
+  width: 36%;
+  top: 25%;
+  left: 40%;
 }
 input{
   display: list-item;
-}
-button{
-  float: left;
-  margin-left: 70%;
 }
 .form-control{
   margin-left: -30%;
@@ -19,18 +17,25 @@ button{
     background-color: purple;
     height: 184px;
     width: 200px;
-    margin-top: 17%;
+    margin-top: 11%;
     margin-left: 10%;
 }
 .upload{
-    margin-top: 96%;
+    margin-top: 92%;
     height: 15%;
-    width: 101%;
+    width: 100%;
     margin-left: 0%;
+    border: black;
 }
 .profileName{
     float: left;
     margin-left: 10%;
-    margin-top: 15%;
+    margin-top: 7%;
     font-size: 20px;
+}
+.but{
+    margin-top: -5%;
+    width: 50%;
+    float: left;
+    margin-left: 70%;
 }
