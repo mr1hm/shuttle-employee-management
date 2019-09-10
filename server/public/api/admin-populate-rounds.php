@@ -252,9 +252,9 @@ function populateSchedule($operators, $rounds)  {
     $unassignedRoundsAvailable = 0;
     $roundsOnLineAvailable = 0;
 
-    echo '<pre>';
-    print('roundsIndex:' . $roundsIndex );
-    echo '</pre>';
+    // echo '<pre>';
+    // print('roundsIndex:' . $roundsIndex );
+    // echo '</pre>';
     //count the number of unassigned rounds
     for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++){
       if ($rounds[$roundsIndex + $roundOfShift]['user_id'] === '1') {
@@ -267,9 +267,9 @@ function populateSchedule($operators, $rounds)  {
         // echo '</pre>';
       }
     }
-    echo '<pre>';
-    print('roundsIndex:' . $roundsIndex );
-    echo '</pre>';
+    // echo '<pre>';
+    // print('roundsIndex:' . $roundsIndex );
+    // echo '</pre>';
     //count the number of rounds available on line
     for ($roundOfShift1 = 0; $roundOfShift1 < $numberRounds; $roundOfShift1++){
 
@@ -295,14 +295,24 @@ function populateSchedule($operators, $rounds)  {
 
     if ($unassignedRoundsAvailable === $numberRounds and $roundsOnLineAvailable === $numberRounds) {
       echo '<pre>';
-      print('INSIDE ASSIGNMENT');
-      echo '</pre>';
-      echo '<pre>';
-      print('number rounds:' . $numberRounds );
+      print('line name:' . $rounds[$roundsIndex]['line_name']);
       echo '</pre>';
 
       echo '<pre>';
+      print('number of rounds:' . $numberRounds);
+      echo '</pre>';
+
+      echo '<pre>';
+      print('round start');
+      echo '</pre>';
+      echo '<pre>';
       print_r($rounds[$roundsIndex]['round_start']);
+      echo '</pre>';
+      echo '<pre>';
+      print('round end:');
+      echo '</pre>';
+      echo '<pre>';
+      print_r($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
       echo '</pre>';
 
       //specify the length of the operator array
@@ -343,9 +353,11 @@ function populateSchedule($operators, $rounds)  {
             //yes, a shift assignement was made
             $madeAssignment = true;
 
-          
+            // $shiftStartTime = intval($rounds[$roundsIndex]['round_start']);
+            // $shiftEndTime = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
+
             //yes, add the time added to assigned times for the operator
-            array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex]['round_end'])]);
+            array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
             // echo '<pre>';
             // print('time added to assigned time: '. $shiftStartTime . ',' . $shiftEndTime);
             // echo '</pre>';
@@ -353,7 +365,7 @@ function populateSchedule($operators, $rounds)  {
 
             //yes, adjust available times
             //shift is exactly the same as the available time
-            if($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex]['round_end'])) {
+            if($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
               print('time the SAME - before');
               echo '<pre>';
               print_r($operators);
@@ -366,12 +378,12 @@ function populateSchedule($operators, $rounds)  {
               break;
             }
             //shift has same beginning as available time
-            if ($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex]['round_end'])) {
+            if ($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
               echo '<pre>';
               print('time at BEGINNING- before');
               print_r($operators);
               echo '</pre>';
-              $operators[$operatorsIndex]['available_times'][$timesIndex][0] = intval($rounds[$roundsIndex]['round_end']);
+              $operators[$operatorsIndex]['available_times'][$timesIndex][0] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
               echo '<pre>';
               print('time at BEGINNING - after');
               print_r($operators);
@@ -379,7 +391,7 @@ function populateSchedule($operators, $rounds)  {
               break;
             }
             //shift has same end as available time
-            if ($availableStartTime > intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex]['round_end'])) {
+            if ($availableStartTime < intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
               echo '<pre>';
               print('time at END - before');
               print_r($operators);
@@ -392,12 +404,12 @@ function populateSchedule($operators, $rounds)  {
               break;
             }
             //shift in middle of available time
-            if ($availableStartTime < intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex]['round_end'])){
+            if ($availableStartTime <  intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])){
               echo '<pre>';
               print('time in BETWEEN - before');
               print_r($operators);
               echo '</pre>';
-              $newAvailableTimeArray = [intval($rounds[$roundsIndex]['round_end']), $operators[$operatorsIndex]['available_times'][$timesIndex][1]];
+              $newAvailableTimeArray = [intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']), $operators[$operatorsIndex]['available_times'][$timesIndex][1]];
               $operators[$operatorsIndex]['available_times'][$timesIndex][1] = intval($rounds[$roundsIndex]['round_start']);
               array_push($operators[$operatorsIndex]['available_times'], $newAvailableTimeArray);
               echo '<pre>';
