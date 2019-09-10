@@ -38,7 +38,7 @@ class ShiftsDetails extends React.Component {
         'Content-Type': 'application/json'
       },
       method: 'PATCH',
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         status: status,
         user_id: userID,
         id: roundID})
@@ -120,10 +120,10 @@ class ShiftsDetails extends React.Component {
   generateCheckboxElements(object) {
     return (
       <div className="custom-control custom-checkbox">
-      <input 
-        type="checkbox" 
-        className="custom-control-input" 
-        id={object.id} 
+      <input
+        type="checkbox"
+        className="custom-control-input"
+        id={object.id}
         onChange={() => this.pushRoundIDsToArray(object.id)}
         ></input>
       <label className="custom-control-label" htmlFor={object.id}></label>
@@ -227,9 +227,10 @@ class ShiftsDetails extends React.Component {
           </div>
         </div>
         <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
-          <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
+          <h2> PLEASE CONFIRM: <br></br>Do you really want to post this/these shift(s)?</h2>
+          <h3 className="shiftToTake"> C1 600-1100  15rounds 5h </h3>
           <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
-          <p><button onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p> 
+          <p><button className= "modalConfirmButton" onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p>
         </Modal>
       </React.Fragment>
     )

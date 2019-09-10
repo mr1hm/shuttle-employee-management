@@ -259,8 +259,9 @@ class ShiftsDay extends React.Component {
 
           <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view}>
             <h2> PLEASE CONFIRM: <br></br>Do you really want to TAKE this shift?</h2>
+            <h3 className="shiftToTake"> D2   740-800   1round   20m  </h3>
             <p><button className="modalCancelButton" onClick={() => this.closeModal()}>Cancel</button></p>
-            <p><button onClick={() => { this.handleTakeShift("scheduled", 1, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
+            <p><button className="modalConfirmButton" onClick={() => { this.handleTakeShift("scheduled", 1, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
           </Modal>
 
         </div>

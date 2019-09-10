@@ -31,7 +31,17 @@ body{
 }
 .modalCancelButton{
   margin: 5%;
+  position: absolute;
+  left: 65%;
 
+}
+.modalConfirmButton{
+  margin: 5%;
+  position: absolute;
+  right: 50%;
+}
+.shiftToTake{
+  margin: 5%;
 }
 
 
