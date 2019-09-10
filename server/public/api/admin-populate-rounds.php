@@ -350,10 +350,7 @@ function populateSchedule($operators, $rounds)  {
             }
             //yes, adjust total daily and weekly hours
 
-            //right now this is in minutes, needs to be adjusted for hours
             $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
-
-            //NOTE: We have everything displaying in minutes right now. This needs to be adjusted to hours.
 
             $operators[$operatorsIndex]['total_weekly_hours'] = intval($operators[$operatorsIndex]['total_weekly_hours']) /60 + $totalShiftTime /60;
             $operators[$operatorsIndex]['total_daily_hours'] = intval($operators[$operatorsIndex]['total_daily_hours']) /60 + $totalShiftTime /60;
