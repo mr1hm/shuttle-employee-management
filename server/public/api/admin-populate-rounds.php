@@ -183,7 +183,6 @@ function sundayOperatorsSort($a, $b) {
   }
 }
 
-
 //NEEDS TO BE CORRECTED FOR PHP
 function calculateShiftHours($startTime, $endTime){
   $startHourDigits = floor($startTime/100);
@@ -199,42 +198,23 @@ function calculateShiftHours($startTime, $endTime){
   return round($shiftLengthInMinutes); 
 }
 
-function determineLineName ($lineName){
-  $z = null;
-  if ($lineName === 'C') {
-    $z = 3;
-    return $z;
-  } if ($lineName === 'D') {
-    $z = 4;
-    return $z;
-  } if ($lineName === 'Hs') {
-    $z = 5;
-    return $z;
-  } if ($lineName === 'N') {
-    $z = 3;
-    return $z; 
-  } if ($lineName === 'S') {
-    $z = 4;
-    return $z; 
-  }
+function determineLineName($lineName){
+  $shiftLength = [
+    'C'=>3, 
+    'D'=>4, 
+    'Hs'=>5
+  ];
+  return $shiftLength[$lineName];
 }
-
 
 function populateSchedule($operators, $rounds)  {
   $lengthOperatorsArray = count($operators);
   $lengthRoundsArray = count($rounds);
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray ; $roundsIndex++) {
    //determine the line and assign number of rounds to that line
-
    $lineName = $rounds[$roundsIndex]['line_name'];
    $numberRounds = determineLineName($lineName);
-  //  echo '<pre>';
-  //  print('number of rounds in '. $lineName . ': ' . $numberRounds);
-  //  echo '</pre>';
 
-    //not enough rounds to assign -- end of the round array
-    // $length = $lengthRoundsArray  - 1;
-    // print('BREAK CRITERIA - number rounds: '. $numberRounds . ' last index: ' . $length . "current index: " . $roundsIndex . "number rounds necessary: " . $numberRounds);
     if ($roundsIndex >= $lengthRoundsArray  - 1 - $numberRounds) {
       break;
     } 
@@ -255,46 +235,18 @@ function populateSchedule($operators, $rounds)  {
     $unassignedRoundsAvailable = 0;
     $roundsOnLineAvailable = 0;
 
-    // echo '<pre>';
-    // print('roundsIndex:' . $roundsIndex );
-    // echo '</pre>';
-    //count the number of unassigned rounds
     for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++){
       if ($rounds[$roundsIndex + $roundOfShift]['user_id'] === '1') {
-        // echo '<pre>';
-        // print('unassignedRoundsAvailable before: '.$unassignedRoundsAvailable);
-        // echo '</pre>';
         $unassignedRoundsAvailable++;
-        // echo '<pre>';
-        // print('unassignedRoundsAvailable after: '.$unassignedRoundsAvailable);
-        // echo '</pre>';
       }
     }
-    // echo '<pre>';
-    // print('roundsIndex:' . $roundsIndex );
-    // echo '</pre>';
-    //count the number of rounds available on line
+
     for ($roundOfShift1 = 0; $roundOfShift1 < $numberRounds; $roundOfShift1++){
 
       if($rounds[$roundsIndex + $roundOfShift1]['line_name'] === $rounds[$roundsIndex +$roundOfShift1 +1] ['line_name']) {
-        // echo '<pre>';
-        // print('unassignedLines before: '.$roundsOnLineAvailable);
-        // echo '</pre>';
         $roundsOnLineAvailable++;
-        // echo '<pre>';
-        // print('unassignedLines after: '.$roundsOnLineAvailable);
-        // echo '</pre>';
       }
     }
-    // echo '<pre>';
-    // print('roundsIndex:' . $roundsIndex );
-    // echo '</pre>';
-
-    // echo '<pre>';
-    // print_r($rounds[$roundsIndex]['round_start']);
-    // echo '</pre>';
-    // $shiftStartTime = intval($rounds[$roundsIndex]['round_start']);
-    // $shiftEndTime = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
 
     if ($unassignedRoundsAvailable === $numberRounds and $roundsOnLineAvailable === $numberRounds) {
       echo '<pre>';
@@ -352,14 +304,12 @@ function populateSchedule($operators, $rounds)  {
 
             $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
 
-            $operators[$operatorsIndex]['total_weekly_hours'] = intval($operators[$operatorsIndex]['total_weekly_hours']) /60 + $totalShiftTime /60;
-            $operators[$operatorsIndex]['total_daily_hours'] = intval($operators[$operatorsIndex]['total_daily_hours']) /60 + $totalShiftTime /60;
+            $operators[$operatorsIndex]['total_weekly_hours'] = intval($operators[$operatorsIndex]['total_weekly_hours']) + $totalShiftTime /60;
+
+            $operators[$operatorsIndex]['total_daily_hours'] = intval($operators[$operatorsIndex]['total_daily_hours']) + $totalShiftTime /60;
 
             //yes, a shift assignement was made
             $madeAssignment = true;
-
-            // $shiftStartTime = intval($rounds[$roundsIndex]['round_start']);
-            // $shiftEndTime = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
 
             //yes, add the time added to assigned times for the operator
             array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
