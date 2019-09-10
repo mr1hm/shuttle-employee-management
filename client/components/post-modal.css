@@ -30,14 +30,14 @@ body{
   padding: 0;
 }
 .modalCancelButton{
-  margin: 5%;
+   margin: 5%;
   position: absolute;
   left: 65%;
 
 }
 .modalConfirmButton{
   margin: 5%;
-  position: absolute;
+ position: absolute;
   right: 50%;
 }
 .shiftToTake{

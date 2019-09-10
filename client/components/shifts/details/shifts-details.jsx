@@ -229,8 +229,8 @@ class ShiftsDetails extends React.Component {
         <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
           <h2> PLEASE CONFIRM: <br></br>Do you really want to post this/these shift(s)?</h2>
           <h3 className="shiftToTake"> C1 600-1100  15rounds 5h </h3>
-          <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
-          <p><button className= "modalConfirmButton" onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p>
+          <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Cancel</button></p>
+          <p><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p>
         </Modal>
       </React.Fragment>
     )
