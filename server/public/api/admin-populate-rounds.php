@@ -186,14 +186,17 @@ function sundayOperatorsSort($a, $b) {
 
 //NEEDS TO BE CORRECTED FOR PHP
 function calculateShiftHours($startTime, $endTime){
-  $startHourDigits = (int)($startTime/100);
-  $startMinuteDigits = $startTime/100 - Math.floor($startTime/100);
-  $endHourDigits = (int)($endTime/100);
-  $endMinuteDigits = $endTime/100 - Math.floor($endTime/100);
-  $startTimeInMinutes = $startHourDigits*60 + $startMinuteDigits;
-  $endTimeInMinutes = $endHourDigits*60 + $endMinuteDigits;
-  $shiftLengthInMinutes = $endTimeInMinutes-$startTimeInMinutes;
-  return Math.round($shiftLengthInMinutes); 
+  $startHourDigits = floor($startTime/100);
+  $startMinuteDigits = $startTime/100 - $startHourDigits;
+
+  $endHourDigits = floor($endTime/100);
+  $endMinuteDigits = $endTime/100 - $endHourDigits;
+
+  $startTimeInMinutes = $startHourDigits*60 + $startMinuteDigits*100;
+  $endTimeInMinutes = $endHourDigits*60 + $endMinuteDigits*100;
+
+  $shiftLengthInMinutes = $endTimeInMinutes - $startTimeInMinutes;
+  return round($shiftLengthInMinutes); 
 }
 
 function determineLineName ($lineName){
@@ -346,9 +349,11 @@ function populateSchedule($operators, $rounds)  {
               $rounds[$roundsIndex + $roundOfShift]['first_name'] = $operators[$operatorsIndex]['first_name'];
             }
             //yes, adjust total daily and weekly hours
-            $totalShiftTime = (intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])-intval($rounds[$roundsIndex]['round_start']))/100;
-            $operators[$operatorsIndex]['total_weekly_hours'] = intval($operators[$operatorsIndex]['total_weekly_hours']) + $totalShiftTime;
-            $operators[$operatorsIndex]['total_daily_hours'] = intval($operators[$operatorsIndex]['total_daily_hours']) + $totalShiftTime;
+
+            $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
+
+            $operators[$operatorsIndex]['total_weekly_hours'] = intval($operators[$operatorsIndex]['total_weekly_hours']) /60 + $totalShiftTime /60;
+            $operators[$operatorsIndex]['total_daily_hours'] = intval($operators[$operatorsIndex]['total_daily_hours']) /60 + $totalShiftTime /60;
 
             //yes, a shift assignement was made
             $madeAssignment = true;
