@@ -12,7 +12,7 @@
     padding-right: 2vmin;
     padding-bottom: 5vmin;
 }
-.flex-section {
+.roundsListGrid {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
@@ -20,15 +20,15 @@
     margin-left: 2%;
     border: 2px solid black;
 }
-.flex-col-scroll {
+.scrollableContainer {
     flex-grow: 1;
     overflow: auto;
     min-height: 100%;
 }
-.col-12 {
+.fullWidthGridColumn {
     padding: 0;
 }
-.custom-checkbox {
+.checkboxElements {
     padding-left: 30px;
 }
 .buttonContainer {
