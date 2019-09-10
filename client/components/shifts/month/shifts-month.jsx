@@ -66,7 +66,7 @@ class ShiftsMonth extends React.Component {
     let startTimeInMinutes = startHourDigits*60 + startMinuteDigits;
     let endTimeInMinutes = endHourDigits*60 + endMinuteDigits;
     let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
-    return Math.round(shiftLengthInMinutes); 
+    return Math.round(shiftLengthInMinutes);
   }
   generateCalendarPage(dateProp) {
     var selectedDate = new Date(dateProp);
@@ -100,16 +100,16 @@ class ShiftsMonth extends React.Component {
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
       var targetUnixDate = calendarPage[dayOfCalendar].getTime();
       monthDivArray.push(
-        <Link className={calendarPage[dayOfCalendar].getFullYear() + 
-          "-" + calendarPage[dayOfCalendar].getMonth() + 
+        <Link className={calendarPage[dayOfCalendar].getFullYear() +
+          "-" + calendarPage[dayOfCalendar].getMonth() +
           "-" + calendarPage[dayOfCalendar].getDate() === new Date(this.props.defaultDate).getFullYear() +
-          "-" + new Date(this.props.defaultDate).getMonth() + 
-          "-" + new Date(this.props.defaultDate).getDate() ? "today-mark link-style " : "link-style"} 
+          "-" + new Date(this.props.defaultDate).getMonth() +
+          "-" + new Date(this.props.defaultDate).getDate() ? "today-mark link-style " : "link-style"}
           to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
-          <DayOfMonth 
-            key={calendarPage[dayOfCalendar].getTime()} 
+          <DayOfMonth
+            key={calendarPage[dayOfCalendar].getTime()}
             dayObj={ calendarPage[dayOfCalendar]}
-            dayIndex={calendarPage[dayOfCalendar].getDate()} 
+            dayIndex={calendarPage[dayOfCalendar].getDate()}
             shiftsArray={this.state.scheduledHoursForCurrentMonth}
           />
         </Link>
@@ -146,17 +146,17 @@ class ShiftsMonth extends React.Component {
             arrayOfRoundsForWeek.push(shiftsArray[roundIndex]);
             console.log("array of rounds per week: ",arrayOfRoundsForWeek)
             weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
-          } 
+          }
           weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
         }
       }
       var targetUnixDate = bundledWeeksArray[weekIndex][0].getTime();
       arrayOfRoundsForWeek = [];
       weekTotalHoursArrayToBeDisplayed.push(
-        <Link key={bundledWeeksArray[weekIndex][0].getTime()} 
-          className="link-style" 
+        <Link key={bundledWeeksArray[weekIndex][0].getTime()}
+          className="link-style"
           to={`/shifts/week/shifts-week/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
-          <div class = "totalHoursForWeek">
+          <div className = "totalHoursForWeek">
             <div>{weekHourTotal}</div>
           </div>
         </Link>
@@ -193,10 +193,10 @@ class ShiftsMonth extends React.Component {
       <div className ="calenderContainer">
         <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
         {/* line 219 is for testing only. CSS styling is not complete */}
-        <RouteBusDisplay bus='1' route='H'/> 
-        <div className="row" class="calendarBox">
-          <div class="monthCalendar">
-            <div class="dayOfMonth Title">
+        <RouteBusDisplay bus='1' route='H'/>
+        <div className="row" className="calendarBox">
+          <div className="monthCalendar">
+            <div className="dayOfMonth Title">
               <div>SUN</div>
               <div>MON</div>
               <div>TUE</div>
