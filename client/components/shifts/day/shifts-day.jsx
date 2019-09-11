@@ -264,19 +264,25 @@ class ShiftsDay extends React.Component {
 
           <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view}>
             <h2> PLEASE CONFIRM: <br></br>Do you really want to TAKE this shift?</h2>
-            {
-              this.state.shiftsToPass.map((shifts, index) => {
+            <table className='table table-striped'>
+              <tbody>
+                {
+                  this.state.shiftsToPass.map((shifts, index) => {
 
-                return (
-                  < OneOfMyShifts
-                    key={index}
-                    shifts={shifts}
-                    openDetails={this.openModal}
-                    view={this.props.view}
-                  />
-                );
-              })
-            }
+                    return (
+
+                      < OneOfMyShifts
+                        key={index}
+                        shifts={shifts}
+                        openDetails={this.openModal}
+                        view={this.props.view}
+                      />
+                    );
+                  })
+                }
+              </tbody>
+            </table>
+
             {/* <h3 className="shiftToTake"> D2   740-800   1round   20m  </h3> */}
             <p><button className="modalCancelButton btn-dark" onClick={() => this.closeModal()}>Cancel</button></p>
             <p><button className="modalConfirmButton btn-primary" onClick={() => { this.handleTakeShift("scheduled", 1, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
