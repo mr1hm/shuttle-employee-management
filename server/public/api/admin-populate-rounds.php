@@ -1,104 +1,128 @@
 <?php
-//NOTE: all the debugging code was left in place as a precautionary measure. 
+
 require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
-$query = "SELECT 
-          rt.line_name, 
-          bi.bus_number, 
-          rd.start_time AS round_start, 
-          rd.end_time AS round_end,
-          us.id AS user_id, 
-          us.last_name, 
-          us.first_name,
-          rd.date
-          FROM route AS rt 
-          JOIN bus_info AS bi ON bi.route_id = rt.id 
-          JOIN round AS rd ON rd.bus_info_id = bi.id 
-          JOIN user AS us ON rd.user_id = us.id
-          WHERE rd.session_id = 1";
 
-$result = mysqli_query($conn, $query);
-if(!$result){
-  throw new Exception('MySQL error: '.mysqli_error($conn));
-}
-$rounds = [];
-while ($row = mysqli_fetch_assoc($result)) {
-  $row['day'] = date('D', $row['date']);
-  $rounds[] = $row;
-}
-
-// echo '<pre>';
-// print_r($rounds);
-// echo '</pre>';
-// exit();
-
-$operatorsUserDetailsQuery = "SELECT 
-                              id AS user_id, 
-                              last_name, 
-                              first_name 
-                              FROM user 
-                              WHERE role = 'operator' AND status = 'active'";
-
-$resultOperatorsUserDetailsQuery = mysqli_query($conn, $operatorsUserDetailsQuery);
-if(!$resultOperatorsUserDetailsQuery){
-  throw new Exception('MySQL error: '.mysqli_error($conn));
+//**FUNCTIONS**/
+function getRoundsData($conn) {
+  $roundsQuery = "SELECT 
+                  rt.line_name, 
+                  bi.bus_number, 
+                  rd.start_time AS round_start, 
+                  rd.end_time AS round_end,
+                  us.id AS user_id, 
+                  us.last_name, 
+                  us.first_name,
+                  rd.date,
+                  rd.status
+                  FROM route AS rt 
+                  JOIN bus_info AS bi ON bi.route_id = rt.id 
+                  JOIN round AS rd ON rd.bus_info_id = bi.id 
+                  JOIN user AS us ON rd.user_id = us.id
+                  WHERE rd.session_id = 1
+                  ORDER BY date ASC,line_name ASC, bus_number ASC, round_start ASC, round_end ASC";
+          
+  $result = mysqli_query($conn, $roundsQuery);
+  if(!$result){
+    throw new Exception('MySQL error: '.mysqli_error($conn));
+  }
+  $rounds = [];
+  while ($row = mysqli_fetch_assoc($result)) {
+    $row['day'] = date('D', $row['date']);
+    $rounds[] = $row;
+  }
+  return $rounds;
 }
 
-$operatorsUserDetails = [];
-$fetchedUserIDs = [];
+function getOperatorsData($conn) {
+  $operatorsUserDetailsQuery = "SELECT 
+                                id AS user_id, 
+                                last_name, 
+                                first_name 
+                                FROM user 
+                                WHERE role = 'operator' AND status = 'active'";
 
-$baseDayStructure = [
-  'available_times'=>[],
-  'times_assigned'=>[],
-  'continuous_hours_assigned'=>0,
-  'total_daily_hours'=>0
-];
+  $resultOperatorsUserDetailsQuery = mysqli_query($conn, $operatorsUserDetailsQuery);
+  if(!$resultOperatorsUserDetailsQuery){
+    throw new Exception('MySQL error: '.mysqli_error($conn));
+  }
 
-while ($row = mysqli_fetch_assoc($resultOperatorsUserDetailsQuery)) {
-  $row['total_weekly_hours'] = 0;
-  $row['assignment_details']=[
-    'Sun'=>$baseDayStructure,
-    'Mon'=>$baseDayStructure,
-    'Tue'=>$baseDayStructure,
-    'Wed'=>$baseDayStructure,
-    'Thu'=>$baseDayStructure,
-    'Fri'=>$baseDayStructure,
-    'Sat'=>$baseDayStructure,
+  $operatorsUserDetails = [];
+  $fetchedUserIDs = [];
+
+  $baseDayStructure = [
+    'available_times'=>[],
+    'times_assigned'=>[],
+    'continuous_hours_assigned'=>0,
+    'total_daily_hours'=>0
   ];
-  $fetchedUserIDs[] = $row['user_id'];
-  $operatorsUserDetails[$row['user_id']] = $row;
+
+  while ($row = mysqli_fetch_assoc($resultOperatorsUserDetailsQuery)) {
+    $row['total_weekly_hours'] = 0;
+    $row['assignment_details']=[
+      'Sun'=>$baseDayStructure,
+      'Mon'=>$baseDayStructure,
+      'Tue'=>$baseDayStructure,
+      'Wed'=>$baseDayStructure,
+      'Thu'=>$baseDayStructure,
+      'Fri'=>$baseDayStructure,
+      'Sat'=>$baseDayStructure,
+    ];
+    $fetchedUserIDs[] = $row['user_id'];
+    $operatorsUserDetails[$row['user_id']] = $row;
+  }
+
+  $operatorCSV = implode(',', $fetchedUserIDs);
+
+  $operatorAvailabilityQuery = "SELECT 
+                                user_id, 
+                                day_of_week, 
+                                CONCAT(start_time, ' , ', end_time) AS availability 
+                                FROM `operator_availability` 
+                                WHERE session_id = 1 AND user_id IN ({$operatorCSV})";
+
+  $resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
+
+  if(!$resultAvailabilityQuery){
+    throw new Exception('MySQL error: '.mysqli_error($conn));
+  }
+
+  //array of operator's availabilities
+  $operatorAvailability = [];
+
+  while ($row = mysqli_fetch_assoc($resultAvailabilityQuery)) {
+    $operatorAvailability[] = $row;
+  }
+
+  $lengthOperatorAvailability = count($operatorAvailability);
+
+  //put all the availability information into arrays (came in as strings)
+  for ($j = 0; $j < $lengthOperatorAvailability; $j++) {
+    $operatorAvailability[$j]['availability'] = explode (',', $operatorAvailability[$j]['availability']);
+  }
+
+  //grouped availabilty array
+  $groupedAvailabilityArray = array_group_by($operatorAvailability,'user_id');
+
+  foreach($groupedAvailabilityArray as $userID=>$userAvailability){
+    //for each record that has that user_id
+    $userAvailabilityLength = count($userAvailability);
+    for ($availabilityIndex = 0; $availabilityIndex < $userAvailabilityLength; $availabilityIndex++) {
+      
+      $currentDay = $userAvailability[$availabilityIndex]['day_of_week'];
+      $operatorsUserDetails[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
+    }
+  }
+  $operators =[];
+
+  foreach($operatorsUserDetails as $value) {
+    $operators[] = $value;
+  }
+  return $operators;
 }
 
-$operatorCSV = implode(',', $fetchedUserIDs);
-
-$operatorAvailabilityQuery = "SELECT 
-                              user_id, 
-                              day_of_week, 
-                              CONCAT(start_time, ' , ', end_time) AS availability 
-                              FROM `operator_availability` 
-                              WHERE session_id = 1 AND user_id IN ({$operatorCSV})";
-
-$resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
-
-if(!$resultAvailabilityQuery){
-  throw new Exception('MySQL error: '.mysqli_error($conn));
-}
-
-//array of operator's availabilities
-$operatorAvailability = [];
-
-while ($row = mysqli_fetch_assoc($resultAvailabilityQuery)) {
-  $operatorAvailability[] = $row;
-}
-
-$lengthOperatorAvailability = count($operatorAvailability);
-
-//put all the availability information into arrays (came in as strings)
-for ($j = 0; $j < $lengthOperatorAvailability; $j++) {
-  $operatorAvailability[$j]['availability'] = explode (',', $operatorAvailability[$j]['availability']);
-}
-
+//group all array items with the same key
 function array_group_by(array $array, $key)
 {
   if (!is_string($key) && !is_int($key) && !is_float($key) && !is_callable($key) ) {
@@ -135,47 +159,8 @@ function array_group_by(array $array, $key)
   return $grouped;
 }
 
-$groupedAvailabilityArray = array_group_by($operatorAvailability,'user_id');
-
-foreach($groupedAvailabilityArray as $userID=>$userAvailability){
-  //for each record that has that user_id
-  $userAvailabilityLength = count($userAvailability);
-  for ($availabilityIndex = 0; $availabilityIndex < $userAvailabilityLength; $availabilityIndex++) {
-    
-    $currentDay = $userAvailability[$availabilityIndex]['day_of_week'];
-    $operatorsUserDetails[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
-  }
-}
-
-$operators =[];
-
-foreach($operatorsUserDetails as $value) {
-  $operators[] = $value;
-}
-
-// echo '<pre>';
-// print_r($operators);
-// echo '</pre>';
-// exit();
-
-
-$sundayOperators = [];
-for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
-  if(count($operators[$operatorsIndex]['assignment_details']['Sun']['available_times'])) {
-    $content['user_id'] = $operators[$operatorsIndex]['user_id'];
-    $content['last_name'] = $operators[$operatorsIndex]['last_name'];
-    $content['first_name'] = $operators[$operatorsIndex]['first_name'];
-    $content['total_weekly_hours'] = $operators[$operatorsIndex]['total_weekly_hours'];
-    $content['available_times'] = $operators[$operatorsIndex]['assignment_details']['Sun']['available_times'];
-    $content['times_assigned'] = $operators[$operatorsIndex]['assignment_details']['Sun']['times_assigned'];
-    $content['continuous_hours_assigned'] = $operators[$operatorsIndex]['assignment_details']['Sun']['continuous_hours_assigned'];
-    $content['total_daily_hours'] = $operators[$operatorsIndex]['assignment_details']['Sun']['total_daily_hours'];
-    array_push($sundayOperators, $content);
-  }
-}
-
-
-function sundayOperatorsSort($a, $b) {
+//sorts based on total weekly hours
+function operatorsSort($a, $b) {
   if ($a['total_weekly_hours'] == $b['total_weekly_hours']) {
       return 0;
   } else {
@@ -183,7 +168,40 @@ function sundayOperatorsSort($a, $b) {
   }
 }
 
-//NEEDS TO BE CORRECTED FOR PHP
+//returns and array of operators that are available for one day (Sun, Mon, Tue, etc.)
+function buildOperatorsByDay($operators, $day) {
+  $dayOperators = [];
+  
+  for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
+    if(count($operators[$operatorsIndex]['assignment_details'][$day]['available_times'])) {
+      $content['user_id'] = $operators[$operatorsIndex]['user_id'];
+      $content['last_name'] = $operators[$operatorsIndex]['last_name'];
+      $content['first_name'] = $operators[$operatorsIndex]['first_name'];
+      $content['total_weekly_hours'] = $operators[$operatorsIndex]['total_weekly_hours'];
+      $content['available_times'] = $operators[$operatorsIndex]['assignment_details'][$day]['available_times'];
+      $content['times_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['times_assigned'];
+      $content['continuous_hours_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['continuous_hours_assigned'];
+      $content['total_daily_hours'] = $operators[$operatorsIndex]['assignment_details'][$day]['total_daily_hours'];
+      array_push($dayOperators, $content);
+    }
+  }
+  uasort($dayOperators, 'operatorsSort');
+  $dayOperators = array_values($dayOperators);
+  return $dayOperators;
+}
+
+function buildRoundsByDay($rounds, $day) {
+  $dayRounds = [];
+  
+  for($roundsIndex = 0; $roundsIndex < count($rounds); $roundsIndex++) {
+    if($rounds[$roundsIndex]['day'] === $day) {
+      array_push($dayRounds, $rounds[$roundsIndex]);
+    }
+  }
+  return $dayRounds;
+}
+
+//takes start and end time and calculates total
 function calculateShiftHours($startTime, $endTime){
   $startHourDigits = floor($startTime/100);
   $startMinuteDigits = $startTime/100 - $startHourDigits;
@@ -198,6 +216,7 @@ function calculateShiftHours($startTime, $endTime){
   return round($shiftLengthInMinutes); 
 }
 
+//determine the line name
 function determineLineName($lineName){
   $shiftLength = [
     'C'=>3, 
@@ -207,6 +226,7 @@ function determineLineName($lineName){
   return $shiftLength[$lineName];
 }
 
+//auto-populate the schedule
 function populateSchedule($operators, $rounds)  {
   $lengthOperatorsArray = count($operators);
   $lengthRoundsArray = count($rounds);
@@ -229,25 +249,26 @@ function populateSchedule($operators, $rounds)  {
     array_values($operators);
     
     //sort the operator array, put operator with fewest weekly hours at the top
-    uasort($operators, 'sundayOperatorsSort'); 
+    uasort($operators, 'operatorsSort'); 
     $operators = array_values($operators);
 
+    //set or reset the unassigned rounds and rounds on an available line to 0.
     $unassignedRoundsAvailable = 0;
     $roundsOnLineAvailable = 0;
 
+    //count the number of unassigned rounds
     for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++){
       if ($rounds[$roundsIndex + $roundOfShift]['user_id'] === '1') {
         $unassignedRoundsAvailable++;
       }
     }
-
+    //count the number the number of rounds on the same line
     for ($roundOfShift1 = 0; $roundOfShift1 < $numberRounds; $roundOfShift1++){
-
       if($rounds[$roundsIndex + $roundOfShift1]['line_name'] === $rounds[$roundsIndex +$roundOfShift1 +1] ['line_name']) {
         $roundsOnLineAvailable++;
       }
     }
-
+    //Are there adequate unassigned rounds and rounds on the same line?
     if ($unassignedRoundsAvailable === $numberRounds and $roundsOnLineAvailable === $numberRounds) {
       echo '<pre>';
       print('line name:' . $rounds[$roundsIndex]['line_name']);
@@ -270,10 +291,10 @@ function populateSchedule($operators, $rounds)  {
       print_r($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
       echo '</pre>';
 
-      //specify the length of the operator array
+      //length of the operator array
       $lengthOperatorsArray = count($operators);
       
-      //iterate through each operator
+      //yes, iterate through each operator
       for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
 
         //array of available time slots for one operator
@@ -299,6 +320,7 @@ function populateSchedule($operators, $rounds)  {
               $rounds[$roundsIndex + $roundOfShift]['user_id'] = $operators[$operatorsIndex]['user_id'];
               $rounds[$roundsIndex + $roundOfShift]['last_name'] = $operators[$operatorsIndex]['last_name'];
               $rounds[$roundsIndex + $roundOfShift]['first_name'] = $operators[$operatorsIndex]['first_name'];
+              $rounds[$roundsIndex + $roundOfShift]['status'] = 'scheduled';
             }
             //yes, adjust total daily and weekly hours
 
@@ -313,10 +335,6 @@ function populateSchedule($operators, $rounds)  {
 
             //yes, add the time added to assigned times for the operator
             array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
-            // echo '<pre>';
-            // print('time added to assigned time: '. $shiftStartTime . ',' . $shiftEndTime);
-            // echo '</pre>';
-
 
             //yes, adjust available times
             //shift is exactly the same as the available time
@@ -385,7 +403,10 @@ function populateSchedule($operators, $rounds)  {
   print("\n". $rounds);
 }
 
-uasort($sundayOperators, 'sundayOperatorsSort');
-$sundayOperators = array_values($sundayOperators);
-populateSchedule($sundayOperators, $rounds);
+//**PROCESSING**/
+$rounds = getRoundsData($conn);
+$operators = getOperatorsData($conn);
+$roundsForDay = buildRoundsByDay($rounds, 'Sun');
+$operatorsForDay = buildOperatorsByDay($operators, 'Sun');
+populateSchedule($operatorsForDay, $roundsForDay);
 ?>
