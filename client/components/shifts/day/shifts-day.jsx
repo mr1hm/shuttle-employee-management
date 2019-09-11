@@ -39,7 +39,7 @@ function OneOfMyShifts(props) {
       <td> {shiftHours} </td>
 
       <td /*className={statusColor}*/> {statusIndicator} </td>
-      <td> <input type="button" value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID)} /> </td>
+      <td> <input type="button" className= "btn btn-dark" value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID)} /> </td>
     </tr>
   )
 }
@@ -57,7 +57,8 @@ class ShiftsDay extends React.Component {
       isModalOpen: false,
       queryString: `?date=${defaultDate}&type=${this.props.view || 'myShifts'}`,
       dateToPass:  defaultDate,
-      roundID: null
+      roundID: null,
+      shiftsToPass: []
 
     }
   }
@@ -102,12 +103,16 @@ class ShiftsDay extends React.Component {
     }
   }
   openModal(roundID) {
+    let shiftsToPass = this.state.myShiftsToday.filter(shift => (shift.roundID === roundID));
+    console.log("ShiftsToPass: ", shiftsToPass);
     this.setState({
       isModalOpen: true,
       view: "availableShifts",
-      roundID: parseInt(roundID)
+      roundID: parseInt(roundID),
+      shiftsToPass: shiftsToPass
 
     })
+
   }
   closeModal() {
     this.setState({
@@ -141,7 +146,7 @@ class ShiftsDay extends React.Component {
         id: roundID
       })
     })
-      .then(response => { return response.json() })
+      .then(response => { return console.log("Patch response: ", response.json())  })
       .catch(error => { throw (error) });
 
       this.closeTakeShiftsModal();
@@ -259,7 +264,20 @@ class ShiftsDay extends React.Component {
 
           <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view}>
             <h2> PLEASE CONFIRM: <br></br>Do you really want to TAKE this shift?</h2>
-            <h3 className="shiftToTake"> D2   740-800   1round   20m  </h3>
+            {
+              this.state.shiftsToPass.map((shifts, index) => {
+
+                return (
+                  < OneOfMyShifts
+                    key={index}
+                    shifts={shifts}
+                    openDetails={this.openModal}
+                    view={this.props.view}
+                  />
+                );
+              })
+            }
+            {/* <h3 className="shiftToTake"> D2   740-800   1round   20m  </h3> */}
             <p><button className="modalCancelButton btn-dark" onClick={() => this.closeModal()}>Cancel</button></p>
             <p><button className="modalConfirmButton btn-primary" onClick={() => { this.handleTakeShift("scheduled", 1, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
           </Modal>
