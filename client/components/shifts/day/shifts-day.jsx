@@ -38,8 +38,10 @@ function OneOfMyShifts(props) {
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
       <td> {shiftHours} </td>
 
-      <td /*className={statusColor}*/> {statusIndicator} </td>
-      <td> <input type="button" className= "btn btn-dark" value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID)} /> </td>
+      <td /*className={statusColor}*/ style={{ display: props.modalStatus ? 'none' : 'block' }}> {statusIndicator} </td>
+      <td> <input type="button" className="btn btn-dark" style={{ display: props.modalStatus ? 'none' : 'block' }}
+          value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID)} />
+     </td>
     </tr>
   )
 }
@@ -205,6 +207,7 @@ class ShiftsDay extends React.Component {
                     shifts={shifts}
                     openDetails={this.openModal}
                     view = {this.props.view}
+                    modalStatus= {this.state.isModalOpen}
                   />
                 );
               })
@@ -255,6 +258,7 @@ class ShiftsDay extends React.Component {
                       shifts={shifts}
                       openDetails={this.openModal}
                       view={this.props.view}
+                      modalStatus={this.state.isModalOpen}
                     />
                   );
                 })
@@ -262,7 +266,7 @@ class ShiftsDay extends React.Component {
             </tbody>
           </table>
 
-          <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view}>
+          <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view} modalStatus={this.state.isModalOpen}>
             <h2> PLEASE CONFIRM: <br></br>Do you really want to TAKE this shift?</h2>
             <table className='table table-striped'>
               <tbody>
@@ -276,6 +280,7 @@ class ShiftsDay extends React.Component {
                         shifts={shifts}
                         openDetails={this.openModal}
                         view={this.props.view}
+                        modalStatus={this.state.isModalOpen}
                       />
                     );
                   })
