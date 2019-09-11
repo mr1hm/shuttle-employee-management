@@ -17,7 +17,7 @@ function convertUnixMonthDay(time) {
   return dateString;
 }
 
-function OneOfMyShifts(props) {
+export function OneOfMyShifts(props) {
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
   // let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
   if (props.view === 'availableShifts'){
@@ -259,6 +259,7 @@ class ShiftsDay extends React.Component {
                       openDetails={this.openModal}
                       view={this.props.view}
                       modalStatus={this.state.isModalOpen}
+                      defaultDate= { this.props.match.params.date }
                     />
                   );
                 })
@@ -281,6 +282,7 @@ class ShiftsDay extends React.Component {
                         openDetails={this.openModal}
                         view={this.props.view}
                         modalStatus={this.state.isModalOpen}
+                        defaultDate = { this.props.match.params.date }
                       />
                     );
                   })

@@ -4,7 +4,10 @@ import TopMenuGeneral from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
 import {Grid} from '@material-ui/core';
 import Modal from '../../post-modal';
+import ShiftsDay from '../../shifts/day/shifts-day';
+import {OneOfMyShifts} from '../../shifts/day/shifts-day';
 import {createDateObjFromDateString} from '../../../lib/time-functions';
+
 
 class ShiftsDetails extends React.Component {
   constructor(props) {
@@ -58,9 +61,15 @@ class ShiftsDetails extends React.Component {
     const fullQuery = unixDateOfDay + shiftBlockStartTime + shiftBlockEndTime + userID;
     this.getData('/api/shifts-details.php' + fullQuery, 'GET');
   }
-  openModal() {
+
+  openModal(roundIDs) {
+    let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.id) === parseInt(roundIDs)));
+    console.log("ShiftsToPass: ", shiftsToPass);
     this.setState({
       isModalOpen: true,
+      roundID: parseInt(roundIDs),
+      shiftsDetailsInfo: shiftsToPass
+
     })
   }
   closeModal() {
@@ -68,6 +77,7 @@ class ShiftsDetails extends React.Component {
       isModalOpen: false,
     })
   }
+
   pushRoundIDsToArray(number) {
     const index = this.checkedRoundIDs.findIndex(element => element === number); // findIndex returns index of matching element if it exists in array, otherwise returns -1.
     if (index < 0) {  // if index doesnt exist,
@@ -193,26 +203,10 @@ class ShiftsDetails extends React.Component {
                     <table className="table table-bordered">
                       <thead>
                         <tr>
-                          {/* <th></th> */}
-                          {/* <div className="custom-control custom-checkbox">
-                            <input type="checkbox" className="custom-control-input" id="customCheckD0"></input>
-                            <label className="custom-control-label" htmlFor="customCheckD0">{""}</label>
-                          </div> */}
                           <th scope="col">Recurring Dates</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {/* {shiftDetails.map(shiftDate => {return (
-                          <tr>
-                            <td>
-                            <div className="custom-control custom-checkbox">
-                              <input type="checkbox" className="custom-control-input" id={shiftDate}></input>
-                              <label className="custom-control-label" htmlFor={shiftDate}></label>
-                            </div>
-                            </td>
-                            <td>{shiftDate}</td>
-                          </tr>
-                        )})} */}
                       </tbody>
                     </table>
                   </div>
@@ -221,14 +215,34 @@ class ShiftsDetails extends React.Component {
             </Grid>
           </Grid>
           <div className="buttonContainer">
-            <button type="button" className="btn btn-outline-dark btn-block" onClick={this.openModal}>Post</button>
+            <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs)}>Post</button>
             <button type="button" className="btn btn-outline-dark btn-block">Trade/Swap</button>
             <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.props.goBack()}>My Shifts</button>
           </div>
         </div>
         <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
           <h2> PLEASE CONFIRM: <br></br>Do you really want to post this/these shift(s)?</h2>
-          <h3 className="shiftToTake"> C1 600-1100  15rounds 5h </h3>
+          <table className='table table-striped'>
+            <tbody>
+              {
+                this.state.shiftsDetailsInfo.map((shifts, index) => {
+
+                  return (
+
+                    < OneOfMyShifts
+                      key={index}
+                      shifts={shifts}
+                      openDetails={this.openModal}
+                      view={this.props.view}
+                      modalStatus={this.state.isModalOpen}
+                      defaultDate= { this.props.unixDate }
+
+                    />
+                  );
+                })
+              }
+            </tbody>
+          </table>
           <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Cancel</button></p>
           <p><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p>
         </Modal>
