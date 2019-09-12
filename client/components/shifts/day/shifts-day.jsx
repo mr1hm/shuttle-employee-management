@@ -180,12 +180,12 @@ class ShiftsDay extends React.Component {
       );
     }
 
-    let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)"] || index.start_time).toString();
-    let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"] || index.end_time).toString();
-    let shiftUserId = this.state.myShiftsToday.map(index => index.user_id).toString();
-    let shiftBusLine = this.state.myShiftsToday.map(index => index.line_name).toString();
-    let shiftBusNum = this.state.myShiftsToday.map(index => index.bus_info_id).toString();
-    let shiftRoundID = this.state.myShiftsToday.map(roundID => roundID.roundID);
+    let shiftBlockStart = this.state.shiftsToPass.map(index => index["MIN(`start_time`)"] || index.start_time).toString();
+    let shiftBlockEnd = this.state.shiftsToPass.map(index => index["MAX(`end_time`)"] || index.end_time).toString();
+    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id).toString();
+    let shiftBusLine = this.state.shiftsToPass.map(index => index.line_name).toString();
+    let shiftBusNum = this.state.shiftsToPass.map(index => index.bus_info_id).toString();
+    let shiftRoundID = this.state.shiftsToPass.map(roundID => roundID.roundID);
 
 
 
