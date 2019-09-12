@@ -40,7 +40,7 @@ function getRoundsData($conn) {
 }
 
 function getOperatorsData($conn) {
-  //TODO:Bring in weekly minutes (hours)
+  //TODO: Bring in weekly minutes (hours) in query
   $operatorsUserDetailsQuery = "SELECT 
                                 id AS user_id, 
                                 last_name, 
@@ -167,7 +167,6 @@ function array_group_by(array $array, $key)
 
 //sorts based on total weekly hours
 function operatorsSort($a, $b) {
-  //TODO:change to bring in weekly minutes
   if ($a['total_weekly_minutes'] == $b['total_weekly_minutes']) {
       return 0;
   } else {
@@ -184,11 +183,10 @@ function buildOperatorsByDay($operators, $day) {
       $content['user_id'] = $operators[$operatorsIndex]['user_id'];
       $content['last_name'] = $operators[$operatorsIndex]['last_name'];
       $content['first_name'] = $operators[$operatorsIndex]['first_name'];
-      //TODO:change to bring in weekly minutes
       $content['total_weekly_minutes'] = $operators[$operatorsIndex]['total_weekly_minutes'];
       $content['available_times'] = $operators[$operatorsIndex]['assignment_details'][$day]['available_times'];
       $content['times_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['times_assigned'];
-      $content['continuous_hours_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['continuous_hours_assigned'];
+      $content['continuous_minutes_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['continuous_minutes_assigned'];
       $content['total_daily_minutes'] = $operators[$operatorsIndex]['assignment_details'][$day]['total_daily_minutes'];
       array_push($dayOperators, $content);
     }
@@ -243,9 +241,9 @@ function updateRoundsInDatabase($conn, $rounds) {
     $roundsStatus = $rounds[$rowIndex]['status'];
 
     if($roundsStatus === 'scheduled') {
-      echo '<pre>';
-      print('round id: '.$roundsId. " user id: ".$userId);
-      echo '</pre>';
+      // echo '<pre>';
+      // print('round id: '.$roundsId. " user id: ".$userId);
+      // echo '</pre>';
       $updateQuery = "UPDATE round 
                       SET user_id = $userId,
                           status = 'scheduled'    
@@ -359,9 +357,8 @@ function populateSchedule($operators, $rounds, $conn)  {
             //yes, adjust total daily and weekly hours
             $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
 
-            //TODO:change to weekly minutes
             $operators[$operatorsIndex]['total_weekly_minutes'] = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
-            //TODO:change to daily minutes
+
             $operators[$operatorsIndex]['total_daily_minutes'] = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
 
             //yes, a shift assignement was made
@@ -438,28 +435,26 @@ function populateSchedule($operators, $rounds, $conn)  {
   print("\n". $rounds);
 }
 
+function populateTemplateWeek ($conn, $rounds) {
+  $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
+    //we need to change the getOperatorsData query to pull in the total_weekly_minutes
+    //this will be stored in a table in the db
+    $operators = getOperatorsData($conn);
+    $roundsForDay = buildRoundsByDay($rounds, $dayOfWeek[$dayOfWeekIndex]);
+    $operatorsForDay = buildOperatorsByDay($operators, $dayOfWeek[$dayOfWeekIndex]);
+    populateSchedule($operatorsForDay, $roundsForDay, $conn); 
+  }
+}
+
 //**PROCESSING**/
-$rounds = getRoundsData($conn);
-$operators = getOperatorsData($conn);
-$roundsForDay = buildRoundsByDay($rounds, 'Sun');
-$operatorsForDay = buildOperatorsByDay($operators, 'Sun');
-populateSchedule($operatorsForDay, $roundsForDay, $conn);
 
 //NEW
-// //This is slightly inefficient (sending data and retrieving data from db for each day of template) -- only doing once a quarter, so doesn't matter
-// //eventually need to restrict to first 7 days so only pulls Sun - Sat -- we can do this with date
-// function populateTemplateWeek ($conn, $rounds) {
-//   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-//   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
-//     //we need to change the getOperatorsData query to pull in the weekly hours
-//     //this will be stored in a table in the db
-//     $operators = getOperatorsData($conn);
-//     $roundsForDay = buildRoundsByDay($rounds, $dayOfWeek[$dayOfWeekIndex]);
-//     $operatorsForDay = buildOperatorsByDay($operators, $dayOfWeek[$dayOfWeekIndex]);
-//     populateSchedule($operatorsForDay, $roundsForDay, $conn); 
-//   }
-// }
-// //make sure we are only pulling in the first seven days
-// $rounds = getRoundsData($conn);
-// $populateTemplateWeek($conn, $rounds);
+//This is slightly inefficient (sending data and retrieving data from db for each day of template) -- only doing once a quarter, so it shouldn't matter
+
+//eventually need to restrict to first 7 days so only pulls Sun - Sat -- we can do this with date
+
+//make sure we are only pulling in the first seven days
+$rounds = getRoundsData($conn);
+populateTemplateWeek($conn, $rounds);
 ?>
