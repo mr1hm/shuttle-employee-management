@@ -139,7 +139,7 @@ class ShiftsDetails extends React.Component {
   }
   generateCheckboxElements(object) {
     return (
-      <div className="custom-control custom-checkbox">
+      <div className="custom-control custom-checkbox checkboxElements">
       <input
         type="checkbox"
         className="custom-control-input"
@@ -165,20 +165,20 @@ class ShiftsDetails extends React.Component {
             {this.createSubHeaderTimeFrame()}
         </div>
         <div className="details mainContainer">
-          <Grid container className="flex-section">
+          <Grid container className="flex-section roundsListGrid">
             <Grid
               item
               xs={6}
-              className={"flex-col-scroll"}
+              className={"flex-col-scroll scrollableContainer"}
             >
               <div className="container">
                 <div className="row">
-                  <div className="col-12">
+                  <div className="col-12 fullWidthGridColumn">
                     <table className="table table-bordered">
                       <thead>
                         <tr>
                           <th></th>
-                          {/* <div className="custom-control custom-checkbox">
+                          {/* <div className="custom-control custom-checkbox checkboxElements">
                             <input type="checkbox" className="custom-control-input" id="customCheckT0"></input>
                             <label className="custom-control-label" htmlFor="customCheckT0">{""}</label>
                           </div> */}
@@ -205,18 +205,37 @@ class ShiftsDetails extends React.Component {
             <Grid
               item
               xs={6}
-              className={"flex-col-scroll"}
+              className={"flex-col-scroll scrollableContainer"}
             >
               <div className="container inactive">
                 <div className="row">
-                  <div className="col-12">
+                  <div className="col-12 fullWidthGridColumn">
                     <table className="table table-bordered">
                       <thead>
                         <tr>
+
+                          {/* <th></th> */}
+                          {/* <div className="custom-control custom-checkbox checkboxElements">
+                            <input type="checkbox" className="custom-control-input" id="customCheckD0"></input>
+                            <label className="custom-control-label" htmlFor="customCheckD0">{""}</label>
+                          </div> */}
                           <th scope="col">Recurring Dates</th>
                         </tr>
                       </thead>
                       <tbody>
+
+                        {/* {shiftDetails.map(shiftDate => {return (
+                          <tr>
+                            <td>
+                            <div className="custom-control custom-checkbox checkboxElements">
+                              <input type="checkbox" className="custom-control-input" id={shiftDate}></input>
+                              <label className="custom-control-label" htmlFor={shiftDate}></label>
+                            </div>
+                            </td>
+                            <td>{shiftDate}</td>
+                          </tr>
+                        )})} */}
+
                       </tbody>
                     </table>
                   </div>
