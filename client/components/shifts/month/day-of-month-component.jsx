@@ -20,14 +20,14 @@ class DayOfMonth extends React.Component {
         postedClasses += dayTypeClasses[key] ? ` ${key}-shift-color` : ''
       }
       return (
-        <div class={ postedClasses}>
+        <div className={ postedClasses}>
           {this.props.dayIndex}
         </div>
       )   
     }
     return (
       <div>
-        <div class="calendarDay">
+        <div className="calendarDay">
           {this.props.dayIndex}
         </div>
       </div> 
