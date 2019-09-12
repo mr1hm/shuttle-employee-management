@@ -20,6 +20,7 @@ class App extends React.Component {
       // presetDateForTesting: 1563951600000
     }
   }
+
   render(){
     return (
         <React.Fragment>
