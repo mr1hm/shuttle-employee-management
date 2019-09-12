@@ -7,6 +7,7 @@ require_once('db_connection.php');
 //**FUNCTIONS**/
 function getRoundsData($conn) {
   $roundsQuery = "SELECT 
+                  rd.id,
                   rt.line_name, 
                   bi.bus_number, 
                   rd.start_time AS round_start, 
@@ -226,8 +227,33 @@ function determineLineName($lineName){
   return $shiftLength[$lineName];
 }
 
+//send assigned shift information to db
+function updateRoundsInDatabase($conn, $rounds) {
+  // print('inside updateRounds function');
+  for( $rowIndex=0; $rowIndex < count($rounds); $rowIndex++ ){
+    $userId = $rounds[$rowIndex]['user_id'];
+    $roundsId = $rounds[$rowIndex]['id'];
+    $roundsStatus = $rounds[$rowIndex]['status'];
+
+    if($roundsStatus === 'scheduled') {
+      echo '<pre>';
+      print('round id: '.$roundsId. " user id: ".$userId);
+      echo '</pre>';
+      $updateQuery = "UPDATE round 
+                      SET user_id = $userId,
+                          status = 'scheduled'    
+                      WHERE id = $roundsId";
+
+      $result = mysqli_query($conn, $updateQuery);
+      if(!$result){
+        throw new Exception('MySQL error: '.mysqli_error($conn));
+      }
+    }
+  }
+}
+
 //auto-populate the schedule
-function populateSchedule($operators, $rounds)  {
+function populateSchedule($operators, $rounds, $conn)  {
   $lengthOperatorsArray = count($operators);
   $lengthRoundsArray = count($rounds);
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray ; $roundsIndex++) {
@@ -323,7 +349,6 @@ function populateSchedule($operators, $rounds)  {
               $rounds[$roundsIndex + $roundOfShift]['status'] = 'scheduled';
             }
             //yes, adjust total daily and weekly hours
-
             $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
 
             $operators[$operatorsIndex]['total_weekly_hours'] = intval($operators[$operatorsIndex]['total_weekly_hours']) + $totalShiftTime /60;
@@ -399,6 +424,7 @@ function populateSchedule($operators, $rounds)  {
       }
     }
   }
+  updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
   print("\n". $rounds);
 }
@@ -408,5 +434,6 @@ $rounds = getRoundsData($conn);
 $operators = getOperatorsData($conn);
 $roundsForDay = buildRoundsByDay($rounds, 'Sun');
 $operatorsForDay = buildOperatorsByDay($operators, 'Sun');
-populateSchedule($operatorsForDay, $roundsForDay);
+populateSchedule($operatorsForDay, $roundsForDay, $conn);
+
 ?>
