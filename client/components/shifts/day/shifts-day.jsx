@@ -40,7 +40,7 @@ export function OneOfMyShifts(props) {
 
       <td /*className={statusColor}*/ style={{ display: props.modalStatus ? 'none' : 'block' }}> {statusIndicator} </td>
       <td> <input type="button" className="btn btn-dark" style={{ display: props.modalStatus ? 'none' : 'block' }}
-          value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID)} />
+          value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID || props.shifts.id)} />
      </td>
     </tr>
   )
@@ -104,8 +104,19 @@ class ShiftsDay extends React.Component {
       // commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
     }
   }
+  // openModal() {
+
+  //   this.setState({
+  //     isModalOpen: true,
+  //     view: "availableShifts",
+  //     roundID: null
+
+
+  //   })
+
+  // }
   openModal(roundID) {
-    let shiftsToPass = this.state.myShiftsToday.filter(shift => (shift.roundID === roundID));
+    let shiftsToPass = this.state.myShiftsToday.filter(shift => (shift.roundID === roundID || shift.id === roundID));
     console.log("ShiftsToPass: ", shiftsToPass);
     this.setState({
       isModalOpen: true,
@@ -220,7 +231,7 @@ class ShiftsDay extends React.Component {
               unixDate={this.props.match.params.date}
               blockStartTime={shiftBlockStart}   // the start time (military 4-digit) of the first round in the block clicked
               blockEndTime={shiftBlockEnd}      // the end time (military 4-digit) of the last round of the block clicked
-              userID={shiftUserId}           // the user's ID number
+              userID={shiftUserId[0]}           // the user's ID number (used the specific 0 index because the user id should be the same for all of these shifts on the details)
               busLine={shiftBusLine}          // the letter representing the line (route) of the selected round or block
               busNumber={shiftBusNum}        // the number of the bus for the selected round or block
             >

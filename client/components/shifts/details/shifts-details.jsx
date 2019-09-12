@@ -63,12 +63,22 @@ class ShiftsDetails extends React.Component {
   }
 
   openModal(roundIDs) {
-    let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.id) === parseInt(roundIDs)));
-    console.log("ShiftsToPass: ", shiftsToPass);
+    debugger;
+    if(!Array.isArray(roundIDs)){
+      roundIDs = [roundIDs];
+    }
+    let allShiftsToPass = [];
+    for( var roundIndex = 0; roundIndex < roundIDs.length; roundIndex++){
+      let currentRound = parseInt(roundIDs[roundIndex]);
+      let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.id) === currentRound));
+      allShiftsToPass = allShiftsToPass.concat( shiftsToPass);
+    }
+
+    console.log("ShiftsToPass: ", allShiftsToPass);
     this.setState({
       isModalOpen: true,
       roundID: parseInt(roundIDs),
-      shiftsDetailsInfo: shiftsToPass
+      shiftsDetailsInfo: allShiftsToPass
 
     })
   }
