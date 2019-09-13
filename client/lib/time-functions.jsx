@@ -124,25 +124,52 @@ function getTotalDayWorkingHours(props) {
 
 
 //calculates total shift duration and formats it in XXh YYmin
-function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
+// function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
 
-  function calcShiftHours(startTime, endTime){
-    let startHourDigits = Math.trunc(startTime/100);
-    let startMinuteDigits = startTime/100 - Math.floor(startTime/100);
-    let endHourDigits = Math.trunc(endTime/100);
-    let endMinuteDigits = endTime/100 - Math.floor(endTime/100);
-    let startTimeInMinutes = startHourDigits*60 + startMinuteDigits;
-    let endTimeInMinutes = endHourDigits*60 + endMinuteDigits;
-    let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
-    return Math.round(shiftLengthInMinutes);
+//   function calcShiftHours(startTime, endTime){
+//     let startHourDigits = Math.trunc(startTime/100);
+//     let startMinuteDigits = startTime/100 - Math.floor(startTime/100);
+//     let endHourDigits = Math.trunc(endTime/100);
+//     let endMinuteDigits = endTime/100 - Math.floor(endTime/100);
+//     let startTimeInMinutes = startHourDigits*60 + startMinuteDigits;
+//     let endTimeInMinutes = endHourDigits*60 + endMinuteDigits;
+//     let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
+//     return Math.round(shiftLengthInMinutes);
+//   }
+
+//     let totalShiftLengthForWeek = 0
+//     let minutesForShift = calcShiftHours(startOfShift,endOfShift);
+//     totalShiftLengthForWeek += minutesForShift;
+//     let totalHours = Math.floor(totalShiftLengthForWeek/60);
+//     let totalMinutes = totalShiftLengthForWeek%60;
+//     return (totalHours + "h " + totalMinutes + "m");
+// }
+function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
+
+  function calcShiftHours(startTime, endTime) { // 1220, 1240
+    let startHourDigits = Math.trunc(startTime / 100);//12
+    console.log("startHourDigits", startHourDigits)
+    let startMinuteDigits = Math.round((startTime / 100 - Math.floor(startTime / 100)) * 100);//20
+    console.log("startMinuteDigits", startMinuteDigits)
+    let endHourDigits = Math.trunc(endTime / 100); // 12
+    console.log("endHourDigits", endHourDigits)
+    let endMinuteDigits = Math.round((endTime / 100 - Math.floor(endTime / 100)) * 100); //40
+    console.log("endMinuteDigits", endMinuteDigits)
+    let startTimeInMinutes = startHourDigits * 60 + startMinuteDigits; //600 + 20 = 620
+    console.log("startTimeInMinutes", startTimeInMinutes)
+    let endTimeInMinutes = endHourDigits * 60 + endMinuteDigits; // 720 + 20 = 740
+    console.log("endTimeInMinutes", endTimeInMinutes)
+    let shiftLengthInMinutes = endTimeInMinutes - startTimeInMinutes; //740 - 620 = 120
+    console.log("shiftLengthInMinutes: ", shiftLengthInMinutes)
+    return Math.round(shiftLengthInMinutes); // 120 min
   }
 
-    let totalShiftLengthForWeek = 0
-    let hoursForShift = calcShiftHours(startOfShift,endOfShift);
-    totalShiftLengthForWeek += hoursForShift;
-    let totalHours = Math.floor(totalShiftLengthForWeek/60);
-    let totalMinutes = totalShiftLengthForWeek%60;
-    return (totalHours + "h " + totalMinutes + "m");
+  let totalShiftLengthForWeek = 0 //initial hours
+  let minutesForShift = calcShiftHours(startOfShift, endOfShift); // 120 minutes
+  totalShiftLengthForWeek += minutesForShift;
+  let totalHours = Math.floor(totalShiftLengthForWeek / 60); //2
+  let totalMinutes = totalShiftLengthForWeek % 60; //0
+  return (totalHours + "h " + totalMinutes + "m");
 }
 
 export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,

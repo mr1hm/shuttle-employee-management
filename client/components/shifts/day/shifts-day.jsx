@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { calcShiftLenghtInHourMinFormat, calculateDailyWorkingHours } from '../../../lib/time-functions';
+import { calcShiftLenghtInHourMinFormat } from '../../../lib/time-functions';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
@@ -20,13 +20,16 @@ function convertUnixMonthDay(time) {
 export function OneOfMyShifts(props) {
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
   // let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
+  let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"], props.shifts["MAX(`end_time`)"]);
+  let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"]) > 1) ? "Scheduled/Posted" : props.shifts.status;
+  let numOfRounds = props.shifts["COUNT(`start_time`)"];
   if (props.view === 'availableShifts'){
      shiftButton = "Take Shift";
+     shiftHours = calcShiftLenghtInHourMinFormat(props.shifts.start_time, props.shifts.end_time);
+     statusIndicator = props.shifts.status;
+     numOfRounds = 1; /*can work on changing this dynamically if needed.  Thought that it would be okay to just hardcode it
+                      since this view shows the rounds broken up, so they would be 1*/
   }
-
-  let numOfRounds = props.shifts["COUNT(`start_time`)"];
-  let shiftHours = calculateDailyWorkingHours(props.shifts["MIN(`start_time`)"],props.shifts["MAX(`end_time`)"]);
-  let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"])>1) ? "Scheduled/Posted" : props.shifts.status;
 
   return (
     <tr>
