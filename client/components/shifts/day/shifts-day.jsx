@@ -64,8 +64,7 @@ class ShiftsDay extends React.Component {
       dateToPass:  defaultDate,
       roundID: null,
       shiftsToPass: [],
-
-
+      userId: 1
     }
   }
   fetchCallMethod(query) {
@@ -308,7 +307,7 @@ class ShiftsDay extends React.Component {
 
             {/* <h3 className="shiftToTake"> D2   740-800   1round   20m  </h3> */}
             <p><button className="modalCancelButton btn-dark" onClick={() => this.closeModal()}>Cancel</button></p>
-            <p><button className="modalConfirmButton btn-primary" onClick={() => { this.handleTakeShift("scheduled", 1, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
+            <p><button className="modalConfirmButton btn-primary" onClick={() => { this.handleTakeShift("scheduled", this.state.userId, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
           </Modal>
 
         </div>
