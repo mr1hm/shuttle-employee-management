@@ -11,9 +11,11 @@ require_once 'db_connection.php';
 // }
 
 // $userID = $_GET['user_id'];
-$date= $_GET['date'];
+$date = $_GET['date'];
 
-if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
+//Counting how many rounds are scheduled COUNT(`start_time`),
+//See if the status types are all the same (scheduled/posted) but only works if there a mix of both COUNT(DISTINCT rd.`status`)
+if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
   $query = "SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
@@ -24,6 +26,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
             rt.`id`,
             COUNT(`start_time`),
             COUNT(DISTINCT rd.`status`)
+
           FROM
             `round` AS rd
           INNER JOIN
@@ -63,11 +66,12 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
 
 $result = mysqli_query($conn, $query);
 if (!$result) {
-    throw new Exception('mysql error ' . mysqli_error($conn));
+  throw new Exception('mysql error ' . mysqli_error($conn));
 }
 $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
-    $data[] = $row;
+
+  $data[] = $row;
 }
 print(json_encode($data));
 ?>

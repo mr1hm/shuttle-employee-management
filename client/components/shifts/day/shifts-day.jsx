@@ -20,13 +20,16 @@ function convertUnixMonthDay(time) {
 export function OneOfMyShifts(props) {
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
   // let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
+  let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"], props.shifts["MAX(`end_time`)"]);
+  let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"]) > 1) ? "Scheduled/Posted" : props.shifts.status;
+  let numOfRounds = props.shifts["COUNT(`start_time`)"];
   if (props.view === 'availableShifts'){
      shiftButton = "Take Shift";
+     shiftHours = calcShiftLenghtInHourMinFormat(props.shifts.start_time, props.shifts.end_time);
+     statusIndicator = props.shifts.status;
+     numOfRounds = 1; /*can work on changing this dynamically if needed.  Thought that it would be okay to just hardcode it
+                      since this view shows the rounds broken up, so they would be 1*/
   }
-
-  let numOfRounds = props.shifts["COUNT(`start_time`)"];
-  let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"],props.shifts["MAX(`end_time`)"]);
-  let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"])>1) ? "Scheduled/Posted" : props.shifts.status;
 
   return (
     <tr>
@@ -60,8 +63,8 @@ class ShiftsDay extends React.Component {
       queryString: `?date=${defaultDate}&type=${this.props.view || 'myShifts'}`,
       dateToPass:  defaultDate,
       roundID: null,
-      shiftsToPass: []
-
+      shiftsToPass: [],
+      userId: 1
     }
   }
   fetchCallMethod(query) {
@@ -219,6 +222,7 @@ class ShiftsDay extends React.Component {
                     openDetails={this.openModal}
                     view = {this.props.view}
                     modalStatus= {this.state.isModalOpen}
+
                   />
                 );
               })
@@ -303,7 +307,7 @@ class ShiftsDay extends React.Component {
 
             {/* <h3 className="shiftToTake"> D2   740-800   1round   20m  </h3> */}
             <p><button className="modalCancelButton btn-dark" onClick={() => this.closeModal()}>Cancel</button></p>
-            <p><button className="modalConfirmButton btn-primary" onClick={() => { this.handleTakeShift("scheduled", 1, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
+            <p><button className="modalConfirmButton btn-primary" onClick={() => { this.handleTakeShift("scheduled", this.state.userId, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
           </Modal>
 
         </div>

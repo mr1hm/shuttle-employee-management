@@ -63,7 +63,6 @@ class ShiftsDetails extends React.Component {
   }
 
   openModal(roundIDs) {
-    debugger;
     if(!Array.isArray(roundIDs)){
       roundIDs = [roundIDs];
     }
@@ -86,6 +85,7 @@ class ShiftsDetails extends React.Component {
     this.setState({
       isModalOpen: false,
     })
+    this.props.goBack();
   }
 
   pushRoundIDsToArray(number) {
