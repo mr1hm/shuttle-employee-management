@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { calcShiftLenghtInHourMinFormat } from '../../../lib/time-functions';
+import { calcShiftLenghtInHourMinFormat, calculateDailyWorkingHours } from '../../../lib/time-functions';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
@@ -25,7 +25,7 @@ export function OneOfMyShifts(props) {
   }
 
   let numOfRounds = props.shifts["COUNT(`start_time`)"];
-  let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"],props.shifts["MAX(`end_time`)"]);
+  let shiftHours = calculateDailyWorkingHours(props.shifts["MIN(`start_time`)"],props.shifts["MAX(`end_time`)"]);
   let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"])>1) ? "Scheduled/Posted" : props.shifts.status;
 
   return (
@@ -60,7 +60,8 @@ class ShiftsDay extends React.Component {
       queryString: `?date=${defaultDate}&type=${this.props.view || 'myShifts'}`,
       dateToPass:  defaultDate,
       roundID: null,
-      shiftsToPass: []
+      shiftsToPass: [],
+
 
     }
   }
@@ -219,6 +220,7 @@ class ShiftsDay extends React.Component {
                     openDetails={this.openModal}
                     view = {this.props.view}
                     modalStatus= {this.state.isModalOpen}
+
                   />
                 );
               })

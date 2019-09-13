@@ -54,7 +54,8 @@ function calculateDailyWorkingHours(startTime, endTime) {
   const startTimeFloat = parseInt(startHour) + startMinutesAsRatio;
   const endTimeFloat = parseInt(endHour) + endMinutesAsRatio;
   const shiftHoursPerDay = endTimeFloat - startTimeFloat;
-  return shiftHoursPerDay;
+  const shiftHoursPerDayFixed = shiftHoursPerDay.toFixed(2);
+  return shiftHoursPerDayFixed;
 }
 /* converts a YYYY-MM-DD date string into a js date object set to midnight on the same day LOCAL time
 params:

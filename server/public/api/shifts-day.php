@@ -13,6 +13,8 @@ require_once 'db_connection.php';
 // $userID = $_GET['user_id'];
 $date= $_GET['date'];
 
+//Counting how many rounds are scheduled COUNT(`start_time`),
+//See if the status types are all the same (scheduled/posted) but only works if there a mix of both COUNT(DISTINCT rd.`status`)
 if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
   $query = "SELECT
             rd.`bus_info_id`,
@@ -24,6 +26,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
             rt.`id`,
             COUNT(`start_time`),
             COUNT(DISTINCT rd.`status`)
+
           FROM
             `round` AS rd
           INNER JOIN
