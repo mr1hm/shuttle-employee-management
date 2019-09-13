@@ -8,10 +8,12 @@ require_once('db_connection.php');
 //TODO: EVENTUALLY change name to reflect that this is a template
 function getRoundsData($conn) {
   //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
-  //TODO: redo query to restrict to a one week range (restrict with date)
-  $startDate = _____;
-  //TODO: need equation to calculate based on 7 full days from midnight on the first day
-  $endDate = ____;
+  // //TODO: need equation to calculate based on 7 full days from midnight on the first day
+
+  $templateDates = [15661600000, 15662592000,15663456000, 15664320000, 15665184000, 15666048000, 15666912000];
+
+  $templateDatesCSV = implode(',', $templateDates);
+
   //TODO: change query to pull in only the days set by the $roundStart and $roundEnd
   $roundsQuery = "SELECT 
                   rd.id,
@@ -28,7 +30,7 @@ function getRoundsData($conn) {
                   JOIN bus_info AS bi ON bi.route_id = rt.id 
                   JOIN round AS rd ON rd.bus_info_id = bi.id 
                   JOIN user AS us ON rd.user_id = us.id
-                  WHERE rd.session_id = 1
+                  WHERE rd.session_id = 1 AND rd.date IN ({$templateDatesCSV})
                   ORDER BY date ASC,line_name ASC, bus_number ASC, round_start ASC, round_end ASC";
           
   $result = mysqli_query($conn, $roundsQuery);
@@ -37,7 +39,11 @@ function getRoundsData($conn) {
   }
   $rounds = [];
   while ($row = mysqli_fetch_assoc($result)) {
+    print("row date: ".$row['date']);
     $row['day'] = date('D', $row['date']);
+    print($row['day']) ;
+    // $row['day'] = "Mon";
+    // $row['day'] = strptime($row['date'], '%a');
     $rounds[] = $row;
   }
   return $rounds;
@@ -82,8 +88,10 @@ function getOperatorsData($conn) {
     $fetchedUserIDs[] = $row['user_id'];
     $operatorsUserDetails[$row['user_id']] = $row;
   }
-
+  // print("fetched user id");
+  // print_r($fetchedUserIDs);
   $operatorCSV = implode(',', $fetchedUserIDs);
+  // print ("operatorCSV".$operatorCSV);
 
   $operatorAvailabilityQuery = "SELECT 
                                 user_id, 
