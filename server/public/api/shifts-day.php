@@ -12,7 +12,7 @@ require_once 'db_connection.php';
 
 // $userID = $_GET['user_id'];
 $date = $_GET['date'];
-
+//these were placed under rt. `id` before in place
 //Counting how many rounds are scheduled COUNT(`start_time`),
 //See if the status types are all the same (scheduled/posted) but only works if there a mix of both COUNT(DISTINCT rd.`status`)
 if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
@@ -25,7 +25,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
             rt.`line_name`,
             rt.`id`,
             COUNT(`start_time`),
-            COUNT(DISTINCT rd.`status`)
+            rd. `status`
 
           FROM
             `round` AS rd
@@ -40,7 +40,8 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
             rd.`user_id`,
             rd.`date`,
             rt.`line_name`,
-            rt.`id`";
+            rt.`id`,
+            rd. `status`";
 } else {
   $query = " SELECT
             rd.`id` AS roundID,
