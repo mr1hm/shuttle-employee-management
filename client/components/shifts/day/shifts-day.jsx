@@ -22,7 +22,7 @@ export function OneOfMyShifts(props) {
   // let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
   let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"], props.shifts["MAX(`end_time`)"]);
   let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"]) > 1) ? "Scheduled/Posted" : props.shifts.status;
-  let numOfRounds = props.shifts["COUNT(`start_time`)"];
+  let numOfRounds = props.shifts.roundCount;
   if (props.view === 'availableShifts'){
      shiftButton = "Take Shift";
      shiftHours = calcShiftLenghtInHourMinFormat(props.shifts.start_time, props.shifts.end_time);

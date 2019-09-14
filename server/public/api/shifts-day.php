@@ -71,6 +71,7 @@ if (!$result) {
   throw new Exception('mysql error ' . mysqli_error($conn));
 }
 $data = [];
+//conditional for grouping contiguous rounds together by status type
 if($checkingType){
   $previousEndTime = '';
   $previousStatus = '';
