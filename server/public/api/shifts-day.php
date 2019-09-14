@@ -26,8 +26,8 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
             rd.`date`,
             rt.`line_name`,
             rt.`id`,
-            rd. `status`
-
+            rd. `status`,
+            rd.`id` AS roundID
           FROM
             `round` AS rd
           INNER JOIN
@@ -81,9 +81,12 @@ if($checkingType){
     if($row['status']!==$previousStatus || $row['start_time'] !== $previousEndTime){
       $data[] = $currentDataRow;
       $currentDataRow = $row;
+      $currentDataRow['componentIDs'] = [ intVal($row['roundID'])];
+      $currentDataRow['startingRoundId'] = intVal($row['roundID']);
       $currentDataRow['roundCount'] = 1;
     } else {
       $currentDataRow['roundCount']++;
+      $currentDataRow['componentIDs'][] = intVal($row['roundID']);
       $currentDataRow['end_time'] = $row['end_time'];
     }
     $previousEndTime = $row['end_time'];

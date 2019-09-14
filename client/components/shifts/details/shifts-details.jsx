@@ -69,7 +69,7 @@ class ShiftsDetails extends React.Component {
     let allShiftsToPass = [];
     for( var roundIndex = 0; roundIndex < roundIDs.length; roundIndex++){
       let currentRound = parseInt(roundIDs[roundIndex]);
-      let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.id) === currentRound));
+      let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.roundID) === currentRound));
       allShiftsToPass = allShiftsToPass.concat( shiftsToPass);
     }
 
@@ -144,7 +144,7 @@ class ShiftsDetails extends React.Component {
         type="checkbox"
         className="custom-control-input"
         id={object.id}
-        onChange={() => this.pushRoundIDsToArray(object.id)}
+        onChange={() => this.pushRoundIDsToArray(object.roundID)}
         ></input>
       <label className="custom-control-label" htmlFor={object.id}></label>
     </div>
@@ -160,7 +160,7 @@ class ShiftsDetails extends React.Component {
         <TopMenuGeneral title="Shifts - DETAILS"/>
         <div className="details subHeader">
           <div className="busRouteIconContainer">
-              <RouteBusDisplay route={this.props.busLine} bus={this.props.busNumber}/>
+              <RouteBusDisplay route={this.props.busLine[0]} bus={this.props.busNumber[0]}/>
           </div>
             {this.createSubHeaderTimeFrame()}
         </div>
@@ -187,8 +187,8 @@ class ShiftsDetails extends React.Component {
                         </tr>
                       </thead>
                       <tbody>
-                        {shiftDetails.map(object => { return (
-                          <tr key={object.id}>
+                        {shiftDetails.map((object, index ) => { return (
+                          <tr key={index}>
                             <td>
                             {this.generateCheckboxElements(object)}
                             </td>

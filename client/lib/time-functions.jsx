@@ -148,19 +148,12 @@ function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
 
   function calcShiftHours(startTime, endTime) { // 1220, 1240
     let startHourDigits = Math.trunc(startTime / 100);//12
-    console.log("startHourDigits", startHourDigits)
     let startMinuteDigits = Math.round((startTime / 100 - Math.floor(startTime / 100)) * 100);//20
-    console.log("startMinuteDigits", startMinuteDigits)
     let endHourDigits = Math.trunc(endTime / 100); // 12
-    console.log("endHourDigits", endHourDigits)
     let endMinuteDigits = Math.round((endTime / 100 - Math.floor(endTime / 100)) * 100); //40
-    console.log("endMinuteDigits", endMinuteDigits)
     let startTimeInMinutes = startHourDigits * 60 + startMinuteDigits; //600 + 20 = 620
-    console.log("startTimeInMinutes", startTimeInMinutes)
     let endTimeInMinutes = endHourDigits * 60 + endMinuteDigits; // 720 + 20 = 740
-    console.log("endTimeInMinutes", endTimeInMinutes)
     let shiftLengthInMinutes = endTimeInMinutes - startTimeInMinutes; //740 - 620 = 120
-    console.log("shiftLengthInMinutes: ", shiftLengthInMinutes)
     return Math.round(shiftLengthInMinutes); // 120 min
   }
 
