@@ -30,6 +30,9 @@ export function OneOfMyShifts(props) {
      numOfRounds = 1; /*can work on changing this dynamically if needed.  Thought that it would be okay to just hardcode it
                       since this view shows the rounds broken up, so they would be 1*/
   }
+  if (!props.shifts["MIN(`start_time`)"]){
+    shiftHours = calcShiftLenghtInHourMinFormat(props.shifts.start_time, props.shifts.end_time);
+  }
 
   return (
     <tr>
