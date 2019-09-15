@@ -9,6 +9,10 @@ require_once('db_connection.php');
 function getRoundsData($conn) {
   //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
   //TODO: redo query to restrict to a one week range (restrict with date)
+  $startDate = _____;
+  //TODO: need equation to calculate based on 7 full days from midnight on the first day
+  $endDate = ____;
+  //TODO: change query to pull in only the days set by the $roundStart and $roundEnd
   $roundsQuery = "SELECT 
                   rd.id,
                   rt.line_name, 
@@ -204,6 +208,9 @@ function buildRoundsByDay($rounds, $day) {
       array_push($dayRounds, $rounds[$roundsIndex]);
     }
   }
+  echo '<pre>';
+  print_r($dayRounds);
+  echo '</pre>';
   return $dayRounds;
 }
 
@@ -257,6 +264,7 @@ function updateRoundsInDatabase($conn, $rounds) {
   }
 }
 
+
 //auto-populate the schedule
 function populateSchedule($operators, $rounds, $conn)  {
   $lengthOperatorsArray = count($operators);
@@ -286,6 +294,7 @@ function populateSchedule($operators, $rounds, $conn)  {
     //set or reset the unassigned rounds and rounds on an available line to 0.
     $unassignedRoundsAvailable = 0;
     $roundsOnLineAvailable = 0;
+    $roundsOnBusAvailable = 0;
 
     //count the number of unassigned rounds
     for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++){
@@ -299,28 +308,34 @@ function populateSchedule($operators, $rounds, $conn)  {
         $roundsOnLineAvailable++;
       }
     }
+      //count the number the number of rounds on the same bus number
+      for ($roundOfShift2 = 0; $roundOfShift2 < $numberRounds; $roundOfShift2++){
+        if($rounds[$roundsIndex + $roundOfShift2]['bus_number'] === $rounds[$roundsIndex +$roundOfShift1 +1] ['bus_number']) {
+          $roundsOnBusAvailable++;
+        }
+      }
     //Are there adequate unassigned rounds and rounds on the same line?
-    if ($unassignedRoundsAvailable === $numberRounds and $roundsOnLineAvailable === $numberRounds) {
-      echo '<pre>';
-      print('line name:' . $rounds[$roundsIndex]['line_name']);
-      echo '</pre>';
+    if ($unassignedRoundsAvailable === $numberRounds and $roundsOnLineAvailable === $numberRounds and $roundsOnBusAvailable === $numberRounds) {
+      // echo '<pre>';
+      // print('line name:' . $rounds[$roundsIndex]['line_name']);
+      // echo '</pre>';
 
-      echo '<pre>';
-      print('number of rounds:' . $numberRounds);
-      echo '</pre>';
+      // echo '<pre>';
+      // print('number of rounds:' . $numberRounds);
+      // echo '</pre>';
 
-      echo '<pre>';
-      print('round start');
-      echo '</pre>';
-      echo '<pre>';
-      print_r($rounds[$roundsIndex]['round_start']);
-      echo '</pre>';
-      echo '<pre>';
-      print('round end:');
-      echo '</pre>';
-      echo '<pre>';
-      print_r($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
-      echo '</pre>';
+      // echo '<pre>';
+      // print('round start');
+      // echo '</pre>';
+      // echo '<pre>';
+      // print_r($rounds[$roundsIndex]['round_start']);
+      // echo '</pre>';
+      // echo '<pre>';
+      // print('round end:');
+      // echo '</pre>';
+      // echo '<pre>';
+      // print_r($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
+      // echo '</pre>';
 
       //length of the operator array
       $lengthOperatorsArray = count($operators);
@@ -342,9 +357,9 @@ function populateSchedule($operators, $rounds, $conn)  {
 
           //Is shift within the available time range of operator?
           if ($availableStartTime <= intval($rounds[$roundsIndex]['round_start']) and $availableEndTime >= intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-            echo'<pre>';
-            print('available start time: '. $availableStartTime . '  available end time: '. $availableEndTime);
-            echo'</pre>'; 
+            // echo'<pre>';
+            // print('available start time: '. $availableStartTime . '  available end time: '. $availableEndTime);
+            // echo'</pre>'; 
 
             //yes, update the rounds in the schedule
             for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++) {
@@ -440,9 +455,10 @@ function populateTemplateWeek ($conn, $rounds) {
   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
     //we need to change the getOperatorsData query to pull in the total_weekly_minutes
     //this will be stored in a table in the db
+    $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $operators = getOperatorsData($conn);
-    $roundsForDay = buildRoundsByDay($rounds, $dayOfWeek[$dayOfWeekIndex]);
-    $operatorsForDay = buildOperatorsByDay($operators, $dayOfWeek[$dayOfWeekIndex]);
+    $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
+    $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
     populateSchedule($operatorsForDay, $roundsForDay, $conn); 
   }
 }
