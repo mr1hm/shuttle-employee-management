@@ -12,6 +12,7 @@ require_once 'db_connection.php';
 
 // $userID = $_GET['user_id'];
 $date = $_GET['date'];
+
 $checkingType = false;
 //these were placed under rt. `id` before in place
 //Counting how many rounds are scheduled COUNT(`start_time`),
@@ -28,6 +29,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
             rt.`id`,
             rd. `status`,
             rd.`id` AS roundID
+
           FROM
             `round` AS rd
           INNER JOIN
@@ -35,7 +37,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            rd.`date`= {$date} AND rd.`user_id` = 1";
+rd.`date`= {$date} AND rd.`user_id` = 1";
           // GROUP BY
           //   rd.`bus_info_id`,
           //   rd.`user_id`,
@@ -77,16 +79,15 @@ if($checkingType){
   $previousStatus = '';
   $currentDataRow = [];
   while ($row = mysqli_fetch_assoc($result)) {
-    // print(" {$row['status']} !== {$previousStatus}\n");
     if($row['status']!==$previousStatus || $row['start_time'] !== $previousEndTime){
       $data[] = $currentDataRow;
       $currentDataRow = $row;
-      $currentDataRow['componentIDs'] = [ intVal($row['roundID'])];
+      $currentDataRow['componentIDs'] = [intVal($row['roundID'])];
       $currentDataRow['startingRoundId'] = intVal($row['roundID']);
       $currentDataRow['roundCount'] = 1;
     } else {
       $currentDataRow['roundCount']++;
-      $currentDataRow['componentIDs'][] = intVal($row['roundID']);
+      $currentDataRow['componentIDs'][] = [intVal($row['roundID'])];
       $currentDataRow['end_time'] = $row['end_time'];
     }
     $previousEndTime = $row['end_time'];

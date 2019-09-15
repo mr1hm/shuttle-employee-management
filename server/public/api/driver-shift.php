@@ -22,12 +22,16 @@ if ($method === 'PATCH') { //make sure it's patch request
   if (!is_numeric($id)) { //checking to make sure it is a number
     throw new Exception('id needs to be a number');
   }
+  if (empty($body['transaction'])) { //make sure there is a transaction of the body
+    throw new Exception('request body needs a transaction key');
+  }
+  $transaction = $body['transaction']; //stores the status in a variable
   $status = $body['status']; //store the status in a variable
   $validStatuses = ['scheduled', 'traded', 'posted', 'unscheduled'];
   if (!in_array($status, $validStatuses)) { //needle, haystack (what you are looking for, where you are looking for it)
     throw new Exception('not a valid status');
   }
-  if($status === 'scheduled'){
+  if($status === 'scheduled' && $transaction !== 'cancelPost' ){
     $query = " UPDATE `round` SET `status` = ? , `user_id` = ? WHERE `user_id` != ? AND `id` = ? ";
     $statement = mysqli_stmt_init($conn);
     mysqli_stmt_prepare($statement, $query);

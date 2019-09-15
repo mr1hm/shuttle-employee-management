@@ -25,6 +25,7 @@ $query = "SELECT
             rd.`start_time`,
             rd.`end_time`,
             rd.`date`,
+            rd. `status`,
             rt.`line_name`,
             rt.`id`,
             rd.`id` AS roundID
@@ -34,7 +35,7 @@ $query = "SELECT
             `route` AS rt
           ON
             rd.`bus_info_id` = rt.`id`
-             WHERE `user_id` = {$userID}
+          WHERE `user_id` = {$userID}
           AND `date` = {$unixDate}
           AND (`start_time` >= {$shiftStartTime} AND `end_time` <= {$shiftEndTime})
 
