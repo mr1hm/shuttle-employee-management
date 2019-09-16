@@ -30,6 +30,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
             rd. `status`,
             rd.`id` AS roundID
 
+
           FROM
             `round` AS rd
           INNER JOIN
@@ -93,6 +94,7 @@ if($checkingType){
     $previousEndTime = $row['end_time'];
     $previousStatus = $row['status'];
   }
+  $data[]= $currentDataRow;
   array_shift($data);
 } else {
   while ($row = mysqli_fetch_assoc($result)) {

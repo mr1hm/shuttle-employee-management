@@ -94,7 +94,6 @@ class ShiftsDay extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    debugger;
     // console.log( "prevProps: ", prevProps);
     // console.log("prevState: " , prevState);
     if (prevProps.match.params.date !== this.props.match.params.date || this.props.view !== prevProps.view) {
@@ -111,17 +110,17 @@ class ShiftsDay extends React.Component {
       this.fetchCallMethod(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`);
       // commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
     }
-    if (this.props.view === 'myShifts' && this.state.isModalOpen !== prevState.isModalOpen) {
-      let dateToQuery = createDateObjFromDateString((this.props.match.params.date ? this.props.match.params.date : this.state.dateToPass)).getTime();
-      this.setState({
-        dateToQuery: dateToQuery,
-        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
-        dateToPass: this.props.match.params.date
-      })
-      console.log(`update query string ?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`)
-      this.fetchCallMethod(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`);
+    // if (this.props.view === 'myShifts' && this.state.isModalOpen !== prevState.isModalOpen) {
+    //   let dateToQuery = createDateObjFromDateString((this.props.match.params.date ? this.props.match.params.date : this.state.dateToPass)).getTime();
+    //   this.setState({
+    //     dateToQuery: dateToQuery,
+    //     queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
+    //     dateToPass: this.props.match.params.date
+    //   })
+    //   console.log(`update query string ?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`)
+    //   this.fetchCallMethod(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`);
 
-    }
+    // }
   }
   // openModal() {
 

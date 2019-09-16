@@ -55,7 +55,7 @@ class ShiftsDetails extends React.Component {
     let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();
     let shiftStart = this.props.blockStartTime ? this.props.blockStartTime : 600;
     let shiftEnd = this.props.blockEndTime ? this.props.blockEndTime : 1100;
-    let user = this.props.userID ? this.props.userID : 1;
+    let user = this.props.userID ? this.props.userID : 2;
     const unixDateOfDay = `?unixdate=${date}`;
     const shiftBlockStartTime = `&start_time=${shiftStart}`;
     const shiftBlockEndTime = `&end_time=${shiftEnd}`;
