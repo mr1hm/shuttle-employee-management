@@ -60,10 +60,11 @@ class ShiftsDay extends React.Component {
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );
+    const defaultId = 1;
     this.state = {
       myShiftsToday: [],
       isModalOpen: false,
-      queryString: `?date=${defaultDate}&type=${this.props.view || 'myShifts'}`,
+      queryString: `?date=${defaultDate}&userID=${defaultId}&type=${this.props.view || 'myShifts'}`,
       dateToPass:  defaultDate,
       roundID: null,
       shiftsToPass: [],
@@ -103,11 +104,11 @@ class ShiftsDay extends React.Component {
       //it would be in the display of the time, not the passing of the time, at least with the present system.
       this.setState({
         dateToQuery: dateToQuery,
-        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
+        queryString: `?date=${dateToQuery}&userID=${this.state.userId}type=${this.props.view || 'myShifts'}`,
         dateToPass: this.props.match.params.date
       })
-      console.log(`update query string ?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`)
-      this.fetchCallMethod(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`);
+      console.log(`update query string ?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`)
+      this.fetchCallMethod(`?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`);
       // commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
     }
     // if (this.props.view === 'myShifts' && this.state.isModalOpen !== prevState.isModalOpen) {
