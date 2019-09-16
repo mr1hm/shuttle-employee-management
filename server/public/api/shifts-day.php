@@ -10,8 +10,9 @@ require_once 'db_connection.php';
 //   $startTime = intval($startTime);
 // }
 
-// $userID = $_GET['user_id'];
+$userID = $_GET['userID'];
 $date = $_GET['date'];
+
 
 $checkingType = false;
 //these were placed under rt. `id` before in place
@@ -30,6 +31,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
             rd. `status`,
             rd.`id` AS roundID
 
+
           FROM
             `round` AS rd
           INNER JOIN
@@ -37,7 +39,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-rd.`date`= {$date} AND rd.`user_id` = 1";
+rd.`date`= {$date} AND rd.`user_id` = {$userID}";
           // GROUP BY
           //   rd.`bus_info_id`,
           //   rd.`user_id`,
@@ -64,7 +66,7 @@ rd.`date`= {$date} AND rd.`user_id` = 1";
             rd.`bus_info_id` = rt.`id`
           WHERE
             rd.`date`= {$date}
-            AND rd.`status` = 'posted' AND rd.`user_id` != 1";
+            AND rd.`status` = 'posted' AND rd.`user_id` != {$userID}";
 }
 
 
@@ -93,6 +95,7 @@ if($checkingType){
     $previousEndTime = $row['end_time'];
     $previousStatus = $row['status'];
   }
+  $data[]= $currentDataRow;
   array_shift($data);
 } else {
   while ($row = mysqli_fetch_assoc($result)) {
