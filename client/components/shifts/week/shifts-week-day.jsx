@@ -84,14 +84,16 @@ class ShiftsWeekDay extends React.Component {
       children: [data]
     }));
     return (
-      <div className={currentDayHighlightClass}>
-        <div className="dayLabelContainer">
-          <div className="dayText">{dayText}</div>
-          <div className="dateText">{dateText}</div>
-          <div className="dayHours">{dayHoursRounded} {dayHoursRounded === 1 ? 'Hour' : 'Hours'}</div>
-        </div>
-        <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
-        <div className="shiftRowContainer">
+      <Link 
+        className="shiftWeekIndividualDayLink" 
+        to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
+        <div className={currentDayHighlightClass}>
+          <div className="dayLabelContainer">
+            <div className="dayText">{dayText}</div>
+            <div className="dateText">{dateText}</div>
+            <div className="dayHours">{dayHoursRounded} {dayHoursRounded === 1 ? 'Hour' : 'Hours'}</div>
+          </div>
+          <div className="shiftRowContainer">
             <ShiftDisplayComponent
               test='1'
               type='active'
@@ -99,9 +101,9 @@ class ShiftsWeekDay extends React.Component {
               shiftData={startAndEndTimes}
               children={convertedShifts}
             />
+          </div>
         </div>
-        </Link>
-      </div>
+      </Link>
     )
   }
 }
