@@ -34,8 +34,8 @@ class ShiftsDetails extends React.Component {
       })
       .catch(error => {throw(error)});
   }
-  postShift(status, userID, roundID){
-    fetch('/api/driver-shift.php' + '?status=' + status + '&user_id=' + userID + '&id=' + roundID,{
+  postShift(status, userID, roundID, transactionType){
+    fetch('/api/driver-shift.php' + '?status=' + status + '&user_id=' + userID + '&id=' + roundID + '&transaction=' + transactionType,{
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -44,7 +44,9 @@ class ShiftsDetails extends React.Component {
       body: JSON.stringify({
         status: status,
         user_id: userID,
-        id: roundID})
+        id: roundID,
+        transaction: transactionType
+      })
     })
       .then(response => { return response.json()} )
       .catch(error => {throw(error)});
@@ -69,7 +71,7 @@ class ShiftsDetails extends React.Component {
     let allShiftsToPass = [];
     for( var roundIndex = 0; roundIndex < roundIDs.length; roundIndex++){
       let currentRound = parseInt(roundIDs[roundIndex]);
-      let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.id) === currentRound));
+      let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.roundID) === currentRound));
       allShiftsToPass = allShiftsToPass.concat( shiftsToPass);
     }
 
@@ -95,9 +97,14 @@ class ShiftsDetails extends React.Component {
     } else this.checkedRoundIDs.splice(index, 1);   // otherwise, the element is already in the array and clicking again must remove, so splicing.
   }
   handlePostButtonConfirmation() {
-    this.checkedRoundIDs.map(element => this.postShift('posted', this.props.userID, element))
-    this.closeModal()
-    this.props.goBack()
+    this.checkedRoundIDs.map(element => {
+      if (this.state.shiftsDetailsInfo[0].status === 'scheduled'){
+        this.postShift('posted', this.props.userID, element, 'postShift')
+      } else if (this.state.shiftsDetailsInfo[0].status === 'posted'){
+        this.postShift('scheduled', this.props.userID, element, 'cancelPost')
+      }
+      })
+    this.closeModal();
   }
   convertMilitaryTime(militaryTime) {
     if (militaryTime.length < 4){
@@ -143,10 +150,10 @@ class ShiftsDetails extends React.Component {
       <input
         type="checkbox"
         className="custom-control-input"
-        id={object.id}
-        onChange={() => this.pushRoundIDsToArray(object.id)}
+        id={object.roundID}
+        onChange={() => this.pushRoundIDsToArray(object.roundID)}
         ></input>
-      <label className="custom-control-label" htmlFor={object.id}></label>
+      <label className="custom-control-label" htmlFor={object.roundID}></label>
     </div>
     );
   }
@@ -160,7 +167,7 @@ class ShiftsDetails extends React.Component {
         <TopMenuGeneral title="Shifts - DETAILS"/>
         <div className="details subHeader">
           <div className="busRouteIconContainer">
-              <RouteBusDisplay route={this.props.busLine} bus={this.props.busNumber}/>
+              <RouteBusDisplay route={this.props.busLine[0]} bus={this.props.busNumber[0]}/>
           </div>
             {this.createSubHeaderTimeFrame()}
         </div>
@@ -187,8 +194,8 @@ class ShiftsDetails extends React.Component {
                         </tr>
                       </thead>
                       <tbody>
-                        {shiftDetails.map(object => { return (
-                          <tr key={object.id}>
+                        {shiftDetails.map((object, index ) => { return (
+                          <tr key={index}>
                             <td>
                             {this.generateCheckboxElements(object)}
                             </td>
@@ -244,13 +251,16 @@ class ShiftsDetails extends React.Component {
             </Grid>
           </Grid>
           <div className="buttonContainer">
-            <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs)}>Post</button>
+            <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs)}>
+            {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Cancel Post' : "Post" }</button>
             <button type="button" className="btn btn-outline-dark btn-block">Trade/Swap</button>
             <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.props.goBack()}>My Shifts</button>
           </div>
         </div>
         <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
-          <h2> PLEASE CONFIRM: <br></br>Do you really want to post this/these shift(s)?</h2>
+          <h2> PLEASE CONFIRM: <br></br>
+            {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted'
+              ? "Do you really want to cancel this/these post(s)?" : "Do you really want to post this/these shift(s)?"}</h2>
           <table className='table table-striped'>
             <tbody>
               {
@@ -273,7 +283,8 @@ class ShiftsDetails extends React.Component {
             </tbody>
           </table>
           <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Cancel</button></p>
-          <p><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p>
+          <p><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >
+            {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Yes, I want to cancel' : "Yes, I want to post"}</button></p>
         </Modal>
       </React.Fragment>
     )
