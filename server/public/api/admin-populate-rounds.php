@@ -8,10 +8,12 @@ require_once('db_connection.php');
 //TODO: EVENTUALLY change name to reflect that this is a template
 function getRoundsData($conn) {
   //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
-  //TODO: redo query to restrict to a one week range (restrict with date)
-  $startDate = _____;
-  //TODO: need equation to calculate based on 7 full days from midnight on the first day
-  $endDate = ____;
+  // //TODO: need equation to calculate based on 7 full days from midnight on the first day
+
+  $templateDates = [15661600000, 15662592000,15663456000, 15664320000, 15665184000, 15666048000, 15666912000];
+
+  $templateDatesCSV = implode(',', $templateDates);
+
   //TODO: change query to pull in only the days set by the $roundStart and $roundEnd
   $roundsQuery = "SELECT 
                   rd.id,
@@ -28,7 +30,7 @@ function getRoundsData($conn) {
                   JOIN bus_info AS bi ON bi.route_id = rt.id 
                   JOIN round AS rd ON rd.bus_info_id = bi.id 
                   JOIN user AS us ON rd.user_id = us.id
-                  WHERE rd.session_id = 1
+                  WHERE rd.session_id = 1 AND rd.date IN ({$templateDatesCSV})
                   ORDER BY date ASC,line_name ASC, bus_number ASC, round_start ASC, round_end ASC";
           
   $result = mysqli_query($conn, $roundsQuery);
@@ -37,7 +39,11 @@ function getRoundsData($conn) {
   }
   $rounds = [];
   while ($row = mysqli_fetch_assoc($result)) {
+    // print("row date: ".$row['date']);
     $row['day'] = date('D', $row['date']);
+    // print($row['day']) ;
+    // $row['day'] = "Mon";
+    // $row['day'] = strptime($row['date'], '%a');
     $rounds[] = $row;
   }
   return $rounds;
@@ -82,8 +88,10 @@ function getOperatorsData($conn) {
     $fetchedUserIDs[] = $row['user_id'];
     $operatorsUserDetails[$row['user_id']] = $row;
   }
-
+  // print("fetched user id");
+  // print_r($fetchedUserIDs);
   $operatorCSV = implode(',', $fetchedUserIDs);
+  // print ("operatorCSV".$operatorCSV);
 
   $operatorAvailabilityQuery = "SELECT 
                                 user_id, 
@@ -208,9 +216,9 @@ function buildRoundsByDay($rounds, $day) {
       array_push($dayRounds, $rounds[$roundsIndex]);
     }
   }
-  echo '<pre>';
-  print_r($dayRounds);
-  echo '</pre>';
+  // echo '<pre>';
+  // print_r($dayRounds);
+  // echo '</pre>';
   return $dayRounds;
 }
 
@@ -267,12 +275,17 @@ function updateRoundsInDatabase($conn, $rounds) {
 
 //auto-populate the schedule
 function populateSchedule($operators, $rounds, $conn)  {
+  // echo '<pre>';
+  // print('inside populate schedule: ');
+  // print_r($rounds);
+  // echo '</pre>';
+
   $lengthOperatorsArray = count($operators);
   $lengthRoundsArray = count($rounds);
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray ; $roundsIndex++) {
    //determine the line and assign number of rounds to that line
-   $lineName = $rounds[$roundsIndex]['line_name'];
-   $numberRounds = determineLineName($lineName);
+    $lineName = $rounds[$roundsIndex]['line_name'];
+    $numberRounds = determineLineName($lineName);
 
     if ($roundsIndex >= $lengthRoundsArray  - 1 - $numberRounds) {
       break;
@@ -280,12 +293,12 @@ function populateSchedule($operators, $rounds, $conn)  {
     $madeAssignment = false;
 
     //check to make sure we have times available, if not remove that person
-    for ($operatorsIndex = $lengthOperatorsArray -1; 0 <=$operatorsIndex; $operatorsIndex--) {
-      if (empty ($operators[$operatorsIndex]['available_times'])){
-        unset($operators[$operatorsIndex]);
-      }
-    }
-    array_values($operators);
+    // for ($operatorsIndex = $lengthOperatorsArray -1; 0 <=$operatorsIndex; $operatorsIndex--) {
+    //   if (empty ($operators[$operatorsIndex]['available_times'])){
+    //     unset($operators[$operatorsIndex]);
+    //   }
+    // }
+    // array_values($operators);
     
     //sort the operator array, put operator with fewest weekly hours at the top
     uasort($operators, 'operatorsSort'); 
@@ -385,56 +398,56 @@ function populateSchedule($operators, $rounds, $conn)  {
             //yes, adjust available times
             //shift is exactly the same as the available time
             if($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-              print('time the SAME - before');
-              echo '<pre>';
-              print_r($operators);
-              echo '</pre>';
+              // print('time the SAME - before');
+              // echo '<pre>';
+              // print_r($operators);
+              // echo '</pre>';
               array_splice($operators[$operatorsIndex]['available_times'], $timesIndex, 1);
-              echo '<pre>';
-              print('time the SAME - after');
-              print_r($operators);
-              echo '</pre>';
+              // echo '<pre>';
+              // print('time the SAME - after');
+              // print_r($operators);
+              // echo '</pre>';
               break;
             }
             //shift has same beginning as available time
             if ($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-              echo '<pre>';
-              print('time at BEGINNING- before');
-              print_r($operators);
-              echo '</pre>';
+              // echo '<pre>';
+              // print('time at BEGINNING- before');
+              // print_r($operators);
+              // echo '</pre>';
               $operators[$operatorsIndex]['available_times'][$timesIndex][0] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
-              echo '<pre>';
-              print('time at BEGINNING - after');
-              print_r($operators);
-              echo '</pre>';
+              // echo '<pre>';
+              // print('time at BEGINNING - after');
+              // print_r($operators);
+              // echo '</pre>';
               break;
             }
             //shift has same end as available time
             if ($availableStartTime < intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-              echo '<pre>';
-              print('time at END - before');
-              print_r($operators);
-              echo '</pre>';
+              // echo '<pre>';
+              // print('time at END - before');
+              // print_r($operators);
+              // echo '</pre>';
               $operators[$operatorsIndex]['available_times'][$timesIndex][1] = intval($rounds[$roundsIndex]['round_start']);
-              echo '<pre>';
-              print('time at END - after');
-              print_r($operators);
-              echo '</pre>';
+              // echo '<pre>';
+              // print('time at END - after');
+              // print_r($operators);
+              // echo '</pre>';
               break;
             }
             //shift in middle of available time
             if ($availableStartTime <  intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])){
-              echo '<pre>';
-              print('time in BETWEEN - before');
-              print_r($operators);
-              echo '</pre>';
+              // echo '<pre>';
+              // print('time in BETWEEN - before');
+              // print_r($operators);
+              // echo '</pre>';
               $newAvailableTimeArray = [intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']), $operators[$operatorsIndex]['available_times'][$timesIndex][1]];
               $operators[$operatorsIndex]['available_times'][$timesIndex][1] = intval($rounds[$roundsIndex]['round_start']);
               array_push($operators[$operatorsIndex]['available_times'], $newAvailableTimeArray);
-              echo '<pre>';
-              print('time in BETWEEN - after');
-              print_r($operators);
-              echo '</pre>';
+              // echo '<pre>';
+              // print('time in BETWEEN - after');
+              // print_r($operators);
+              // echo '</pre>';
               break;
             }
           }
@@ -448,29 +461,67 @@ function populateSchedule($operators, $rounds, $conn)  {
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
   print("\n". $rounds);
+  return $operators;
 }
 
-function populateTemplateWeek ($conn, $rounds) {
+//TODO: functionality to populate the entire quarter
+// function populateTemplateWeek ($conn, $rounds, $specificDayOfWeek) {
+//     $operators = getOperatorsData($conn);
+//     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
+//     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
+//     populateSchedule($operatorsForDay, $roundsForDay, $conn); 
+//     return $roundsForDay;
+// }
+
+// function populateSpecificDayRestOfQuarter($roundsForDay)) {
+//   //$matchingDays = [] -- an array of all the UNIX timestamps for that particular days of the week between the end of the template and the end of quarter
+//   for ($matchingDaysIndex = 0; $matchingDaysIndex < count($matchingDays); $matchingDaysIndex++) {
+//     //go through each round for the day
+//     for($roundsForDayIndex = 0; $roundsForDayIndex < count($roundsForDay); $roundsForDayIndex++) {
+//       $rowId = $roundsForDay['id'];
+//       //add the query here that adds a row to db with the content on that line of the $roundsForDay with a date that matches $matchingDays[$matchingDaysIndex];
+//       }
+//     }
+//   }
+// }
+
+// function populateQuarter($conn, $rounds) {
+//   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+//   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
+//     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
+//     $roundsForDay = populateTemplateWeek($conn, $rounds, $specificDayOfWeek);
+//     populateSpecificDayRestOfQuarter($roundsForDay);
+//   }
+// }
+
+function populateTemplateWeek ($conn, $rounds, $operators) {
+  echo '<pre>';
+  print('operators after entering populate template week: ');
+  print_r($operators);
+  echo '</pre>';
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
-    //we need to change the getOperatorsData query to pull in the total_weekly_minutes
-    //this will be stored in a table in the db
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
-    $operators = getOperatorsData($conn);
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
-    populateSchedule($operatorsForDay, $roundsForDay, $conn); 
+    $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn); 
+    for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
+      for ($revOperatorsSpecificDayIndex = 0; $revOperatorsSpecificDayIndex < count($revOperatorsSpecificDay); $revOperatorsSpecificDayIndex++) {
+        if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['user_id'] === $operators[$operatorsIndex]['user_id']) {
+        $operators[$operatorsIndex]['total_weekly_minutes'] = $revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['total_weekly_minutes'];
+        }
+      }
+    }
+    echo '<pre>';
+    print('operators after updated with total weekly minutes from day of week population: ');
+    print_r($operators);
+    echo '</pre>';
   }
 }
 
 //**PROCESSING**/
-
-//NEW
-//This is slightly inefficient (sending data and retrieving data from db for each day of template) -- only doing once a quarter, so it shouldn't matter
-
-//eventually need to restrict to first 7 days so only pulls Sun - Sat -- we can do this with date
-
-//make sure we are only pulling in the first seven days
 $rounds = getRoundsData($conn);
-populateTemplateWeek($conn, $rounds);
+$operators = getOperatorsData($conn);
+populateTemplateWeek($conn, $rounds, $operators);
+//TODO: replace populateTemplateWeek with populateQuarter and modified populateTemplateWeek
 ?>
