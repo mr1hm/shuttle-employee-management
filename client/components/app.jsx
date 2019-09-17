@@ -16,6 +16,7 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      // presetDateForTesting: 1566172800000
       presetDateForTesting: 1560409200000
       // presetDateForTesting: 1563951600000
     }
