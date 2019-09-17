@@ -14,7 +14,7 @@ class ShiftsWeek extends React.Component {
     }
   }
   generateFullWeekOfTimestamps(time) {
-    const convertedDateStart = createDateObjFromDateString(time)
+    const convertedDateStart = createDateObjFromDateString(time)// converts unix time to date/at midnight
     const convertedDate = new Date(convertedDateStart);
     const finalConvertedDate = convertedDate.getUTCDay();
     const sunday = time - finalConvertedDate * 86400000;
@@ -38,17 +38,17 @@ class ShiftsWeek extends React.Component {
     return daysObject;
   }
   generateStartOfWeekTimestamp(time) {
-    const convertedDate = createDateObjFromDateString(time);
+    const convertedDate = createDateObjFromDateString(time);// converts unix time to date/at midnight
     const numericDay = convertedDate.getDay();
-    const startDay = createDateObjFromDateString(time);
+    const startDay = createDateObjFromDateString(time);// converts unix time to date/at midnight
     startDay.setDate(startDay.getDate() - numericDay);
     const startOfWeek = startDay.getTime();
     return startOfWeek;
   }
   generateEndOfWeekTimestamp(time) {
-    const convertedDate = createDateObjFromDateString(time);
+    const convertedDate = createDateObjFromDateString(time);// converts unix time to date/at midnight
     const numericDay = convertedDate.getDay();
-    const endDay = createDateObjFromDateString(time);
+    const endDay = createDateObjFromDateString(time);// converts unix time to date/at midnight
     endDay.setDate(endDay.getDate() + 6 - numericDay);
     const endOfWeek = endDay.getTime();
     return endOfWeek;
@@ -93,7 +93,7 @@ class ShiftsWeek extends React.Component {
     if (this.props.match.params.date === undefined) {
       var dateToPass = this.props.defaultDate;
     } else {
-      dateToPass = createDateObjFromDateString( this.props.match.params.date );
+      dateToPass = createDateObjFromDateString(this.props.match.params.date);// converts unix time to date/at midnight
       console.log("date to pass before getTime: ", dateToPass);
       dateToPass = dateToPass.getTime();
       console.log("date to pass after getTime: ", dateToPass);

@@ -1,40 +1,46 @@
-function convertUnixTime(time) {
+function convertUnixTime(time) {// converts unix time to date/time for example: input:convertUnixTime(1568670748829)
   const convertedDate = new Date(time);
-  return convertedDate.toString();
+  return convertedDate.toString();// output: "Mon Sep 16 2019 14:52:28 GMT-0700 (Pacific Daylight Time)"
 }
-function convertUnixDateDay(time) {
+function convertUnixMonthDay(time) {// This could be added to time-function.jsx  input:convertUnixMonthDay(156859200) 09/17/2019
+  const getTheDate = new Date(time);
+  const dateString = getTheDate.getFullYear() + '-' + ('0' + getTheDate.getDate()).slice(-2)
+    + '-' + ('0' + (getTheDate.getMonth() + 1)).slice(-2);
+  return dateString;// Output: "1970-02-01"
+}
+function convertUnixDateDay(time) {// converts unix time to specific day of the week example: input: convertUnixDateDay(1568670748829)
   const convertedDate = new Date(time);
   const dateString = "" + convertedDate;
   const arrayDateString = dateString.split(' ');
-  return arrayDateString[0].toUpperCase();
+  return arrayDateString[0].toUpperCase();// output: "MON"
 }
-function convertUnixDateNumber(time) {
+function convertUnixDateNumber(time) {// converts unix time to specific day of the month example: input: convertUnixDateNumber(1568670748829)
   const convertedDate = new Date(time);
   const dateString = "" + convertedDate;
   const arrayDateString = dateString.split(' ');
-  return arrayDateString[2];
+  return arrayDateString[2];// output: 16
 }
-function getShiftStartHour(time) {
+function getShiftStartHour(time) {// converts unix time to dayOfTheWeek/Month/dayOfTheMonth/year/hour example: input:getShiftStartHour(1568670748829)
   const timeResult = convertUnixTime(time);
   const splitTimeResult = timeResult.split(':');
-  return splitTimeResult[0];
+  return splitTimeResult[0];// output: Mon Sep 16 2019 14
 }
-function getShiftStartMinute(time) {
+function getShiftStartMinute(time) {//converts unix time to current minutes example: input:getShiftStartMinute(1568670748829)
   const timeResult = convertUnixTime(time);
   const splitTimeResult = timeResult.split(':');
-  return splitTimeResult[1];
+  return splitTimeResult[1];// output: 52
 }
-function getShiftEndHour(time) {
+function getShiftEndHour(time) {// converts unix time to dayOfTheWeek/Month/dayOfTheMonth/year/hour example: input:getShiftStartHour(1568670748829)
   const timeResult = convertUnixTime(time);
   const splitTimeResult = timeResult.split(':');
-  return splitTimeResult[0];
+  return splitTimeResult[0];// output: Mon Sep 16 2019 14
 }
-function getShiftEndMinute(time) {
+function getShiftEndMinute(time) {//converts unix time to current minutes example: input:getShiftStartMinute(1568670748829)
   const timeResult = convertUnixTime(time);
   const splitTimeResult = timeResult.split(':');
-  return splitTimeResult[1];
-}
-function calculateDailyWorkingHours(startTime, endTime) {
+  return splitTimeResult[1];// output: 52
+}//1568676748829
+function calculateDailyWorkingHours(startTime, endTime) {// not working Uncaught TypeError: startTime.slice is not a function
   if (startTime.length < 4){
     startTime = "0" + startTime;
     parseInt(startTime);
@@ -61,7 +67,7 @@ params:
   dateString(string) : a YYYY-MM-DD formatted string
   returns: a js date object
 */
-function convertMilitaryTimeStringToMilitaryTimeFloat( time ){
+function convertMilitaryTimeStringToMilitaryTimeFloat(time) {// not working Uncaught TypeError: startTime.slice is not a function
   //converts '1430' to 14.5
   // '1245' to 12.75
   while( time.length < 4){
@@ -72,14 +78,14 @@ function convertMilitaryTimeStringToMilitaryTimeFloat( time ){
   return hour+minutes;
 
 }
-function zeroPadNumber( number, length=2){
+function zeroPadNumber(number, length = 2) {// converts unix time from number to string example: input:1568670748829
   number += '';
   while(number.length < length){
     number = '0' + number;
   }
-  return number;
+  return number;// output: "1568670748829"
 }
-function createDateStringFromDateObject( dateObject ){
+function createDateStringFromDateObject(dateObject) {// not working zeroPadNumber is not defined
   // if (!dateObject){
   //   return;
   // }
@@ -89,7 +95,7 @@ function createDateStringFromDateObject( dateObject ){
   const stringDate = `${dateObject.getFullYear()}-${zeroPadNumber(dateObject.getMonth()+1)}-${zeroPadNumber(dateObject.getDate())}`;
   return stringDate;
 }
-function createDateObjFromDateString( dateString, setToMidnight=true ){
+function createDateObjFromDateString(dateString, setToMidnight = true) {// converts unix time to date/at midnight example: input: createDateObjFromDateString(1568670748829)
   let date = new Date();
   if( typeof dateString === 'number'){ //the dateString is actually a timestamp
     date.setTime(dateString);
@@ -100,7 +106,7 @@ function createDateObjFromDateString( dateString, setToMidnight=true ){
   if (setToMidnight) {
     date.setHours(0, 0, 0, 0);
   }
-  return date;
+  return date;// output: Mon Sep 16 2019 00:00:00 GMT-0700 (Pacific Daylight Time)
 }
 
 function getTotalDayWorkingHours(props) {
@@ -123,7 +129,7 @@ function getTotalDayWorkingHours(props) {
 
 
 //calculates total shift duration and formats it in XXh YYmin
-function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
+function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){// example input: calcShiftLenghtInHourMinFormat(1568670748829,1568676748829)
 
   function calcShiftHours(startTime, endTime){
     let startHourDigits = Math.trunc(startTime/100);
@@ -141,10 +147,10 @@ function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){
     totalShiftLengthForWeek += hoursForShift;
     let totalHours = Math.floor(totalShiftLengthForWeek/60);
     let totalMinutes = totalShiftLengthForWeek%60;
-    return (totalHours + "h " + totalMinutes + "m");
+  return (totalHours + "h " + totalMinutes + "m");// output: "60000h 0m"
 }
 
 export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
-  createDateStringFromDateObject, zeroPadNumber };
+  createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay };

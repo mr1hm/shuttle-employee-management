@@ -9,7 +9,7 @@ class ShiftsWeekDay extends React.Component {
   getZeroPaddedNumber( number ){
     return ('0' + number).slice(-2);
   }
-  getDateStringFromTimestamp( timestamp ){
+  getDateStringFromTimestamp(timestamp) {//The convertUnixMonthDay(time) function from shifts-day.jsx could be used here 09/17/2019
     const date = new Date(parseInt(timestamp));
     return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
@@ -60,8 +60,8 @@ class ShiftsWeekDay extends React.Component {
     // console.log('shift data: ', this.props.shifts);
     const range = { min: 6, max: 24 };
     const startAndEndTimes = {start: 6, end: 24};
-    const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));
-    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));
+    const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));// converts unix time to date/time
+    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));// converts unix time to specific day of the month
     const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
     const dayHoursRounded = dayHours.toFixed(2);
     const currentUnixDate = this.props.dayData.round_date;
@@ -78,8 +78,8 @@ class ShiftsWeekDay extends React.Component {
         max: range.max
       },
       shiftData: {
-        start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time),
-        end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time)
+        start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time),// not working Uncaught TypeError: startTime.slice is not a function
+        end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time)// not working Uncaught TypeError: startTime.slice is not a function
       },
       children: [data]
     }));

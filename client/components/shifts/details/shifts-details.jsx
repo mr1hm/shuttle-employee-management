@@ -38,7 +38,7 @@ class ShiftsDetails extends React.Component {
         'Content-Type': 'application/json'
       },
       method: 'PATCH',
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         status: status,
         user_id: userID,
         id: roundID})
@@ -47,7 +47,7 @@ class ShiftsDetails extends React.Component {
       .catch(error => {throw(error)});
   }
   componentDidMount(){
-    let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();
+    let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();// converts unix time to date/at midnight 09/17/2019
     let shiftStart = this.props.blockStartTime ? this.props.blockStartTime : 600;
     let shiftEnd = this.props.blockEndTime ? this.props.blockEndTime : 1100;
     let user = this.props.userID ? this.props.userID : 1;
@@ -79,7 +79,7 @@ class ShiftsDetails extends React.Component {
     this.closeModal()
     this.props.goBack()
   }
-  convertMilitaryTime(militaryTime) {
+  convertMilitaryTime(militaryTime) {// SyntaxError Unexpected token { also there is a function for this in time-function.jsx but doesn't work
     if (militaryTime.length < 4){
       militaryTime = "0" + militaryTime;
     }
@@ -98,7 +98,7 @@ class ShiftsDetails extends React.Component {
   }
   createSubHeaderTimeFrame() {
     const shiftDetails = this.state.shiftsDetailsInfo;
-    let date = new Date(createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime());
+    let date = new Date(createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime());// converts unix time to date/at midnight
     const daysArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const monthsArray = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const year = date.getFullYear();
@@ -120,10 +120,10 @@ class ShiftsDetails extends React.Component {
   generateCheckboxElements(object) {
     return (
       <div className="custom-control custom-checkbox">
-      <input 
-        type="checkbox" 
-        className="custom-control-input" 
-        id={object.id} 
+      <input
+        type="checkbox"
+        className="custom-control-input"
+        id={object.id}
         onChange={() => this.pushRoundIDsToArray(object.id)}
         ></input>
       <label className="custom-control-label" htmlFor={object.id}></label>
@@ -229,7 +229,7 @@ class ShiftsDetails extends React.Component {
         <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
           <h2> PLEASE CONFIRM: <br></br>Do you really want to post this shift?</h2>
           <p><button className= "modalCancelButton" onClick= {() => this.closeModal()}>Cancel</button></p>
-          <p><button onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p> 
+          <p><button onClick={this.handlePostButtonConfirmation} >Yes, I want to post</button></p>
         </Modal>
       </React.Fragment>
     )
