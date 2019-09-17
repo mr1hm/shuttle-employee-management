@@ -79,13 +79,15 @@ class ShiftsDetails extends React.Component {
     this.setState({
       isModalOpen: true,
       roundID: parseInt(roundIDs),
-      shiftsDetailsInfo: allShiftsToPass
+      shiftsDetailsInfo: allShiftsToPass,
+
 
     })
   }
   closeModal() {
     this.setState({
       isModalOpen: false,
+      view: "confirmShifts"
     })
     this.props.goBack();
   }
