@@ -59,6 +59,7 @@ class ShiftsDay extends React.Component {
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.dataDidUpdate = this.dataDidUpdate.bind(this);
     const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );
     const defaultId = 1;
     this.state = {
@@ -87,7 +88,7 @@ class ShiftsDay extends React.Component {
         this.setState({
           myShiftsToday: myJson
         })
-        console.log("myShiftsToday")
+
       })
       .catch(error => { throw (error) });
   }
@@ -110,28 +111,20 @@ class ShiftsDay extends React.Component {
       })
       console.log(`update query string ?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`)
       this.fetchCallMethod(`?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`);
-    } else {
-      this.fetchCallMethod(this.state.queryString);
-    }
-    // } else if (this.state.postModal  && this.state.isModalOpen !== prevState.isModalOpen) {
+     }
+    //  else {
+    //   this.fetchCallMethod(this.state.queryString);
+    // }
+    //  else if (this.state.postModal!==prevState.postModal  || this.state.isModalOpen !== prevState.isModalOpen) {
+    //   this.fetchCallMethod(this.state.queryString);
     //   this.setState({
     //     postModal: false
     //   })
-    //   this.fetchCallMethod(this.state.queryString);
+
 
     // }
   }
-  // openModal() {
 
-  //   this.setState({
-  //     isModalOpen: true,
-  //     view: "availableShifts",
-  //     roundID: null
-
-
-  //   })
-
-  // }
   openModal(roundID) {
     let shiftsToPass = this.state.myShiftsToday.filter(shift => (shift.roundID === roundID || shift.id === roundID));
     console.log("ShiftsToPass: ", shiftsToPass);
@@ -150,8 +143,8 @@ class ShiftsDay extends React.Component {
       view: "myShifts",
       postModal: true,
       roundID: null
+    });
 
-    })
 
   }
   closeTakeShiftsModal() {
@@ -163,7 +156,6 @@ class ShiftsDay extends React.Component {
       myShiftsToday: updatedShifts
 
     })
-
   }
   handleTakeShift(status, userID, roundID, transactionType) {
     fetch('/api/driver-shift.php' + '?status=' + status + '&user_id=' + userID + '&id=' + roundID + '&transaction=' + transactionType, {
@@ -181,9 +173,12 @@ class ShiftsDay extends React.Component {
     })
       .then(response => { return console.log("Patch response: ", response.json())  })
       .catch(error => { throw (error) });
-
+      debugger;
       this.closeTakeShiftsModal();
 
+  }
+  dataDidUpdate(){
+    this.fetchCallMethod(this.state.queryString);
   }
 
 
@@ -248,6 +243,7 @@ class ShiftsDay extends React.Component {
         </table>
         <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view}>
             <ShiftsDetails
+              dataDidUpdateCallback = {this.dataDidUpdate}
               goBack={this.closeModal}
               unixDate={this.props.match.params.date}
               blockStartTime={shiftBlockStart}   // the start time (military 4-digit) of the first round in the block clicked

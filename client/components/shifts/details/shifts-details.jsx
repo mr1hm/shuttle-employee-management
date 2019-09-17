@@ -48,7 +48,10 @@ class ShiftsDetails extends React.Component {
         transaction: transactionType
       })
     })
-      .then(response => { return response.json()} )
+      .then(response => {
+        this.props.dataDidUpdateCallback();
+        return response.json();
+      } )
       .catch(error => {throw(error)});
   }
   componentDidMount(){
