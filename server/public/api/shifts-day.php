@@ -95,7 +95,7 @@ if($checkingType){
     $previousEndTime = $row['end_time'];
     $previousStatus = $row['status'];
   }
-  $data[]= $currentDataRow;
+  $data[] = $currentDataRow;
   array_shift($data);
 } else {
   while ($row = mysqli_fetch_assoc($result)) {

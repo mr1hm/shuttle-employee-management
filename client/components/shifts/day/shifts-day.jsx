@@ -68,7 +68,8 @@ class ShiftsDay extends React.Component {
       dateToPass:  defaultDate,
       roundID: null,
       shiftsToPass: [],
-      userId: 1
+      userId: 1,
+      postModal: false
     }
   }
   fetchCallMethod(query) {
@@ -104,22 +105,19 @@ class ShiftsDay extends React.Component {
       //it would be in the display of the time, not the passing of the time, at least with the present system.
       this.setState({
         dateToQuery: dateToQuery,
-        queryString: `?date=${dateToQuery}&userID=${this.state.userId}type=${this.props.view || 'myShifts'}`,
+        queryString: `?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`,
         dateToPass: this.props.match.params.date
       })
       console.log(`update query string ?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`)
       this.fetchCallMethod(`?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`);
-      // commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
+    } else {
+      this.fetchCallMethod(this.state.queryString);
     }
-    // if (this.props.view === 'myShifts' && this.state.isModalOpen !== prevState.isModalOpen) {
-    //   let dateToQuery = createDateObjFromDateString((this.props.match.params.date ? this.props.match.params.date : this.state.dateToPass)).getTime();
+    // } else if (this.state.postModal  && this.state.isModalOpen !== prevState.isModalOpen) {
     //   this.setState({
-    //     dateToQuery: dateToQuery,
-    //     queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
-    //     dateToPass: this.props.match.params.date
+    //     postModal: false
     //   })
-    //   console.log(`update query string ?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`)
-    //   this.fetchCallMethod(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`);
+    //   this.fetchCallMethod(this.state.queryString);
 
     // }
   }
@@ -150,7 +148,8 @@ class ShiftsDay extends React.Component {
     this.setState({
       isModalOpen: false,
       view: "myShifts",
-      roundID: null,
+      postModal: true,
+      roundID: null
 
     })
 
