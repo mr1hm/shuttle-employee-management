@@ -27,8 +27,8 @@ class ShiftDisplayComponent extends React.Component {
             test={data.test}
             key={index}
             type={data.type}
-            range={{ min: data.shiftStartTime, max: data.shiftEndTime}}
-            shiftData={{start: data.start, end: data.end}}
+            range={data.range ? { min: data.range.min, max: data.range.max } : { min: data.shiftStartTime, max: data.shiftEndTime }}
+            shiftData={data.shiftData ? { start: data.shiftData.start, end: data.shiftData.end } : { start: data.start, end: data.end }}
             children={[]}
           />
         ))}

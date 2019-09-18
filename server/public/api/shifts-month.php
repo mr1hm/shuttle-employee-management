@@ -15,8 +15,12 @@ if (!empty($_GET['unixend'])) {
     $upperDateRange = intval($_GET['unixend']);
 } else throw new Exception('need upper limit date range for query');
 
-$query = "SELECT * FROM `round` WHERE `user_id`= {$ownerID} AND (`date` >= {$lowerDateRange} AND `date` <={$upperDateRange})
-            ORDER BY `date` ASC";
+$query = "SELECT * 
+  FROM `round` 
+  WHERE `user_id`= {$ownerID} 
+  AND (`date` >= {$lowerDateRange} AND `date` <={$upperDateRange}) 
+  AND (`status` = 'scheduled' OR `status` = 'posted') 
+  ORDER BY `date` ASC";
 
 $result = mysqli_query($conn, $query);
 if (!$result) {

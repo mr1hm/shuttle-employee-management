@@ -10,20 +10,28 @@ require_once 'db_connection.php';
 //   $startTime = intval($startTime);
 // }
 
-// $userID = $_GET['user_id'];
-$date= $_GET['date'];
+$userID = $_GET['userID'];
+$date = $_GET['date'];
 
-if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
+
+$checkingType = false;
+//these were placed under rt. `id` before in place
+//Counting how many rounds are scheduled COUNT(`start_time`),
+//See if the status types are all the same (scheduled/posted) but only works if there a mix of both COUNT(DISTINCT rd.`status`)
+if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
+  $checkingType = true;
   $query = "SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
-            MIN(`start_time`),
-            MAX(`end_time`),
+            rd.`start_time`,
+            rd.`end_time`,
             rd.`date`,
             rt.`line_name`,
             rt.`id`,
-            COUNT(`start_time`),
-            COUNT(DISTINCT rd.`status`)
+            rd. `status`,
+            rd.`id` AS roundID
+
+
           FROM
             `round` AS rd
           INNER JOIN
@@ -31,13 +39,14 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            rd.`date`= {$date} AND rd.`user_id` = 1
-          GROUP BY
-            rd.`bus_info_id`,
-            rd.`user_id`,
-            rd.`date`,
-            rt.`line_name`,
-            rt.`id`";
+rd.`date`= {$date} AND rd.`user_id` = {$userID}";
+          // GROUP BY
+          //   rd.`bus_info_id`,
+          //   rd.`user_id`,
+          //   rd.`date`,
+          //   rt.`line_name`,
+          //   rt.`id`,
+          //   rd. `status`";
 } else {
   $query = " SELECT
             rd.`id` AS roundID,
@@ -57,17 +66,42 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts'){
             rd.`bus_info_id` = rt.`id`
           WHERE
             rd.`date`= {$date}
-            AND rd.`status` = 'posted' AND rd.`user_id` != 1";
+            AND rd.`status` = 'posted' AND rd.`user_id` != {$userID}";
 }
 
 
 $result = mysqli_query($conn, $query);
 if (!$result) {
-    throw new Exception('mysql error ' . mysqli_error($conn));
+  throw new Exception('mysql error ' . mysqli_error($conn));
 }
 $data = [];
-while ($row = mysqli_fetch_assoc($result)) {
+//conditional for grouping contiguous rounds together by status type
+if($checkingType){
+  $previousEndTime = '';
+  $previousStatus = '';
+  $currentDataRow = [];
+  while ($row = mysqli_fetch_assoc($result)) {
+    if($row['status']!==$previousStatus || $row['start_time'] !== $previousEndTime){
+      $data[] = $currentDataRow;
+      $currentDataRow = $row;
+      $currentDataRow['componentIDs'] = [intVal($row['roundID'])];
+      $currentDataRow['startingRoundId'] = intVal($row['roundID']);
+      $currentDataRow['roundCount'] = 1;
+    } else {
+      $currentDataRow['roundCount']++;
+      $currentDataRow['componentIDs'][] = [intVal($row['roundID'])];
+      $currentDataRow['end_time'] = $row['end_time'];
+    }
+    $previousEndTime = $row['end_time'];
+    $previousStatus = $row['status'];
+  }
+  $data[] = $currentDataRow;
+  array_shift($data);
+} else {
+  while ($row = mysqli_fetch_assoc($result)) {
     $data[] = $row;
+  }
 }
+
 print(json_encode($data));
 ?>

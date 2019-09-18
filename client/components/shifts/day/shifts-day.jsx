@@ -9,29 +9,37 @@ import ShiftsAvailable from '../available/shifts-available';
 import { createDateObjFromDateString, convertUnixMonthDay } from '../../../lib/time-functions';
 import { Minimatch } from 'minimatch';
 
-function OneOfMyShifts(props) {
+export function OneOfMyShifts(props) {
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
   // let statusColor = (props.shifts.status === 'posted') ? "border border-warning" : "border border-primary";
+  let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts.start_time, props.shifts.end_time);
+  let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"]) > 1) ? "Scheduled/Posted" : props.shifts.status;
+  let numOfRounds = props.shifts.roundCount;
   if (props.view === 'availableShifts'){
      shiftButton = "Take Shift";
+     shiftHours = calcShiftLenghtInHourMinFormat(props.shifts.start_time, props.shifts.end_time);
+     statusIndicator = props.shifts.status;
+     numOfRounds = 1; /*can work on changing this dynamically if needed.  Thought that it would be okay to just hardcode it
+                      since this view shows the rounds broken up, so they would be 1*/
   }
-
-  let numOfRounds = props.shifts["COUNT(`start_time`)"];
-  let shiftHours = calcShiftLenghtInHourMinFormat(props.shifts["MIN(`start_time`)"], props.shifts["MAX(`end_time`)"]);// calculates total shift duration and formats it in XXh YYmin 09/17/2019
-  let statusIndicator = (parseInt(props.shifts["COUNT(DISTINCT rd.`status`)"])>1) ? "Scheduled/Posted" : props.shifts.status;
+  if (!props.shifts["MIN(`start_time`)"]){
+    shiftHours = calcShiftLenghtInHourMinFormat(props.shifts.start_time, props.shifts.end_time);
+  }
 
   return (
     <tr>
       {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
       <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name} /> </td>
 
-      <td> {props.shifts["MIN(`start_time`)"] || props.shifts.start_time} - {props.shifts["MAX(`end_time`)"] || props.shifts.end_time} </td>
+      <td> {props.shifts.start_time} - {props.shifts.end_time} </td>
       <td> {numOfRounds} </td>
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
       <td> {shiftHours} </td>
 
-      <td /*className={statusColor}*/> {statusIndicator} </td>
-      <td> <input type="button" value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID)} /> </td>
+      <td /*className={statusColor}*/ style={{ display: props.modalStatus ? 'none' : 'block' }}> {statusIndicator} </td>
+      <td> <input type="button" className="btn btn-dark" style={{ display: props.modalStatus ? 'none' : 'block' }}
+          value={shiftButton} onClick={() => props.openDetails(props.shifts.roundID || props.shifts.id)} />
+     </td>
     </tr>
   )
 }
@@ -43,14 +51,18 @@ class ShiftsDay extends React.Component {
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);// converts unix time to date/at midnight 09/17/2019
+    this.dataDidUpdate = this.dataDidUpdate.bind(this);
+    const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );// converts unix time to date/at midnight 09/17/2019
+    const defaultId = 1;
     this.state = {
       myShiftsToday: [],
       isModalOpen: false,
-      queryString: `?date=${defaultDate}&type=${this.props.view || 'myShifts'}`,
+      queryString: `?date=${defaultDate}&userID=${defaultId}&type=${this.props.view || 'myShifts'}`,
       dateToPass:  defaultDate,
-      roundID: null
-
+      roundID: null,
+      shiftsToPass: [],
+      userId: 1,
+      postModal: false
     }
   }
   fetchCallMethod(query) {
@@ -68,6 +80,7 @@ class ShiftsDay extends React.Component {
         this.setState({
           myShiftsToday: myJson
         })
+
       })
       .catch(error => { throw (error) });
   }
@@ -85,28 +98,45 @@ class ShiftsDay extends React.Component {
       //it would be in the display of the time, not the passing of the time, at least with the present system.
       this.setState({
         dateToQuery: dateToQuery,
-        queryString: `?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`,
+        queryString: `?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`,
         dateToPass: this.props.match.params.date
       })
-      console.log(`update query string ?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`)
-      this.fetchCallMethod(`?date=${dateToQuery}&type=${this.props.view || 'myShifts'}`);
-      // commented out: this.fetchCallMethod('?date=' + this.props.defaultDate);
-    }
+      console.log(`update query string ?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`)
+      this.fetchCallMethod(`?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`);
+     }
+    //  else {
+    //   this.fetchCallMethod(this.state.queryString);
+    // }
+    //  else if (this.state.postModal!==prevState.postModal  || this.state.isModalOpen !== prevState.isModalOpen) {
+    //   this.fetchCallMethod(this.state.queryString);
+    //   this.setState({
+    //     postModal: false
+    //   })
+
+
+    // }
   }
+
   openModal(roundID) {
+    let shiftsToPass = this.state.myShiftsToday.filter(shift => (shift.roundID === roundID || shift.id === roundID));
+    console.log("ShiftsToPass: ", shiftsToPass);
     this.setState({
       isModalOpen: true,
       view: "availableShifts",
-      roundID: parseInt(roundID)
+      roundID: parseInt(roundID),
+      shiftsToPass: shiftsToPass
 
     })
+
   }
   closeModal() {
     this.setState({
       isModalOpen: false,
       view: "myShifts",
-      roundID: null,
-    })
+      postModal: true,
+      roundID: null
+    });
+
 
   }
   closeTakeShiftsModal() {
@@ -118,10 +148,9 @@ class ShiftsDay extends React.Component {
       myShiftsToday: updatedShifts
 
     })
-
   }
-  handleTakeShift(status, userID, roundID) {
-    fetch('/api/driver-shift.php' + '?status=' + status + '&user_id=' + userID + '&id=' + roundID, {
+  handleTakeShift(status, userID, roundID, transactionType) {
+    fetch('/api/driver-shift.php' + '?status=' + status + '&user_id=' + userID + '&id=' + roundID + '&transaction=' + transactionType, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -130,14 +159,18 @@ class ShiftsDay extends React.Component {
       body: JSON.stringify({
         status: status,
         user_id: userID,
-        id: roundID
+        id: roundID,
+        transaction: transactionType
       })
     })
-      .then(response => { return response.json() })
+      .then(response => { return console.log("Patch response: ", response.json())  })
       .catch(error => { throw (error) });
-
+      debugger;
       this.closeTakeShiftsModal();
 
+  }
+  dataDidUpdate(){
+    this.fetchCallMethod(this.state.queryString);
   }
 
 
@@ -154,12 +187,12 @@ class ShiftsDay extends React.Component {
       );
     }
 
-    let shiftBlockStart = this.state.myShiftsToday.map(index => index["MIN(`start_time`)"] || index.start_time).toString();
-    let shiftBlockEnd = this.state.myShiftsToday.map(index => index["MAX(`end_time`)"] || index.end_time).toString();
-    let shiftUserId = this.state.myShiftsToday.map(index => index.user_id).toString();
-    let shiftBusLine = this.state.myShiftsToday.map(index => index.line_name).toString();
-    let shiftBusNum = this.state.myShiftsToday.map(index => index.bus_info_id).toString();
-    let shiftRoundID = this.state.myShiftsToday.map(roundID => roundID.roundID);
+    let shiftBlockStart = this.state.shiftsToPass.map(index =>  index.start_time).toString();
+    let shiftBlockEnd = this.state.shiftsToPass.map(index =>  index.end_time).toString();
+    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id).toString();
+    let shiftBusLine = this.state.shiftsToPass.map(index => index.line_name).toString();
+    let shiftBusNum = this.state.shiftsToPass.map(index => index.bus_info_id).toString();
+    let shiftRoundID = this.state.shiftsToPass.map(roundID => roundID.roundID);
 
 
 
@@ -192,6 +225,8 @@ class ShiftsDay extends React.Component {
                     shifts={shifts}
                     openDetails={this.openModal}
                     view = {this.props.view}
+                    modalStatus= {this.state.isModalOpen}
+
                   />
                 );
               })
@@ -200,11 +235,12 @@ class ShiftsDay extends React.Component {
         </table>
         <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view}>
             <ShiftsDetails
+              dataDidUpdateCallback = {this.dataDidUpdate}
               goBack={this.closeModal}
               unixDate={this.props.match.params.date}
               blockStartTime={shiftBlockStart}   // the start time (military 4-digit) of the first round in the block clicked
               blockEndTime={shiftBlockEnd}      // the end time (military 4-digit) of the last round of the block clicked
-              userID={shiftUserId}           // the user's ID number
+              userID={shiftUserId[0]}           // the user's ID number (used the specific 0 index because the user id should be the same for all of these shifts on the details)
               busLine={shiftBusLine}          // the letter representing the line (route) of the selected round or block
               busNumber={shiftBusNum}        // the number of the bus for the selected round or block
             >
@@ -242,6 +278,8 @@ class ShiftsDay extends React.Component {
                       shifts={shifts}
                       openDetails={this.openModal}
                       view={this.props.view}
+                      modalStatus={this.state.isModalOpen}
+                      defaultDate= { this.props.match.params.date }
                     />
                   );
                 })
@@ -249,10 +287,32 @@ class ShiftsDay extends React.Component {
             </tbody>
           </table>
 
-          <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view}>
+          <Modal open={this.state.isModalOpen} className="modalShiftDetails" view={this.state.view} modalStatus={this.state.isModalOpen}>
             <h2> PLEASE CONFIRM: <br></br>Do you really want to TAKE this shift?</h2>
-            <p><button className="modalCancelButton" onClick={() => this.closeModal()}>Cancel</button></p>
-            <p><button onClick={() => { this.handleTakeShift("scheduled", 1, this.state.roundID)}}>Yes, I want to TAKE this shift</button></p>
+            <table className='table table-striped'>
+              <tbody>
+                {
+                  this.state.shiftsToPass.map((shifts, index) => {
+
+                    return (
+
+                      < OneOfMyShifts
+                        key={index}
+                        shifts={shifts}
+                        openDetails={this.openModal}
+                        view={this.props.view}
+                        modalStatus={this.state.isModalOpen}
+                        defaultDate = { this.props.match.params.date }
+                      />
+                    );
+                  })
+                }
+              </tbody>
+            </table>
+
+            {/* <h3 className="shiftToTake"> D2   740-800   1round   20m  </h3> */}
+            <p><button className="modalCancelButton btn-dark" onClick={() => this.closeModal()}>Cancel</button></p>
+            <p><button className="modalConfirmButton btn-primary" onClick={() => { this.handleTakeShift("scheduled", this.state.userId, this.state.roundID, "claimShift")}}>Yes, I want to TAKE this shift</button></p>
           </Modal>
 
         </div>

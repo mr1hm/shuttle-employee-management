@@ -5,7 +5,7 @@ import '../../app.css';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends'
-import { createDateObjFromDateString, calcShiftLenghtInHourMinFormat} from '../../../lib/time-functions';
+import { createDateObjFromDateString, calculateShiftHours} from '../../../lib/time-functions';
 import RouteBusDisplay from '../../route-bus-display';
 
 class ShiftsMonth extends React.Component {
@@ -90,7 +90,9 @@ class ShiftsMonth extends React.Component {
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
       var targetUnixDate = calendarPage[dayOfCalendar].getTime();
       monthDivArray.push(
-        <Link className={calendarPage[dayOfCalendar].getFullYear() +
+        <Link
+          key={calendarPage[dayOfCalendar].getTime()}
+          className={calendarPage[dayOfCalendar].getFullYear() +
           "-" + calendarPage[dayOfCalendar].getMonth() +
           "-" + calendarPage[dayOfCalendar].getDate() === new Date(this.props.defaultDate).getFullYear() +
           "-" + new Date(this.props.defaultDate).getMonth() +
@@ -125,20 +127,23 @@ class ShiftsMonth extends React.Component {
     return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
   displayWeeklyHours(calendarPage,shiftsArray){
+    // console.log("shiftsArray", shiftsArray);
     var weekTotalHoursArrayToBeDisplayed = [];
     var arrayOfRoundsForWeek = [];
     var bundledWeeksArray = this.chunkArray(calendarPage,7);
-    var weekHourTotal=0;
+    var weekHourTotal=null;
     for(var weekIndex=0; weekIndex<bundledWeeksArray.length; weekIndex++){
       for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){
         for(var roundIndex=0 ; roundIndex<shiftsArray.length; roundIndex++){
           if(bundledWeeksArray[weekIndex][dateIndex].getTime() === new Date(parseInt(shiftsArray[roundIndex].date)).getTime()){
             arrayOfRoundsForWeek.push(shiftsArray[roundIndex]);
-            console.log("array of rounds per week: ",arrayOfRoundsForWeek)
-            weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
+            // console.log("array of rounds per week: ",arrayOfRoundsForWeek);
           }
-          weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
+          weekHourTotal = <div>{this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek)}</div>;
         }
+      }
+      if (!weekHourTotal) {
+        weekHourTotal = <div style={{"color" : "lightgrey"}}>No Shifts</div>;
       }
       var targetUnixDate = bundledWeeksArray[weekIndex][0].getTime();
       arrayOfRoundsForWeek = [];
@@ -147,27 +152,26 @@ class ShiftsMonth extends React.Component {
           className="link-style"
           to={`/shifts/week/shifts-week/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
           <div className = "totalHoursForWeek">
-            <div>{weekHourTotal}</div>
+            {weekHourTotal}
           </div>
         </Link>
       )
     }
-    console.log("array of rounds per week: ",arrayOfRoundsForWeek)
+    // console.log("array of rounds per week: ",arrayOfRoundsForWeek)
     return weekTotalHoursArrayToBeDisplayed;
   }
   calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek){
     if(arrayOfRoundsForWeek.length){
       let totalShiftLengthForWeek = 0;
-    for(let roundIndex=0; roundIndex<arrayOfRoundsForWeek.length; roundIndex++){
-      let roundToCalculate = arrayOfRoundsForWeek[roundIndex];
-      let hoursForShift = calcShiftLenghtInHourMinFormat(roundToCalculate.start_time, roundToCalculate.end_time);
-      totalShiftLengthForWeek += hoursForShift;
-    }
+      for(let roundIndex=0; roundIndex<arrayOfRoundsForWeek.length; roundIndex++){
+        let roundToCalculate = arrayOfRoundsForWeek[roundIndex];
+        let hoursForShift = calculateShiftHours(roundToCalculate.start_time, roundToCalculate.end_time);
+        totalShiftLengthForWeek += hoursForShift;
+      }
       let totalHours = Math.floor(totalShiftLengthForWeek/60);
       let totalMinutes = totalShiftLengthForWeek%60;
       return (totalHours + "h " + totalMinutes + "m");
-    }
-    return <div style={{"color" : "lightgrey"} }>No Shifts</div>;
+    } else return <div style={{"color" : "lightgrey"}}>No Shifts</div>;
   }
   render() {
     if (this.props.match.params.date === undefined) {
@@ -182,8 +186,7 @@ class ShiftsMonth extends React.Component {
     return (
       <div className ="calenderContainer">
         <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
-        {/* line 219 is for testing only. CSS styling is not complete */}
-        <RouteBusDisplay bus='1' route='H'/>
+        {/* <RouteBusDisplay bus='1' route='H'/> */}
         <div className="row" className="calendarBox">
           <div className="monthCalendar">
             <div className="dayOfMonth Title">
@@ -195,14 +198,14 @@ class ShiftsMonth extends React.Component {
               <div>FRI</div>
               <div>SAT</div>
             </div>
-            <div class="wrapper">
+            <div className="wrapper">
                 {this.displayCalendarPage(dateToPass)}
             </div>
           </div>
-          <div class="weekTotalCol">
-            <div class="weekTotal">TOTAL</div>
-              <div class="totalHoursColumn">
-                <div class="weekTotalWrapper">
+          <div className="weekTotalCol">
+            <div className="weekTotal">TOTAL</div>
+              <div className="totalHoursColumn">
+                <div className="weekTotalWrapper">
                   {this.displayWeeklyHours(this.generateCalendarPage(dateToPass),this.state.scheduledHoursForCurrentMonth)}
                 </div>
               </div>
