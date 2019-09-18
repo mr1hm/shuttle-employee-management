@@ -41,20 +41,6 @@ class AdminShiftsDay extends React.Component {
   render() {
     const range = { min: 6, max: 24 };
     const dateToPass = parseInt(this.props.defaultDate);
-
-    // how json was set up
-    //  "route": 4,
-    // "line": "D",
-    // "startTime": 800,
-    // "endTime": 2400,
-    // "shifts": [ 24,25,26,27 ],
-    // "alert": [
-    //   {"start": 1200,
-    //     "end": 1300,
-    //     "type": "alertShift",
-    //     "shiftStartTime": 800,
-    //     "shiftEndTime": 2400
-    //   }
     const lineName = [...new Set(this.state.shiftsAdmin.map((index) => index.line_name))];
     const busNumber = [...new Set(this.state.shiftsAdmin.map((index) => index.bus_info_id))];
     const routeLineArray = lineName.reduce(function (arr, v, i) {
@@ -62,62 +48,39 @@ class AdminShiftsDay extends React.Component {
     }, []);
 
     const roundInfo = this.state.shiftsAdmin
-      .map((data) => ({ // FILTER?
-        start: data.start_time,
-        end: data.end_time,
-        type: data.status != 'unscheduled' ? 'active' : 'alertShift',
-        shiftStartTime: data.busStart,
-        shiftEndTime: data.busEnd
-      }))
+    .map((data) => ({
+      shiftData: {
+        start: data.start_time, //round start time
+        end: data.end_time,  //round end time
+      },
+      type: data.status != 'unscheduled' ? 'active' : 'alertShift',
+      range: {
+        min: data.busStart, //bus start for day  //used to be shiftStartTime
+        max: data.busEnd //bus end for day  //used to be shiftEndTime
+      },
+      routeLine: data.line_name + data.bus_info_id
+    }));
 
     const allShiftInfo = this.state.shiftsAdmin.map((data) => ({
-      route: data.bus_info_id,
-      line: data.line_name,
-      routeLine: data.line_name + data.bus_info_id,
-      startTime: data.busStart,
-      endTime: data.busEnd,
-      start: data.start_time,
-      end: data.end_time,
-      type: data.status != 'unscheduled' ? 'active' : 'alertShift',
-      shiftStartTime: data.busStart,
-      shiftEndTime: data.busEnd,
+      route: data.bus_info_id,  // 1, 2, 3
+      line: data.line_name,     // C, D, H
+      routeLine: data.line_name + data.bus_info_id, // C1, D2, H3
+      type: data.status, // sched, unsched, posted, swapped
+      shiftData: {
+        start: data.busStart, // bus start for day
+        end: data.busEnd      //bus end for day
+      },
+      range: {
+        min: range.min, //6am
+        max: range.max //12am
+      },
       alert: [data]
     }));
 
-
-    // {
-    //   C1: [],
-    //   D2: [],
-    //   // etc
-    // }
-    // You could create this structure by looping through your array of routeLines
-
-    // // assume routeLines array is ['C1', 'D2', etc]
-    // const shiftsByRouteLine = {}
-
-
-    // routeLines.forEach(routeLine => {
-    //   shiftsByRouteLine[routeLine] = []
-    // })
-
-    // allShiftInfo.forEach(shift => {
-    //   const routeLine = shift.routeLine
-    //   shiftsByRouteLine[routeLine].push(shift)
-    // })
-
-
-    // If the shiftsByRouteLine has a key for each routeLine set to an empty array, you can push each shift into the matching array.
-    // That will at least group them.
-
-
-    // If you need an array of arrays, you can then take the grouped shifts and loop through the keys, pushing each group array into the final array.
-    // const shifts = []
-    // for (const routeLine in shiftsByRouteLine) {
-    //   const shiftGroup = shiftsByRouteLine[routeLine]
-    //   shifts.push(shiftGroup)
-    // }
-
     const shiftsByRouteLine = {};
+    const shiftsMapRender = [];
+    const childrenByBusLine = {};
+    const childrenShifts = [];
 
     routeLineArray.forEach(routeLine => {
       shiftsByRouteLine[routeLine] = []
@@ -128,18 +91,44 @@ class AdminShiftsDay extends React.Component {
       shiftsByRouteLine[routeLine].push(shift);
     })
 
-    const shifts = []
     for (const routeLine in shiftsByRouteLine) {
       const shiftGroup = shiftsByRouteLine[routeLine]
-      shifts.push(shiftGroup)
+      shiftsMapRender.push(shiftGroup)
+    }    
+
+    routeLineArray.forEach(routeLine => {
+      childrenByBusLine[routeLine] = []
+    })
+
+    roundInfo.forEach(shift => {
+      const routeLine = shift.routeLine
+      childrenByBusLine[routeLine].push(shift);
+    })
+    
+    for (const routeLine in childrenByBusLine) {
+      const shiftGroupChildren = childrenByBusLine[routeLine]
+      childrenShifts.push(shiftGroupChildren)
     }
 
-    console.log("shifts:", shifts);
-    console.log("shiftsByRouteLine:", shiftsByRouteLine);
-    console.log('routeLineArray:', routeLineArray);
-    console.log('allShiftInfo:', allShiftInfo);
-    console.log('roundInfo:', roundInfo);
+    // how json was set up
+    //  "route": 4,
+    // "line": "D",
+    // "startTime": 800, ----------------------\
+    // "endTime": 2400, --------------\         |
+    // "shifts": [ 24,25,26,27 ],      |        |
+    // "alert": [                      |        | 
+    //   {"start": 1200,               |        | 
+    //     "end": 1300,                |        | 
+    //     "type": "alertShift",       |        | 
+    //     "shiftStartTime": 800,------|-------/
+    //     "shiftEndTime": 2400 ------/
+    //   }
+    console.log("shiftsMapRender::", shiftsMapRender);
+    console.log('allShiftInfo::', allShiftInfo);
+    console.log('roundInfo::', roundInfo);
+    console.log('childrenShifts::', childrenShifts);
     // debugger;
+
     return (
       <div>
         <TopMenuShift title="Admin" page='day' date={dateToPass} />
@@ -147,15 +136,15 @@ class AdminShiftsDay extends React.Component {
           <HoursOfOperation />
         </div>
         <div className="adminShiftsDayView">
-          {shifts.map((data,index) => {
+          {shiftsMapRender.map((data, index) => {
             return (
               <div className="dayDataContainer">
                 <div className="dayLabelContainer">
                   <div className="adminShiftsDayBusLine">
                     < RouteBusDisplay
                       key={index}
-                      bus={data.route}  //bus number
-                      route={data.line} //line letter
+                      bus={data[index].route}  //bus number
+                      route={data[index].line} //line letter
                     />
                   </div>
                 </div>
@@ -163,11 +152,10 @@ class AdminShiftsDay extends React.Component {
                   < ShiftDisplayComponent
                     key={index}
                     range={range}
-                    shiftData={{ start: data.startTime / 100, end: data.endTime / 100 }}
-                    children={data}
+                    shiftData={{ start: data[index].shiftData.start / 100, end: data[index].shiftData.end / 100 }}
+                    children={childrenShifts[index]}
                     type={'active'}
                   />
-
                 </div>
               </div>
             )
@@ -178,13 +166,3 @@ class AdminShiftsDay extends React.Component {
   }
 }
 export default AdminShiftsDay;
-
-
-//from shifts-week::::
-// {/* <ShiftDisplayComponent
-// test='1'
-// type='active'
-// range={range}
-// shiftData={startAndEndTimes}
-// children={convertedShifts}
-// /> */}
