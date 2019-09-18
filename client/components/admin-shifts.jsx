@@ -11,12 +11,24 @@ class AdminShiftsDay extends React.Component {
     super(props);
     this.query = ``;
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
+    this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);
     this.state = {
       shiftsAdmin: [],
       queryString: `?date=${defaultDate}`,
       dateToPass: defaultDate
     }
+  }
+
+  fetchAutoPopulatedData(){
+    fetch(`/api/admin-populate-rounds.php`, {
+      method: 'GET'
+    })
+    .then(response => {
+      return response.json()
+    })
+    .then(res => console.log("res", res))
+    .catch(error => { throw (error) });
   }
 
   fetchCallMethod(query) {
@@ -133,6 +145,7 @@ class AdminShiftsDay extends React.Component {
       <div>
         <TopMenuShift title="Admin" page='day' date={dateToPass} />
         <div className="viewHoursContainer">
+          {this.fetchAutoPopulatedData()}
           <HoursOfOperation />
         </div>
         <div className="adminShiftsDayView">
