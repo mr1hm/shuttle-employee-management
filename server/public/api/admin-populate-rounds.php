@@ -495,13 +495,16 @@ function populateSchedule($operators, $rounds, $conn)  {
 // }
 
 function populateTemplateWeek ($conn, $rounds, $operators) {
-  echo '<pre>';
-  print('operators after entering populate template week: ');
-  print_r($operators);
-  echo '</pre>';
+  // echo '<pre>';
+  // print('operators after entering populate template week: ');
+  // print_r($operators);
+  // echo '</pre>';
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
+    echo '<pre>';
+    print('specific day of week: '. $specificDayOfWeek);
+    echo '</pre>';
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
     $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn); 
@@ -512,10 +515,10 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
         }
       }
     }
-    echo '<pre>';
-    print('operators after updated with total weekly minutes from day of week population: ');
-    print_r($operators);
-    echo '</pre>';
+    // echo '<pre>';
+    // print('operators after updated with total weekly minutes from day of week population: ');
+    // print_r($operators);
+    // echo '</pre>';
   }
 }
 
