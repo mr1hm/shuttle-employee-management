@@ -6,16 +6,8 @@ import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
 import ShiftsDetails from '../details/shifts-details';
 import ShiftsAvailable from '../available/shifts-available';
-import { createDateObjFromDateString } from '../../../lib/time-functions';
+import { createDateObjFromDateString, convertUnixMonthDay } from '../../../lib/time-functions';
 import { Minimatch } from 'minimatch';
-
-
-function convertUnixMonthDay(time) {
-  const getTheDate = new Date(time);
-  const dateString = getTheDate.getFullYear() + '-' + ('0' + getTheDate.getDate()).slice(-2)
-    + '-' + ('0' + (getTheDate.getMonth() + 1)).slice(-2);
-  return dateString;
-}
 
 export function OneOfMyShifts(props) {
   let shiftButton = (props.shifts.status === 'posted' && props.view === 'myShifts') ? "Cancel Post" : "Details";
@@ -60,7 +52,7 @@ class ShiftsDay extends React.Component {
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
-    const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );
+    const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );// converts unix time to date/at midnight 09/17/2019
     const defaultId = 1;
     this.state = {
       myShiftsToday: [],
@@ -100,7 +92,7 @@ class ShiftsDay extends React.Component {
     // console.log( "prevProps: ", prevProps);
     // console.log("prevState: " , prevState);
     if (prevProps.match.params.date !== this.props.match.params.date || this.props.view !== prevProps.view) {
-      let dateToQuery = createDateObjFromDateString( (this.props.match.params.date ? this.props.match.params.date : this.state.dateToPass )).getTime();
+      let dateToQuery = createDateObjFromDateString((this.props.match.params.date ? this.props.match.params.date : this.state.dateToPass)).getTime();// converts unix time to date/at midnight 09/17/2019
       //dateToQuery += 25200000; //need to convert this, this is +7 hours for showing accurate time in Pacific Time
       //this shouldn't happen here because the backend expects things to be at midnight, not offset.  if any offset would be used
       //it would be in the display of the time, not the passing of the time, at least with the present system.
@@ -184,7 +176,7 @@ class ShiftsDay extends React.Component {
 
   render() {
     let dateToPass = this.state.dateToPass;
-    dateToPass = createDateObjFromDateString(dateToPass);
+    dateToPass = createDateObjFromDateString(dateToPass);// converts unix time to date/at midnight 09/17/2019
 
     if (this.state.myShiftsToday.length === 0) {
       return (

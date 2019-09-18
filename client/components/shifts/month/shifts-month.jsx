@@ -5,7 +5,7 @@ import '../../app.css';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends'
-import {createDateObjFromDateString} from '../../../lib/time-functions';
+import { createDateObjFromDateString, calculateShiftHours} from '../../../lib/time-functions';
 import RouteBusDisplay from '../../route-bus-display';
 
 class ShiftsMonth extends React.Component {
@@ -90,8 +90,8 @@ class ShiftsMonth extends React.Component {
     for(var dayOfCalendar=0; dayOfCalendar < calendarPage.length; dayOfCalendar++){
       var targetUnixDate = calendarPage[dayOfCalendar].getTime();
       monthDivArray.push(
-        <Link 
-          key={calendarPage[dayOfCalendar].getTime()} 
+        <Link
+          key={calendarPage[dayOfCalendar].getTime()}
           className={calendarPage[dayOfCalendar].getFullYear() +
           "-" + calendarPage[dayOfCalendar].getMonth() +
           "-" + calendarPage[dayOfCalendar].getDate() === new Date(this.props.defaultDate).getFullYear() +
@@ -122,7 +122,7 @@ class ShiftsMonth extends React.Component {
   getZeroPaddedNumber( number ){
     return ('0' + number).slice(-2);
   }
-  getDateStringFromTimestamp( timestamp ){
+  getDateStringFromTimestamp(timestamp) {// The convertUnixMonthDay(time) function from shifts-day.jsx could be used here 09/17/2019
     const date = new Date(parseInt(timestamp));
     return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
@@ -165,7 +165,7 @@ class ShiftsMonth extends React.Component {
       let totalShiftLengthForWeek = 0;
       for(let roundIndex=0; roundIndex<arrayOfRoundsForWeek.length; roundIndex++){
         let roundToCalculate = arrayOfRoundsForWeek[roundIndex];
-        let hoursForShift = this.calculateShiftHours(roundToCalculate.start_time, roundToCalculate.end_time);
+        let hoursForShift = calculateShiftHours(roundToCalculate.start_time, roundToCalculate.end_time);
         totalShiftLengthForWeek += hoursForShift;
       }
       let totalHours = Math.floor(totalShiftLengthForWeek/60);
@@ -173,19 +173,11 @@ class ShiftsMonth extends React.Component {
       return (totalHours + "h " + totalMinutes + "m");
     } else return <div style={{"color" : "lightgrey"}}>No Shifts</div>;
   }
-  calculateShiftHours(startTime, endTime){
-    let startHourDigits = Math.trunc(parseInt(startTime)/100);
-    let startMinuteDigits = parseInt(startTime.slice(-2));
-    let endHourDigits = Math.trunc(parseInt(endTime/100));
-    let endMinuteDigits = parseInt(endTime.slice(-2)); 
-    let shiftLengthInMinutes = ((endHourDigits - startHourDigits) * 60) + (endMinuteDigits - startMinuteDigits);
-    return Math.round(shiftLengthInMinutes);
-  }
   render() {
     if (this.props.match.params.date === undefined) {
       var dateToPass = this.props.defaultDate;
     } else {
-      dateToPass = createDateObjFromDateString( this.props.match.params.date );
+      dateToPass = createDateObjFromDateString(this.props.match.params.date);// converts unix time to date/at midnight 09/17/2019
       dateToPass = dateToPass.getTime();
     }
     if (!this.state.scheduledHoursForCurrentMonth){

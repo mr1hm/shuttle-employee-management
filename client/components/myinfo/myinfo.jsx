@@ -7,17 +7,23 @@ class MyInfo extends React.Component {
     super(props);
     this.state ={
       editButton:false,
-      userInfo:[]
+      userInfo:[],
+      userId: 19,
+      cellProvider:[]
     }
-    this.fetchCallMethod=this.fetchCallMethod.bind(this);
-    this.handleEditButton=this.handleEditButton.bind(this);
+    this.saveUploadedImageTofile = this.saveUploadedImageTofile.bind(this);
+    this.fetchCellProvider = this.fetchCellProvider.bind(this);
+    this.handlePhoneValidation = this.handlePhoneValidation.bind(this);
+    this.fetchCallMethod = this.fetchCallMethod.bind(this);
+    this.handleEditButton = this.handleEditButton.bind(this);
   }
   componentDidMount(){
     this.fetchCallMethod();
+    this.fetchCellProvider();
   }
 
   fetchCallMethod() {
-    fetch(`/api/my-info-page.php?id=`+ 20, {
+    fetch(`/api/my-info-page.php?id=`+ this.state.userId, {
       method: 'GET'
     })
       .then(response => {
@@ -31,20 +37,52 @@ class MyInfo extends React.Component {
       .catch(error => { throw (error) });
     }
 
-    handleEditButton(){
-      this.setState({
-        editButton:true
-      })
-      fetch(`/api/my-info-update.php?id=` + 20,{
-        method:'GET'
+    fetchCellProvider(){
+      fetch(`/api/my-info-cell-provider.php`, {
+        method: 'GET'
       })
         .then(response => {
           return response.json()
         })
+        .then(response => {
+          this.setState({
+            cellProvider: response
+          })
+        })
         .catch(error => { throw (error) });
     }
 
+    saveUploadedImageTofile(event){
+      const imageFile = event.target.files;
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile[0]);
+      reader.onload=(event)=>{
+        const imageResult = event.target.result;
+        const url = "/api/my-info-uploadimage.php";
+        fetch(url, {
+          method: 'POST',
+          body: imageResult
+        })
+          .then(response => response)
+          
+          .catch(error => { throw (error) });
+
+      };
+
+    }
+
+    handleEditButton(){
+      this.setState({
+        editButton: true
+      })
+    }
+
+    handlePhoneValidation(event){
+    this.state.userInfo[0].cell_provider += event.currentTarget.value;
+    }
+
   render() {
+    const stateCellProvider= this.state.cellProvider;
     const stateUserInfo = this.state.userInfo;
     const stateEditButton = this.state.editButton;
     if(!stateUserInfo.length){return null};
@@ -52,37 +90,53 @@ class MyInfo extends React.Component {
       return (
         <React.Fragment>
           <TopMenuGeneral title="MY INFO" />
-          <div className="container" className="col" style={{ top: "40%", left: "40%", position: "absolute" }}>
+          <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
+          <div className="imageHolder">
+            <img className="myInfoPic" src={stateUserInfo[0].url} />
+            <form action="/api/my-info-uploadimage.php" method="POST">
+              <label htmlFor="files" className="upload">Upload Image ></label>
+              <input name="image" onChange={(event => this.saveUploadedImageTofile(event))} accept="image/png, image/jpeg" id="files" style={{ visibility: "hidden" }} type="file" />
+            </form>
+          </div>
+          <div className="container" className="w-50" style={{ top: "14%", left: "40%", position: "absolute" }}>
             <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >
               <form action="/api/my-info-update.php" method="POST">
-                <input type="hidden" name="id" value="20"/>
-                <div className="form-group row">
-                  <label className="col-sm-2 col-form-label">Email</label>
-                  <div className="col-sm-10">
-                    <input type="text" name="email"  placeholder="Email"/>
-                  </div>
+                <input type="hidden" name="id" value={this.state.userId} />
+                <div className="row">
+                  <div className="col-6">UCINetID</div>
+                  <div className="col-6" className="mb-3">{stateUserInfo[0].uci_net_id}</div>
                 </div>
-                <div className="form-group row">
-                  <label className="col-sm-2 col-form-label">Phone Number</label>
-                  <div className="col-sm-10">
-                   <input type="text" name="phone" placeholder="Phone Number" />
-                  </div>
+                <div className="row">
+                  <div className="col-6">Email</div>
+                  <div className="col-6" className="mb-3">{stateUserInfo[0].email}</div>
                 </div>
-                <div className="form-group row">
-                  <label className="col-sm-2 col-form-label">Cell Provider</label>
-                  <div className="col-sm-10">
-                    <input type="text" name="cellProvider" placeholder="Cell Provider" />
-                  </div>
+                  <div className="row">
+                  <div className="col-6">Phone Number</div>
+                  <small className="phoneLabel">format:(0000000000)</small>
+                  <input className="col-6 mb-3 editInput" pattern="^[0-9]{10}$" required id="phoneNumberInput" type="tel" name="phone"
+                     onChange={this.handlePhoneValidation} defaultValue={stateUserInfo[0].phone} />
                 </div>
-                <div className="form-group row">
-                 <label className="col-sm-2 col-form-label">Shirt Size</label>
-                  <div className="col-sm-10">
-                    <input type="text" name="shirtSize" placeholder="Shirt Size" />
-                  </div>
+                  <div className="row">
+                  <div className="col-6">Cell Provider</div>
+                  <select className="col-6 mb-3 editInput" type="text" name="cellProvider"
+                    placeholder="Cell Provider" defaultValue={stateUserInfo[0].cell_provider}>
+                    {this.state.cellProvider.map((cell, index) => <option key={index} value={cell.cell_provider}>{cell.cell_provider}</option>)}
+                  </select>
                 </div>
-                <button className="save" type="submit" name="submit">SAVE</button>
+                  <div className="row">
+                  <div className="col-6">Shirt Size</div>
+                  <select className="col-6 mb-2 editInput" placeholder="Shirt Size" type="text" name="shirtSize"
+                    defaultValue={stateUserInfo[0].shirt_size}>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                  </select>
+                </div>
+                <button className="save" type="submit" name="submit" className="btn btn-primary but">SAVE</button>
               </form>
-           </div>
+            </div>
           </div>
         </React.Fragment>
       );
@@ -93,39 +147,37 @@ class MyInfo extends React.Component {
         <TopMenuGeneral title="MY INFO" />
         <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
         <div className="imageHolder">
-          <button className="upload" >Upload Photo ></button>
+          <img className="myInfoPic" src={stateUserInfo[0].url}/>
+          <form action="/api/my-info-uploadimage.php" method="POST">
+            <label htmlFor="files" className="upload">Upload Image ></label>
+            <input name="image" onChange={(event => this.saveUploadedImageTofile(event))} accept="image/png, image/jpeg" id="files" style={{ visibility: "hidden" }} type="file" />
+          </form>
         </div>
-        <div className="container con" style={{ top: "25%", left: "40%", position: "absolute" }}>
+        <div className="container" className="w-50" style={{ top: "14%", left: "40%", position: "absolute" }}>
           <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >
             <div className="row">
-              <div className="col">UCINetID</div>
-              <div className="w-0"></div>
-              <div className="col">{stateUserInfo[0].uci_net_id}</div>
+              <div className="col-6">UCINetID</div>
+              <div className="col-6" className="mb-3">{stateUserInfo[0].uci_net_id}</div>
             </div>
             <div className="row">
-              <div className="col">Email</div>
-              <div className="w-0"></div>
-              <div className="col">{stateUserInfo[0].email}</div>
+              <div className="col-6">Email</div>
+              <div className="col-6" className="mb-3">{stateUserInfo[0].email}</div>
             </div>
             <div className="row">
-              <div className="col">Phone Number</div>
-              <div className="w-0"></div>
-              <div className="col">{stateUserInfo[0].phone}</div>
+              <div className="col-6">Phone Number</div>
+              <div className="col-6" className="mb-3">{stateUserInfo[0].phone}</div>
             </div>
             <div className="row">
-              <div className="col">Cell Provider</div>
-              <div className="w-0"></div>
-              <div className="col">{stateUserInfo[0].cell_provider}</div>
+              <div className="col-6">Cell Provider</div>
+              <div className="col-6" className="mb-3">{stateUserInfo[0].cell_provider}</div>
             </div>
             <div className="row">
-              <div className="col">Shirt Size</div>
-              <div className="w-0"></div>
-              <div className="col">{stateUserInfo[0].shirt_size}</div>
+              <div className="col-6">Shirt Size</div>
+              <div className="col-6" className="mb-2">{stateUserInfo[0].shirt_size}</div>
             </div>
             <button onClick={this.handleEditButton} className="btn btn-primary but">Edit Info</button>
           </div>
         </div>
-
       </React.Fragment>
     );
 

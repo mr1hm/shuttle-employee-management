@@ -55,7 +55,7 @@ class ShiftsDetails extends React.Component {
       .catch(error => {throw(error)});
   }
   componentDidMount(){
-    let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();
+    let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();// converts unix time to date/at midnight 09/17/2019
     let shiftStart = this.props.blockStartTime ? this.props.blockStartTime : 600;
     let shiftEnd = this.props.blockEndTime ? this.props.blockEndTime : 1100;
     let user = this.props.userID ? this.props.userID : 2;
@@ -111,7 +111,7 @@ class ShiftsDetails extends React.Component {
       })
     this.closeModal();
   }
-  convertMilitaryTime(militaryTime) {
+  convertMilitaryTime(militaryTime) {// SyntaxError Unexpected token { also there is a function for this in time-function.jsx but doesn't  work
     if (militaryTime.length < 4){
       militaryTime = "0" + militaryTime;
     }
@@ -130,7 +130,7 @@ class ShiftsDetails extends React.Component {
   }
   createSubHeaderTimeFrame() {
     const shiftDetails = this.state.shiftsDetailsInfo;
-    let date = new Date(createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime());
+    let date = new Date(createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime());// converts unix time to date/at midnight
     const daysArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const monthsArray = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const year = date.getFullYear();

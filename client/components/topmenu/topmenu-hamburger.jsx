@@ -7,7 +7,7 @@ import { createDateStringFromDateObject } from '../../lib/time-functions';
 
 const TopMenuHamburger = (props)=> {
 
-    var currentDateString = props.date ? createDateStringFromDateObject(props.date) : '';
+    var currentDateString = props.date ? createDateStringFromDateObject(props.date) : '';// converts unix time to date/at midnight
 
     return (
         <div className="text-dark">
