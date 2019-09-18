@@ -6,13 +6,22 @@ require_once('db_connection.php');
 
 //**FUNCTIONS**/
 //TODO: EVENTUALLY change name to reflect that this is a template
-function getRoundsData($conn) {
+function getRoundsData($conn, $quarterStartTimestamp) {
   //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
   // //TODO: need equation to calculate based on 7 full days from midnight on the first day
 
-  $templateDates = [1566100800, 1566187200, 1566273600, 1566360000, 1566446400, 1566532800, 1566619200];
+  // $templateDates = [1566100800, 1566187200, 1566273600, 1566360000, 1566446400, 1566532800, 1566619200];
+
+  $templateDates = [];
+  $timestamp = $quarterStartTimestamp;
+
+  for ($x = 0; $x < 7; $x++) {
+    $templateDates[] = $timestamp;
+    $timestamp = strtotime('+1 days', $timestamp);
+  }
 
   $templateDatesCSV = implode(',', $templateDates);
+  print('$templateDatesCSV: ' . $templateDatesCSV);
 
   //TODO: change query to pull in only the days set by the $roundStart and $roundEnd
   $roundsQuery = "SELECT 
@@ -464,47 +473,52 @@ function populateSchedule($operators, $rounds, $conn)  {
   return $operators;
 }
 
-//TODO: functionality to populate the entire quarter
-// function populateTemplateWeek ($conn, $rounds, $specificDayOfWeek) {
-//     $operators = getOperatorsData($conn);
+// TODO: functionality to populate the entire quarter
+// function populateTemplateDay ($conn, $rounds, $operators, $specificDayOfWeek) {
 //     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
 //     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
 //     populateSchedule($operatorsForDay, $roundsForDay, $conn); 
 //     return $roundsForDay;
 // }
 
-// function populateSpecificDayRestOfQuarter($roundsForDay)) {
-//   //$matchingDays = [] -- an array of all the UNIX timestamps for that particular days of the week between the end of the template and the end of quarter
+// function populateSpecificDayRestOfQuarter($roundsForDay, $specificDayOfWeek, $quarterStartTimestamp, $quarterEndTimestamp)) {
+//   $timestamp = strtotime('+7 days', $quarterStartTimestamp);
+//   $matchingDays = [];
+
+//   while ($timestamp < $quarterEndTimestamp) {
+//     $matchingDays[] = $timestamp;
+//     $timestamp = strtotime('+7 days', $timestamp);
+//   }
+
 //   for ($matchingDaysIndex = 0; $matchingDaysIndex < count($matchingDays); $matchingDaysIndex++) {
 //     //go through each round for the day
-//     for($roundsForDayIndex = 0; $roundsForDayIndex < count($roundsForDay); $roundsForDayIndex++) {
-//       $rowId = $roundsForDay['id'];
+//     // for($roundsForDayIndex = 0; $roundsForDayIndex < count($roundsForDay); $roundsForDayIndex++) {
+//       $query =  INSERT INTO round (user_id, session_id, bus_info_id, date, start_time, end_time, status) 
+//                 SELECT user_id, session_id, bus_info_id, date, start_time, end_time, status FROM round
+//                 WHERE date = //first date in the round
+//       //may be an easier way to copy all the rows that have a specific date
 //       //add the query here that adds a row to db with the content on that line of the $roundsForDay with a date that matches $matchingDays[$matchingDaysIndex];
-//       }
+//       // }
 //     }
 //   }
 // }
 
-// function populateQuarter($conn, $rounds) {
+// function populateQuarter($conn, $rounds, $operators) {
 //   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 //   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
 //     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
-//     $roundsForDay = populateTemplateWeek($conn, $rounds, $specificDayOfWeek);
-//     populateSpecificDayRestOfQuarter($roundsForDay);
+//     $roundsForDay = populateTemplateDay($conn, $rounds, $operators, $specificDayOfWeek);
+//     populateSpecificDayRestOfQuarter($roundsForDay, $specificDayOfWeek, $quarterStartTimestamp, $quarterEndTimestamp);
 //   }
 // }
 
 function populateTemplateWeek ($conn, $rounds, $operators) {
-  // echo '<pre>';
-  // print('operators after entering populate template week: ');
-  // print_r($operators);
-  // echo '</pre>';
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
-    echo '<pre>';
-    print('specific day of week: '. $specificDayOfWeek);
-    echo '</pre>';
+    // echo '<pre>';
+    // print('specific day of week: '. $specificDayOfWeek);
+    // echo '</pre>';
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
     $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn); 
@@ -523,7 +537,9 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
 }
 
 //**PROCESSING**/
-$rounds = getRoundsData($conn);
+$quarterStartTimestamp = 1566100800;
+// $quarterEndTimestamp =
+$rounds = getRoundsData($conn, $quarterStartTimestamp);
 $operators = getOperatorsData($conn);
 populateTemplateWeek($conn, $rounds, $operators);
 //TODO: replace populateTemplateWeek with populateQuarter and modified populateTemplateWeek
