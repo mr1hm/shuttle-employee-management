@@ -79,7 +79,7 @@ class ShiftsDetails extends React.Component {
     this.closeModal()
     this.props.goBack()
   }
-  convertMilitaryTime(militaryTime) {// SyntaxError Unexpected token { also there is a function for this in time-function.jsx but doesn't work
+  convertMilitaryTime(militaryTime) {// SyntaxError Unexpected token { also there is a function for this in time-function.jsx but doesn't  work
     if (militaryTime.length < 4){
       militaryTime = "0" + militaryTime;
     }
