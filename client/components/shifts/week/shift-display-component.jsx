@@ -11,8 +11,6 @@ class ShiftDisplayComponent extends React.Component {
     const startPercent = ((shiftData.start - range.min) / rangeDistance) * 100;
     const endPercent = ((shiftData.end - range.min) / rangeDistance) * 100;
     const widthPercent = endPercent - startPercent;
-    console.log('const range from shift-display-component:',range);
-    
     return (
       <div
         className={`shift shiftBase ${this.props.type}`}
@@ -24,7 +22,6 @@ class ShiftDisplayComponent extends React.Component {
         }}
       >
         {this.props.children.map((data, index) => (
-
           <ShiftDisplayComponent
             test={data.test}
             key={index}

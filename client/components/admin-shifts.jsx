@@ -62,8 +62,8 @@ class AdminShiftsDay extends React.Component {
     const roundInfo = this.state.shiftsAdmin
     .map((data) => ({
       shiftData: {
-        start: data.start_time, //round start time
-        end: data.end_time,  //round end time
+        start:  convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time), //round start time
+        end:  convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time),  //round end time
       },
       type: data.status != 'unscheduled' ? 'active' : 'alertShift',
       range: {
@@ -165,7 +165,7 @@ class AdminShiftsDay extends React.Component {
                   < ShiftDisplayComponent
                     key={index}
                     range={range}
-                    shiftData={{ start: data[index].shiftData.start / 100, end: data[index].shiftData.end / 100 }}
+                    shiftData={{ start: data[index].shiftData.start , end: data[index].shiftData.end  }}
                     children={childrenShifts[index]}
                     type={'active'}
                   />
