@@ -10,7 +10,7 @@ function getRoundsData($conn) {
   //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
   // //TODO: need equation to calculate based on 7 full days from midnight on the first day
 
-  $templateDates = [15661600000, 15662592000,15663456000, 15664320000, 15665184000, 15666048000, 15666912000];
+  $templateDates = [1566100800, 1566187200, 1566273600, 1566360000, 1566446400, 1566532800, 1566619200];
 
   $templateDatesCSV = implode(',', $templateDates);
 
@@ -495,13 +495,16 @@ function populateSchedule($operators, $rounds, $conn)  {
 // }
 
 function populateTemplateWeek ($conn, $rounds, $operators) {
-  echo '<pre>';
-  print('operators after entering populate template week: ');
-  print_r($operators);
-  echo '</pre>';
+  // echo '<pre>';
+  // print('operators after entering populate template week: ');
+  // print_r($operators);
+  // echo '</pre>';
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
+    echo '<pre>';
+    print('specific day of week: '. $specificDayOfWeek);
+    echo '</pre>';
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
     $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn); 
@@ -512,10 +515,10 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
         }
       }
     }
-    echo '<pre>';
-    print('operators after updated with total weekly minutes from day of week population: ');
-    print_r($operators);
-    echo '</pre>';
+    // echo '<pre>';
+    // print('operators after updated with total weekly minutes from day of week population: ');
+    // print_r($operators);
+    // echo '</pre>';
   }
 }
 
