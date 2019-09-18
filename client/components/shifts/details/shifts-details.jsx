@@ -287,7 +287,7 @@ class ShiftsDetails extends React.Component {
               }
             </tbody>
           </table>
-          <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Cancel</button></p>
+          <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Back to My Shifts</button></p>
           <p><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >
             {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Yes, I want to cancel' : "Yes, I want to post"}</button></p>
         </Modal>
