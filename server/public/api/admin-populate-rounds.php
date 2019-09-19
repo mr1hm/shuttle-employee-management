@@ -5,17 +5,13 @@ set_exception_handler('error_handler');
 require_once('db_connection.php');
 
 //**FUNCTIONS**/
-//TODO: EVENTUALLY change name to reflect that this is a template
 function getRoundsData($conn, $quarterStartTimestamp) {
   //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
-  // //TODO: need equation to calculate based on 7 full days from midnight on the first day
-
-  // $templateDates = [1566100800, 1566187200, 1566273600, 1566360000, 1566446400, 1566532800, 1566619200];
 
   $templateDates = [];
   $timestamp = $quarterStartTimestamp;
 
-  for ($x = 0; $x < 7; $x++) {
+  for ($day = 0; $day < 7; $day++) {
     $templateDates[] = $timestamp;
     $timestamp = strtotime('+1 days', $timestamp);
   }
@@ -23,7 +19,6 @@ function getRoundsData($conn, $quarterStartTimestamp) {
   $templateDatesCSV = implode(',', $templateDates);
   print('$templateDatesCSV: ' . $templateDatesCSV);
 
-  //TODO: change query to pull in only the days set by the $roundStart and $roundEnd
   $roundsQuery = "SELECT 
                   rd.id,
                   rt.line_name, 
@@ -59,7 +54,6 @@ function getRoundsData($conn, $quarterStartTimestamp) {
 }
 
 function getOperatorsData($conn) {
-  //TODO: Bring in weekly minutes (hours) in query
   $operatorsUserDetailsQuery = "SELECT 
                                 id AS user_id, 
                                 last_name, 
@@ -83,7 +77,6 @@ function getOperatorsData($conn) {
   ];
 
   while ($row = mysqli_fetch_assoc($resultOperatorsUserDetailsQuery)) {
-    //TODO: we don't need to add here - need to change to arrive with query
     $row['total_weekly_minutes'] = 0;
     $row['assignment_details']=[
       'Sun'=>$baseDayStructure,
@@ -300,14 +293,6 @@ function populateSchedule($operators, $rounds, $conn)  {
       break;
     } 
     $madeAssignment = false;
-
-    //check to make sure we have times available, if not remove that person
-    // for ($operatorsIndex = $lengthOperatorsArray -1; 0 <=$operatorsIndex; $operatorsIndex--) {
-    //   if (empty ($operators[$operatorsIndex]['available_times'])){
-    //     unset($operators[$operatorsIndex]);
-    //   }
-    // }
-    // array_values($operators);
     
     //sort the operator array, put operator with fewest weekly hours at the top
     uasort($operators, 'operatorsSort'); 
@@ -473,44 +458,6 @@ function populateSchedule($operators, $rounds, $conn)  {
   return $operators;
 }
 
-// TODO: functionality to populate the entire quarter
-// function populateTemplateDay ($conn, $rounds, $operators, $specificDayOfWeek) {
-//     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
-//     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
-//     populateSchedule($operatorsForDay, $roundsForDay, $conn); 
-//     return $roundsForDay;
-// }
-
-// function populateSpecificDayRestOfQuarter($roundsForDay, $specificDayOfWeek, $quarterStartTimestamp, $quarterEndTimestamp)) {
-//   $timestamp = strtotime('+7 days', $quarterStartTimestamp);
-//   $matchingDays = [];
-
-//   while ($timestamp < $quarterEndTimestamp) {
-//     $matchingDays[] = $timestamp;
-//     $timestamp = strtotime('+7 days', $timestamp);
-//   }
-
-//   for ($matchingDaysIndex = 0; $matchingDaysIndex < count($matchingDays); $matchingDaysIndex++) {
-//     //go through each round for the day
-//     // for($roundsForDayIndex = 0; $roundsForDayIndex < count($roundsForDay); $roundsForDayIndex++) {
-//       $query =  INSERT INTO round (user_id, session_id, bus_info_id, date, start_time, end_time, status) 
-//                 SELECT user_id, session_id, bus_info_id, date, start_time, end_time, status FROM round
-//                 WHERE date = //first date in the round
-//       //may be an easier way to copy all the rows that have a specific date
-//       //add the query here that adds a row to db with the content on that line of the $roundsForDay with a date that matches $matchingDays[$matchingDaysIndex];
-//       // }
-//     }
-//   }
-// }
-
-// function populateQuarter($conn, $rounds, $operators) {
-//   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-//   for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
-//     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
-//     $roundsForDay = populateTemplateDay($conn, $rounds, $operators, $specificDayOfWeek);
-//     populateSpecificDayRestOfQuarter($roundsForDay, $specificDayOfWeek, $quarterStartTimestamp, $quarterEndTimestamp);
-//   }
-// }
 
 function populateTemplateWeek ($conn, $rounds, $operators) {
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -538,9 +485,16 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
 
 //**PROCESSING**/
 $quarterStartTimestamp = 1566100800;
-// $quarterEndTimestamp =
-$rounds = getRoundsData($conn, $quarterStartTimestamp);
-$operators = getOperatorsData($conn);
-populateTemplateWeek($conn, $rounds, $operators);
-//TODO: replace populateTemplateWeek with populateQuarter and modified populateTemplateWeek
+$quarterEndTimestamp = 1576904400;
+$beginningOfWeekTimeStamp = $quarterStartTimestamp;
+while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
+  $rounds = [];
+  $operators = [];
+  $rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
+  $operators = getOperatorsData($conn);
+  populateTemplateWeek($conn, $rounds, $operators);
+  // print('$beginningOfWeekTimeStamp'.$beginningOfWeekTimeStamp);
+  $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
+}
+
 ?>
