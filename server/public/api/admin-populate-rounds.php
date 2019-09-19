@@ -17,7 +17,6 @@ function getRoundsData($conn, $quarterStartTimestamp) {
   }
 
   $templateDatesCSV = implode(',', $templateDates);
-  print('$templateDatesCSV: ' . $templateDatesCSV);
 
   $roundsQuery = "SELECT 
                   rd.id,
@@ -57,7 +56,8 @@ function getOperatorsData($conn) {
   $operatorsUserDetailsQuery = "SELECT 
                                 id AS user_id, 
                                 last_name, 
-                                first_name 
+                                first_name,
+                                special_route_ok
                                 FROM user 
                                 WHERE role = 'operator' AND status = 'active'";
 
@@ -197,6 +197,7 @@ function buildOperatorsByDay($operators, $day) {
       $content['user_id'] = $operators[$operatorsIndex]['user_id'];
       $content['last_name'] = $operators[$operatorsIndex]['last_name'];
       $content['first_name'] = $operators[$operatorsIndex]['first_name'];
+      $content['special_route'] = $operators[$operatorsIndex]['special_route_ok'];
       $content['total_weekly_minutes'] = $operators[$operatorsIndex]['total_weekly_minutes'];
       $content['available_times'] = $operators[$operatorsIndex]['assignment_details'][$day]['available_times'];
       $content['times_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['times_assigned'];
@@ -293,12 +294,13 @@ function populateSchedule($operators, $rounds, $conn)  {
       break;
     } 
     $madeAssignment = false;
+    $specialStatusRequired = false;
     
     //sort the operator array, put operator with fewest weekly hours at the top
     uasort($operators, 'operatorsSort'); 
     $operators = array_values($operators);
 
-    //set or reset the unassigned rounds and rounds on an available line to 0.
+    //set the unassigned rounds, rounds on an available line, and rounds on specific bus to 0.
     $unassignedRoundsAvailable = 0;
     $roundsOnLineAvailable = 0;
     $roundsOnBusAvailable = 0;
@@ -315,13 +317,14 @@ function populateSchedule($operators, $rounds, $conn)  {
         $roundsOnLineAvailable++;
       }
     }
-      //count the number the number of rounds on the same bus number
-      for ($roundOfShift2 = 0; $roundOfShift2 < $numberRounds; $roundOfShift2++){
-        if($rounds[$roundsIndex + $roundOfShift2]['bus_number'] === $rounds[$roundsIndex +$roundOfShift1 +1] ['bus_number']) {
-          $roundsOnBusAvailable++;
-        }
+    //count the number the number of rounds on the same bus number
+    for ($roundOfShift2 = 0; $roundOfShift2 < $numberRounds; $roundOfShift2++){
+      if($rounds[$roundsIndex + $roundOfShift2]['bus_number'] === $rounds[$roundsIndex +$roundOfShift1 +1] ['bus_number']) {
+        $roundsOnBusAvailable++;
       }
-    //Are there adequate unassigned rounds and rounds on the same line?
+    }
+
+    //Are there adequate unassigned rounds, rounds on the same line, rounds on the same bus?
     if ($unassignedRoundsAvailable === $numberRounds and $roundsOnLineAvailable === $numberRounds and $roundsOnBusAvailable === $numberRounds) {
       // echo '<pre>';
       // print('line name:' . $rounds[$roundsIndex]['line_name']);
@@ -347,8 +350,22 @@ function populateSchedule($operators, $rounds, $conn)  {
       //length of the operator array
       $lengthOperatorsArray = count($operators);
       
+      //check line type, designate special status if it is required
+      $nameOfLine = $rounds[$roundsIndex]['line_name'];
+      if ($nameOfLine = 'C') {
+        $specialStatusRequired = true;
+      }
+
       //yes, iterate through each operator
       for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
+
+        //Is the operator able to drive this line?
+        if ($specialStatusRequired) {
+          //if operator does not have special status go to next operator
+          if ($operators[$operatorsIndex]['special_route'] === '0'|| $operators[$operatorsIndex]['special_route'] === 0) {
+            continue;
+          }
+        }
 
         //array of available time slots for one operator
         $availabilityArray = $operators[$operatorsIndex]['available_times']; 
