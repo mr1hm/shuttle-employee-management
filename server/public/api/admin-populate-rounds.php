@@ -241,7 +241,7 @@ function calculateShiftHours($startTime, $endTime){
 }
 
 //determine the line name
-function determineLineName($lineName){
+function determineNumberShiftRounds($lineName){
   $shiftLength = [
     'C'=>3, 
     'D'=>4, 
@@ -288,7 +288,7 @@ function populateSchedule($operators, $rounds, $conn)  {
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray ; $roundsIndex++) {
    //determine the line and assign number of rounds to that line
     $lineName = $rounds[$roundsIndex]['line_name'];
-    $numberRounds = determineLineName($lineName);
+    $numberRounds = determineNumberShiftRounds($lineName);
 
     if ($roundsIndex >= $lengthRoundsArray  - 1 - $numberRounds) {
       break;
@@ -375,7 +375,6 @@ function populateSchedule($operators, $rounds, $conn)  {
 
         //array of available time slots for one operator
         $availabilityArray = $operators[$operatorsIndex]['available_times']; 
-
         //length of the times availability array
         $lengthTimesAvailableArray = count($availabilityArray); 
     
