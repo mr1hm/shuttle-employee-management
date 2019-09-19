@@ -350,8 +350,6 @@ function populateSchedule($operators, $rounds, $conn)  {
       //length of the operator array
       $lengthOperatorsArray = count($operators);
       
-
-
       //yes, iterate through each operator
       for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
 
@@ -361,12 +359,18 @@ function populateSchedule($operators, $rounds, $conn)  {
         if ($nameOfLine = 'C') {
           $specialStatusRequired = true;
         }
-        //check driver status
+
         if ($specialStatusRequired) {
           //if operator does not have special status go to next operator
           if ($operators[$operatorsIndex]['special_route'] === '0'|| $operators[$operatorsIndex]['special_route'] === 0) {
             continue;
           }
+        }
+
+        //if operator will exceed 8 hours, skip over that operator
+        $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
+        if (intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime > 480) {
+          continue;
         }
 
         //array of available time slots for one operator
