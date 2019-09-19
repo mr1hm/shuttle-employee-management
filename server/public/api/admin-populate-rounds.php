@@ -241,7 +241,7 @@ function calculateShiftHours($startTime, $endTime){
 }
 
 //determine the line name
-function determineLineName($lineName){
+function determineNumberShiftRounds($lineName){
   $shiftLength = [
     'C'=>3, 
     'D'=>4, 
@@ -288,7 +288,7 @@ function populateSchedule($operators, $rounds, $conn)  {
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray ; $roundsIndex++) {
    //determine the line and assign number of rounds to that line
     $lineName = $rounds[$roundsIndex]['line_name'];
-    $numberRounds = determineLineName($lineName);
+    $numberRounds = determineNumberShiftRounds($lineName);
 
     if ($roundsIndex >= $lengthRoundsArray  - 1 - $numberRounds) {
       break;
@@ -350,16 +350,18 @@ function populateSchedule($operators, $rounds, $conn)  {
       //length of the operator array
       $lengthOperatorsArray = count($operators);
       
-      //check line type, designate special status if it is required
-      $nameOfLine = $rounds[$roundsIndex]['line_name'];
-      if ($nameOfLine = 'C') {
-        $specialStatusRequired = true;
-      }
+
 
       //yes, iterate through each operator
       for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
 
         //Is the operator able to drive this line?
+        //check line type, designate special status if it is required
+        $nameOfLine = $rounds[$roundsIndex]['line_name'];
+        if ($nameOfLine = 'C') {
+          $specialStatusRequired = true;
+        }
+        //check driver status
         if ($specialStatusRequired) {
           //if operator does not have special status go to next operator
           if ($operators[$operatorsIndex]['special_route'] === '0'|| $operators[$operatorsIndex]['special_route'] === 0) {
@@ -369,7 +371,6 @@ function populateSchedule($operators, $rounds, $conn)  {
 
         //array of available time slots for one operator
         $availabilityArray = $operators[$operatorsIndex]['available_times']; 
-
         //length of the times availability array
         $lengthTimesAvailableArray = count($availabilityArray); 
     
