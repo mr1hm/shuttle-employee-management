@@ -359,7 +359,6 @@ function populateSchedule($operators, $rounds, $conn)  {
         if ($nameOfLine = 'C') {
           $specialStatusRequired = true;
         }
-
         if ($specialStatusRequired) {
           //if operator does not have special status go to next operator
           if ($operators[$operatorsIndex]['special_route'] === '0'|| $operators[$operatorsIndex]['special_route'] === 0) {
@@ -367,11 +366,17 @@ function populateSchedule($operators, $rounds, $conn)  {
           }
         }
 
-        //if operator will exceed 8 hours, skip over that operator
+        //if operator will exceed 8 hours (480 minutes), skip that operator
         $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
         if (intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime > 480) {
           continue;
         }
+        //if the total weekly minutes exceeds 29 hours (1740 minutes), skip that operator
+        if (intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime > 1740) {
+          continue;
+        }
+
+        //TODO: if operator will have too many hours in a block, skip that operator
 
         //array of available time slots for one operator
         $availabilityArray = $operators[$operatorsIndex]['available_times']; 
@@ -410,6 +415,16 @@ function populateSchedule($operators, $rounds, $conn)  {
 
             //yes, add the time added to assigned times for the operator
             array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
+
+            //TODO: improve how the assigned times are stored so it is easier determine continuous hour blocks
+            //cycle through array
+            //if ending time matches beginning time of shift
+              //change the ending time for that element in the assigned array
+            //if the starting time matches the ending time of shift
+              //change the starting time for that element in the assigned array
+            //else add a new element to the assigned array
+            //sort the operator array, put operator with the lowest hour at the top
+
 
             //yes, adjust available times
             //shift is exactly the same as the available time
