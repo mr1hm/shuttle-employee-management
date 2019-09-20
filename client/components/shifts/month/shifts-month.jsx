@@ -119,8 +119,8 @@ class ShiftsMonth extends React.Component {
     }
     return bundledWeeksArray;
   }
-  getZeroPaddedNumber( number ){
-    return ('0' + number).slice(-2);
+  getZeroPaddedNumber(number) {// could be moved to time-function.jsx get last two number of string exmple: input:getZeroPaddedNumber(8449897897)
+    return ('0' + number).slice(-2);// Output: "97"
   }
   getDateStringFromTimestamp(timestamp) {// The convertUnixMonthDay(time) function from shifts-day.jsx could be used here 09/17/2019
     const date = new Date(parseInt(timestamp));
