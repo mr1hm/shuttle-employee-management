@@ -68,7 +68,7 @@ params:
   dateString(string) : a YYYY-MM-DD formatted string
   returns: a js date object
 */
-function convertMilitaryTimeStringToMilitaryTimeFloat(time) {// not working Uncaught TypeError: startTime.slice is not a function
+function convertMilitaryTimeStringToMilitaryTimeFloat(time) {
   //converts '1430' to 14.5
   // '1245' to 12.75
   while( time.length < 4){
