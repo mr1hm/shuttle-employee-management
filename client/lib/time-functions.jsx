@@ -1,3 +1,9 @@
+function convertSecondsToMilliseconds(secondsTimestamp) { // convert string timestamp (seconds) to string timestamp (milliseconds)
+  return secondsTimestamp + "000"; // example: input "1566100800", output "1566100800000"
+}
+function convertMillisecondsToSeconds(millisecondsTimestamp) { // convert number timestamp (milliseconds) to number timestamp (seconds)
+  return millisecondsTimestamp / 1000; // example: input 1566100800000, output 1566100800
+}
 function convertUnixTime(time) {// converts unix time to date/time for example: input:convertUnixTime(1568670748829)
   const convertedDate = new Date(time);
   return convertedDate.toString();// output: "Mon Sep 16 2019 14:52:28 GMT-0700 (Pacific Daylight Time)"
@@ -179,7 +185,7 @@ function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
   return (totalHours + "h " + totalMinutes + "m");
 }
 
-export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
     createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };
