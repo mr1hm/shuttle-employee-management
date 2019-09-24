@@ -275,6 +275,97 @@ function updateRoundsInDatabase($conn, $rounds) {
   }
 }
 
+//add assigned shifts to the time assigned array for the operator
+function addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds) {
+  $lengthAssignedTimesArray = count($operators[$operatorsIndex]['times_assigned']);
+  $assignedTimeIndex = 0;
+  do {
+    if(empty($operators[$operatorsIndex]['times_assigned'])) {
+      ('Inside EMPTY conditional');
+      array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
+      break;
+    } if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]) === 
+        intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
+      $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0] = intval($rounds[$roundsIndex]['round_start']);
+      print('FIRST CONDITIONAL - after assignment');
+      echo '<pre>';
+      print_r($operators[$operatorsIndex]['times_assigned']);
+      echo '</pre>';
+      break;
+    } if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1]) === intval($rounds[$roundsIndex]['round_start'])) {
+      $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
+      print('SECOND CONDITIONAL - after assignment');
+      echo '<pre>';
+      print_r($operators[$operatorsIndex]['times_assigned']);
+      echo '</pre>';
+      break;
+    } else {
+      if ($assignedTimeIndex === $lengthAssignedTimesArray - 1) {
+        array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
+        print('THIRD CONDITIONAL - after assignment');
+        echo '<pre>';
+        print_r($operators[$operatorsIndex]['times_assigned']);
+        echo '</pre>';
+      }
+    }
+    $assignedTimeIndex++;
+  } while ($assignedTimeIndex < $lengthAssignedTimesArray);
+  return $operators;
+}
+
+function adjustAvailableTimes($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds, $availableStartTime, $availableEndTime, $timesIndex) {
+  //shift is exactly the same as the available time
+  if($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
+    // print('time the SAME - before');
+    // echo '<pre>';
+    // print_r($operators);
+    // echo '</pre>';
+    array_splice($operators[$operatorsIndex]['available_times'], $timesIndex, 1);
+    // echo '<pre>';
+    // print('time the SAME - after');
+    // print_r($operators);
+    // echo '</pre>';
+  }
+  //shift has same beginning as available time
+  else if ($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
+    // echo '<pre>';
+    // print('time at BEGINNING- before');
+    // print_r($operators);
+    // echo '</pre>';
+    $operators[$operatorsIndex]['available_times'][$timesIndex][0] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
+    // echo '<pre>';
+    // print('time at BEGINNING - after');
+    // print_r($operators);
+    // echo '</pre>';
+  }
+  //shift has same end as available time
+  else if ($availableStartTime < intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
+    // echo '<pre>';
+    // print('time at END - before');
+    // print_r($operators);
+    // echo '</pre>';
+    $operators[$operatorsIndex]['available_times'][$timesIndex][1] = intval($rounds[$roundsIndex]['round_start']);
+    // echo '<pre>';
+    // print('time at END - after');
+    // print_r($operators);
+    // echo '</pre>';
+  }
+  //shift in middle of available time
+  else if ($availableStartTime <  intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])){
+    // echo '<pre>';
+    // print('time in BETWEEN - before');
+    // print_r($operators);
+    // echo '</pre>';
+    $newAvailableTimeArray = [intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']), $operators[$operatorsIndex]['available_times'][$timesIndex][1]];
+    $operators[$operatorsIndex]['available_times'][$timesIndex][1] = intval($rounds[$roundsIndex]['round_start']);
+    array_push($operators[$operatorsIndex]['available_times'], $newAvailableTimeArray);
+    // echo '<pre>';
+    // print('time in BETWEEN - after');
+    // print_r($operators);
+    // echo '</pre>';
+  }
+  return $operators;
+}
 
 //auto-populate the schedule
 function populateSchedule($operators, $rounds, $conn)  {
@@ -376,7 +467,15 @@ function populateSchedule($operators, $rounds, $conn)  {
           continue;
         }
 
-        //TODO: if operator will have too many hours in a block, skip that operator
+        // //TODO: if operator will have too many hours in a block, skip that operator
+        // checkContinuousHourBlock($operators, $rounds, $operatorsIndex) {
+        //   $operators = addAssignedTime($operators, $rounds, $operatorsIndex);
+        //   $lengthAssignedTimesArray = $operators
+        //   for ($assignedIndex = 0; $assignedIndex < )
+        //     //loop through each element for that particular index and make sure it does not pull the person past their maximum continuous hours
+        // }
+
+
 
         //array of available time slots for one operator
         $availabilityArray = $operators[$operatorsIndex]['available_times']; 
@@ -406,139 +505,17 @@ function populateSchedule($operators, $rounds, $conn)  {
             }
             //yes, adjust total daily and weekly hours
             $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
-
             $operators[$operatorsIndex]['total_weekly_minutes'] = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
-
             $operators[$operatorsIndex]['total_daily_minutes'] = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
 
             //yes, a shift assignement was made
             $madeAssignment = true;
 
             //yes, add the time added to assigned times for the operator
-            //line 419 the original code -- lines 423 - 436 new code
-            // array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
+            $operators = addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
 
-            //TODO: improve how the assigned times are stored so it is easier determine continuous hour blocks
-            //cycle through array
-
-            $lengthAssignedTimesArray = count($operators[$operatorsIndex]['times_assigned']);
-            $assignedTimeIndex = 0;
-            // print('Assigned - BEFORE');
-            // echo '<pre>';
-            // print_r($operators[$operatorsIndex]['times_assigned']);
-            // echo '</pre>';
-
-            // echo '<pre>';
-            // print ('BEFORE Round start: ' . intval($rounds[$roundsIndex]['round_start']));
-            // echo '</pre>';
-            // echo '<pre>';
-            // print ('BEFORE Round end: ' . intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
-            // echo '</pre>';
-
-            do {
-              // if ($operators[$operatorsIndex]['times_assigned']) {
-              //   echo '<pre>';
-              //   print ('Line: ' . $rounds[$roundsIndex]['line_name']);
-              //   echo '</pre>';
-              //   echo '<pre>';
-              //   print ('Contents of operators array times assigned at 0: ' . $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]);
-              //   echo '</pre>';
-              //   echo '<pre>';
-              //   print ('Contents of operators array times assigned at 1: ' . $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1]);
-              //   echo '</pre>';
-              //   echo '<pre>';
-              //   print ('Round start: ' . intval($rounds[$roundsIndex]['round_start']));
-              //   echo '</pre>';
-              //   echo '<pre>';
-              //   print ('Round end: ' . intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
-              //   echo '</pre>';
-              // }
-              if(empty($operators[$operatorsIndex]['times_assigned'])) {
-                ('Inside EMPTY conditional');
-                array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
-                break;
-              } if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]) === 
-                  intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-                $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0] = intval($rounds[$roundsIndex]['round_start']);
-                print('FIRST CONDITIONAL - after assignment');
-                echo '<pre>';
-                print_r($operators[$operatorsIndex]['times_assigned']);
-                echo '</pre>';
-                break;
-              } if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1]) === intval($rounds[$roundsIndex]['round_start'])) {
-                $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
-                print('SECOND CONDITIONAL - after assignment');
-                echo '<pre>';
-                print_r($operators[$operatorsIndex]['times_assigned']);
-                echo '</pre>';
-                break;
-              } else {
-                if ($assignedTimeIndex === $lengthAssignedTimesArray - 1) {
-                  array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
-                  print('THIRD CONDITIONAL - after assignment');
-                  echo '<pre>';
-                  print_r($operators[$operatorsIndex]['times_assigned']);
-                  echo '</pre>';
-                }
-              }
-              $assignedTimeIndex++;
-            } while ($assignedTimeIndex < $lengthAssignedTimesArray);
-    
             //yes, adjust available times
-            //shift is exactly the same as the available time
-            if($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-              // print('time the SAME - before');
-              // echo '<pre>';
-              // print_r($operators);
-              // echo '</pre>';
-              array_splice($operators[$operatorsIndex]['available_times'], $timesIndex, 1);
-              // echo '<pre>';
-              // print('time the SAME - after');
-              // print_r($operators);
-              // echo '</pre>';
-              break;
-            }
-            //shift has same beginning as available time
-            if ($availableStartTime === intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-              // echo '<pre>';
-              // print('time at BEGINNING- before');
-              // print_r($operators);
-              // echo '</pre>';
-              $operators[$operatorsIndex]['available_times'][$timesIndex][0] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
-              // echo '<pre>';
-              // print('time at BEGINNING - after');
-              // print_r($operators);
-              // echo '</pre>';
-              break;
-            }
-            //shift has same end as available time
-            if ($availableStartTime < intval($rounds[$roundsIndex]['round_start']) and $availableEndTime === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-              // echo '<pre>';
-              // print('time at END - before');
-              // print_r($operators);
-              // echo '</pre>';
-              $operators[$operatorsIndex]['available_times'][$timesIndex][1] = intval($rounds[$roundsIndex]['round_start']);
-              // echo '<pre>';
-              // print('time at END - after');
-              // print_r($operators);
-              // echo '</pre>';
-              break;
-            }
-            //shift in middle of available time
-            if ($availableStartTime <  intval($rounds[$roundsIndex]['round_start']) and $availableEndTime > intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])){
-              // echo '<pre>';
-              // print('time in BETWEEN - before');
-              // print_r($operators);
-              // echo '</pre>';
-              $newAvailableTimeArray = [intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']), $operators[$operatorsIndex]['available_times'][$timesIndex][1]];
-              $operators[$operatorsIndex]['available_times'][$timesIndex][1] = intval($rounds[$roundsIndex]['round_start']);
-              array_push($operators[$operatorsIndex]['available_times'], $newAvailableTimeArray);
-              // echo '<pre>';
-              // print('time in BETWEEN - after');
-              // print_r($operators);
-              // echo '</pre>';
-              break;
-            }
+            $operators = adjustAvailableTimes ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds, $availableStartTime, $availableEndTime, $timesIndex);
           }
         }
         if ($madeAssignment) {
@@ -591,5 +568,120 @@ $beginningOfWeekTimeStamp = $quarterStartTimestamp;
   // print('$beginningOfWeekTimeStamp'.$beginningOfWeekTimeStamp);
   $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
 // }
+
+//COPIES WITH PRINT Rs
+// function addAssignedTime ($operators, $rounds, $operatorsIndex) {
+//   $lengthAssignedTimesArray = count($operators[$operatorsIndex]['times_assigned']);
+//   $assignedTimeIndex = 0;
+//   // print('Assigned - BEFORE');
+//   // echo '<pre>';
+//   // print_r($operators[$operatorsIndex]['times_assigned']);
+//   // echo '</pre>';
+
+//   // echo '<pre>';
+//   // print ('BEFORE Round start: ' . intval($rounds[$roundsIndex]['round_start']));
+//   // echo '</pre>';
+//   // echo '<pre>';
+//   // print ('BEFORE Round end: ' . intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
+//   // echo '</pre>';
+
+//   do {
+//     // if ($operators[$operatorsIndex]['times_assigned']) {
+//     //   echo '<pre>';
+//     //   print ('Line: ' . $rounds[$roundsIndex]['line_name']);
+//     //   echo '</pre>';
+//     //   echo '<pre>';
+//     //   print ('Contents of operators array times assigned at 0: ' . $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]);
+//     //   echo '</pre>';
+//     //   echo '<pre>';
+//     //   print ('Contents of operators array times assigned at 1: ' . $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1]);
+//     //   echo '</pre>';
+//     //   echo '<pre>';
+//     //   print ('Round start: ' . intval($rounds[$roundsIndex]['round_start']));
+//     //   echo '</pre>';
+//     //   echo '<pre>';
+//     //   print ('Round end: ' . intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
+//     //   echo '</pre>';
+//     // }
+//     if(empty($operators[$operatorsIndex]['times_assigned'])) {
+//       ('Inside EMPTY conditional');
+//       array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
+//       break;
+//     } if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]) === 
+//         intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
+//       $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0] = intval($rounds[$roundsIndex]['round_start']);
+//       print('FIRST CONDITIONAL - after assignment');
+//       echo '<pre>';
+//       print_r($operators[$operatorsIndex]['times_assigned']);
+//       echo '</pre>';
+//       break;
+//     } if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1]) === intval($rounds[$roundsIndex]['round_start'])) {
+//       $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
+//       print('SECOND CONDITIONAL - after assignment');
+//       echo '<pre>';
+//       print_r($operators[$operatorsIndex]['times_assigned']);
+//       echo '</pre>';
+//       break;
+//     } else {
+//       if ($assignedTimeIndex === $lengthAssignedTimesArray - 1) {
+//         array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
+//         print('THIRD CONDITIONAL - after assignment');
+//         echo '<pre>';
+//         print_r($operators[$operatorsIndex]['times_assigned']);
+//         echo '</pre>';
+//       }
+//     }
+//     $assignedTimeIndex++;
+//   } while ($assignedTimeIndex < $lengthAssignedTimesArray);
+// }
+
+        // $lenAssignedTimesArray = count($operators[$operatorsIndex]['times_assigned']);
+        // $continuousBlockTooLong = false;
+        // for ($assignedIndex = 0; $assignedIndex < $lenAssignedTimesArray; $assignedIndex++) {
+        //   $totalContBlockTime = 0;
+        //   //shift is attached to either beginning or end (or both) of an assigned shift
+        //   if (intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][0]) === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']) || intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][1]) === intval($rounds[$roundsIndex]['round_start'])) {
+        //     //there is another element in array beyond this one
+        //     if($assignedIndex + 1 < $lenAssignedTimesArray) {
+        //       //shift EXACTLY between two assigned shifts
+        //       if (intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][1]) === intval($rounds[$roundsIndex]['round_start']) and intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex + 1][0]) === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
+        //         $firstBlock = intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][1]) - intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][0]);
+        //         $secondBlock = intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex + 1][1]) - intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex + 1][0]);
+        //         $totalContBlockTime = $totalShiftTime + $firstBlock + $secondBlock;
+        //         if($totalContBlockTime >= 300) {
+        //           $continuousBlockTooLong = true;
+        //         }
+        //       //attached to only one assigned shift
+        //       } else {
+        //         $existingBlock = intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][1]) - intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][0]);
+        //         $totalContBlockTime = $totalShiftTime + $existingBlock;
+
+        //         if($totalContBlockTime >= 300) {
+        //           $continuousBlockTooLong = true;
+        //         }
+        //       }
+        //     //only there is not an element beyond this one
+        //     } else {
+        //         $existingBlock = intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][1]) - intval($operators[$operatorsIndex]['times_assigned'][$assignedIndex][0]);
+        //         $totalContBlockTime = $totalShiftTime + $existingBlock;
+
+        //         if($totalContBlockTime >= 300) {
+        //           $continuousBlockTooLong = true;
+        //           break;
+        //         }
+        //     }
+        //   //shift is not attached to an existing assigned shift
+        //   } else {
+        //     $totalContBlockTime = $totalShiftTime;               
+        //     if($totalContBlockTime >= 300) {
+        //       $continuousBlockTooLong = true;
+        //       break;
+        //     }
+        //   }
+        // }
+
+        // if ($continuousBlockTooLong) {
+        //   continue;
+        // }
 
 ?>
