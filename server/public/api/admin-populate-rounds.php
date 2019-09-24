@@ -367,6 +367,20 @@ function adjustAvailableTimes($operators, $rounds, $operatorsIndex, $roundsIndex
   return $operators;
 }
 
+function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds) {
+  $blockTooBig = false;
+  $operators = addAssignedTime($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
+  $lengthAssignedTimesArray = count($operators[$operatorsIndex]['times_assigned']);
+  for ($assignedTimeIndex = 0; $assignedTimeIndex < $lengthAssignedTimesArray; $assignedTimeIndex++) {
+    $blockTime = intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1])- intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]);
+    if ($blockTime >= 300) {
+      $blockTooBig = true;
+      break;
+    }
+  }
+  return $blockTooBig;
+}
+
 //auto-populate the schedule
 function populateSchedule($operators, $rounds, $conn)  {
   // echo '<pre>';
@@ -467,15 +481,11 @@ function populateSchedule($operators, $rounds, $conn)  {
           continue;
         }
 
-        // //TODO: if operator will have too many hours in a block, skip that operator
-        // checkContinuousHourBlock($operators, $rounds, $operatorsIndex) {
-        //   $operators = addAssignedTime($operators, $rounds, $operatorsIndex);
-        //   $lengthAssignedTimesArray = $operators
-        //   for ($assignedIndex = 0; $assignedIndex < )
-        //     //loop through each element for that particular index and make sure it does not pull the person past their maximum continuous hours
-        // }
-
-
+        // Check to see if the operator will have too many hours if the shift is added. If so, skip that operator
+        $blockTooBig = checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
+        if ($blockTooBig) {
+          continue;
+        }
 
         //array of available time slots for one operator
         $availabilityArray = $operators[$operatorsIndex]['available_times']; 
