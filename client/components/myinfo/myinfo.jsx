@@ -5,6 +5,7 @@ import TopMenuGeneral from '../topmenu/topmenu-general';
 class MyInfo extends React.Component {
   constructor(props) {
     super(props);
+    console.log("myinfo props", props);
     this.state ={
       editButton:false,
       userInfo:[],
