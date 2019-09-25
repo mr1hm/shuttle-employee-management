@@ -8,7 +8,7 @@ class MyInfo extends React.Component {
     this.state ={
       editButton:false,
       userInfo:[],
-      userId: 19,
+      userId: 15,
       cellProvider:[]
     }
     this.saveUploadedImageTofile = this.saveUploadedImageTofile.bind(this);
@@ -54,10 +54,12 @@ class MyInfo extends React.Component {
 
     saveUploadedImageTofile(event){
       event.preventDefault();
+      const sendUserId = this.state.userId;
       const form = new FormData(event.target);
+      form.append("userID", sendUserId);
         fetch(`/api/my-info-uploadimage.php`, {
           method: 'POST',
-          body: form
+          body: form,
         })
           .then(response => {
             return response.json()
