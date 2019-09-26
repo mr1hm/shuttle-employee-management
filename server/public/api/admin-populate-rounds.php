@@ -415,7 +415,7 @@ function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsI
     echo '<pre>';
     print('continuous block time for ' . $operators[$operatorsIndex]['last_name'] .  ' ' .$blockTime);
     echo '</pre>';
-    if ($blockTime >= 300) {
+    if ($blockTime > 300) {
       $blockTooBig = true;
       echo '<pre>';
       print('continuous block EXCEEDED -- block time for ' . $operators[$operatorsIndex]['last_name'] .  ' ' .$blockTime);
@@ -533,7 +533,12 @@ function populateSchedule($operators, $rounds, $conn)  {
           continue;
         }
         //if the total weekly minutes exceeds 29 hours (1740 minutes), skip that operator
-        if (intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime > 1740) {
+        $totalWeeklyMinutes = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
+        if ($totalWeeklyMinutes > 1740) {
+          echo '<pre>';
+          print('MORE THAN 1740 weekly minutes '. $operators[$operatorsIndex]['last_name'] . ': '. $totalWeeklyMinutes);
+          echo '</pre>';
+          continue;
           continue;
         }
 
