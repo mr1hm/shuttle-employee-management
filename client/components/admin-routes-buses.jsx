@@ -24,10 +24,10 @@ class AdminRoutes extends React.Component {
         </div>
         <div className = "container mt-2">
           <div className = "row">
-              <div className = "col">Line</div>
-              <div className="col">Active</div>
-              <div className="col">Public</div>
-              <div className="col">Regular Service</div>
+              <div className ="col-sm-2 ml-2">Line</div>
+              <div className="col-sm-2 ml-2">Active</div>
+              <div className="col-sm-2 ml-2">Public</div>
+              <div className="col-sm-2 ml-2">Regular Service</div>
           </div>
         </div>
 
@@ -46,7 +46,7 @@ class AdminRoutes extends React.Component {
                     <button className="btn btn-link col dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                       Bus Details
                    </button>
-                   <button className= "btn btn-dark btn-sm col-sm" type="button"> </button>
+                   <button className= "btn btn-dark btn-sm " type="button" style={{"fontSize": 24}}> +</button>
                   </div>
                 </div>
               </div>
@@ -55,7 +55,7 @@ class AdminRoutes extends React.Component {
                 <div className="card-body">
                   <div className="row">
 
-                    <div className="col">#</div>
+                    <div className="col">Line #</div>
                     <div className="col">Start Time</div>
                     <div className="col">End Time</div>
                     <div className="col">Rd. Duration</div>
@@ -73,6 +73,18 @@ class AdminRoutes extends React.Component {
                     <div className="col">30 min.</div>
                     <div className="col">45 min.</div>
                   </div>
+                  <div className="row">
+
+                    <div className="col">
+                      <RouteBusDisplay bus="2"></RouteBusDisplay>
+                    </div>
+                    <div className="col">6:20 a.m.</div>
+                    <div className="col">10:20 a.m.</div>
+                    <div className="col">15 min.</div>
+                    <div className="col">30 min.</div>
+                    <div className="col">45 min.</div>
+                  </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -88,9 +100,10 @@ class AdminRoutes extends React.Component {
                       <div className="col">true</div>
                       <div className="col">true</div>
                       <div className="col">true</div>
-                      <button className="btn btn-link col" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                      <button className="btn btn-link col dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                         Bus Details
                    </button>
+                      <button className="btn btn-dark btn-sm " type="button" style={{ "fontSize": 24 }}> +</button>
                     </div>
                   </div>
                 </div>
@@ -106,6 +119,8 @@ class AdminRoutes extends React.Component {
                       <div className="col">Start Up</div>
                       <div className="col">Close Down</div>
                     </div>
+                    <div className ="row">
+                      <div className="col">No buses added</div>
                   </div>
                 </div>
               </div>
@@ -121,9 +136,10 @@ class AdminRoutes extends React.Component {
                         <div className="col">true</div>
                         <div className="col">true</div>
                         <div className="col">true</div>
-                        <button className="btn btn-link col" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                        <button className="btn btn-link col dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
                           Bus Details
                    </button>
+                        <button className="btn btn-dark btn-sm " type="button" style={{ "fontSize": 24 }}> +</button>
                       </div>
                     </div>
                   </div>
@@ -138,6 +154,9 @@ class AdminRoutes extends React.Component {
                         <div className="col">Rd. Duration</div>
                         <div className="col">Start Up</div>
                         <div className="col">Close Down</div>
+                      </div>
+                      <div className="row">
+                        <div className="col">No buses added</div>
                       </div>
                     </div>
                   </div>
