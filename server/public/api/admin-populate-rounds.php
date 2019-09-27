@@ -461,8 +461,9 @@ function populateSchedule($operators, $rounds, $conn)  {
         //Is the operator able to drive this line?
         //check line type, designate special status if it is required
         $nameOfLine = $rounds[$roundsIndex]['line_name'];
-        if ($nameOfLine = 'C') {
-          $specialStatusRequired = true;
+        // if ($nameOfLine = 'C') {
+          if ($nameOfLine = 'H') {
+          $specialStatusRequired = false;
         }
         if ($specialStatusRequired) {
           //if operator does not have special status go to next operator
