@@ -166,11 +166,6 @@ class AdminRoutes extends React.Component {
                 </div>
                 </div>
 
-
-
-
-
-
         </React.Fragment>
       );
     }

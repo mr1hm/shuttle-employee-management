@@ -1,0 +1,14 @@
+{
+  "route_id": 2,
+  "bus_number": 1,
+  "start_time": 600,
+  "end_time": 2400,
+  "line_name": 1,
+  "opening_duration": 45,
+  "closing_duration": 45,
+  "status": "active",
+  "public": true,
+  "regular_service": true
+
+
+}
