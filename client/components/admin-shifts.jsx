@@ -147,8 +147,8 @@ class AdminShiftsDay extends React.Component {
     return (
       <div>
         <TopMenuShift title="Admin" page='day' date={dateToPass} />
+        <button onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
         <div className="viewHoursContainer">
-          {this.fetchAutoPopulatedData()}
           <HoursOfOperation />
         </div>
         <div className="adminShiftsDayView">
