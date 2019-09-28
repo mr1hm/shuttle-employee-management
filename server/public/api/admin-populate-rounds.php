@@ -426,6 +426,18 @@ function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsI
   return $blockTooBig;
 }
 
+function checkSpecialStatus($rounds, $roundsIndex, $operators, $operatorsIndex) {
+  $specialStatusRequired = false;
+  if ($rounds[$roundsIndex]['line_name'] === 'C') {
+    $specialStatusRequired = true;
+  }
+  if ($specialStatusRequired){
+    if($operators[$operatorsIndex]['special_route']=== '0' || $operators[$operatorsIndex]['special_route'] === 0) {
+      return true;
+    }
+  }
+}
+  
 //auto-populate the schedule
 function populateSchedule($operators, $rounds, $conn)  {
   // echo '<pre>';
@@ -507,20 +519,13 @@ function populateSchedule($operators, $rounds, $conn)  {
       //yes, iterate through each operator
       for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
 
-        //Is the operator able to drive this line?
-        //check line type, designate special status if it is required
-        $nameOfLine = $rounds[$roundsIndex]['line_name'];
-        if ($nameOfLine = 'C') {
-          $specialStatusRequired = true;
-        }
-        if ($specialStatusRequired) {
-          //if operator does not have special status go to next operator
-          if ($operators[$operatorsIndex]['special_route'] === '0'|| $operators[$operatorsIndex]['special_route'] === 0) {
-            continue;
-          }
+        //If the line requires special status and operator does not have special status, skip the operator.
+        $specialStatus = checkSpecialStatus($rounds, $roundsIndex, $operators, $operatorsIndex);
+        if ($specialStatus) {
+          continue;
         }
 
-        //if operator will exceed 8 hours (480 minutes), skip that operator
+        //if operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
         $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
         $totalMinutesInDay = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
         echo '<pre>';
@@ -532,13 +537,12 @@ function populateSchedule($operators, $rounds, $conn)  {
           echo '</pre>';
           continue;
         }
-        //if the total weekly minutes exceeds 29 hours (1740 minutes), skip that operator
+        //if the total weekly minutes exceeds 29 hours (1740 minutes) once the shift is added, skip the operator
         $totalWeeklyMinutes = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
         if ($totalWeeklyMinutes > 1740) {
           echo '<pre>';
           print('MORE THAN 1740 weekly minutes '. $operators[$operatorsIndex]['last_name'] . ': '. $totalWeeklyMinutes);
           echo '</pre>';
-          continue;
           continue;
         }
 
