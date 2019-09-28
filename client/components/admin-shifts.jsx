@@ -172,7 +172,7 @@ console.log('Array of available driver names:', fullName);
     return (
       <div>
             <div className="dropdown">
-              <button className="dropbtn">Dropdown</button>
+              <button onClick={this.getAvailableDrivers} className="dropbtn">Available Drivers</button>
               <div className="dropdown-content">
                   {fullName.map((index) => {
                     return (
@@ -181,8 +181,6 @@ console.log('Array of available driver names:', fullName);
                   })}
               </div>
             </div>
-
-            <button onClick={this.getAvailableDrivers}> Available Drivers </button>
             
         <TopMenuShift title="Admin" page='day' date={dateToPass} />
         <button onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
