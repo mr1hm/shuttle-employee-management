@@ -9,7 +9,6 @@ import ShiftsAvailable from '../available/shifts-available';
 import { 
   createDateObjFromDateString, 
   convertUnixMonthDay, 
-  convertMillisecondsToSeconds, 
   adjustLocalTimestampToUTCSeconds 
 } from '../../../lib/time-functions';
 import { Minimatch } from 'minimatch';
