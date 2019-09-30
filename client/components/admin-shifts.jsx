@@ -12,9 +12,11 @@ class AdminShiftsDay extends React.Component {
     this.query = ``;
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
+    this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     const defaultDate = 1573876800; //1566273600;// this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);
     this.state = {
       shiftsAdmin: [],
+      availableOperators: [],
       queryString: `?date=${defaultDate}`,
       dateToPass: defaultDate
     }
@@ -23,15 +25,30 @@ class AdminShiftsDay extends React.Component {
     console.log('queryString:', this.state.queryString);
   }
 
-  fetchAutoPopulatedData(){
+  fetchAutoPopulatedData() {
     fetch(`/api/admin-populate-rounds.php`, {
       method: 'GET'
     })
-    .then(response => {
-      return response.json()
+      .then(response => {
+        return response.json()
+      })
+      .then(res => console.log("res", res))
+      .catch(error => { throw (error) });
+  }
+
+  getAvailableDrivers(){
+    fetch(`/api/admin-available-drivers.php`, {
+      method: 'GET'
     })
-    .then(res => console.log("res", res))
-    .catch(error => { throw (error) });
+      .then(response => {
+        return response.json()
+      })
+      .then(myJson => {
+        this.setState({
+          availableOperators: myJson
+        })
+      })
+      .catch(error => { throw (error) });
   }
 
   fetchCallMethod(query) {
@@ -63,18 +80,18 @@ class AdminShiftsDay extends React.Component {
     }, []);
 
     const roundInfo = this.state.shiftsAdmin
-    .map((data) => ({
-      shiftData: {
-        start:  convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time), //round start time
-        end:  convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time),  //round end time
-      },
-      type: data.status != 'unscheduled' ? 'active' : 'alertShift',
-      range: {
-        min: data.busStart, //bus start for day  //used to be shiftStartTime
-        max: data.busEnd //bus end for day  //used to be shiftEndTime
-      },
-      routeLine: data.line_name + data.bus_info_id
-    }));
+      .map((data) => ({
+        shiftData: {
+          start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time), //round start time
+          end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time),  //round end time
+        },
+        type: data.status != 'unscheduled' ? 'active' : 'alertShift',
+        range: {
+          min: data.busStart, //bus start for day  //used to be shiftStartTime
+          max: data.busEnd //bus end for day  //used to be shiftEndTime
+        },
+        routeLine: data.line_name + data.bus_info_id
+      }));
 
     const allShiftInfo = this.state.shiftsAdmin.map((data) => ({
       route: data.bus_info_id,  // 1, 2, 3
@@ -109,7 +126,7 @@ class AdminShiftsDay extends React.Component {
     for (const routeLine in shiftsByRouteLine) {
       const shiftGroup = shiftsByRouteLine[routeLine]
       shiftsMapRender.push(shiftGroup)
-    }    
+    }
 
     routeLineArray.forEach(routeLine => {
       childrenByBusLine[routeLine] = []
@@ -119,7 +136,7 @@ class AdminShiftsDay extends React.Component {
       const routeLine = shift.routeLine
       childrenByBusLine[routeLine].push(shift);
     })
-    
+
     for (const routeLine in childrenByBusLine) {
       const shiftGroupChildren = childrenByBusLine[routeLine]
       childrenShifts.push(shiftGroupChildren)
@@ -143,12 +160,31 @@ class AdminShiftsDay extends React.Component {
     console.log('roundInfo::', roundInfo);
     console.log('childrenShifts::', childrenShifts);
     // debugger;
+console.log('Available Drivers:',this.state.availableOperators)
+
+const firstName = [...new Set(this.state.availableOperators.map((index) => index.first_name))];
+const lastName = [...new Set(this.state.availableOperators.map((index) => index.last_name))];
+const fullName = firstName.reduce(function (arr, v, i) {
+  return arr.concat(lastName[i] + ', ' + v);
+}, []);
+console.log('Array of available driver names:', fullName);
 
     return (
       <div>
+            <div className="dropdown">
+              <button onClick={this.getAvailableDrivers} className="dropbtn">Available Drivers</button>
+              <div className="dropdown-content">
+                  {fullName.map((index) => {
+                    return (
+                      <a href="#">{index}</a>
+                    )
+                  })}
+              </div>
+            </div>
+            
         <TopMenuShift title="Admin" page='day' date={dateToPass} />
+        <button onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
         <div className="viewHoursContainer">
-          {this.fetchAutoPopulatedData()}
           <HoursOfOperation />
         </div>
         <div className="adminShiftsDayView">
@@ -168,7 +204,7 @@ class AdminShiftsDay extends React.Component {
                   < ShiftDisplayComponent
                     key={index}
                     range={range}
-                    shiftData={{ start: data[index].shiftData.start , end: data[index].shiftData.end  }}
+                    shiftData={{ start: data[index].shiftData.start, end: data[index].shiftData.end }}
                     children={childrenShifts[index]}
                     type={'active'}
                   />

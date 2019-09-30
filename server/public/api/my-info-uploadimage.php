@@ -2,9 +2,23 @@
 require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
-
-$target_dir = '../assets/images/profile/';
-$target_file = $target_dir. basename($_FILES['fileName']['name']);
+$id = $_POST['userID'];
+$target_dir = '../assets/images/profile/user id/'.$id;
+$exist = is_dir($target_dir);
+if(!$exist){
+  mkdir("$target_dir");
+  chmod("$target_dir", 0755);
+}else{
+  $folder = $target_dir;
+  $files = glob($folder.'/*');
+  foreach ($files as $file) {
+    if (is_file($file)) {
+      unlink($file);
+    }
+  }
+  echo "Folder already exist";
+}
+$target_file = $target_dir . '/' . basename($_FILES['fileName']['name']);
 $uploadOK = true;
 $output = [];
   if($_FILES['fileName']['size'] > 500000){
@@ -22,7 +36,7 @@ if($uploadOK){
 }
 echo json_encode($output);
 $query = "UPDATE user SET user.url ='$target_file'
-WHERE id =" . 19;
+WHERE id =" . $id;
 $result = mysqli_query($conn, $query);
 if (!$result) {
   throw new Exception('mysql error ' . mysqli_error($conn));
