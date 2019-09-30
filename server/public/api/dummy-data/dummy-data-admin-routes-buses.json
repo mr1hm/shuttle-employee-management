@@ -1,9 +1,9 @@
-{
-  "route_id": 2,
-  "bus_number": 1,
+[{
+  "route_id": 1,
+  "bus_number": 2,
   "start_time": 600,
   "end_time": 2400,
-  "line_name": 1,
+  "line_name": "C",
   "opening_duration": 45,
   "closing_duration": 45,
   "status": "active",
@@ -11,4 +11,20 @@
   "regular_service": true
 
 
+},
+
+{
+  "route_id": 2,
+  "bus_number": 1,
+  "start_time": 600,
+  "end_time": 2400,
+  "line_name": "D",
+  "opening_duration": 45,
+  "closing_duration": 45,
+  "status": "active",
+  "public": true,
+  "regular_service": true
 }
+
+
+]
