@@ -1,3 +1,9 @@
+function adjustLocalTimestampToUTCSeconds (localMillisecondsTimeStamp) {  // adjusts local timestamp (msec) [number or string] to UTC then converts to 10-digit timestamp (sec) [number]
+  const timestampUTCmilliseconds = parseInt(localMillisecondsTimeStamp) - 10800000;
+  return timestampUTCmilliseconds / 1000;
+  // NOTE: this function combines the convertMillisecondsToSeconds function
+  // should be used when needing to convert front-end generated 13-digit timestamps to a 10-digit UTC timestamp (since front-end generated timestamps are not in UTC)
+}
 function convertSecondsToMilliseconds(secondsTimestamp) { // convert timestamp (seconds) [number or string] to timestamp (milliseconds) [string]
   return secondsTimestamp + "000"; // example: input 1566100800, output "1566100800000"
 }
@@ -186,7 +192,7 @@ function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
   return (totalHours + "h " + totalMinutes + "m");
 }
 
-export { convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { adjustLocalTimestampToUTCSeconds, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
     createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };
