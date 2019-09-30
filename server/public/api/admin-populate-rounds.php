@@ -387,8 +387,8 @@ function populateSchedule($operators, $rounds, $conn)  {
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray; $roundsIndex++) {
    //determine the line and assign number of rounds to that line
     $lineName = $rounds[$roundsIndex]['line_name'];
-    $numberRounds = determineNumberRoundsInShift($lineName);
 
+    $numberRounds = determineNumberRoundsInShift($lineName);
     if($roundsIndex >= $lengthRoundsArray - 1 - $numberRounds) {
       break;
     }
@@ -453,7 +453,6 @@ function populateSchedule($operators, $rounds, $conn)  {
 
         //array of available time slots for one operator
         $availabilityArray = $operators[$operatorsIndex]['available_times']; 
-
         //length of the times availability array
         $lengthTimesAvailableArray = count($availabilityArray); 
     

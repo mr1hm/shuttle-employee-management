@@ -1,3 +1,10 @@
+function convertSecondsToMilliseconds(secondsTimestamp) { // convert timestamp (seconds) [number or string] to timestamp (milliseconds) [string]
+  return secondsTimestamp + "000"; // example: input 1566100800, output "1566100800000"
+}
+function convertMillisecondsToSeconds(millisecondsTimestamp) { // convert timestamp (milliseconds) to number timestamp (seconds)
+  return parseInt(millisecondsTimestamp) / 1000; // example: input 1566100800000, output 1566100800
+  // NOTE: the result of this function is a NUMBER so if you need the timestamp as a STRING, be sure to concat with empty string ( + "" ) when using.
+}
 function convertUnixTime(time) {// converts unix time to date/time for example: input:convertUnixTime(1568670748829)
   const convertedDate = new Date(time);
   return convertedDate.toString();// output: "Mon Sep 16 2019 14:52:28 GMT-0700 (Pacific Daylight Time)"
@@ -68,7 +75,7 @@ params:
   dateString(string) : a YYYY-MM-DD formatted string
   returns: a js date object
 */
-function convertMilitaryTimeStringToMilitaryTimeFloat(time) {// not working Uncaught TypeError: startTime.slice is not a function
+function convertMilitaryTimeStringToMilitaryTimeFloat(time) {
   //converts '1430' to 14.5
   // '1245' to 12.75
   while( time.length < 4){
@@ -94,7 +101,7 @@ function calculateShiftHours(startTime, endTime) {// takes two string military t
   let shiftLengthInMinutes = ((endHourDigits - startHourDigits) * 60) + (endMinuteDigits - startMinuteDigits);
   return Math.round(shiftLengthInMinutes);// Output: 80
 }
-function createDateStringFromDateObject(dateObject) {// not working zeroPadNumber is not defined
+function createDateStringFromDateObject(dateObject) {// not working zeroPadNumber is not defined // This seems to be the same as convertUnixMonthDay
   // if (!dateObject){
   //   return;
   // }
@@ -179,7 +186,7 @@ function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
   return (totalHours + "h " + totalMinutes + "m");
 }
 
-export { convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
     createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };

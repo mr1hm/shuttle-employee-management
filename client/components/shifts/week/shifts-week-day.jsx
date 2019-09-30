@@ -6,7 +6,7 @@ import { convertMilitaryTimeStringToMilitaryTimeFloat, convertUnixDateDay, conve
 
 class ShiftsWeekDay extends React.Component {
 
-  getZeroPaddedNumber( number ){
+  getZeroPaddedNumber( number ){// could be moved to time-function.jsx
     return ('0' + number).slice(-2);
   }
   getDateStringFromTimestamp(timestamp) {//The convertUnixMonthDay(time) function from shifts-day.jsx could be used here 09/17/2019
@@ -84,8 +84,8 @@ class ShiftsWeekDay extends React.Component {
       children: [data]
     }));
     return (
-      <Link 
-        className="shiftWeekIndividualDayLink" 
+      <Link
+        className="shiftWeekIndividualDayLink"
         to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
         <div className={currentDayHighlightClass}>
           <div className="dayLabelContainer">

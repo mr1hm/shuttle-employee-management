@@ -37,8 +37,15 @@ switch($shirtSize){
 
 $query = "UPDATE user SET user.phone='$phone',user.cell_provider='$cellProvider',user.shirt_size='$shirtSize'
 WHERE id =" . $id;
-$result = mysqli_query($conn,$query);
-
+$result = mysqli_query($conn, $query);
+if (!$result) {
+  throw new Exception('mysql error ' . mysqli_error($conn));
+}
+$data = [];
+while ($row = mysqli_fetch_assoc($result)) {
+  $data[] = $row;
+}
+print(json_encode($data));
 header("Location: http://localhost:3000/myinfo");
 
 exit();

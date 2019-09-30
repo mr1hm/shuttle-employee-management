@@ -8,7 +8,7 @@ class MyInfo extends React.Component {
     this.state ={
       editButton:false,
       userInfo:[],
-      userId: 19,
+      userId: 15,
       cellProvider:[]
     }
     this.saveUploadedImageTofile = this.saveUploadedImageTofile.bind(this);
@@ -53,21 +53,21 @@ class MyInfo extends React.Component {
     }
 
     saveUploadedImageTofile(event){
-      const imageFile = event.target.files;
-      const reader = new FileReader();
-      reader.readAsDataURL(imageFile[0]);
-      reader.onload=(event)=>{
-        const imageResult = event.target.result;
-        const url = "/api/my-info-uploadimage.php";
-        fetch(url, {
+      event.preventDefault();
+      const sendUserId = this.state.userId;
+      const form = new FormData(event.target);
+      form.append("userID", sendUserId);
+        fetch(`/api/my-info-uploadimage.php`, {
           method: 'POST',
-          body: imageResult
+          body: form,
         })
-          .then(response => response)
-          
+          .then(response => {
+            return response.json()
+          })
+          .then(response => {
+            console.log(response)
+          })
           .catch(error => { throw (error) });
-
-      };
 
     }
 
@@ -93,9 +93,10 @@ class MyInfo extends React.Component {
           <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
           <div className="imageHolder">
             <img className="myInfoPic" src={stateUserInfo[0].url} />
-            <form action="/api/my-info-uploadimage.php" method="POST">
+            <form method="POST" encType="multipart/form-data" onSubmit={(event => this.saveUploadedImageTofile(event))}>
               <label htmlFor="files" className="upload">Upload Image ></label>
-              <input name="image" onChange={(event => this.saveUploadedImageTofile(event))} accept="image/png, image/jpeg" id="files" style={{ visibility: "hidden" }} type="file" />
+              <input name="fileName" accept="image/png, image/jpeg" id="files" style={{ visibility: "hidden" }} type="file" />
+              <input className="upload " type="submit" value="Save Profile Image" />
             </form>
           </div>
           <div className="container" className="w-50" style={{ top: "14%", left: "40%", position: "absolute" }}>
@@ -148,10 +149,6 @@ class MyInfo extends React.Component {
         <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
         <div className="imageHolder">
           <img className="myInfoPic" src={stateUserInfo[0].url}/>
-          <form action="/api/my-info-uploadimage.php" method="POST">
-            <label htmlFor="files" className="upload">Upload Image ></label>
-            <input name="image" onChange={(event => this.saveUploadedImageTofile(event))} accept="image/png, image/jpeg" id="files" style={{ visibility: "hidden" }} type="file" />
-          </form>
         </div>
         <div className="container" className="w-50" style={{ top: "14%", left: "40%", position: "absolute" }}>
           <div className="row d-inline" style={{ transform: "translate(-50%, -50%)" }} >
