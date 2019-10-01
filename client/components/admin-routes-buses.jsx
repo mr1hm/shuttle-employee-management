@@ -20,8 +20,16 @@ class AdminRoutes extends React.Component {
     if (!routeInfo){
       return;
     }
+    let prevLine = " ";
     return(
-    routeInfo.map((routeInfo, index) => {return (
+    routeInfo.map((routeInfo, index) => {
+
+
+      let currentLine = routeInfo.line_name;
+      if (currentLine !== prevLine){
+        prevLine = routeInfo.line_name;
+        {/* returns the route/line name and bus # if the route has not been displayed already */ }
+      return (
 
         <div className = "card" key = {routeInfo.line_name + routeInfo.bus_number}>
         <div className="card-header" id={"heading" + routeInfo.line_name}>
@@ -71,8 +79,40 @@ class AdminRoutes extends React.Component {
         </div>
 
 
-    )
-    }))
+        )
+      }
+      {/* returns JUST the bus # if the # is already associated with a route/line name */}
+      return (
+        <div key={routeInfo.line_name + routeInfo.bus_number} id={"collapse" + routeInfo.line_name} className="collapse" aria-labelledby={"heading" + routeInfo.line_name}
+          data-parent="#accordionExample">
+          <div className="card-body">
+            <div className="row">
+
+              <div className="col-sm-2 border border-dark">Line #</div>
+              <div className="col-sm-2 border border-dark">Start Time</div>
+              <div className="col-sm-2 border border-dark">End Time</div>
+              {/* <div className="col-sm-2 border border-dark">Rd. Duration</div> */}
+              <div className="col-sm-2 border border-dark">Start Up</div>
+              <div className="col-sm-2 border border-dark">Close Down</div>
+            </div>
+            <div className="row">
+              <div className="col-sm-2 mr-0 border border-dark">
+                <RouteBusDisplay bus={routeInfo.bus_number}></RouteBusDisplay>
+              </div>
+              <div className="col-sm-2 border border-dark">{routeInfo.start_time}</div>
+              <div className="col-sm-2 border border-dark">{routeInfo.end_time}</div>
+              {/* <div className="col-sm-2 border border-dark">{routeInfo.round_dur}</div> */}
+              <div className="col-sm-2 border border-dark">{routeInfo.opening_duration + "min."}</div>
+              <div className="col-sm-2 border border-dark">{routeInfo.closing_duration + "min."}</div>
+            </div>
+          </div>
+          {/*collapse  */}
+        </div>
+
+      )
+    }
+    ))
+
   }
       // createAccordianComponent(routeInfo){
 //map through routeInfo
