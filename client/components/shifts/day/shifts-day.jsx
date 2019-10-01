@@ -6,10 +6,10 @@ import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
 import ShiftsDetails from '../details/shifts-details';
 import ShiftsAvailable from '../available/shifts-available';
-import { 
-  createDateObjFromDateString, 
-  convertUnixMonthDay, 
-  adjustLocalTimestampToUTCSeconds 
+import {
+  createDateObjFromDateString,
+  convertUnixMonthDay,
+  adjustLocalTimestampToUTCSeconds
 } from '../../../lib/time-functions';
 import { Minimatch } from 'minimatch';
 
