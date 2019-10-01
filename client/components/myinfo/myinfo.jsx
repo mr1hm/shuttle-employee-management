@@ -4,12 +4,13 @@ import TopMenuGeneral from '../topmenu/topmenu-general';
 
 class MyInfo extends React.Component {
   constructor(props) {
+    console.log("myinfo props", props);
     super(props);
     console.log("myinfo props", props);
     this.state ={
       editButton:false,
       userInfo:[],
-      userId: 15,
+      userId: null,
       cellProvider:[]
     }
     this.saveUploadedImageTofile = this.saveUploadedImageTofile.bind(this);
@@ -17,11 +18,34 @@ class MyInfo extends React.Component {
     this.handlePhoneValidation = this.handlePhoneValidation.bind(this);
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.handleEditButton = this.handleEditButton.bind(this);
+    // this.updateUserID = this.updateUserID.bind(this);
+    this.editButtonUpdateUserID = this.editButtonUpdateUserID.bind(this);
+  }
+  editButtonUpdateUserID(){
+    console.log("grebhbhdhddh", this.state);
+    console.log("update id", this.props.get());
+    const id = this.props.get();
+    console.log("id", id);
+    if(!this.state.userId){
+      this.setState({
+        userId: parseInt(id)
+      });
+    }
+    console.log("gergh",this.state);
+  }
+  componentWillMount(){
+    this.editButtonUpdateUserID();
+
   }
   componentDidMount(){
     this.fetchCallMethod();
     this.fetchCellProvider();
   }
+  // updateUserID(){
+  //   this.setState({
+  //     userId:this.props.userId
+  //   })
+  // }
 
   fetchCallMethod() {
     fetch(`/api/my-info-page.php?id=`+ this.state.userId, {
@@ -43,6 +67,7 @@ class MyInfo extends React.Component {
         method: 'GET'
       })
         .then(response => {
+          this.editButtonUpdateUserID();
           return response.json()
         })
         .then(response => {
@@ -67,6 +92,7 @@ class MyInfo extends React.Component {
           })
           .then(response => {
             console.log(response)
+
           })
           .catch(error => { throw (error) });
 
@@ -136,7 +162,7 @@ class MyInfo extends React.Component {
                     <option value="XXL">XXL</option>
                   </select>
                 </div>
-                <button className="save" type="submit" name="submit" className="btn btn-primary but">SAVE</button>
+                <button  className="save" type="submit" name="submit" className="btn btn-primary but">SAVE</button>
               </form>
             </div>
           </div>

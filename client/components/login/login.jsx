@@ -1,5 +1,4 @@
 import React from 'react';
-import App from '../app'
 import TopMenuGeneral from '../topmenu/topmenu-general';
 import Welcome from '../welcome/welcome'
 import "./login.css";
@@ -7,7 +6,7 @@ import "./login.css";
 class Login extends React.Component {
   constructor(props){
     super(props);
-    console.log(props);
+    console.log("props", props);
     this.state = {
       userID : null,
       email:null,
@@ -26,12 +25,9 @@ class Login extends React.Component {
 
 
   checkLoginInfo(event) {
-    console.log("event",event);
     event.preventDefault();
     const email = this.state.email;
-    console.log("email",email);
     const password = this.state.password;
-    console.log("password",password);
     const form = new FormData(event.target);
     form.append("email", email);
     form.append("password",password);
@@ -43,25 +39,18 @@ class Login extends React.Component {
         return response.json()
       })
       .then(response => {
-        console.log("suc", response[0]);
         this.setState({
           userID:response[0]
         });
-        console.log("state",this.state.userID);
+        this.props.onClick(this.state.userID);
       })
       .catch(error => { throw (error) })
       .catch (()=>{this.setState({loginError:true});});
   }
   render(){
+    const id = this.state.userID;
     console.log(this.state.userID);
     console.log(this.state.loginError);
-    if(this.state.userID !== null){
-      return(
-        <React.Fragment>
-          <Welcome {...this.state} />
-        </React.Fragment>
-      );
-    }
     if(this.state.loginError === true){
       return (
         <React.Fragment>
@@ -104,7 +93,7 @@ class Login extends React.Component {
                       Remember me
                   </label>
              </div>
-                  <button type="submit" className="btn btn-primary">Sign in</button>
+                  <button  type="submit" className="btn btn-primary">Sign in</button>
            </form>
       </React.Fragment>
     );
