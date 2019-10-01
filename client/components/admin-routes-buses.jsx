@@ -24,7 +24,6 @@ class AdminRoutes extends React.Component {
     return(
     routeInfo.map((routeInfo, index) => {
 
-
       let currentLine = routeInfo.line_name;
       if (currentLine !== prevLine){
         prevLine = routeInfo.line_name;
