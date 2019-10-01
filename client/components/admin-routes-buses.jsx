@@ -45,7 +45,8 @@ class AdminRoutes extends React.Component {
               data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}>
                 Bus Details
       </button>
-              <button className="btn btn-dark btn-sm " type="button" style={{ "fontSize": 24 }}> +</button>
+              <button className="btn btn-dark btn-sm collapsed  " type="button" data-toggle="collapse" style={{ "fontSize": 24 }}
+                data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}> +</button>
             </div>
          </div>
 
