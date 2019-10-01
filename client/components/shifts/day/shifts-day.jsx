@@ -169,7 +169,6 @@ class ShiftsDay extends React.Component {
     })
       .then(response => { return console.log("Patch response: ", response.json())  })
       .catch(error => { throw (error) });
-      debugger;
       this.closeTakeShiftsModal();
 
   }

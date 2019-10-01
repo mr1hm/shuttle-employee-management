@@ -10,6 +10,7 @@ import Login from './login/login';
 import Welcome from './welcome/welcome';
 import Modal from './post-modal';
 import AdminShiftsDay from './admin-shifts';
+import AdminRoutes from './admin-routes-buses';
 import './post-modal.css';
 
 class App extends React.Component {
@@ -25,6 +26,7 @@ class App extends React.Component {
   render(){
     return (
         <React.Fragment>
+
           <Switch>
           <Route path="/login/" render={(props) => <Login {...props}   />}/>
           <Route exact path={['/', '/welcome/']} render={(props) => <Welcome {...props}   />}/>
@@ -35,6 +37,7 @@ class App extends React.Component {
             <Route path=  "/shifts/available/:date?" render = {(props) => <ShiftsDay {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/details/" render={(props) => <ShiftsDetails {...props} />}/>
             <Route path = "/admin-day/" render={(props) => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
+            <Route path="/admin-routes/" render={(props) => <AdminRoutes {...props} defaultDate={this.state.presetDateForTesting} />} />
           </Switch>
         </React.Fragment>
     );
