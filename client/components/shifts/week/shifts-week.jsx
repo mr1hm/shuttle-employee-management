@@ -5,8 +5,8 @@ import ShiftsWeekDay from './shifts-week-day';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import {
   createDateObjFromDateString, 
-  convertSecondsToMilliseconds, 
-  convertMillisecondsToSeconds
+  adjustLocalTimestampToUTCSeconds, 
+  adjustUTCSecondsToLocalTimestamp
 } from '../../../lib/time-functions';
 
 
@@ -47,7 +47,7 @@ class ShiftsWeek extends React.Component {
     const startDay = createDateObjFromDateString(time);// converts unix time to date/at midnight
     startDay.setDate(startDay.getDate() - numericDay);
     const startOfWeek = startDay.getTime();
-    return convertMillisecondsToSeconds(startOfWeek);
+    return adjustLocalTimestampToUTCSeconds(startOfWeek);
   }
   generateEndOfWeekTimestamp(time) {
     const convertedDate = createDateObjFromDateString(time);// converts unix time to date/at midnight
@@ -55,7 +55,7 @@ class ShiftsWeek extends React.Component {
     const endDay = createDateObjFromDateString(time);// converts unix time to date/at midnight
     endDay.setDate(endDay.getDate() + 6 - numericDay);
     const endOfWeek = endDay.getTime();
-    return convertMillisecondsToSeconds(endOfWeek);
+    return adjustLocalTimestampToUTCSeconds(endOfWeek);
   }
   generateArrayOfFullWeek(weekData){
     if(this.state.data===null){
@@ -63,7 +63,7 @@ class ShiftsWeek extends React.Component {
     }
     for( let shiftI = 0; shiftI < this.state.data.length; shiftI++){
       let thisShift = this.state.data[shiftI];
-      let fullTimestampFromShift = parseInt(convertSecondsToMilliseconds(thisShift.date));
+      let fullTimestampFromShift = parseInt(adjustUTCSecondsToLocalTimestamp(thisShift.date));
       let shiftTimestamp = createDateObjFromDateString(fullTimestampFromShift).getTime();
       if( weekData[ shiftTimestamp] !== undefined ){
         weekData[ shiftTimestamp].shifts.push( thisShift );

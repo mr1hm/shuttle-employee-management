@@ -1,8 +1,14 @@
-function adjustLocalTimestampToUTCSeconds (localMillisecondsTimeStamp) {  // adjusts local timestamp (msec) [number or string] to UTC then converts to 10-digit timestamp (sec) [number]
+function adjustLocalTimestampToUTCSeconds(localMillisecondsTimeStamp) {  // adjusts local timestamp (msec) [number or string] to UTC then converts to 10-digit timestamp (sec) [number]
   const timestampUTCmilliseconds = parseInt(localMillisecondsTimeStamp) - 10800000;
   return timestampUTCmilliseconds / 1000;
   // NOTE: this function combines the convertMillisecondsToSeconds function
   // should be used when needing to convert front-end generated 13-digit timestamps to a 10-digit UTC timestamp (since front-end generated timestamps are not in UTC)
+}
+function adjustUTCSecondsToLocalTimestamp(utcSecondsTimestamp) {  // the reverse of the above function (adjustLocalTimestampToUTCSeconds)
+  const utcMillisecondsTimestamp = utcSecondsTimestamp + "000";
+  return parseInt(utcMillisecondsTimestamp) + 10800000;
+  // NOTE: the purpose of this function is to get timestamps from the back-end or db (seconds / UTC) and convert to a 13-digit local time timestamp (milliseconds)
+  // also note that this function incorporates the convertSecondsToMilliseconds function below
 }
 function convertSecondsToMilliseconds(secondsTimestamp) { // convert timestamp (seconds) [number or string] to timestamp (milliseconds) [string]
   return secondsTimestamp + "000"; // example: input 1566100800, output "1566100800000"
@@ -192,7 +198,7 @@ function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
   return (totalHours + "h " + totalMinutes + "m");
 }
 
-export { adjustLocalTimestampToUTCSeconds, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
     createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };

@@ -1,6 +1,6 @@
 import React from 'react';
 import './shifts-month.css'
-import {createDateObjFromDateString, convertSecondsToMilliseconds} from '../../../lib/time-functions';
+import {createDateObjFromDateString, adjustUTCSecondsToLocalTimestamp} from '../../../lib/time-functions';
 
 class DayOfMonth extends React.Component {
   renderDate(){
@@ -11,7 +11,7 @@ class DayOfMonth extends React.Component {
       }
       for(var shiftIndex=0; shiftIndex<this.props.shiftsArray.length; shiftIndex++){
         const shiftDate = this.props.shiftsArray[shiftIndex].date;
-        const shiftDateFullTimestamp = convertSecondsToMilliseconds(shiftDate);
+        const shiftDateFullTimestamp = adjustUTCSecondsToLocalTimestamp(shiftDate);
         let baseDate = createDateObjFromDateString(parseInt(shiftDateFullTimestamp));// converts unix time to date/at midnight 09/17/2019
         if( baseDate.getTime() === this.props.dayObj.getTime()){
           dayTypeClasses[this.props.shiftsArray[shiftIndex].status]=true;
