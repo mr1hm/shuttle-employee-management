@@ -17,22 +17,23 @@ class AdminRoutes extends React.Component {
   }
 
   createRouteBusComponent(routeInfo){
-
     if (!routeInfo){
       return;
     }
     return(
     routeInfo.map((routeInfo, index) => {return (
-      <React.Fragment>
-        <div className = "card">
+
+        <div className = "card" key = {routeInfo.line_name + routeInfo.bus_number}>
         <div className="card-header" id={"heading" + routeInfo.line_name}>
             <div className="row" id={index}>
               <div className="col">
                 <RouteBusDisplay route={routeInfo.line_name}></RouteBusDisplay>
               </div>
               <div className="col">{routeInfo.status}</div>
-              <div className="col">{routeInfo.public.toString()}</div>
-              <div className="col">{routeInfo.regular_service.toString()}</div>
+              <div className="col">true</div>
+              <div className="col">true</div>
+              {/* <div className="col">{routeInfo.public.toString()}</div> */}
+              {/* <div className="col">{routeInfo.regular_service.toString()}</div> */}
               <button className="btn btn-link  collapsed dropdown-toggle" type="button" data-toggle="collapse"
               data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}>
                 Bus Details
@@ -50,7 +51,7 @@ class AdminRoutes extends React.Component {
                 <div className="col-sm-2 border border-dark">Line #</div>
                 <div className="col-sm-2 border border-dark">Start Time</div>
                 <div className="col-sm-2 border border-dark">End Time</div>
-                <div className="col-sm-2 border border-dark">Rd. Duration</div>
+                {/* <div className="col-sm-2 border border-dark">Rd. Duration</div> */}
                 <div className="col-sm-2 border border-dark">Start Up</div>
                 <div className="col-sm-2 border border-dark">Close Down</div>
               </div>
@@ -60,15 +61,15 @@ class AdminRoutes extends React.Component {
               </div>
                 <div className="col-sm-2 border border-dark">{routeInfo.start_time}</div>
                 <div className="col-sm-2 border border-dark">{routeInfo.end_time}</div>
-                <div className="col-sm-2 border border-dark">{routeInfo.round_dur}</div>
-                <div className="col-sm-2 border border-dark">{routeInfo.open_duration}</div>
-                <div className="col-sm-2 border border-dark">{routeInfo.close_duration}</div>
+                {/* <div className="col-sm-2 border border-dark">{routeInfo.round_dur}</div> */}
+                <div className="col-sm-2 border border-dark">{routeInfo.opening_duration + "min."}</div>
+                <div className="col-sm-2 border border-dark">{routeInfo.closing_duration + "min."}</div>
               </div>
       </div>
       {/*collapse  */}
         </div>
         </div>
-      </React.Fragment>
+
 
     )
     }))
@@ -146,8 +147,8 @@ class AdminRoutes extends React.Component {
 
 
       componentDidMount(){
-        this.handleRoutesInformation('api/dummy-data/dummy-data-admin-routes-buses.json', 'GET');
-        this.handleBusesInformation('api/dummy-data/dummy-data-admin-routes-buses.json', 'GET');
+        this.handleRoutesInformation('api/admin-buses-routes.php', 'GET');
+        this.handleBusesInformation('api/admin-buses-routes.php', 'GET');
       }
       handleRoutesInformation(url, method){
           fetch(url, { method: method })

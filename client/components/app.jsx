@@ -26,8 +26,8 @@ class App extends React.Component {
   render(){
     return (
         <React.Fragment>
-        <AdminRoutes></AdminRoutes>
-          {/* <Switch>
+
+          <Switch>
           <Route path="/login/" render={(props) => <Login {...props}   />}/>
           <Route exact path={['/', '/welcome/']} render={(props) => <Welcome {...props}   />}/>
           <Route path="/myinfo/" render={(props) => <MyInfo {...props}  />}/>
@@ -37,7 +37,8 @@ class App extends React.Component {
             <Route path=  "/shifts/available/:date?" render = {(props) => <ShiftsDay {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />}/>
             <Route path = "/shifts/details/" render={(props) => <ShiftsDetails {...props} />}/>
             <Route path = "/admin-day/" render={(props) => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
-          </Switch> */}
+            <Route path="/admin-routes/" render={(props) => <AdminRoutes {...props} defaultDate={this.state.presetDateForTesting} />} />
+          </Switch>
         </React.Fragment>
     );
   }

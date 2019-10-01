@@ -2,7 +2,8 @@
 require_once('functions.php');
 set_exception_handler('error_handler');
 require_once 'db_connection.php';
-
+$method = $_SERVER['REQUEST_METHOD'];
+if ($method === 'GET'){
 $query = "SELECT
               bi.`bus_number`,
               bi.`route_id`,
@@ -19,6 +20,7 @@ $query = "SELECT
           ON
             rt.`id` = bi.`route_id`
             WHERE  rt. `status` ='active'";
+}
 
 
 $result = mysqli_query($conn, $query);
