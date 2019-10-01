@@ -170,18 +170,7 @@ const fullName = firstName.reduce(function (arr, v, i) {
 console.log('Array of available driver names:', fullName);
 
     return (
-      <div>
-            <div className="dropdown">
-              <button onClick={this.getAvailableDrivers} className="dropbtn">Available Drivers</button>
-              <div className="dropdown-content">
-                  {fullName.map((index) => {
-                    return (
-                      <a href="#">{index}</a>
-                    )
-                  })}
-              </div>
-            </div>
-            
+      <div>            
         <TopMenuShift title="Admin" page='day' date={dateToPass} />
         <button onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
         <div className="viewHoursContainer">
@@ -213,6 +202,16 @@ console.log('Array of available driver names:', fullName);
             )
           })}
         </div>
+        <div className="dropdown drivers-list">
+              <button onClick={this.getAvailableDrivers} className="dropbtn">Available Drivers</button>
+              <div className="dropdown-content">
+                  {fullName.map((index) => {
+                    return (
+                      <a href="#">{index}</a>
+                    )
+                  })}
+              </div>
+            </div>
       </div>
     )
   }

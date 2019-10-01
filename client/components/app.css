@@ -26,7 +26,7 @@
 }
 .adminShiftsDayView {
   display: inline-block;
-  width: 96%;
+  width: 76%;
   height: 100vh;
   top: 28%;
   position: absolute;
@@ -37,6 +37,12 @@
   margin-top: 15%;
   margin-left: 52%;
 }
+
+
+.drivers-list {
+  float: right;
+}
+
 /* Dropdown Button */
 .dropbtn {
   background-color: blue;
@@ -50,6 +56,7 @@
 .dropdown {
   position: relative;
   display: inline-block;
+  width: 20%;
 }
 
 /* Dropdown Content (Hidden by Default) */

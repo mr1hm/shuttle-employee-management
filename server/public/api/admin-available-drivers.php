@@ -23,8 +23,7 @@ $query = "SELECT
             us.`id` = oa.`user_id`
           WHERE
             us.`status` = 'active' AND
-            us.`role` = 'operator' AND
-            oa.`day_of_week` = 'Thu'";
+            us.`role` = 'operator'";
 
 
 
