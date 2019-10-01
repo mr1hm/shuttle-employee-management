@@ -8,8 +8,8 @@ import Legend from './shift-month-legends'
 import { 
   createDateObjFromDateString, 
   calculateShiftHours, 
-  convertMillisecondsToSeconds,
-  convertSecondsToMilliseconds,
+  adjustLocalTimestampToUTCSeconds, 
+  adjustUTCSecondsToLocalTimestamp, 
   convertUnixMonthDay 
 } from '../../../lib/time-functions';
 // import RouteBusDisplay from '../../route-bus-display';
@@ -51,7 +51,7 @@ class ShiftsMonth extends React.Component {
       previousDate.setDate(previousDate.getDate() - 1);
     }
     const unixCalendarStartRange = previousDate.getTime();
-    const secondsTimestampStartRange = convertMillisecondsToSeconds(unixCalendarStartRange) + "";
+    const secondsTimestampStartRange = adjustLocalTimestampToUTCSeconds(unixCalendarStartRange) + "";
     var lastDayOfMonth = function(month,year) {
      return new Date(year, month, 0).getDate();
     };
@@ -62,7 +62,7 @@ class ShiftsMonth extends React.Component {
       lastDate.setDate(lastDate.getDate() + 1);
     }
     const unixCalendarEndRange = lastDate.getTime();
-    const secondsTimestampEndRange = convertMillisecondsToSeconds(unixCalendarEndRange) + "";
+    const secondsTimestampEndRange = adjustLocalTimestampToUTCSeconds(unixCalendarEndRange) + "";
     const query = `?unixstart=${secondsTimestampStartRange}&unixend=${secondsTimestampEndRange}`;
     return query;
   }
@@ -144,7 +144,7 @@ class ShiftsMonth extends React.Component {
       for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){
         for(var roundIndex=0 ; roundIndex<shiftsArray.length; roundIndex++){
           const calendarTimestamp = bundledWeeksArray[weekIndex][dateIndex].getTime();
-          const shiftTimestamp = parseInt(convertSecondsToMilliseconds(shiftsArray[roundIndex].date));
+          const shiftTimestamp = parseInt(adjustUTCSecondsToLocalTimestamp(shiftsArray[roundIndex].date));
           const calendarTimestampToStringDate = convertUnixMonthDay(calendarTimestamp);
           const shiftTimestampToStringDate = convertUnixMonthDay(shiftTimestamp);
           if (calendarTimestampToStringDate === shiftTimestampToStringDate) {
