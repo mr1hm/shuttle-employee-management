@@ -55,10 +55,11 @@ class ShiftsDetails extends React.Component {
       .catch(error => {throw(error)});
   }
   componentDidMount(){
+    debugger;
     let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();// converts unix time to date/at midnight 09/17/2019
     let shiftStart = this.props.blockStartTime ? this.props.blockStartTime : 600;
     let shiftEnd = this.props.blockEndTime ? this.props.blockEndTime : 1100;
-    let user = this.props.userID ? this.props.userID : 2;
+    let user = this.props.userID ? this.props.userID : 17;
     const unixDateOfDay = `?unixdate=${adjustLocalTimestampToUTCSeconds(date)}`;
     const shiftBlockStartTime = `&start_time=${shiftStart}`;
     const shiftBlockEndTime = `&end_time=${shiftEnd}`;
@@ -68,6 +69,7 @@ class ShiftsDetails extends React.Component {
   }
 
   openModal(roundIDs) {
+    debugger;
     if(!Array.isArray(roundIDs)){
       roundIDs = [roundIDs];
     }
@@ -150,6 +152,7 @@ class ShiftsDetails extends React.Component {
     }
   }
   generateCheckboxElements(object) {
+    debugger;
     return (
       <div className="custom-control custom-checkbox checkboxElements">
       <input

@@ -122,6 +122,7 @@ class ShiftsDay extends React.Component {
   }
 
   openModal(roundID) {
+    debugger;
     let shiftsToPass = this.state.myShiftsToday.filter(shift => (shift.roundID === roundID || shift.id === roundID));
     console.log("ShiftsToPass: ", shiftsToPass);
     this.setState({
@@ -189,10 +190,10 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
-
+debugger;
     let shiftBlockStart = this.state.shiftsToPass.map(index =>  index.start_time).toString();
     let shiftBlockEnd = this.state.shiftsToPass.map(index =>  index.end_time).toString();
-    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id).toString();
+    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id);
     let shiftBusLine = this.state.shiftsToPass.map(index => index.line_name).toString();
     let shiftBusNum = this.state.shiftsToPass.map(index => index.bus_info_id).toString();
     let shiftRoundID = this.state.shiftsToPass.map(roundID => roundID.roundID);
@@ -244,6 +245,7 @@ class ShiftsDay extends React.Component {
               blockStartTime={shiftBlockStart}   // the start time (military 4-digit) of the first round in the block clicked
               blockEndTime={shiftBlockEnd}      // the end time (military 4-digit) of the last round of the block clicked
               userID={shiftUserId[0]}           // the user's ID number (used the specific 0 index because the user id should be the same for all of these shifts on the details)
+              // userID={"17"}  
               busLine={shiftBusLine}          // the letter representing the line (route) of the selected round or block
               busNumber={shiftBusNum}        // the number of the bus for the selected round or block
             >
