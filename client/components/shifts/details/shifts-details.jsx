@@ -6,7 +6,7 @@ import {Grid} from '@material-ui/core';
 import Modal from '../../post-modal';
 import ShiftsDay from '../../shifts/day/shifts-day';
 import {OneOfMyShifts} from '../../shifts/day/shifts-day';
-import {createDateObjFromDateString} from '../../../lib/time-functions';
+import { createDateObjFromDateString, adjustLocalTimestampToUTCSeconds} from '../../../lib/time-functions';
 
 
 class ShiftsDetails extends React.Component {
@@ -58,8 +58,8 @@ class ShiftsDetails extends React.Component {
     let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();// converts unix time to date/at midnight 09/17/2019
     let shiftStart = this.props.blockStartTime ? this.props.blockStartTime : 600;
     let shiftEnd = this.props.blockEndTime ? this.props.blockEndTime : 1100;
-    let user = this.props.userID ? this.props.userID : 2;
-    const unixDateOfDay = `?unixdate=${date}`;
+    let user = this.props.userID ? this.props.userID : 17;
+    const unixDateOfDay = `?unixdate=${adjustLocalTimestampToUTCSeconds(date)}`;
     const shiftBlockStartTime = `&start_time=${shiftStart}`;
     const shiftBlockEndTime = `&end_time=${shiftEnd}`;
     const userID = `&user_id=${user}`;

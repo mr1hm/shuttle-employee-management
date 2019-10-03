@@ -6,7 +6,11 @@ import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
 import ShiftsDetails from '../details/shifts-details';
 import ShiftsAvailable from '../available/shifts-available';
-import { createDateObjFromDateString, convertUnixMonthDay } from '../../../lib/time-functions';
+import {
+  createDateObjFromDateString,
+  convertUnixMonthDay,
+  adjustLocalTimestampToUTCSeconds
+} from '../../../lib/time-functions';
 import { Minimatch } from 'minimatch';
 
 export function OneOfMyShifts(props) {
@@ -53,15 +57,15 @@ class ShiftsDay extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );// converts unix time to date/at midnight 09/17/2019
-    const defaultId = 1;
+    const defaultId = 17;
     this.state = {
       myShiftsToday: [],
       isModalOpen: false,
-      queryString: `?date=${defaultDate}&userID=${defaultId}&type=${this.props.view || 'myShifts'}`,
+      queryString: `?date=${adjustLocalTimestampToUTCSeconds(defaultDate)}&userID=${defaultId}&type=${this.props.view || 'myShifts'}`,
       dateToPass:  defaultDate,
       roundID: null,
       shiftsToPass: [],
-      userId: 1,
+      userId: 17,
       postModal: false
     }
   }
@@ -97,12 +101,12 @@ class ShiftsDay extends React.Component {
       //this shouldn't happen here because the backend expects things to be at midnight, not offset.  if any offset would be used
       //it would be in the display of the time, not the passing of the time, at least with the present system.
       this.setState({
-        dateToQuery: dateToQuery,
-        queryString: `?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`,
+        dateToQuery: adjustLocalTimestampToUTCSeconds(dateToQuery),
+        queryString: `?date=${adjustLocalTimestampToUTCSeconds(dateToQuery)}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`,
         dateToPass: this.props.match.params.date
       })
-      console.log(`update query string ?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`)
-      this.fetchCallMethod(`?date=${dateToQuery}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`);
+      console.log(`update query string ?date=${adjustLocalTimestampToUTCSeconds(dateToQuery)}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`)
+      this.fetchCallMethod(`?date=${adjustLocalTimestampToUTCSeconds(dateToQuery)}&userID=${this.state.userId}&type=${this.props.view || 'myShifts'}`);
      }
     //  else {
     //   this.fetchCallMethod(this.state.queryString);
@@ -165,7 +169,6 @@ class ShiftsDay extends React.Component {
     })
       .then(response => { return console.log("Patch response: ", response.json())  })
       .catch(error => { throw (error) });
-      debugger;
       this.closeTakeShiftsModal();
 
   }
@@ -186,10 +189,9 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
-
     let shiftBlockStart = this.state.shiftsToPass.map(index =>  index.start_time).toString();
     let shiftBlockEnd = this.state.shiftsToPass.map(index =>  index.end_time).toString();
-    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id).toString();
+    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id);
     let shiftBusLine = this.state.shiftsToPass.map(index => index.line_name).toString();
     let shiftBusNum = this.state.shiftsToPass.map(index => index.bus_info_id).toString();
     let shiftRoundID = this.state.shiftsToPass.map(roundID => roundID.roundID);

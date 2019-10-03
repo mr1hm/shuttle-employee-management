@@ -5,13 +5,19 @@ import '../../app.css';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends'
-import { createDateObjFromDateString, calculateShiftHours} from '../../../lib/time-functions';
-import RouteBusDisplay from '../../route-bus-display';
+import { 
+  createDateObjFromDateString, 
+  calculateShiftHours, 
+  adjustLocalTimestampToUTCSeconds, 
+  adjustUTCSecondsToLocalTimestamp, 
+  convertUnixMonthDay 
+} from '../../../lib/time-functions';
+// import RouteBusDisplay from '../../route-bus-display';
 
 class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
-    this.id = '&id=1';
+    this.id = '&id=17';
     this.state = {
       scheduledHoursForCurrentMonth: []
     }
@@ -45,6 +51,7 @@ class ShiftsMonth extends React.Component {
       previousDate.setDate(previousDate.getDate() - 1);
     }
     const unixCalendarStartRange = previousDate.getTime();
+    const secondsTimestampStartRange = adjustLocalTimestampToUTCSeconds(unixCalendarStartRange) + "";
     var lastDayOfMonth = function(month,year) {
      return new Date(year, month, 0).getDate();
     };
@@ -55,7 +62,8 @@ class ShiftsMonth extends React.Component {
       lastDate.setDate(lastDate.getDate() + 1);
     }
     const unixCalendarEndRange = lastDate.getTime();
-    const query = `?unixstart=${unixCalendarStartRange}&unixend=${unixCalendarEndRange}`;
+    const secondsTimestampEndRange = adjustLocalTimestampToUTCSeconds(unixCalendarEndRange) + "";
+    const query = `?unixstart=${secondsTimestampStartRange}&unixend=${secondsTimestampEndRange}`;
     return query;
   }
   generateCalendarPage(dateProp) {
@@ -135,7 +143,11 @@ class ShiftsMonth extends React.Component {
     for(var weekIndex=0; weekIndex<bundledWeeksArray.length; weekIndex++){
       for(var dateIndex=0; dateIndex<bundledWeeksArray[weekIndex].length; dateIndex++){
         for(var roundIndex=0 ; roundIndex<shiftsArray.length; roundIndex++){
-          if(bundledWeeksArray[weekIndex][dateIndex].getTime() === new Date(parseInt(shiftsArray[roundIndex].date)).getTime()){
+          const calendarTimestamp = bundledWeeksArray[weekIndex][dateIndex].getTime();
+          const shiftTimestamp = parseInt(adjustUTCSecondsToLocalTimestamp(shiftsArray[roundIndex].date));
+          const calendarTimestampToStringDate = convertUnixMonthDay(calendarTimestamp);
+          const shiftTimestampToStringDate = convertUnixMonthDay(shiftTimestamp);
+          if (calendarTimestampToStringDate === shiftTimestampToStringDate) {
             arrayOfRoundsForWeek.push(shiftsArray[roundIndex]);
             // console.log("array of rounds per week: ",arrayOfRoundsForWeek);
           }
