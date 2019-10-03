@@ -182,12 +182,22 @@ class ShiftsDay extends React.Component {
     dateToPass = createDateObjFromDateString(dateToPass);// converts unix time to date/at midnight 09/17/2019
 
     if (this.state.myShiftsToday.length === 0) {
-      return (
-        <div>
-          <TopMenuShift title="DAY" page='day' date={dateToPass} />
-          <div>You have no shifts scheduled today.</div>
-        </div>
-      );
+      if (this.props.view === 'availableShifts'){
+        return (
+          <div>
+            <TopMenuShift title="AVAILABLE" page='day' date={dateToPass} />
+            <div>There are no available shifts for you today.</div>
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            <TopMenuShift title="DAY" page='day' date={dateToPass} />
+            <div>You have no shifts scheduled today.</div>
+          </div>
+        );
+      }
+
     }
     let shiftBlockStart = this.state.shiftsToPass.map(index =>  index.start_time).toString();
     let shiftBlockEnd = this.state.shiftsToPass.map(index =>  index.end_time).toString();
