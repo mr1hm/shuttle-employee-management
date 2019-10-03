@@ -4,8 +4,8 @@ import HoursOfOperation from './hours-of-operation';
 import ShiftsWeekDay from './shifts-week-day';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import {
-  createDateObjFromDateString, 
-  adjustLocalTimestampToUTCSeconds, 
+  createDateObjFromDateString,
+  adjustLocalTimestampToUTCSeconds,
   adjustUTCSecondsToLocalTimestamp
 } from '../../../lib/time-functions';
 
@@ -14,7 +14,8 @@ class ShiftsWeek extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      data: null
+      data: null,
+      userId:this.props.userId
     }
   }
   generateFullWeekOfTimestamps(time) {
@@ -86,13 +87,13 @@ class ShiftsWeek extends React.Component {
   componentDidMount(){
     const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.defaultDate);
     const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.defaultDate);
-    this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 17, 'GET');
+    this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + this.state.userId, 'GET');
   }
   componentDidUpdate(prevProps) {
     if(prevProps.match.params.date !== this.props.match.params.date){
       const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.match.params.date);
       const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.match.params.date);
-      this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 17, 'GET');
+      this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + this.state.userId, 'GET');
     }
   }
   render() {
