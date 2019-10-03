@@ -53,12 +53,12 @@ class App extends React.Component {
           <Switch>
             <Route exact path={['/', '/welcome/']} render={(props) => <Welcome {...props} userId={this.state.userId} />} />
             <Route path="/myinfo/" render={(props) => <MyInfo {...props} userId={this.state.userId} get={this.getUserID} />} />
-            <Route path="/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/day/shifts-day/:date?" render={(props) => <ShiftsDay {...props} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/available/:date?" render={(props) => <ShiftsDay {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/details/" render={(props) => <ShiftsDetails {...props} />} />
-            <Route path="/admin-day/" render={(props) => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />} />
+            <Route path="/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek userId={this.state.userId} {...props} defaultDate={this.state.presetDateForTesting} />} />
+            <Route path="/shifts/day/shifts-day/:date?" render={(props) => <ShiftsDay {...props} userId={this.state.userId} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
+            <Route path="/shifts/month/shifts-month/:date?" render={(props) => <ShiftsMonth userId={this.state.userId} {...props} defaultDate={this.state.presetDateForTesting} />} />
+            <Route path="/shifts/available/:date?" render={(props) => <ShiftsDay userId={this.state.userId} {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />} />
+            <Route path="/shifts/details/" render={(props) => <ShiftsDetails userId={this.state.userId} {...props} />} />
+            <Route path="/admin-day/" render={(props) => <AdminShiftsDay userId={this.state.userId} {...props} defaultDate={this.state.presetDateForTesting} />} />
           </Switch>
         </React.Fragment>
       );

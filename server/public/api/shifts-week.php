@@ -17,7 +17,7 @@ $endDate = intval($endDate);
 // $query = "SELECT * FROM `shift` WHERE `ownerID`= {$id} AND (`round_date` >= {$startDate} AND `round_date` <={$endDate})
 //             ORDER BY `round_date` ASC";
 
-$query = "SELECT * FROM `round` WHERE `user_id`= 17 AND (`date` >= {$startDate} AND `date` <= {$endDate})
+$query = "SELECT * FROM `round` WHERE `user_id`= {$id} AND (`date` >= {$startDate} AND `date` <= {$endDate})
 ORDER BY `date` ASC";
 
 $result = mysqli_query($conn, $query);

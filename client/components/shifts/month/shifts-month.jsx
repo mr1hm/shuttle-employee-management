@@ -5,19 +5,19 @@ import '../../app.css';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends'
-import { 
-  createDateObjFromDateString, 
-  calculateShiftHours, 
-  adjustLocalTimestampToUTCSeconds, 
-  adjustUTCSecondsToLocalTimestamp, 
-  convertUnixMonthDay 
+import {
+  createDateObjFromDateString,
+  calculateShiftHours,
+  adjustLocalTimestampToUTCSeconds,
+  adjustUTCSecondsToLocalTimestamp,
+  convertUnixMonthDay
 } from '../../../lib/time-functions';
 // import RouteBusDisplay from '../../route-bus-display';
 
 class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
-    this.id = '&id=17';
+    this.id = '&id=' + this.props.userId;
     this.state = {
       scheduledHoursForCurrentMonth: []
     }

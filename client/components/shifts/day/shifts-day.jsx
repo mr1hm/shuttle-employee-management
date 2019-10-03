@@ -57,7 +57,7 @@ class ShiftsDay extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );// converts unix time to date/at midnight 09/17/2019
-    const defaultId = 17;
+    const defaultId = this.props.userId;
     this.state = {
       myShiftsToday: [],
       isModalOpen: false,
@@ -65,7 +65,7 @@ class ShiftsDay extends React.Component {
       dateToPass:  defaultDate,
       roundID: null,
       shiftsToPass: [],
-      userId: 17,
+      userId: this.props.userId,
       postModal: false
     }
   }
