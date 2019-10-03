@@ -1,3 +1,20 @@
+function convertMilitaryTime(militaryTime) {  // takes a string military time (eg "0600") and converts to meridian time (eg "6:00 AM")
+  if (militaryTime.length < 4){
+    militaryTime = "0" + militaryTime;
+  }
+  let hour = parseInt(militaryTime.slice(0,2));
+  const minute = militaryTime.slice(2);
+  let meridiem;
+  if (hour < 12) {
+    meridiem = "AM";
+  } else {
+    meridiem = "PM";
+    if (hour > 12) {
+      hour -= 12;
+    }
+  }
+  return hour + ":" + minute + " " + meridiem;
+}
 function adjustLocalTimestampToUTCSeconds(localMillisecondsTimeStamp) {  // adjusts local timestamp (msec) [number or string] to UTC then converts to 10-digit timestamp (sec) [number]
   const timestampUTCmilliseconds = parseInt(localMillisecondsTimeStamp) - 10800000;
   return timestampUTCmilliseconds / 1000;
@@ -198,7 +215,7 @@ function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
   return (totalHours + "h " + totalMinutes + "m");
 }
 
-export { adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
     createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };
