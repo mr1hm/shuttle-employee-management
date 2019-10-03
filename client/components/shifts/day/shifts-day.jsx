@@ -189,10 +189,9 @@ class ShiftsDay extends React.Component {
         </div>
       );
     }
-
     let shiftBlockStart = this.state.shiftsToPass.map(index =>  index.start_time).toString();
     let shiftBlockEnd = this.state.shiftsToPass.map(index =>  index.end_time).toString();
-    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id).toString();
+    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id);
     let shiftBusLine = this.state.shiftsToPass.map(index => index.line_name).toString();
     let shiftBusNum = this.state.shiftsToPass.map(index => index.bus_info_id).toString();
     let shiftRoundID = this.state.shiftsToPass.map(roundID => roundID.roundID);
