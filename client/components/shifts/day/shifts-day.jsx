@@ -9,7 +9,8 @@ import ShiftsAvailable from '../available/shifts-available';
 import {
   createDateObjFromDateString,
   convertUnixMonthDay,
-  adjustLocalTimestampToUTCSeconds
+  adjustLocalTimestampToUTCSeconds, 
+  convertMilitaryTime 
 } from '../../../lib/time-functions';
 import { Minimatch } from 'minimatch';
 
@@ -35,7 +36,7 @@ export function OneOfMyShifts(props) {
       {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
       <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name} /> </td>
 
-      <td> {props.shifts.start_time} - {props.shifts.end_time} </td>
+      <td> {convertMilitaryTime(props.shifts.start_time)} - {convertMilitaryTime(props.shifts.end_time)} </td>
       <td> {numOfRounds} </td>
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
       <td> {shiftHours} </td>
