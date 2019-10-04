@@ -3,7 +3,7 @@ import TopMenuShift from './topmenu/topmenu-shift';
 import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
 import ShiftDisplayComponent from './shifts/week/shift-display-component';
-import { convertMilitaryTimeStringToMilitaryTimeFloat } from '../lib/time-functions';
+import { convertMilitaryTimeStringToMilitaryTimeFloat, convertUnixDateDay } from '../lib/time-functions';
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 class AdminShiftsDay extends React.Component {
@@ -13,16 +13,16 @@ class AdminShiftsDay extends React.Component {
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
-    const defaultDate = 1573876800; //1566273600;// this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);
+    const defaultDate = 1566100800; //1573876800; //1566273600;// this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);
     this.state = {
       shiftsAdmin: [],
       availableOperators: [],
       queryString: `?date=${defaultDate}`,
       dateToPass: defaultDate
     }
-    console.log('defaultDate:', defaultDate);
-    console.log('dateToPass(should be same as defaultDate:', this.state.dateToPass);
-    console.log('queryString:', this.state.queryString);
+    // console.log('defaultDate:', defaultDate);
+    // console.log('dateToPass(should be same as defaultDate:', this.state.dateToPass);
+    // console.log('queryString:', this.state.queryString);
   }
 
   fetchAutoPopulatedData() {
@@ -36,8 +36,14 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error) });
   }
 
-  getAvailableDrivers(){
-    fetch(`/api/admin-available-drivers.php`, {
+  getAvailableDrivers(start_time){
+    let date;
+    if(!start_time) {
+      date = this.state.queryString;
+    } else {
+    date = this.state.queryString + '&start_time=' + start_time
+    }
+    fetch(`/api/admin-available-drivers.php` + date, {
       method: 'GET'
     })
       .then(response => {
@@ -68,6 +74,7 @@ class AdminShiftsDay extends React.Component {
 
   componentDidMount() {
     this.fetchCallMethod(this.state.queryString);
+    this.getAvailableDrivers();
   }
 
   render() {
@@ -84,6 +91,9 @@ class AdminShiftsDay extends React.Component {
         shiftData: {
           start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time), //round start time
           end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time),  //round end time
+          user_name: data.user_id,
+          round_status: data.status,
+          start_military_time: data.start_time,
         },
         type: data.status != 'unscheduled' ? 'active' : 'alertShift',
         range: {
@@ -156,11 +166,15 @@ class AdminShiftsDay extends React.Component {
     //     "shiftEndTime": 2400 ------/
     //   }
     console.log("shiftsMapRender::", shiftsMapRender);
-    console.log('allShiftInfo::', allShiftInfo);
-    console.log('roundInfo::', roundInfo);
-    console.log('childrenShifts::', childrenShifts);
+    // console.log('allShiftInfo::', allShiftInfo);
+    // console.log('roundInfo::', roundInfo);
+    // console.log('childrenShifts::', childrenShifts);
     // debugger;
 console.log('Available Drivers:',this.state.availableOperators)
+// debugger;
+// sort through id numbers instead of names to create names list
+const driverIds = [...new Set(this.state.availableOperators.map((index) => index.user_id))];
+// console.log('driverIDs', driverIds);
 
 const firstName = [...new Set(this.state.availableOperators.map((index) => index.first_name))];
 const lastName = [...new Set(this.state.availableOperators.map((index) => index.last_name))];
@@ -168,6 +182,11 @@ const fullName = firstName.reduce(function (arr, v, i) {
   return arr.concat(lastName[i] + ', ' + v);
 }, []);
 console.log('Array of available driver names:', fullName);
+// console.log('Array of available first names:', firstName)
+// console.log('Array of available last names:', lastName)
+// debugger;
+// console.log("shiftsMapRender[0][0].alert[0].start_time",shiftsMapRender[0][0].alert[0].start_time);  // gives '600'
+// shiftsMapRender[0][1].alert[0].start_timev//620
 
     return (
       <div>            
@@ -179,7 +198,7 @@ console.log('Array of available driver names:', fullName);
         <div className="adminShiftsDayView">
           {shiftsMapRender.map((data, index) => {
             return (
-              <div className="dayDataContainer">
+              <div key={index} className="dayDataContainer">
                 <div className="dayLabelContainer">
                   <div className="adminShiftsDayBusLine">
                     < RouteBusDisplay
@@ -190,30 +209,39 @@ console.log('Array of available driver names:', fullName);
                   </div>
                 </div>
                 <div className="shiftRowContainer">
+                  <div className="individual-round">
                   < ShiftDisplayComponent
                     key={index}
                     range={range}
                     shiftData={{ start: data[index].shiftData.start, end: data[index].shiftData.end }}
                     children={childrenShifts[index]}
                     type={'active'}
+                    onClick={this.getAvailableDrivers}
                   />
+                  </div>
                 </div>
               </div>
             )
           })}
         </div>
+
         <div className="dropdown drivers-list">
-              <button onClick={this.getAvailableDrivers} className="dropbtn">Available Drivers</button>
-              <div className="dropdown-content">
-                  {fullName.map((index) => {
+              <ul className="dropbtn">Drivers
+              <li className="dropdown-content">
+                  {fullName.map((name,index) => {                    
                     return (
-                      <a href="#">{index}</a>
+                      <a key={index} href="#">{name}</a>
                     )
                   })}
-              </div>
-            </div>
+              </li>
+              </ul>
+        </div>
       </div>
     )
   }
 }
 export default AdminShiftsDay;
+
+// if (convertUnixDateDay(dateToPass) == data.day_of_week) {}
+// <option>
+// data.map(res=>console.log('response in map:',res.alert[0]))
