@@ -51,7 +51,7 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error) });
   }
 
-  getAvailableDrivers(start_time){
+  getAvailableDrivers(start_time) {
     let date;
     if(!start_time) {
       date = this.state.queryString;
