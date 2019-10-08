@@ -14,6 +14,7 @@ class AdminShiftsDay extends React.Component {
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     const defaultDate = 1566100800; //1573876800; //1566273600;// this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);
+    this.dataDidUpdate = this.dataDidUpdate.bind(this);
     this.state = {
       shiftsAdmin: [],
       availableOperators: [],
@@ -26,13 +27,27 @@ class AdminShiftsDay extends React.Component {
   }
 
   fetchAutoPopulatedData() {
+    debugger;
     fetch(`/api/admin-populate-rounds.php`, {
       method: 'GET'
     })
       .then(response => {
+        console.log('*********************************response')
+        this.dataDidUpdate();
         return response.json()
       })
-      .then(res => console.log("res", res))
+      .then(myJson => {
+        console.log('#################################### got json')
+        // this.dataDidUpdate();
+        this.setState({
+          shiftsAdmin: myJson
+        })
+        // setTimeout( function(){
+        //   this.fetchCallMethod();
+        // }, 100 );
+        
+      })
+      // .then(res => console.log("res", res))
       .catch(error => { throw (error) });
   }
 
@@ -77,6 +92,10 @@ class AdminShiftsDay extends React.Component {
     this.getAvailableDrivers();
   }
 
+  dataDidUpdate(){
+    this.fetchCallMethod(this.state.queryString);
+  }
+
   render() {
     const range = { min: 6, max: 24 };
     const dateToPass = parseInt(this.props.defaultDate);
@@ -104,6 +123,7 @@ class AdminShiftsDay extends React.Component {
       }));
 
     const allShiftInfo = this.state.shiftsAdmin.map((data) => ({
+      user_id: data.user_id,
       route: data.bus_info_id,  // 1, 2, 3
       line: data.line_name,     // C, D, H
       routeLine: data.line_name + data.bus_info_id, // C1, D2, H3

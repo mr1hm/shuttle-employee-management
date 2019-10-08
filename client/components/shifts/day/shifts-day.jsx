@@ -6,10 +6,11 @@ import Modal from '../../post-modal';
 import RouteBusDisplay from '../../route-bus-display';
 import ShiftsDetails from '../details/shifts-details';
 import ShiftsAvailable from '../available/shifts-available';
-import { 
-  createDateObjFromDateString, 
-  convertUnixMonthDay, 
-  adjustLocalTimestampToUTCSeconds 
+import {
+  createDateObjFromDateString,
+  convertUnixMonthDay,
+  adjustLocalTimestampToUTCSeconds, 
+  convertMilitaryTime 
 } from '../../../lib/time-functions';
 import { Minimatch } from 'minimatch';
 
@@ -35,7 +36,7 @@ export function OneOfMyShifts(props) {
       {/* <td> {props.shifts.line_name} / {props.shifts.bus_info_id} </td> */}
       <td> <RouteBusDisplay bus={props.shifts.bus_info_id} route={props.shifts.line_name} /> </td>
 
-      <td> {props.shifts.start_time} - {props.shifts.end_time} </td>
+      <td> {convertMilitaryTime(props.shifts.start_time)} - {convertMilitaryTime(props.shifts.end_time)} </td>
       <td> {numOfRounds} </td>
       {/* <td> {calculateDailyWorkingHours(props.shifts.startTime, props.shifts.endTime)} </td> */}
       <td> {shiftHours} </td>
@@ -57,7 +58,7 @@ class ShiftsDay extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate );// converts unix time to date/at midnight 09/17/2019
-    const defaultId = 17;
+    const defaultId = this.props.userId;
     this.state = {
       myShiftsToday: [],
       isModalOpen: false,
@@ -65,7 +66,7 @@ class ShiftsDay extends React.Component {
       dateToPass:  defaultDate,
       roundID: null,
       shiftsToPass: [],
-      userId: 17,
+      userId: this.props.userId,
       postModal: false
     }
   }
@@ -169,7 +170,6 @@ class ShiftsDay extends React.Component {
     })
       .then(response => { return console.log("Patch response: ", response.json())  })
       .catch(error => { throw (error) });
-      debugger;
       this.closeTakeShiftsModal();
 
   }
@@ -183,18 +183,27 @@ class ShiftsDay extends React.Component {
     dateToPass = createDateObjFromDateString(dateToPass);// converts unix time to date/at midnight 09/17/2019
 
     if (this.state.myShiftsToday.length === 0) {
-      return (
-        <div>
-          <TopMenuShift title="DAY" page='day' date={dateToPass} />
-          <div>You have no shifts scheduled today.</div>
-        </div>
-      );
-    }
+      if (this.props.view === 'availableShifts'){
+        return (
+          <div>
+            <TopMenuShift title="AVAILABLE" page='day' date={dateToPass} />
+            <div>There are no available shifts for you today.</div>
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            <TopMenuShift title="DAY" page='day' date={dateToPass} />
+            <div>You have no shifts scheduled today.</div>
+          </div>
+        );
+      }
 
+    }
     let shiftBlockStart = this.state.shiftsToPass.map(index =>  index.start_time).toString();
     let shiftBlockEnd = this.state.shiftsToPass.map(index =>  index.end_time).toString();
-    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id).toString();
-    let shiftBusLine = this.state.shiftsToPass.map(index => index.line_name).toString();
+    let shiftUserId = this.state.shiftsToPass.map(index => index.user_id);
+    let shiftBusLine = this.state.shiftsToPass.map(index => index.line_name);
     let shiftBusNum = this.state.shiftsToPass.map(index => index.bus_info_id).toString();
     let shiftRoundID = this.state.shiftsToPass.map(roundID => roundID.roundID);
 

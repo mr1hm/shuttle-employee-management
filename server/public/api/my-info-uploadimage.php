@@ -46,4 +46,7 @@ while ($row = mysqli_fetch_assoc($result)) {
   $data[] = $row;
 }
 print(json_encode($data));
+header("Location: http://localhost:3000/myinfo");
+
+exit();
 ?>
