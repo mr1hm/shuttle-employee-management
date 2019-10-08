@@ -3,28 +3,35 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once 'db_connection.php';
 
-// $date= $_GET['date'];
-
+$date= $_GET['date'];
+$start_time = $_GET['start_time'] ?? false;
+// $day_of_week = $_GET['day_of_week'];
+// $start_time= $_GET['start_time'];
+$start_time_filter = $start_time ? "AND rd.`start_time` != {$start_time}" : "";
 $query = "SELECT
             us.`first_name`,
             us.`last_name`,
             us.`status`,
             us.`role`,
             us.`id`,
-            oa.`user_id`,
-            oa.`day_of_week`,
-            oa.`start_time`,
-            oa.`end_time`
+            rd.`start_time`,
+            rd.`end_time`,
+            rd.`date`,
+            rd.`status` AS shift_status,
+            rd.`user_id`
           FROM
-            `user` AS us
+            `round` AS rd
           INNER JOIN
-            `operator_availability` AS oa
+          `user` AS us
           ON
-            us.`id` = oa.`user_id`
+            us.`id` = rd.`user_id`
           WHERE
-            us.`status` = 'active' AND
-            us.`role` = 'operator' AND
-            oa.`day_of_week` = 'Thu'";
+            us.`status` = 'active' 
+            AND us.`role` = 'operator' 
+            AND rd.`date` = {$date} 
+            $start_time_filter
+          ORDER BY
+            us.`id` ASC";
 
 
 
