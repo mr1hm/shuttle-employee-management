@@ -12,17 +12,32 @@ class AdminRoutes extends React.Component {
     this.state = {
       session: null,
       routeInfo: [],
-      busInfo: []
+      busInfo: [],
+      editBusClicked: false,
+      editLineClicked: false
     }
   }
 
-  createRouteBusComponent(routeInfo){
+  handleEditBusButton() {
+    this.setState({
+      editBusClicked: true
+    })
+  }
+
+  handleEditLineButton() {
+    this.setState({
+      editLineClicked: true
+    })
+  }
+
+
+  readRouteBusComponent(routeInfo){
     if (!routeInfo){
       return;
     }
     let prevLine = " ";
-     if (this.state.)
 
+    {/** if the edit routes button is not clicked, we will render this**/}
     return(
     routeInfo.map((routeInfo, index) => {
 
@@ -48,7 +63,8 @@ class AdminRoutes extends React.Component {
                 Bus Details
       </button>
               <button className="btn btn-dark btn-sm collapsed  " type="button" data-toggle="collapse" style={{ "fontSize": 24 }}
-                data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}> +</button>
+                data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}
+                onClick={() => this.handleEditBusButton()} > +</button>
             </div>
          </div>
 
@@ -142,6 +158,78 @@ class AdminRoutes extends React.Component {
       })
   }
     render(){
+        if (this.state.editLineClicked) {
+          return (
+            <React.Fragment>
+              <TopMenuGeneral title="ADMIN - Routes/Buses" />
+              {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
+              <div className="container mt-2">
+                <div className="row ">
+                  <form onSubmit={this.handleSubmit}>
+                    <label >
+                      Start Date:
+          <input type="text" value={this.state.value} onChange={this.handleChange} />
+                    </label>
+                    <input type="submit" value="Submit" />
+                    <label>
+                      End Date:
+          <input type="text" value={this.state.value} onChange={this.handleChange} />
+                    </label>
+                    <input type="submit" value="Submit" />
+                  </form>
+                </div>
+                <div className="row justify-content-end">
+                  <div className="btn btn-outline-dark " onClick={() => this.handleEditRouteButton()}> Add Line + </div>
+                </div>
+              </div>
+
+
+              <div className="container mt-2">
+                <div className="row">
+                  <div className="col-sm-2 ml-2">Line</div>
+                  <div className="col-sm-2 ml-3">Active</div>
+                  <div className="col-sm-2 ml-4">Public</div>
+                  <div className="col-sm-2 ml-3">Regular Service</div>
+                </div>
+              </div>
+              <div className="accordion" id="accordionExample">
+
+                {this.readRouteBusComponent(this.state.routeInfo)}
+
+              </div>
+              <div className="card" >
+                <div className="card-header" >
+                  <div className="row" >
+                    <div>
+                      <input className="col" type="text">
+
+                    </input>
+                    </div>
+                    <div>
+                      <input className="col" type="text"></input>
+                    </div>
+                    <div>
+                      <input className="col" type="text"></input>
+                    </div>
+                    <div>
+                      <input className="col" type="text"></input>
+                    </div>
+
+
+                    {/* <div className="col">{routeInfo.public.toString()}</div> */}
+                    {/* <div className="col">{routeInfo.regular_service.toString()}</div> */}
+                    <button className="btn btn-link" type="button">
+                      Save
+                     </button>
+                </div>
+                </div>
+                </div>
+            </React.Fragment>
+          );
+
+        }
+
+
       return (
         <React.Fragment>
         <TopMenuGeneral title="ADMIN - Routes/Buses" />
@@ -162,7 +250,7 @@ class AdminRoutes extends React.Component {
               </form>
           </div>
           <div className = "row justify-content-end">
-              <div className="btn btn-outline-dark "> Add Route + </div>
+              <div className="btn btn-outline-dark "  onClick={() => this.handleEditLineButton()}> Add Line + </div>
           </div>
         </div>
 
@@ -177,7 +265,7 @@ class AdminRoutes extends React.Component {
         </div>
           <div className="accordion" id="accordionExample">
 
-            {this.createRouteBusComponent(this.state.routeInfo)}
+            {this.readRouteBusComponent(this.state.routeInfo)}
 
     </div>
         </React.Fragment>
