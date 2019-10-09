@@ -21,6 +21,8 @@ class AdminRoutes extends React.Component {
       return;
     }
     let prevLine = " ";
+     if (this.state.)
+
     return(
     routeInfo.map((routeInfo, index) => {
 
@@ -114,77 +116,6 @@ class AdminRoutes extends React.Component {
     ))
 
   }
-      // createAccordianComponent(routeInfo){
-//map through routeInfo
-//create accordian component with information for each object that matches
-        // if (!routeInfo){
-        //   return;
-        // }
-
-      //  let line_name = routeInfo.map(routeInfo => routeInfo.line_name);
-      //  let active_status = routeInfo.map(routeInfo => routeInfo.status);
-      //  let public_status= routeInfo.map(routeInfo => routeInfo.public ).toString();
-      //   let regular_service = routeInfo.map(routeInfo => routeInfo.regular_service).toString();
-//         debugger;
-//       return (
-//       routeInfo.map((routeInfo, index) => { return (
-//         <React.Fragment>
-//           <div className = "row" id = {index}>
-//         <div className="col">
-//       <RouteBusDisplay route={routeInfo.line_name}></RouteBusDisplay>
-//     </div>
-//             <div className="col">{routeInfo.status}</div>
-//             <div className="col">{routeInfo.public.toString()}</div>
-//             <div className="col">{routeInfo.regular_service.toString()}</div>
-//             <button className="btn btn-link col dropdown-toggle" type="button" data-toggle="collapse" data-target={`#collapse${routeInfo.line_name}`} aria-expanded="false" aria-controls={`collapse${routeInfo.line_name}`}>
-//       Bus Details
-//       </button>
-//       <button className="btn btn-dark btn-sm " type="button" style={{ "fontSize": 24 }}> +</button>
-//           </div>
-//         </React.Fragment>
-//       )})
-// );
-     // }
-
-      // createBusComponent(busInfo){
-      //   if (!busInfo) {
-      //     return;
-      //   }
-
-        // let start_time = busInfo.map(busInfo => busInfo.start_time);
-        // let end_time = busInfo.map(busInfo => busInfo.end_time);
-        // let round_dur = busInfo.map(busInfo => busInfo.round_dur).toString() + "min.";
-        // let open_dur = busInfo.map(busInfo => busInfo.opening_duration).toString() + "min";
-        // let close_dur = busInfo.map(busInfo => busInfo.closing_duration).toString() + "min";
-      //  return(
-      //    busInfo.map((busInfo, index)=> { return (
-      //    <div id={`collapse${busInfo.line_name}`} className="collapse " aria-labelledby="headingOne" data-parent="#accordionExample">
-      //      <div className="card-body">
-      //        <div className="row">
-
-      //          <div className="col">Line #</div>
-      //          <div className="col">Start Time</div>
-      //          <div className="col">End Time</div>
-      //          <div className="col">Rd. Duration</div>
-      //          <div className="col">Start Up</div>
-      //          <div className="col">Close Down</div>
-      //        </div>
-      //     <div className="col">
-      //       <RouteBusDisplay bus={busInfo.bus_number}></RouteBusDisplay>
-      //     </div>
-      //       <div className="col">{busInfo.start_time}</div>
-      //       <div className="col">{busInfo.end_time}</div>
-      //       <div className="col">{busInfo.round_dur}</div>
-      //       <div className="col">{busInfo.open_duration}</div>
-      //       <div className="col">{busInfo.close_duration}</div>
-      //      </div>
-      //    </div>)})
-
-      //  )
-      // }
-
-
-
 
       componentDidMount(){
         this.handleRoutesInformation('api/admin-buses-routes.php', 'GET');
@@ -246,140 +177,9 @@ class AdminRoutes extends React.Component {
         </div>
           <div className="accordion" id="accordionExample">
 
-            {/* <div className="card"> */}
-{this.createRouteBusComponent(this.state.routeInfo)}
-              {/*card closing tag */}
-            {/* </div> */}
+            {this.createRouteBusComponent(this.state.routeInfo)}
 
-            {/*accordian closing tag*/}
-          </div>
-
- {/*turn into "accordian component"*/}
-          {/* <div className="accordion" id="accordionExample">
-            <div className="card">
-              <div className="card-header" id="headingOne">
-                <div className="container">
-
-                    {this.createAccordianComponent(this.state.routeInfo)} */}
-                    {/* {this.createBusComponent(this.state.routeInfo)} */}
-                    {/* <div className = "col">
-                      <RouteBusDisplay route="C"></RouteBusDisplay>
-                    </div>
-                    <div className="col">true</div>
-                    <div className="col">true</div>
-                    <div className="col">true</div>
-                    <button className="btn btn-link col dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      Bus Details
-                   </button>
-                   <button className= "btn btn-dark btn-sm " type="button" style={{"fontSize": 24}}> +</button> */}
-
-                {/* </div>
-              </div> */}
-              {/*turn into bus header component*/}
-
-
-                    {/* {this.createBusComponent(this.state.routeInfo)} */}
-                    {/* <div className="col">
-                      <RouteBusDisplay bus="1"></RouteBusDisplay>
-                    </div>
-                    <div className="col">6:00 a.m.</div>
-                    <div className="col">10:00 a.m.</div>
-                    <div className="col">15 min.</div>
-                    <div className="col">30 min.</div>
-                  <div className="col">45 min.</div>*/}
-
-                  {/* <div className="row">
-
-                    <div className="col">
-                      <RouteBusDisplay bus="2"></RouteBusDisplay>
-                    </div>
-                    <div className="col">6:20 a.m.</div>
-                    <div className="col">10:20 a.m.</div>
-                    <div className="col">15 min.</div>
-                    <div className="col">30 min.</div>
-                    <div className="col">45 min.</div>
-                  </div> */}
-
-              {/* </div>
-            </div> */}
-            {/*turn into "accordian route component"*/}
-            {/* <div className="accordion" id="accordionExample">
-              <div className="card">
-                <div className="card-header" id="headingTwo">
-                  <div className="container">
-                    <div className="row">
-                      <div className="col">
-                        <RouteBusDisplay route="D"></RouteBusDisplay>
-                      </div>
-                      <div className="col">true</div>
-                      <div className="col">true</div>
-                      <div className="col">true</div>
-                      <button className="btn btn-link col dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                        Bus Details
-                   </button>
-                      <button className="btn btn-dark btn-sm " type="button" style={{ "fontSize": 24 }}> +</button>
-                    </div>
-                  </div>
-                </div> */}
-        {/*turn into bus header component*/}
-                {/* <div id="collapseTwo" className="collapse " aria-labelledby="headingTwo" data-parent="#accordionExample">
-                  <div className="card-body">
-                    <div className="row">
-
-                      <div className="col">#</div>
-                      <div className="col">Start Time</div>
-                      <div className="col">End Time</div>
-                      <div className="col">Rd. Duration</div>
-                      <div className="col">Start Up</div>
-                      <div className="col">Close Down</div>
-                    </div>
-                    <div className ="row">
-                      <div className="col">No buses added</div>
-                  </div>
-                </div>
-              </div> */}
-              {/*turn into "accordian component"*/}
-              {/* <div className="accordion" id="accordionExample">
-                <div className="card">
-                  <div className="card-header" id="headingThree">
-                    <div className="container">
-                      <div className="row">
-                        <div className="col">
-                          <RouteBusDisplay route="M"></RouteBusDisplay>
-                        </div>
-                        <div className="col">true</div>
-                        <div className="col">true</div>
-                        <div className="col">true</div>
-                        <button className="btn btn-link col dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                          Bus Details
-                   </button>
-                        <button className="btn btn-dark btn-sm " type="button" style={{ "fontSize": 24 }}> +</button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id="collapseThree" className="collapse " aria-labelledby="headingThree" data-parent="#accordionExample">
-                    <div className="card-body">
-                      <div className="row">
-
-                        <div className="col">#</div>
-                        <div className="col">Start Time</div>
-                        <div className="col">End Time</div>
-                        <div className="col">Rd. Duration</div>
-                        <div className="col">Start Up</div>
-                        <div className="col">Close Down</div>
-                      </div>
-                      <div className="row">
-                        <div className="col">No buses added</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                </div>
-                </div>
-                </div> */}
-
+    </div>
         </React.Fragment>
       );
     }
