@@ -14,7 +14,8 @@ class ShiftsDetails extends React.Component {
     super(props);
       this.state = {
         isModalOpen: false,
-        shiftsDetailsInfo: []
+        shiftsDetailsInfo: [],
+        textFromCommentBox:""
       }
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -23,7 +24,38 @@ class ShiftsDetails extends React.Component {
     this.pushRoundIDsToArray = this.pushRoundIDsToArray.bind(this);
     this.handlePostButtonConfirmation = this.handlePostButtonConfirmation.bind(this);
     this.checkedRoundIDs = [];
+    this.handleTransactionLog = this.handleTransactionLog.bind(this);
+    this.handleTextArea = this.handleTextArea.bind(this);
   }
+
+  handleTextArea(event){
+    console.log("props in handleText",this.props.userID);
+    console.log("props in handleText", this.props.busNumber);
+    this.setState({ textFromCommentBox: event.target.value });
+    console.log("text", this.state.textFromCommentBox);
+
+  }
+
+  handleTransactionLog(){
+    console.log("inside handle transaction", this.state.textFromCommentBox);
+    fetch('/api/transaction.php', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        text: this.state.textFromCommentBox,
+        user_id: this.props.userID,
+        bus_id: this.props.busNumber,
+        type: "POST"
+      })
+    })
+      .then(response => {
+       console.log("transaction",response.json());
+      })
+  }
+
   getData(url, methodToUse) {
     fetch(url, { method: methodToUse })
       .then(response => { return response.json() })
@@ -287,8 +319,12 @@ class ShiftsDetails extends React.Component {
               }
             </tbody>
           </table>
+          <div class="form-group">
+            <label htmlFor="comment mr-3">Comment:</label>
+            <textarea onChange={this.handleTextArea} class="form-control ml-3" rows="5" id="comment"></textarea>
+          </div>
           <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Back to My Shifts</button></p>
-          <p><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >
+          <p onClick={this.handleTransactionLog} ><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >
             {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Yes, I want to cancel' : "Yes, I want to post"}</button></p>
         </Modal>
       </React.Fragment>
