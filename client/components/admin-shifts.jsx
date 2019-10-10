@@ -14,16 +14,13 @@ class AdminShiftsDay extends React.Component {
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
-    const defaultDate = 1566273600; //1573876800; //1566273600;// this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);
+    const defaultDate = 1566273600; 
     this.state = {
-      shiftsAdmin: [],
+      rounds: [],
       availableOperators: [],
       queryString: `?date=${defaultDate}`,
       dateToPass: defaultDate
     }
-    console.log('defaultDate:', defaultDate);
-    console.log('dateToPass(should be same as defaultDate:', this.state.dateToPass);
-    console.log('queryString:', this.state.queryString);
   }
 
   fetchAutoPopulatedData() {
@@ -32,20 +29,14 @@ class AdminShiftsDay extends React.Component {
       method: 'GET'
     })
       .then(response => {
-        console.log('*********************************response')
         this.dataDidUpdate();
         return response.json()
       })
       .then(myJson => {
-        console.log('#################################### got json')
-        // this.dataDidUpdate();
         this.setState({
-          shiftsAdmin: myJson
-        })
-        // setTimeout( function(){
-        //   this.fetchCallMethod();
-        // }, 100 );
-        
+          rounds: myJson
+        }),
+        console.log(this.state.rounds)
       })
       // .then(res => console.log("res", res))
       .catch(error => { throw (error) });
@@ -75,7 +66,7 @@ class AdminShiftsDay extends React.Component {
       })
       .then(myJson => {
         this.setState({
-          shiftsAdmin: myJson
+          rounds: myJson
         })
       })
       .catch(error => { throw (error) });
@@ -89,109 +80,76 @@ class AdminShiftsDay extends React.Component {
     this.fetchCallMethod(this.state.queryString);
   }
 
-  render() {
-    const range = { min: 6, max: 24 };
-    const dateToPass = parseInt(this.props.defaultDate);
-    const lineName = [...new Set(this.state.shiftsAdmin.map((index) => index.line_name))];
-    const busNumber = [...new Set(this.state.shiftsAdmin.map((index) => index.bus_info_id))];
-    const routeLineArray = lineName.reduce(function (arr, v, i) {
-      return arr.concat(v + busNumber[i]);
-    }, []);
-
-    const roundInfo = this.state.shiftsAdmin
-      .map((data) => ({
-        shiftData: {
-          start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time), //round start time
-          end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time),  //round end time
-        },
-        type: data.status != 'unscheduled' ? 'active' : 'alertShift',
-        range: {
-          min: data.busStart, //bus start for day  //used to be shiftStartTime
-          max: data.busEnd //bus end for day  //used to be shiftEndTime
-        },
-        routeLine: data.line_name + data.bus_info_id
-      }));
-
-    const allShiftInfo = this.state.shiftsAdmin.map((data) => ({
-      user_id: data.user_id,
-      route: data.bus_info_id,  // 1, 2, 3
-      line: data.line_name,     // C, D, H
-      routeLine: data.line_name + data.bus_info_id, // C1, D2, H3
-      type: data.status, // sched, unsched, posted, swapped
-      shiftData: {
-        start: data.busStart, // bus start for day
-        end: data.busEnd      //bus end for day
-      },
-      range: {
-        min: range.min, //6am
-        max: range.max //12am
-      },
-      alert: [data]
-    }));
-
-    const shiftsByRouteLine = {};
-    const shiftsMapRender = [];
-    const childrenByBusLine = {};
-    const childrenShifts = [];
-
-    routeLineArray.forEach(routeLine => {
-      shiftsByRouteLine[routeLine] = []
-    })
-
-    allShiftInfo.forEach(shift => {
-      const routeLine = shift.routeLine
-      shiftsByRouteLine[routeLine].push(shift);
-    })
-
-    for (const routeLine in shiftsByRouteLine) {
-      const shiftGroup = shiftsByRouteLine[routeLine]
-      shiftsMapRender.push(shiftGroup)
+  //build array for a specific line and busNumber and sort by start time
+  buildRoundsByLine(lineName, busNumber) {
+    var roundsForLine = [];
+    
+    for( var roundsIndex = 0; roundsIndex < this.state.rounds.length; roundsIndex++) {
+      if(this.state.rounds[roundsIndex]['line_name'] === lineName && this.state.rounds[roundsIndex]['bus_number'] === busNumber) {
+        roundsForLine.push(this.state.rounds[roundsIndex]);
+      }
     }
+    roundsForLine.sort((a, b) => {
+      return a.round_start - b.round_start;
+    });
+    console.log('rounds for line: ', roundsForLine);
+    return roundsForLine;
+  }
 
-    routeLineArray.forEach(routeLine => {
-      childrenByBusLine[routeLine] = []
-    })
-
-    roundInfo.forEach(shift => {
-      const routeLine = shift.routeLine
-      childrenByBusLine[routeLine].push(shift);
-    })
-
-    for (const routeLine in childrenByBusLine) {
-      const shiftGroupChildren = childrenByBusLine[routeLine]
-      childrenShifts.push(shiftGroupChildren)
+  //build an array of shifts for specific line and bus number
+  buildShiftsByLine(lineName, busNumber) {
+    var shiftsForLine = [];
+    var endTime = null;
+    var sortedLineAndBusArray = this.buildRoundsByLine(lineName, busNumber);
+    var startTime = sortedLineAndBusArray[0].round_start;
+    var userId = sortedLineAndBusArray[0].user_id;
+    for (var indexSortedArray = 0;  indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
+      if (sortedLineAndBusArray[indexSortedArray].user_id === userId) {
+        continue;
+      } 
+      if(indexSortedArray === sortedLineAndBusArray.length - 1) {
+        endTime = sortedLineAndBusArray[sortedLineAndBusArray.length - 1].round_end;
+        shiftsForLine.push([startTime, endTime, userId]);
+      }
+        else {
+        endTime = sortedLineAndBusArray[indexSortedArray - 1].round_end;
+        shiftsForLine.push([startTime, endTime, userId]);
+        startTime = sortedLineAndBusArray[indexSortedArray].round_start;
+        userId = sortedLineAndBusArray[indexSortedArray].user_id;
+      }
     }
+    return shiftsForLine;
+  }
 
-    // how json was set up
-    //  "route": 4,
-    // "line": "D",
-    // "startTime": 800, ----------------------\
-    // "endTime": 2400, --------------\         |
-    // "shifts": [ 24,25,26,27 ],      |        |
-    // "alert": [                      |        | 
-    //   {"start": 1200,               |        | 
-    //     "end": 1300,                |        | 
-    //     "type": "alertShift",       |        | 
-    //     "shiftStartTime": 800,------|-------/
-    //     "shiftEndTime": 2400 ------/
-    //   }
-    console.log("shiftsMapRender::", shiftsMapRender);
-    console.log('allShiftInfo::', allShiftInfo);
-    console.log('roundInfo::', roundInfo);
-    console.log('childrenShifts::', childrenShifts);
+  shiftsGroupedByLineAndBus() {
     // debugger;
-console.log('Available Drivers:',this.state.availableOperators)
+    var busAndLineObject = {};
+    var groupedShifts = [];
+    // console.log(this.state.rounds);
+    for (var index = 0; index < this.state.rounds.length; index++) {
+        var joinedLineAndBusNumber = this.state.rounds[index].line_name + this.state.rounds[index].bus_number;
+        busAndLineObject[joinedLineAndBusNumber] = [this.state.rounds[index].line_name, this.state.rounds[index].bus_number];
+    }
 
-const firstName = [...new Set(this.state.availableOperators.map((index) => index.first_name))];
-const lastName = [...new Set(this.state.availableOperators.map((index) => index.last_name))];
-const fullName = firstName.reduce(function (arr, v, i) {
-  return arr.concat(lastName[i] + ', ' + v);
-}, []);
-console.log('Array of available driver names:', fullName);
+    //remove the duplicates that still remain in the busAndLineArray
 
+    console.log('busAndLineObject: ', busAndLineObject);
+    for (var key in busAndLineObject) {
+      var lineName = busAndLineObject[key][0];
+      var busNumber = busAndLineObject[key][1];  
+      groupedShifts.push([lineName, busNumber, this.buildShiftsByLine(lineName, busNumber)]);
+    }
+    console.log(groupedShifts);
+    return groupedShifts;
+  }
+
+  render() {
+    const groupedArray = this.shiftsGroupedByLineAndBus();
+    console.log('groupedArray: ', groupedArray);
+    const range = { min: 6, max: 24 };
     return (
       <div>
-            <div className="dropdown">
+            {/* <div className="dropdown">
               <button onClick={this.getAvailableDrivers} className="dropbtn">Available Drivers</button>
               <div className="dropdown-content">
                   {fullName.map((index) => {
@@ -200,32 +158,34 @@ console.log('Array of available driver names:', fullName);
                     )
                   })}
               </div>
-            </div>
+            </div> */}
             
-        <TopMenuShift title="Admin" page='day' date={dateToPass} />
+        <TopMenuShift title="Admin" page='day' date={this.state.dateToPass} />
         <button onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
         <div className="viewHoursContainer">
           <HoursOfOperation />
         </div>
         <div className="adminShiftsDayView">
-          {shiftsMapRender.map((data, index) => {
+          {groupedArray.map((element, index) => {
             return (
               <div className="dayDataContainer">
                 <div className="dayLabelContainer">
                   <div className="adminShiftsDayBusLine">
                     < RouteBusDisplay
-                      key={index}
-                      bus={data[index].route}  //bus number
-                      route={data[index].line} //line letter
-                    />
+                      key={index} 
+                      bus={element[1]}  //bus number
+                      route={element[0]} //line letter
+                    /> 
                   </div>
                 </div>
-                <div className="shiftRowContainer">
+                <div className="shiftRowContainer"> */}
+                  {/* this still needs to be fixed so it populates properly */}
                   < ShiftDisplayComponent
                     key={index}
                     range={range}
-                    shiftData={{ start: data[index].shiftData.start, end: data[index].shiftData.end }}
-                    children={childrenShifts[index]}
+                    //need to change so it actually pulls from the proper fields in our db
+                    shiftData={{ start: element[2][index][2], end: element[2][index][0]}}
+                    children={element[2][index]}
                     type={'active'}
                   />
                 </div>
@@ -238,3 +198,4 @@ console.log('Array of available driver names:', fullName);
   }
 }
 export default AdminShiftsDay;
+
