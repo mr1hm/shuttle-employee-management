@@ -36,8 +36,18 @@ class ShiftsDetails extends React.Component {
 
   }
 
-  handleTransactionLog(){
-    console.log("inside handle transaction", this.state.textFromCommentBox);
+  handleTransactionLog(event){
+    let text = event.currentTarget.textContent;
+    let type = null;
+    switch(text){
+      case "Yes, I want to cancel":
+        type = "cancel";
+        break;
+      case "Yes, I want to post":
+        type = "post";
+        break;
+    };
+    console.log("type",type);
     fetch('/api/transaction.php', {
       headers: {
         'Accept': 'application/json',
@@ -48,7 +58,7 @@ class ShiftsDetails extends React.Component {
         text: this.state.textFromCommentBox,
         user_id: this.props.userID,
         bus_id: this.props.busNumber,
-        type: "POST"
+        type: type
       })
     })
       .then(response => {
@@ -319,12 +329,12 @@ class ShiftsDetails extends React.Component {
               }
             </tbody>
           </table>
-          <div class="form-group">
-            <label htmlFor="comment mr-3">Comment:</label>
-            <textarea onChange={this.handleTextArea} class="form-control ml-3" rows="5" id="comment"></textarea>
+          <div className="form-group box">
+            <label className="boxComment" htmlFor="comment ">Comment:</label>
+            <textarea onChange={this.handleTextArea} className="form-control ml-3" rows="5" id="comment"></textarea>
           </div>
           <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Back to My Shifts</button></p>
-          <p onClick={this.handleTransactionLog} ><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >
+          <p onClick={(event) => this.handleTransactionLog(event)} ><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >
             {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Yes, I want to cancel' : "Yes, I want to post"}</button></p>
         </Modal>
       </React.Fragment>
