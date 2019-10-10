@@ -24,7 +24,18 @@ $query = "SELECT
             rt.`id` = bi.`route_id`
             WHERE  rt. `status` ='active'
             ORDER BY line_name";
+} else if ($method === 'POST') {
+
+    $line_name = $_POST['line_name'];
+    $status = $_POST['active'];
+    $opening_duration = 30;
+    $closing_duration = 20;
+    $query = "INSERT INTO `route` (`status`, `line_name`, `opening_duration`, `closing_duration`)
+  values ('$status', '$line_name', '$opening_duration', '$closing_duration') ";
+
 }
+
+
 
 
 $result = mysqli_query($conn, $query);
@@ -33,30 +44,15 @@ if (!$result) {
 }
 
 $data = [];
-// conditional for grouping same lines together by line name
-// if ($checkingType) {
-//   $previousLine = '';
-//   $currentDataRow = [];
-//   while ($row = mysqli_fetch_assoc($result)) {
-//     if ($row['line_name'] !== $previousLine) {
-//       $data[] = $currentDataRow;
-//       $currentDataRow = $row;
-//     } else {
-
-//     }
-//     $previousLine = $row['line_name'];
-//   }
-//   $data[] = $currentDataRow;
-//   array_shift($data);
-// } else {
   while ($row = mysqli_fetch_assoc($result)) {
     $data[] = $row;
   }
-// }
 
 
-// while ($row = mysqli_fetch_assoc($result)) {
-//   $data[] = $row;
-// }
+
 print(json_encode($data));
+
+
+
+
 ?>

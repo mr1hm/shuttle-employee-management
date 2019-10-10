@@ -134,10 +134,11 @@ class AdminRoutes extends React.Component {
   }
 
       componentDidMount(){
-        this.handleRoutesInformation('api/admin-buses-routes.php', 'GET');
-        this.handleBusesInformation('api/admin-buses-routes.php', 'GET');
+        this.handleRoutesInformation('api/admin-lines-buses.php', 'GET');
+        this.handleBusesInformation('api/admin-lines-buses.php', 'GET');
       }
-      handleRoutesInformation(url, method){
+
+  handleRoutesInformation(url, method){
           fetch(url, { method: method })
              .then(response => { return response.json() })
             .then(routeInfo => {
@@ -199,29 +200,37 @@ class AdminRoutes extends React.Component {
               </div>
               <div className="card" >
                 <div className="card-header" >
-                  <div className="row" >
-                    <div>
-                      <input className="col" type="text">
 
-                    </input>
+                  <form method="POST" action= "/api/admin-lines-buses.php">
+                  <div className="row" >
+
+                    <div>
+                      <label>Line Name</label>
+                      <input className="col border border-primary" type="text" name="line_name"></input>
                     </div>
                     <div>
-                      <input className="col" type="text"></input>
+                        <label>Active</label>
+                        <input className="col border border-primary" type="text" name="active"></input>
                     </div>
                     <div>
-                      <input className="col" type="text"></input>
+                        <label>Public</label>
+                        <input className="col border border-primary" type="text" name="public"></input>
                     </div>
                     <div>
-                      <input className="col" type="text"></input>
+                        <label>Regular Service</label>
+                        <input className="col border border-primary" type="text" name="regular_service"></input>
                     </div>
 
 
                     {/* <div className="col">{routeInfo.public.toString()}</div> */}
                     {/* <div className="col">{routeInfo.regular_service.toString()}</div> */}
-                    <button className="btn btn-link" type="button">
+                    <button className="btn btn-primary" type="submit" >
                       Save
                      </button>
+
                 </div>
+                  </form>
+
                 </div>
                 </div>
             </React.Fragment>
