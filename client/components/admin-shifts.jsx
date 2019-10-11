@@ -11,73 +11,102 @@ class AdminShiftsDay extends React.Component {
     this.query = ``;
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
-    this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
+    // this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     const defaultDate = 1566273600; 
     this.state = {
-      rounds: [],
+      rounds: null,
       availableOperators: [],
       queryString: `?date=${defaultDate}`,
       dateToPass: defaultDate
     }
   }
 
+  //I don't think this approach will work.
+  //The autopopulate takes awhile and it is pulling the round data too soon.
+  //It's not noticing that anything has been updated, so the rounds array does not have the 
+  //right information.
   fetchAutoPopulatedData() {
-    debugger;
     fetch(`/api/admin-populate-rounds.php`, {
-      method: 'GET'
+      method: 'POST'
     })
-      .then(response => {
-        this.dataDidUpdate();
-        return response.json()
-      })
-      .then(myJson => {
-        this.setState({
-          rounds: myJson
-        }),
-        console.log(this.state.rounds)
-      })
-      // .then(res => console.log("res", res))
-      .catch(error => { throw (error) });
+    .then(() => {
+      this.fetchCallMethod();
+    })
+    .catch(error => { throw (error) });
   }
 
-  getAvailableDrivers(){
-    fetch(`/api/admin-available-drivers.php`, {
+  // getAvailableDrivers(){
+  //   fetch(`/api/admin-available-drivers.php`, {
+  //     method: 'GET'
+  //   })
+  //     .then(response => {
+  //       return response.json()
+  //     })
+  //     .then(myJson => {
+  //       this.setState({
+  //         availableOperators: myJson
+  //       })
+  //     })
+  //     .catch(error => { throw (error) });
+  // }
+
+  // fetchCallMethod(query) {
+  //   fetch(`/api/admin-day-shifts.php` + query, {
+  //     method: 'GET'
+  //   })
+  //     .then(response => {
+  //       return response.json()
+  //     })
+  //     .then(myJson => {
+  //       this.setState({
+  //         rounds: myJson
+  //       })
+  //     })
+  //     .catch(error => { throw (error) });
+  // }
+
+  fetchCallMethod() {
+    fetch(`/api/admin-day-shifts.php`, {
       method: 'GET'
     })
       .then(response => {
         return response.json()
       })
       .then(myJson => {
-        this.setState({
-          availableOperators: myJson
+        this.setState({ 
+          rounds: myJson
         })
       })
       .catch(error => { throw (error) });
   }
 
-  fetchCallMethod(query) {
-    fetch(`/api/admin-day-shifts.php` + query, {
-      method: 'GET'
-    })
-      .then(response => {
-        return response.json()
-      })
-      .then(myJson => {
-        this.setState({
-          rounds: myJson
-        })
-      })
-      .catch(error => { throw (error) });
-  }
+  // componentDidMount() {
+  //   this.fetchCallMethod(this.state.queryString);
+  // }
+
+  // dataDidUpdate(){
+  //   this.fetchCallMethod(this.state.queryString);
+  // }
 
   componentDidMount() {
-    this.fetchCallMethod(this.state.queryString);
+    // this.fetchAutoPopulatedData();
+    this.fetchCallMethod();
   }
 
   dataDidUpdate(){
-    this.fetchCallMethod(this.state.queryString);
+    this.fetchCallMethod();
   }
+
+  // //shutting off the query string for right now, until it is operating properly
+  // componentDidMount() {
+  //   this.fetchCallMethod();
+  // }
+
+  // dataDidUpdate(){
+  //   // this.fetchCallMethod();
+  // }
+
 
   //build array for a specific line and busNumber and sort by start time
   buildRoundsByLine(lineName, busNumber) {
@@ -97,21 +126,25 @@ class AdminShiftsDay extends React.Component {
 
   //build an array of shifts for specific line and bus number
   buildShiftsByLine(lineName, busNumber) {
+    // debugger;
     var shiftsForLine = [];
     var endTime = null;
     var sortedLineAndBusArray = this.buildRoundsByLine(lineName, busNumber);
+    console.log('sortedLineAndBusArray: ', sortedLineAndBusArray);
     var startTime = sortedLineAndBusArray[0].round_start;
     var userId = sortedLineAndBusArray[0].user_id;
     for (var indexSortedArray = 0;  indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
-      if (sortedLineAndBusArray[indexSortedArray].user_id === userId) {
-        continue;
-      } 
       if(indexSortedArray === sortedLineAndBusArray.length - 1) {
+        console.log('inside last item')
         endTime = sortedLineAndBusArray[sortedLineAndBusArray.length - 1].round_end;
+        console.log('endTime: ', endTime)
         // shiftsForLine.push([startTime, endTime, userId]);
         shiftsForLine.push({'start_time': startTime, 'end_time': endTime, 'user_id': userId});
-      }
-        else {
+      } else if (sortedLineAndBusArray[indexSortedArray].user_id === userId) {
+        console.log('inside continue')
+        continue;
+      } else {
+        console.log('inside ELSE item')
         endTime = sortedLineAndBusArray[indexSortedArray - 1].round_end;
         // shiftsForLine.push([startTime, endTime, userId]);
         shiftsForLine.push({'start_time': startTime, 'end_time': endTime, 'user_id': userId});
@@ -145,10 +178,11 @@ class AdminShiftsDay extends React.Component {
   }
 
   render() {
+    console.log('rounds Array: ', this.state.rounds);
     var groupedArray = this.shiftsGroupedByLineAndBus();
     console.log('groupedArray: ', groupedArray);
+    var range = { min: 600, max: 2400 };
 
-    var range = { min: 6, max: 24 };
     return (
       <div>
             {/* <div className="dropdown">
@@ -169,10 +203,6 @@ class AdminShiftsDay extends React.Component {
         </div>
         <div className="adminShiftsDayView">
           {groupedArray.map((element, index) => {
-            console.log('index: ', index);
-            console.log('element: ', element);
-            // console.log("element 0 index: ", element[0]);
-            // console.log('element 1 index:', element[1]);
             return (
               <div className="dayDataContainer">
                 <div className="dayLabelContainer">
@@ -185,12 +215,10 @@ class AdminShiftsDay extends React.Component {
                   </div> 
                </div> 
               <div className="shiftRowContainer"> 
-                  {/* this still needs to be fixed so it populates properly */}
                   < AdminShiftsDisplayComponent
                     key={index}
                     range={range}
-                    //need to change so it actually pulls from the proper fields in our db
-                    shiftData={{start: 6, end: 24}}
+                    shiftData={{start: 600, end: 2400}}
                     children={element[2]}
                     type={'active'}
                   />
@@ -205,20 +233,3 @@ class AdminShiftsDay extends React.Component {
 }
 export default AdminShiftsDay;
 
-{/* <ShiftDisplayComponent
-test='1'
-type='active'
-range={range}
-shiftData={startAndEndTimes}
-children={convertedShifts}
-/> */}
-
-//recursive part
-{/* <ShiftDisplayComponent
-test={data.test}
-key={index}
-type={data.type}
-range={{ min: data.range.min, max: data.range.max }}
-shiftData={ {start: data.shiftData.start, end: data.shiftData.end} } 
-children={[]}
-/> */}

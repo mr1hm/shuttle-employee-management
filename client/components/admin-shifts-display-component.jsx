@@ -6,6 +6,20 @@ class AdminShiftsDisplayComponent extends React.Component {
   constructor(props) {
     super(props);
   }
+  calculateMinutesHours(startTime, endTime){
+    $startHourDigits = floor(startTime/100);
+    $startMinuteDigits = startTime/100 - startHourDigits;
+  
+    var endHourDigits = floor(endTime/100);
+    var endMinuteDigits = endTime/100 - endHourDigits;
+  
+    var startTimeInMinutes = startHourDigits*60 + startMinuteDigits*100;
+    var endTimeInMinutes = endHourDigits*60 + endMinuteDigits*100;
+  
+    var shiftLengthInMinutes = endTimeInMinutes - startTimeInMinutes;
+    return round(shiftLengthInMinutes); 
+  }
+
   render() {
     const range = this.props.range;
     const shiftData = this.props.shiftData;
@@ -31,8 +45,10 @@ class AdminShiftsDisplayComponent extends React.Component {
           // test={data.test}
           key={index}
           type={(element.user_id === "1" || element.user_id === 1) ? 'alertShift' : 'active'}
-          range={{ min: 6, max: 24 }}
+          range={{ min: 600, max: 2400 }}
           shiftData={{start: element.start_time, end: element.end_time} } 
+          widthPercent = {widthPercent}
+          startPercent = {startPercent}
         />
       ))}
       </div>
