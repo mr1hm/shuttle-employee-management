@@ -2,9 +2,8 @@ import React from 'react';
 import TopMenuShift from './topmenu/topmenu-shift';
 import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
-import ShiftDisplayComponent from './shifts/week/shift-display-component';
-import { convertMilitaryTimeStringToMilitaryTimeFloat } from '../lib/time-functions';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import AdminShiftsDisplayComponent from './admin-shifts-display-component';
+import './admin-shifts-display.css';
 
 class AdminShiftsDay extends React.Component {
   constructor(props) {
@@ -109,11 +108,13 @@ class AdminShiftsDay extends React.Component {
       } 
       if(indexSortedArray === sortedLineAndBusArray.length - 1) {
         endTime = sortedLineAndBusArray[sortedLineAndBusArray.length - 1].round_end;
-        shiftsForLine.push([startTime, endTime, userId]);
+        // shiftsForLine.push([startTime, endTime, userId]);
+        shiftsForLine.push({'start_time': startTime, 'end_time': endTime, 'user_id': userId});
       }
         else {
         endTime = sortedLineAndBusArray[indexSortedArray - 1].round_end;
-        shiftsForLine.push([startTime, endTime, userId]);
+        // shiftsForLine.push([startTime, endTime, userId]);
+        shiftsForLine.push({'start_time': startTime, 'end_time': endTime, 'user_id': userId});
         startTime = sortedLineAndBusArray[indexSortedArray].round_start;
         userId = sortedLineAndBusArray[indexSortedArray].user_id;
       }
@@ -144,9 +145,10 @@ class AdminShiftsDay extends React.Component {
   }
 
   render() {
-    const groupedArray = this.shiftsGroupedByLineAndBus();
+    var groupedArray = this.shiftsGroupedByLineAndBus();
     console.log('groupedArray: ', groupedArray);
-    const range = { min: 6, max: 24 };
+
+    var range = { min: 6, max: 24 };
     return (
       <div>
             {/* <div className="dropdown">
@@ -167,6 +169,10 @@ class AdminShiftsDay extends React.Component {
         </div>
         <div className="adminShiftsDayView">
           {groupedArray.map((element, index) => {
+            console.log('index: ', index);
+            console.log('element: ', element);
+            // console.log("element 0 index: ", element[0]);
+            // console.log('element 1 index:', element[1]);
             return (
               <div className="dayDataContainer">
                 <div className="dayLabelContainer">
@@ -176,22 +182,22 @@ class AdminShiftsDay extends React.Component {
                       bus={element[1]}  //bus number
                       route={element[0]} //line letter
                     /> 
-                  </div>
-                </div>
-                <div className="shiftRowContainer"> */}
+                  </div> 
+               </div> 
+              <div className="shiftRowContainer"> 
                   {/* this still needs to be fixed so it populates properly */}
-                  < ShiftDisplayComponent
+                  < AdminShiftsDisplayComponent
                     key={index}
                     range={range}
                     //need to change so it actually pulls from the proper fields in our db
-                    shiftData={{ start: element[2][index][2], end: element[2][index][0]}}
-                    children={element[2][index]}
+                    shiftData={{start: 6, end: 24}}
+                    children={element[2]}
                     type={'active'}
                   />
                 </div>
               </div>
-            )
-          })}
+            ) 
+            })}
         </div>
       </div>
     )
@@ -199,3 +205,20 @@ class AdminShiftsDay extends React.Component {
 }
 export default AdminShiftsDay;
 
+{/* <ShiftDisplayComponent
+test='1'
+type='active'
+range={range}
+shiftData={startAndEndTimes}
+children={convertedShifts}
+/> */}
+
+//recursive part
+{/* <ShiftDisplayComponent
+test={data.test}
+key={index}
+type={data.type}
+range={{ min: data.range.min, max: data.range.max }}
+shiftData={ {start: data.shiftData.start, end: data.shiftData.end} } 
+children={[]}
+/> */}

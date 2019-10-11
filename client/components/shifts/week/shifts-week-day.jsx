@@ -83,7 +83,7 @@ class ShiftsWeekDay extends React.Component {
       },
       children: [data]
     }));
-    console.log('converted Shifts: ', convertedShifts);
+    console.log('convertedShifts: ', convertedShifts);
     return (
       <Link
         className="shiftWeekIndividualDayLink"

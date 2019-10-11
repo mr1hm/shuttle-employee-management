@@ -69,8 +69,8 @@ class App extends React.Component {
         <React.Fragment>
 
           <Switch>
-          {/* <Route exact path={['/', '/login/']} render={(props) => <Login {...props} onClick={this.setLoginProps} onChange={this.getUserID} />} /> */}
-          <Route exact path={['/', '/welcome/']} render={(props) => <Welcome {...props}   />}/>
+          <Route exact path={['/', '/login/']} render={(props) => <Login {...props} onClick={this.setLoginProps} onChange={this.getUserID} />} />
+          <Route path="/welcome/" render={(props) => <Welcome {...props}   />}/>
           <Route path="/myinfo/" render={(props) => <MyInfo {...props} userId={this.state.userId} />}/>
             <Route path = "/shifts/week/shifts-week/:date?" render={(props) => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting}  />}/>
             <Route path = "/shifts/day/shifts-day/:date?" render={(props) => <ShiftsDay {...props} view="myShifts" defaultDate={this.state.presetDateForTesting} />}/>
