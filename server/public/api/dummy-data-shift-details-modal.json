@@ -1,0 +1,47 @@
+{
+  "shiftDetails":[
+    {
+      "userId": 1,
+      "line": "C",
+      "busNum": 8,
+      "shiftDates": [
+        "2019-07-23",
+        "2019-07-30",
+        "2019-08-06",
+        "2019-08-13",
+        "2019-08-20"
+      ],
+      "shiftDuration": {
+        "startTime":"0630",
+        "endTime":"0730"
+      },
+      "shiftRounds": [
+        {
+          "startTime": "0630",
+          "endTime": "0645"
+        },
+        {
+          "startTime": "0645",
+          "endTime": "0700"
+        },
+        {
+          "startTime": "0700",
+          "endTime": "0715"
+        },
+        {
+          "startTime": "0715",
+          "endTime": "0730"
+        }
+      ],
+      "hoursThisShift": 1,
+      "numRounds": 4,
+      "shiftId": 338,
+      "recurring": true,
+      "posted": false,
+      "status": "scheduled"
+    }
+  ]
+
+
+
+}
