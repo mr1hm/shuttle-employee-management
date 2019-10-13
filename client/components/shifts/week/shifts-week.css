@@ -80,7 +80,7 @@
 }
 .viewHoursContainer {
     display: inline-block;
-    width: 98%;
+    width: 79%;
     top: 21%;
     position: absolute;
     left: -1%;
@@ -116,10 +116,12 @@
     display: inline-block;
     text-align: left;
 }
+.shiftWeekIndividualDayLink {
+  color: black;
+}
 .shiftRowContainer {
     height: 75%;
     width: 83%;
-    float: left;
     left: 17%;
     text-align: center;
     display: inline-block;
@@ -138,6 +140,8 @@
     width: 100%;
 }
 .dayDataContainer {
+    display: flex;
+    flex-direction: row;
     width: 98%;
     height: 100px;
 }
@@ -148,7 +152,6 @@
 .dayLabelContainer {
     height: 75%;
     width: 14%;
-    float: left;
     display: inline-block;
     position: absolute;
     text-align: center;

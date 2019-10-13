@@ -5,11 +5,11 @@ import ShiftDisplayComponent from './shift-display-component';
 import { convertMilitaryTimeStringToMilitaryTimeFloat, convertUnixDateDay, convertUnixDateNumber } from '../../../lib/time-functions';
 
 class ShiftsWeekDay extends React.Component {
-  
-  getZeroPaddedNumber( number ){
+
+  getZeroPaddedNumber( number ){// could be moved to time-function.jsx
     return ('0' + number).slice(-2);
   }
-  getDateStringFromTimestamp( timestamp ){
+  getDateStringFromTimestamp(timestamp) {//The convertUnixMonthDay(time) function from shifts-day.jsx could be used here 09/17/2019
     const date = new Date(parseInt(timestamp));
     return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`
   }
@@ -56,14 +56,14 @@ class ShiftsWeekDay extends React.Component {
       }
   }
   render() {
-    // console.log('day data: ', this.props.dayData); 
+    // console.log('day data: ', this.props.dayData);
     // console.log('shift data: ', this.props.shifts);
-
     const range = { min: 6, max: 24 };
     const startAndEndTimes = {start: 6, end: 24};
-    const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));
-    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));
+    const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));// converts unix time to date/time
+    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));// converts unix time to specific day of the month
     const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
+    const dayHoursRounded = dayHours.toFixed(2);
     const currentUnixDate = this.props.dayData.round_date;
     let currentDayHighlightClass = 'dayDataContainer';
 
@@ -77,31 +77,33 @@ class ShiftsWeekDay extends React.Component {
         min: range.min,
         max: range.max
       },
-      shiftData: { 
-        start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time),
-        end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time)
+      shiftData: {
+        start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time),// not working Uncaught TypeError: startTime.slice is not a function
+        end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time)// not working Uncaught TypeError: startTime.slice is not a function
       },
       children: [data]
     }));
     return (
-      <div className={currentDayHighlightClass}>
-        <div className="dayLabelContainer">
-          <div className="dayText">{dayText}</div>
-          <div className="dateText">{dateText}</div>
-          <div className="dayHours">{dayHours} {dayHours === 1 ? 'Hour' : 'Hours'}</div>
-        </div>
-        <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
-        <div className="shiftRowContainer">
-            <ShiftDisplayComponent 
+      <Link
+        className="shiftWeekIndividualDayLink"
+        to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
+        <div className={currentDayHighlightClass}>
+          <div className="dayLabelContainer">
+            <div className="dayText">{dayText}</div>
+            <div className="dateText">{dateText}</div>
+            <div className="dayHours">{dayHoursRounded} {dayHoursRounded === 1 ? 'Hour' : 'Hours'}</div>
+          </div>
+          <div className="shiftRowContainer">
+            <ShiftDisplayComponent
               test='1'
               type='active'
               range={range}
               shiftData={startAndEndTimes}
               children={convertedShifts}
             />
+          </div>
         </div>
-        </Link>
-      </div>
+      </Link>
     )
   }
 }
