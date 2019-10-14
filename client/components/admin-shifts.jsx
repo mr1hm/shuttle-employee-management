@@ -126,7 +126,6 @@ class AdminShiftsDay extends React.Component {
 
   //build an array of shifts for specific line and bus number
   buildShiftsByLine(lineName, busNumber) {
-    // debugger;
     var shiftsForLine = [];
     var endTime = null;
     var sortedLineAndBusArray = this.buildRoundsByLine(lineName, busNumber);
