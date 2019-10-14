@@ -145,8 +145,7 @@ class AdminShiftsDay extends React.Component {
       } 
       if (sortedLineAndBusArray[indexSortedArray].user_id === userId) {
         console.log('inside continue')
-        console.log('continue Index: ', indexSortedArray);
-        continue;
+        console.log('continue Index: ', indexSortedArray);        continue;
       } else {
         console.log('inside ELSE item')
         endTime = sortedLineAndBusArray[indexSortedArray - 1].round_end;
