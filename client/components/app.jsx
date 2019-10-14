@@ -10,7 +10,7 @@ import Login from './login/login';
 import Welcome from './welcome/welcome';
 import Modal from './post-modal';
 import AdminShiftsDay from './admin-shifts';
-import AdminRoutes from './admin-routes-buses';
+import AdminRoutes from './admin-lines-buses';
 import './post-modal.css';
 
 class App extends React.Component {

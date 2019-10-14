@@ -9,8 +9,8 @@ import ShiftsAvailable from '../available/shifts-available';
 import {
   createDateObjFromDateString,
   convertUnixMonthDay,
-  adjustLocalTimestampToUTCSeconds, 
-  convertMilitaryTime 
+  adjustLocalTimestampToUTCSeconds,
+  convertMilitaryTime
 } from '../../../lib/time-functions';
 import { Minimatch } from 'minimatch';
 
