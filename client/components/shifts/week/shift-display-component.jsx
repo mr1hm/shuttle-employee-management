@@ -11,8 +11,10 @@ class ShiftDisplayComponent extends React.Component {
     const startPercent = ((shiftData.start - range.min) / rangeDistance) * 100;
     const endPercent = ((shiftData.end - range.min) / rangeDistance) * 100;
     const widthPercent = endPercent - startPercent;
+    const handleClick = this.props.children.length === 0 ? ()=>this.props.onClick(shiftData.start_military_time) : ()=>{};
+    // const handleClick = ()=>console.log('hello')
     return (
-      <div
+      <div onClick={handleClick}
         className={`shift shiftBase ${this.props.type}`}
         style={{
           width: widthPercent + "%",
@@ -29,11 +31,12 @@ class ShiftDisplayComponent extends React.Component {
             range={{ min: data.range.min, max: data.range.max }}
             shiftData={ {start: data.shiftData.start, end: data.shiftData.end} } 
             children={[]}
+            onClick={this.props.onClick}
           />
         ))}
       </div>
     );
   }
 }
-
+ShiftDisplayComponent.defaultProps={onClick:()=>{}};
 export default ShiftDisplayComponent;
