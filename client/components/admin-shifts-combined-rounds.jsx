@@ -12,13 +12,13 @@ class AdminShiftsCombinedRounds extends React.Component {
     const startPercent = ((shiftData.start - range.min) / rangeDistance) * 100;
     const endPercent = ((shiftData.end - range.min) / rangeDistance) * 100;
     const widthPercent = endPercent - startPercent;
-    console.log('this.props.type: ', this.props.type);
-    console.log('widthPercet: ', widthPercent);
-    console.log('rangeDistance: ', rangeDistance);
-    console.log('endPercent: ', endPercent);
-    console.log('startPercent: ', startPercent);
-    console.log('shiftData: ', shiftData);
-    console.log('range ', range);
+    // console.log('this.props.type: ', this.props.type);
+    // console.log('widthPercet: ', widthPercent);
+    // console.log('rangeDistance: ', rangeDistance);
+    // console.log('endPercent: ', endPercent);
+    // console.log('startPercent: ', startPercent);
+    // console.log('shiftData: ', shiftData);
+    // console.log('range ', range);
     return (
       <div
         className={`shift shiftBase ${this.props.type}`}
