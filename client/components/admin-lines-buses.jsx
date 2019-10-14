@@ -224,7 +224,7 @@ class AdminRoutes extends React.Component {
 
                     {/* <div className="col">{routeInfo.public.toString()}</div> */}
                     {/* <div className="col">{routeInfo.regular_service.toString()}</div> */}
-                    <button className="btn btn-primary" type="submit" >
+                    <button className="btn btn-primary" type="submit" name="submit" >
                       Save
                      </button>
 
