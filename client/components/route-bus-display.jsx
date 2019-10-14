@@ -5,7 +5,7 @@ function RouteBusDisplay(props) {
     const routeColors = {'C': '#8f2c9c', 'D': '#a57b51', 'H': '#68ac9e', 'M': '#3a8456', 'N': '#dd7338', 'S': '#7b3913', 'V': '#347cbd', 'W': '#d8442d', 'Hs': '#df6e9d'};
 
     const routeColorPackage = {
-      'backgroundColor': routeColors[props.route], 
+      'backgroundColor': routeColors[props.route] ? routeColors[props.route] : 'gray',
       'color': 'white'
     };
 

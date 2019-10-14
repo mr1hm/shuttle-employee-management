@@ -12,7 +12,7 @@
     padding-right: 2vmin;
     padding-bottom: 5vmin;
 }
-.flex-section {
+.roundsListGrid {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
@@ -20,14 +20,31 @@
     margin-left: 2%;
     border: 2px solid black;
 }
-.flex-col-scroll {
+.scrollableContainer {
     flex-grow: 1;
     overflow: auto;
     min-height: 100%;
 }
-.col-12 {
-    padding-left: 0;
+.fullWidthGridColumn {
+    padding: 0;
+}
+.checkboxElements {
+    padding-left: 30px;
 }
 .buttonContainer {
     padding: 0 2%;
+}
+.inactive {
+  background-color: grey;
+  opacity: 0.8;
+  height: 100%;
+}
+.boxComment {
+  float: left;
+  margin-top: 5%;
+  margin-right: 2%;
+}
+.box {
+  width: 58%;
+  margin-left: 28%;
 }
