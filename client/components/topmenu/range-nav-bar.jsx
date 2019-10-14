@@ -22,11 +22,12 @@ class Nav extends React.Component {
     if (this.props.page === 'day') {
       const dateString = convertedDate.toDateString()
       const dayText = dateString.slice(0,-5);
+      //might need to add an available option
       return dayText;
     } if (this.props.page === 'month'){
       const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       const dateString = convertedDate.toDateString()
-      const year = dateString.slice(11); 
+      const year = dateString.slice(11);
       return month[convertedDate.getMonth()] + ' ' + year;
     } if (this.props.page === 'week') {
       const convertedDate = new Date(this.props.date);
@@ -43,7 +44,7 @@ class Nav extends React.Component {
   getDateObjFromDateString( dateString ){
     const convertedDate = new Date();
     if(typeof dateString === 'string'){
-      const arrayDate = dateString.split('-'); 
+      const arrayDate = dateString.split('-');
       const dateObj = {
         year: arrayDate[0],
         month: arrayDate[1]-1,
@@ -62,6 +63,7 @@ class Nav extends React.Component {
       'week' : { number: 7, route: '/shifts/week/shifts-week'},
       'day': { number: 1, route: '/shifts/day/shifts-day'},
       'month': { number: 30, route: '/shifts/month/shifts-month'}
+      //might need to add an availabile route
     }
     const leftRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, -1 ).pathDate;
     const rightRoute = this.generateNextTimestamp( this.getDateObjFromDateString( this.props.date ), daysInRange[this.props.page].number, 1 ).pathDate;
