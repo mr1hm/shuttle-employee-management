@@ -494,7 +494,7 @@ function populateSchedule($operators, $rounds, $conn)  {
           }
         }
         if ($madeAssignment) {
-          enforceConditions($rounds, $operators, $operatorsIndex);
+          enforceBreakCondition($rounds, $operators, $operatorsIndex);
           break;
         }
       }
@@ -503,12 +503,11 @@ function populateSchedule($operators, $rounds, $conn)  {
 
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
-  print("\n". $rounds);
   return $operators;
 }
 
 // Make sure there is a 30 minute break after 5 continuous hours
-function enforceConditions(&$rounds, &$operators, $opIndex) {
+function enforceBreakCondition(&$rounds, &$operators, $opIndex) {
   $totalAssignedTimes = count($operators[$opIndex]['times_assigned']);
   if ($totalAssignedTimes > 1) {
     $start = intval($operators[$opIndex]['times_assigned'][0][0]);
@@ -519,10 +518,8 @@ function enforceConditions(&$rounds, &$operators, $opIndex) {
         if ((intval($operators[$opIndex]['times_assigned'][$assignedTime][0]) - $end) < 30) {
           $totalRounds = count($rounds);
           for ($opRound = 0; $opRound < $totalRounds; ++$opRound) {
-            if (
-              $rounds[$opRound]['user_id'] === $operators[$opIndex]['user_id'] &&
-              intVal($rounds[$opRound]['round_start']) === intval($operators[$opIndex]['times_assigned'][$assignedTime][0])
-            ) {
+            if ($rounds[$opRound]['user_id'] === $operators[$opIndex]['user_id'] &&
+                intVal($rounds[$opRound]['round_start']) === intval($operators[$opIndex]['times_assigned'][$assignedTime][0])) {
               $rounds[$opRound]['user_id'] = 1;
               $rounds[$opRound]['first_name'] = 'unassigned';
               $rounds[$opRound]['last_name'] = 'unassigned';
@@ -564,7 +561,7 @@ $quarterStartTimestamp = 1566100800;
 $quarterEndTimestamp = 1576904400;
 $beginningOfWeekTimeStamp = $quarterStartTimestamp;
 
-//populate the entire quarater based on the template week
+//populate the entire quarter based on the template week
 while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
   $rounds = [];
   $operators = [];
