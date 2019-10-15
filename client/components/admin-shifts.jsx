@@ -13,7 +13,7 @@ class AdminShiftsDay extends React.Component {
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     // this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
-    const defaultDate = 1566273600; 
+    const defaultDate = 1566273600;
     this.state = {
       rounds: null,
       availableOperators: [],
@@ -24,7 +24,7 @@ class AdminShiftsDay extends React.Component {
 
   //I don't think this approach will work.
   //The autopopulate takes awhile and it is pulling the round data too soon.
-  //It's not noticing that anything has been updated, so the rounds array does not have the 
+  //It's not noticing that anything has been updated, so the rounds array does not have the
   //right information.
   fetchAutoPopulatedData() {
     fetch(`/api/admin-populate-rounds.php`, {
@@ -66,6 +66,7 @@ class AdminShiftsDay extends React.Component {
   //     .catch(error => { throw (error) });
   // }
 
+  // get assigned rounds from admin-day-shifts.php
   fetchCallMethod() {
     fetch(`/api/admin-day-shifts.php`, {
       method: 'GET'
@@ -73,10 +74,10 @@ class AdminShiftsDay extends React.Component {
       .then(response => {
         return response.json()
       })
-      .then(myJson => {
-        this.setState({ 
-          rounds: myJson
-        })
+      .then(data => {
+        this.setState({
+          rounds: data
+        });
       })
       .catch(error => { throw (error) });
   }
@@ -111,7 +112,7 @@ class AdminShiftsDay extends React.Component {
   //build array for a specific line and busNumber and sort by start time
   buildRoundsByLine(lineName, busNumber) {
     var roundsForLine = [];
-    
+
     for( var roundsIndex = 0; roundsIndex < this.state.rounds.length; roundsIndex++) {
       if(this.state.rounds[roundsIndex]['line_name'] === lineName && this.state.rounds[roundsIndex]['bus_number'] === busNumber) {
         roundsForLine.push(this.state.rounds[roundsIndex]);
@@ -120,6 +121,30 @@ class AdminShiftsDay extends React.Component {
     roundsForLine.sort((a, b) => {
       return a.round_start - b.round_start;
     });
+    // fill in rounds that are missing and cannot be assigned
+    if (roundsForLine[0].round_start !== "600"){
+      let nonOperationalRound = {...roundsForLine[0]};
+      nonOperationalRound.first_name = "n/a";
+      nonOperationalRound.last_name = "n/a";
+      nonOperationalRound.round_id = "n/a";
+      nonOperationalRound.status = "non-operational";
+      nonOperationalRound.user_id = "n/a";
+      nonOperationalRound.round_start = "600";
+      nonOperationalRound.round_end = roundsForLine[0].round_start;
+      roundsForLine.unshift(nonOperationalRound);
+    }
+    var lastRoundIndex = roundsForLine.length - 1;
+    if (roundsForLine[lastRoundIndex].round_end !== "2400") {
+      let nonOperationalRound = { ...roundsForLine[lastRoundIndex] };
+      nonOperationalRound.first_name = "n/a";
+      nonOperationalRound.last_name = "n/a";
+      nonOperationalRound.round_id = "n/a";
+      nonOperationalRound.status = "non-operational";
+      nonOperationalRound.user_id = "n/a";
+      nonOperationalRound.round_start = roundsForLine[lastRoundIndex].round_end;
+      nonOperationalRound.round_end = "2400";
+      roundsForLine.push(nonOperationalRound);
+    }
     console.log('rounds for line: ', roundsForLine);
     return roundsForLine;
   }
@@ -135,23 +160,12 @@ class AdminShiftsDay extends React.Component {
     var userId = sortedLineAndBusArray[0].user_id;
     for (var indexSortedArray = 0;  indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
       if(indexSortedArray === sortedLineAndBusArray.length - 1) {
-        // console.log('inside last item')
-        endTime = sortedLineAndBusArray[sortedLineAndBusArray.length - 1].round_end;
-        console.log('end of array startTime: ', startTime);
-        console.log('end of array endTime: ', endTime);
-        console.log('end of array Index: ', indexSortedArray);
+        endTime = sortedLineAndBusArray[indexSortedArray].round_end;
         shiftsForLine.push({'start_time': startTime, 'end_time': endTime, 'user_id': userId});
-        break;
-      } 
-      if (sortedLineAndBusArray[indexSortedArray].user_id === userId) {
-        console.log('inside continue')
-        console.log('continue Index: ', indexSortedArray);        continue;
+      } else if (sortedLineAndBusArray[indexSortedArray].user_id === userId && sortedLineAndBusArray[indexSortedArray].user_id != 1 && sortedLineAndBusArray[indexSortedArray].user_id != "n/a") {
+        continue;
       } else {
-        console.log('inside ELSE item')
-        endTime = sortedLineAndBusArray[indexSortedArray - 1].round_end;
-        console.log('mid section startTime: ', startTime);
-        console.log('mid section endTime: ', endTime);
-        console.log('mid section Index: ', indexSortedArray);
+        endTime = sortedLineAndBusArray[indexSortedArray].round_end;
         shiftsForLine.push({'start_time': startTime, 'end_time': endTime, 'user_id': userId});
         startTime = sortedLineAndBusArray[indexSortedArray].round_start;
         userId = sortedLineAndBusArray[indexSortedArray].user_id;
@@ -164,8 +178,8 @@ class AdminShiftsDay extends React.Component {
     // debugger;
     var busAndLineObject = {};
     var groupedShifts = [];
-    // console.log(this.state.rounds);
-    
+    console.log('rounds: ', this.state.rounds);
+
     if (this.state.rounds) {
       for (var index = 0; index < this.state.rounds.length; index++) {
           var joinedLineAndBusNumber = this.state.rounds[index].line_name + this.state.rounds[index].bus_number;
@@ -175,65 +189,63 @@ class AdminShiftsDay extends React.Component {
       console.log('busAndLineObject: ', busAndLineObject);
       for (var key in busAndLineObject) {
         var lineName = busAndLineObject[key][0];
-        var busNumber = busAndLineObject[key][1];  
+        var busNumber = busAndLineObject[key][1];
         groupedShifts.push([lineName, busNumber, this.buildShiftsByLine(lineName, busNumber)]);
       }
-      console.log(groupedShifts);
-      return groupedShifts;      
+      console.log('groupedShifts: ', groupedShifts);
+      var elements = [];
+      var busLineElements = [];
+      var shiftRowElements = [];
+      var range = { min: 600, max: 2400 };
+      groupedShifts.forEach((element, index) => {
+        busLineElements.push(
+          <div key={index} className="bus-line adminShiftRow d-flex justify-content-center">
+            < RouteBusDisplay
+              bus={element[1]}  //bus number
+              route={element[0]} //line letter
+            />
+          </div>);
+        shiftRowElements.push(
+          <div key={index} className="shiftRowContainer adminShiftRow container w-100">
+            < AdminShiftsDisplayComponent
+              range={range}
+              shiftData={{ start: 600, end: 2400 }}
+              children={element[2]}
+              type={'alertShift'}
+            />
+          </div>
+        );
+      });
+      elements.push(busLineElements);
+      elements.push(shiftRowElements);
+      return elements;
     }
   }
 
   render() {
-    console.log('rounds Array: ', this.state.rounds);
-    var groupedArray = this.shiftsGroupedByLineAndBus();
-    console.log('groupedArray: ', groupedArray);
-    var range = { min: 600, max: 2400 };
     if (!this.state.rounds) {
       return <div>Retrieving Data</div>;
     } else {
+      var elements = this.shiftsGroupedByLineAndBus();
       return (
         <div>
-              {/* <div className="dropdown">
-                <button onClick={this.getAvailableDrivers} className="dropbtn">Available Drivers</button>
-                <div className="dropdown-content">
-                    {fullName.map((index) => {
-                      return (
-                        <a href="#">{index}</a>
-                      )
-                    })}
-                </div>
-              </div> */}
-              
           <TopMenuShift title="Admin" page='day' date={this.state.dateToPass} />
-          <button onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
-          <div className="viewHoursContainer">
-            <HoursOfOperation />
-          </div>
-          <div className="adminShiftsDayView">
-            {groupedArray.map((element, index) => {
-              return (
-                <div className="dayDataContainer" key={index}>
-                  <div className="dayLabelContainer">
-                    <div className="adminShiftsDayBusLine">
-                      < RouteBusDisplay
-                        // key={index} 
-                        bus={element[1]}  //bus number
-                        route={element[0]} //line letter
-                      /> 
-                    </div> 
-                </div> 
-                <div className="shiftRowContainer"> 
-                    < AdminShiftsDisplayComponent
-                      // key={index}
-                      range={range}
-                      shiftData={{start: 600, end: 2400}}
-                      children={element[2]}
-                      type={'alertShift'}
-                    />
-                  </div>
-                </div>
-              ) 
-              })}
+          <div className="main-container d-flex h-100">
+            <div className="auto-populate-bus-line-container container d-flex flex-column justify-content-center col-2">
+              <div className="auto-populate-button-container d-flex justify-content-center align-items-center adminShiftRow">
+                <button className="btn btn-primary" onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
+              </div>
+              {elements[0]}
+            </div>
+            <div className="hours-populated-shifts-container container d-flex flex-column">
+              <div className="view-hours-container d-flex align-items-end adminShiftRow">
+                <HoursOfOperation />
+              </div>
+              {elements[1]}
+            </div>
+            <div className="additional-info-container container d-flex col-3 adminShiftRow">
+              <div className="available-operators">available operators</div>
+            </div>
           </div>
         </div>
       )
@@ -241,4 +253,3 @@ class AdminShiftsDay extends React.Component {
   }
 }
 export default AdminShiftsDay;
-
