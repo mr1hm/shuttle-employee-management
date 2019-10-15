@@ -4,7 +4,6 @@ import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
 import AdminShiftsDisplayComponent from './admin-shifts-display-component';
 import './admin-shifts-display.css';
-
 class AdminShiftsDay extends React.Component {
   constructor(props) {
     super(props);
@@ -22,11 +21,7 @@ class AdminShiftsDay extends React.Component {
       dateToPass: defaultDate
     }
   }
-
-  //I don't think this approach will work.
-  //The autopopulate takes awhile and it is pulling the round data too soon.
-  //It's not noticing that anything has been updated, so the rounds array does not have the
-  //right information.
+  //updating the db with the autopopulated rounds
   fetchAutoPopulatedData() {
     fetch(`/api/admin-populate-rounds.php`, {
       method: 'POST'
@@ -69,10 +64,8 @@ class AdminShiftsDay extends React.Component {
     console.log('available operators: ', this.state.availableOperators);
   }
   componentDidMount() {
-    // this.fetchAutoPopulatedData();
     this.fetchCallMethod();
   }
-
   dataDidUpdate(){
     this.fetchCallMethod();
   }
@@ -80,7 +73,6 @@ class AdminShiftsDay extends React.Component {
   //build array for a specific line and busNumber and sort by start time
   buildRoundsByLine(lineName, busNumber) {
     var roundsForLine = [];
-
     for( var roundsIndex = 0; roundsIndex < this.state.rounds.length; roundsIndex++) {
       if(this.state.rounds[roundsIndex]['line_name'] === lineName && this.state.rounds[roundsIndex]['bus_number'] === busNumber) {
         roundsForLine.push(this.state.rounds[roundsIndex]);
@@ -113,7 +105,6 @@ class AdminShiftsDay extends React.Component {
       nonOperationalRound.round_end = "2400";
       roundsForLine.push(nonOperationalRound);
     }
-    console.log('rounds for line: ', roundsForLine);
     return roundsForLine;
   }
 
@@ -123,7 +114,6 @@ class AdminShiftsDay extends React.Component {
     var shiftsForLine = [];
     var endTime = null;
     var sortedLineAndBusArray = this.buildRoundsByLine(lineName, busNumber);
-    console.log('sortedLineAndBusArray: ', sortedLineAndBusArray);
     var startTime = sortedLineAndBusArray[0].round_start;
     var userId = sortedLineAndBusArray[0].user_id;
     for (var indexSortedArray = 0;  indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
@@ -149,10 +139,8 @@ class AdminShiftsDay extends React.Component {
   }
 
   shiftsGroupedByLineAndBus() {
-    // debugger;
     var busAndLineObject = {};
     var groupedShifts = [];
-    console.log('rounds: ', this.state.rounds);
 
     if (this.state.rounds) {
       for (var index = 0; index < this.state.rounds.length; index++) {
