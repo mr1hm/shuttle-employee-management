@@ -39,3 +39,12 @@
   opacity: 0.8;
   height: 100%;
 }
+.boxComment {
+  float: left;
+  margin-top: 5%;
+  margin-right: 2%;
+}
+.box {
+  width: 58%;
+  margin-left: 28%;
+}
