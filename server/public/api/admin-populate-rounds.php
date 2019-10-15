@@ -4,8 +4,6 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
 
-$outputStorage = [];
-
 //**FUNCTIONS**/
 //pull the rounds for the first week from the db
 function getRoundsData($conn, $quarterStartTimestamp) {
@@ -503,9 +501,7 @@ function populateSchedule($operators, $rounds, $conn)  {
   }
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
-  //print($rounds);
- // print_r($rounds);
- //print("wtf");
+  print("\n". $rounds);
   return $operators;
 }
 
