@@ -3,31 +3,26 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once 'db_connection.php';
 
-$date= $_GET['date'];
+// $date= $_GET['date'];
+
+// $date = 1566273600;
 
 $query = "SELECT
-            rd.`bus_info_id`,
-            rd.`user_id`,
-            rd.`start_time`,
-            rd.`end_time`,
-            rd.`date`,
-            rd.`status`,
-            rt.`line_name`,
-            rt.`id`,
-            bi.`start_time` AS busStart,
-            bi.`end_time` AS busEnd
-          FROM
-            `round` AS rd
-          INNER JOIN
-            `route` AS rt
-          ON
-            rd.`bus_info_id` = rt.`id`
-          INNER JOIN
-            bus_info bi
-          ON
-            rd.`bus_info_id` = bi.`bus_number`
-          WHERE
-            rd.`date`= {$date}";
+          rd.id AS round_id,
+          rt.line_name,
+          bi.bus_number,
+          rd.start_time AS round_start,
+          rd.end_time AS round_end,
+          us.id AS user_id,
+          us.last_name,
+          us.first_name,
+          rd.date,
+          rd.status
+          FROM route AS rt
+          JOIN bus_info AS bi ON bi.route_id = rt.id
+          JOIN round AS rd ON rd.bus_info_id = bi.id
+          JOIN user AS us ON rd.user_id = us.id
+          WHERE rd.date = 1566273600";
 
 
 $result = mysqli_query($conn, $query);
