@@ -109,7 +109,7 @@ class ShiftsDetails extends React.Component {
     this.getData('/api/shifts-details.php' + fullQuery, 'GET');
   }
 
-  openModal(roundIDs) {
+  openModal(roundIDs,modalType) {
     if(!Array.isArray(roundIDs)){
       roundIDs = [roundIDs];
     }
@@ -124,9 +124,7 @@ class ShiftsDetails extends React.Component {
     this.setState({
       isModalOpen: true,
       roundID: parseInt(roundIDs),
-      shiftsDetailsInfo: allShiftsToPass,
-
-
+      shiftsDetailsInfo: allShiftsToPass
     })
   }
   closeModal() {
@@ -300,7 +298,7 @@ class ShiftsDetails extends React.Component {
           <div className="buttonContainer">
             <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs)}>
             {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Cancel Post' : "Post" }</button>
-            <button type="button" className="btn btn-outline-dark btn-block">Trade/Swap</button>
+            <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs)}>Trade/Swap</button>
             <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.props.goBack()}>My Shifts</button>
           </div>
         </div>
