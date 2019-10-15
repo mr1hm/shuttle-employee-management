@@ -447,10 +447,10 @@ function populateSchedule($operators, $rounds, $conn)  {
         // $availabilityArray = $operators[$operatorsIndex]['available_times'];
         // //length of the times availability array
         // $lengthTimesAvailableArray = count($availabilityArray);
-        $lengthTimesAvailableArray = count($operators[$operatorsIndex]['available_times']);
+        $availableTimes = count($operators[$operatorsIndex]['available_times']);
 
 
-        for ($timesIndex = 0; $timesIndex < $lengthTimesAvailableArray; $timesIndex++) {
+        for ($timesIndex = 0; $timesIndex < $availableTimes; $timesIndex++) {
 
           //define available start and end times
           $availableStartTime = intval($operators[$operatorsIndex]['available_times'][$timesIndex][0]);
@@ -505,12 +505,34 @@ function populateSchedule($operators, $rounds, $conn)  {
       }
     }
   }
+
+  enforceConditions($rounds, $operators);
+
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
   print_r($rounds);
 //  print_r($operators);
 
   return $operators;
+}
+
+function enforceConditions(&$rounds, &$operators) {
+  $totalOperators = count($operators);
+  for ($op = 0; $op < $totalOperators; ++$op) {
+    $totalAssignedTimes = count($operators[$op]['times_assigned']);
+    if ($totalAssignedTimes > 1) {
+      $start = intval($operators[$op]['times_assigned'][0][0]);
+      $end = intval($operators[$op]['times_assigned'][0][1]);
+      $block = calculateShiftMinutes($start, $end);
+      for ($assignedTime = 1; $assignedTime < $totalAssignedTimes; ++$assignedTime) {
+        if ($block == 300) {
+          if ((intval($operators[$op]['times_assigned'][$assignedTime][0]) - $end) < 30) {
+
+          }
+        }
+      }
+    }
+  }
 }
 
 //populate the first week
