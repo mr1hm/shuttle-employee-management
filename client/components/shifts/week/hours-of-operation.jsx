@@ -10,7 +10,7 @@ class HoursOfOperation extends React.Component {
   }
   render() {
     return (
-      <div className="hoursRow">
+      <div className="hoursRow w-100 d-flex justify-content-between">
         {this.hoursLabelRow()}
       </div>
     );
