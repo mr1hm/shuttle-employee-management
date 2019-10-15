@@ -10,7 +10,7 @@ function RouteBusDisplay(props) {
     };
 
     return (
-        <div className="container d-inline-flex align-bottom">
+        <div className="d-flex justify-content-center align-items-center">
             <h3 style={routeColorPackage}>{props.route}</h3>
             <h3 className="align-text-bottom" style={{'backgroundColor': 'black', 'color': 'white'}}>{props.bus} </h3>
         </div>

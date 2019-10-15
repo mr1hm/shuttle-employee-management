@@ -503,9 +503,7 @@ function populateSchedule($operators, $rounds, $conn)  {
   }
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
-  //print($rounds);
- // print_r($rounds);
- //print("wtf");
+  print("\n". $rounds);
   return $operators;
 }
 
