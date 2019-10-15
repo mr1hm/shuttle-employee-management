@@ -80,7 +80,7 @@
 }
 .viewHoursContainer {
     display: inline-block;
-    width: 79%;
+    width: 98%;
     top: 21%;
     position: absolute;
     left: -1%;
@@ -189,7 +189,7 @@
 }
 .active {
     /* background-color: lightgrey; */
-        background-color: lightgrey;
+    background-color: lightgrey;
 }
 .alertShift {
     background-color: red;
