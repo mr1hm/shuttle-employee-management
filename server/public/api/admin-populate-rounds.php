@@ -238,7 +238,7 @@ function calculateShiftMinutes($startTime, $endTime){
 function determineNumberRoundsInShift($lineName){
   $shiftLength = [
     'C'=>3,
-    'D'=>4,
+    'D'=>5,
     'Hs'=>5,
     'S'=>5
   ];
@@ -285,7 +285,7 @@ function addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $n
     else if (intval($operators[$operatorsIndex]['times_assigned'][0][1]) === intval($rounds[$roundsIndex]['round_start'])) {
       $operators[$operatorsIndex]['times_assigned'][0][1] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
     }
-    //neither the starting time or ending time of new entry is the same of start or item in the asssigned times array
+    //neither the starting time or ending time of new entry is the same of start or end item in the assigned times array
     else if (intval($operators[$operatorsIndex]['times_assigned'][0][1]) !== intval($rounds[$roundsIndex]['round_start']) and intval($operators[$operatorsIndex]['times_assigned'][0][0]) !==
     intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
       array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
@@ -356,7 +356,9 @@ function adjustAvailableTimes($operators, $rounds, $operatorsIndex, $roundsIndex
 function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds) {
   $blockTooBig = false;
   $operators = addAssignedTime($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
+
   $lengthAssignedTimesArray = count($operators[$operatorsIndex]['times_assigned']);
+
   for ($assignedTimeIndex = 0; $assignedTimeIndex < $lengthAssignedTimesArray; $assignedTimeIndex++) {
     $endTime = intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1]);
     $startTime = intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]);
@@ -382,8 +384,8 @@ function checkSpecialStatus($rounds, $roundsIndex, $operators, $operatorsIndex) 
   }
 }
 
-//populate the schedule for a particular day
 function populateSchedule($operators, $rounds, $conn)  {
+//populate the schedule for a particular day
   $lengthOperatorsArray = count($operators);
   $lengthRoundsArray = count($rounds);
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray; $roundsIndex++) {
@@ -441,22 +443,12 @@ function populateSchedule($operators, $rounds, $conn)  {
           continue;
         }
 
-        //if operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
-        $totalShiftTime = calculateShiftMinutes(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
-        $totalMinutesInDay = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
-        if ($totalMinutesInDay > 480) {
-          continue;
-        }
-        //if the total weekly minutes exceeds 29 hours (1740 minutes) once the shift is added, skip the operator
-        $totalWeeklyMinutes = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
-        if ($totalWeeklyMinutes > 1740) {
-          continue;
-        }
+        // //array of available time slots for one operator
+        // $availabilityArray = $operators[$operatorsIndex]['available_times'];
+        // //length of the times availability array
+        // $lengthTimesAvailableArray = count($availabilityArray);
+        $lengthTimesAvailableArray = count($operators[$operatorsIndex]['available_times']);
 
-        //array of available time slots for one operator
-        $availabilityArray = $operators[$operatorsIndex]['available_times'];
-        //length of the times availability array
-        $lengthTimesAvailableArray = count($availabilityArray);
 
         for ($timesIndex = 0; $timesIndex < $lengthTimesAvailableArray; $timesIndex++) {
 
@@ -466,6 +458,18 @@ function populateSchedule($operators, $rounds, $conn)  {
 
           //Is shift within the available time range of operator?
           if ($availableStartTime <= intval($rounds[$roundsIndex]['round_start']) and $availableEndTime >= intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
+
+            //if operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
+            $totalShiftTime = calculateShiftMinutes(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
+            $totalMinutesInDay = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
+            if ($totalMinutesInDay > 480) {
+              break;
+            }
+            //if the total weekly minutes exceeds 29 hours (1740 minutes) once the shift is added, skip the operator
+            $totalWeeklyMinutes = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
+            if ($totalWeeklyMinutes > 1740) {
+              break;
+            }
 
             // Check to see if the operator will have too many hours if the shift is added. If so, skip that operator
             $blockTooBig = checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
@@ -503,20 +507,24 @@ function populateSchedule($operators, $rounds, $conn)  {
   }
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
-  //print($rounds);
- // print_r($rounds);
- //print("wtf");
-  print_r($operators);
+  print_r($rounds);
+//  print_r($operators);
+
   return $operators;
 }
 
 //populate the first week
 function populateTemplateWeek ($conn, $rounds, $operators) {
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
-    $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
+  // for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
+    $specificDayOfWeek = $dayOfWeek[0];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
+
+    // print('<pre>');
+    // print_r($operatorsForDay);
+    // print('<pre>');
+
     $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn);
     for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
       for ($revOperatorsSpecificDayIndex = 0; $revOperatorsSpecificDayIndex < count($revOperatorsSpecificDay); $revOperatorsSpecificDayIndex++) {
@@ -525,7 +533,12 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
         }
       }
     }
-  }
+  // }
+
+  // print('<pre>');
+  // print_r($operators);
+  // print('<pre>');
+
 }
 
 //**PROCESSING**/
@@ -534,13 +547,18 @@ $quarterEndTimestamp = 1576904400;
 $beginningOfWeekTimeStamp = $quarterStartTimestamp;
 
 //populate the entire quarater based on the template week
-while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
+// while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
   $rounds = [];
   $operators = [];
   $rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
   $operators = getOperatorsData($conn);
   populateTemplateWeek($conn, $rounds, $operators);
+
+  // print('<pre>');
+  // print_r($operators);
+  // print('<pre>');
+
   $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
-}
+// }
 
 ?>
