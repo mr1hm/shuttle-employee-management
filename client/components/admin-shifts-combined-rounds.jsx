@@ -4,11 +4,16 @@ import './admin-shifts-display.css';
 class AdminShiftsCombinedRounds extends React.Component {
   constructor(props) {
     super(props);
+    this.handleClick = this.handleClick.bind(this);
   }
   timeInMinutesFromMidnight(time){
     let hoursToMinutes = Math.floor(time / 100) * 60;
     let minutesFromTime = time - Math.floor(time / 100) * 100;
     return hoursToMinutes + minutesFromTime;
+  }
+  handleClick(){
+    this.props.onClickAvailableDrivers();
+    console.log('shift data click: ', this.props.shiftData.start, this.props.shiftData.end, this.props.userId);
   }
   render() {
     const rangeMax = this.timeInMinutesFromMidnight(this.props.range.max);
@@ -21,6 +26,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     const widthPercent = endPercent - startPercent;
     return (
       <div
+        onClick={this.handleClick}
         className={`shift shiftBase ${this.props.type}`}
         style={{
           width: widthPercent + "%",

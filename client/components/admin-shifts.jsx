@@ -11,7 +11,7 @@ class AdminShiftsDay extends React.Component {
     this.query = ``;
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
-    // this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
+    this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     const defaultDate = 1566273600;
     this.state = {
@@ -36,44 +36,12 @@ class AdminShiftsDay extends React.Component {
     .catch(error => { throw (error) });
   }
 
-  // getAvailableDrivers(){
-  //   fetch(`/api/admin-available-drivers.php`, {
-  //     method: 'GET'
-  //   })
-  //     .then(response => {
-  //       return response.json()
-  //     })
-  //     .then(myJson => {
-  //       this.setState({
-  //         availableOperators: myJson
-  //       })
-  //     })
-  //     .catch(error => { throw (error) });
-  // }
-
-  // fetchCallMethod(query) {
-  //   fetch(`/api/admin-day-shifts.php` + query, {
-  //     method: 'GET'
-  //   })
-  //     .then(response => {
-  //       return response.json()
-  //     })
-  //     .then(myJson => {
-  //       this.setState({
-  //         rounds: myJson
-  //       })
-  //     })
-  //     .catch(error => { throw (error) });
-  // }
-
   // get assigned rounds from admin-day-shifts.php
   fetchCallMethod() {
     fetch(`/api/admin-day-shifts.php`, {
       method: 'GET'
     })
-      .then(response => {
-        return response.json()
-      })
+      .then(response => response.json())
       .then(data => {
         this.setState({
           rounds: data
@@ -81,15 +49,24 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error) });
   }
-
-  // componentDidMount() {
-  //   this.fetchCallMethod(this.state.queryString);
-  // }
-
-  // dataDidUpdate(){
-  //   this.fetchCallMethod(this.state.queryString);
-  // }
-
+  getAvailableDrivers(){
+    fetch(`/api/admin-available-drivers.php`,{
+      method: 'GET'
+    })
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          rounds: this.state.rounds,
+          availableOperators: data,
+          queryString: this.state.queryString,
+          dateToPass: this.state.dateToPass
+        });
+      })
+      .catch(error => { throw (error) });
+  }
+  createAvailableOperatorElements(){
+    console.log('available operators: ', this.state.availableOperators);
+  }
   componentDidMount() {
     // this.fetchAutoPopulatedData();
     this.fetchCallMethod();
@@ -98,16 +75,6 @@ class AdminShiftsDay extends React.Component {
   dataDidUpdate(){
     this.fetchCallMethod();
   }
-
-  // //shutting off the query string for right now, until it is operating properly
-  // componentDidMount() {
-  //   this.fetchCallMethod();
-  // }
-
-  // dataDidUpdate(){
-  //   // this.fetchCallMethod();
-  // }
-
 
   //build array for a specific line and busNumber and sort by start time
   buildRoundsByLine(lineName, busNumber) {
@@ -214,6 +181,7 @@ class AdminShiftsDay extends React.Component {
         shiftRowElements.push(
           <div key={index} className="shiftRowContainer adminShiftRow container w-100">
             < AdminShiftsDisplayComponent
+              onClickAvailableDrivers={this.getAvailableDrivers}
               range={range}
               shiftData={{ start: 600, end: 2400 }}
               children={element[2]}
@@ -251,6 +219,7 @@ class AdminShiftsDay extends React.Component {
             </div>
             <div className="additional-info-container container d-flex col-3 adminShiftRow">
               <div className="available-operators">available operators</div>
+              {this.createAvailableOperatorElements()}
             </div>
           </div>
         </div>
