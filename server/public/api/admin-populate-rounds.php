@@ -503,7 +503,7 @@ function populateSchedule($operators, $rounds, $conn)  {
 
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
-
+  print("\n". $rounds);
   return $operators;
 }
 

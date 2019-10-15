@@ -6,18 +6,18 @@ class AdminShiftsDisplayComponent extends React.Component {
   constructor(props) {
     super(props);
   }
-  calculateMinutesHours(startTime, endTime){
-    $startHourDigits = floor(startTime/100);
-    $startMinuteDigits = startTime/100 - startHourDigits;
-  
-    var endHourDigits = floor(endTime/100);
-    var endMinuteDigits = endTime/100 - endHourDigits;
-  
-    var startTimeInMinutes = startHourDigits*60 + startMinuteDigits*100;
-    var endTimeInMinutes = endHourDigits*60 + endMinuteDigits*100;
-  
+  calculateMinutesHours(startTime, endTime) {
+    $startHourDigits = floor(startTime / 100);
+    $startMinuteDigits = startTime / 100 - startHourDigits;
+
+    var endHourDigits = floor(endTime / 100);
+    var endMinuteDigits = endTime / 100 - endHourDigits;
+
+    var startTimeInMinutes = startHourDigits * 60 + startMinuteDigits * 100;
+    var endTimeInMinutes = endHourDigits * 60 + endMinuteDigits * 100;
+
     var shiftLengthInMinutes = endTimeInMinutes - startTimeInMinutes;
-    return round(shiftLengthInMinutes); 
+    return round(shiftLengthInMinutes);
   }
 
   render() {
@@ -40,17 +40,27 @@ class AdminShiftsDisplayComponent extends React.Component {
           borderRight: "1px solid black"
         }}
       >
-      {shiftsDetailsArray.map((element, index) => (
-        <AdminShiftsCombinedRounds
-          // test={data.test}
-          key={index}
-          type={(element.user_id === "1" || element.user_id === 1) ? 'alertShift' : 'active'}
-          range={{ min: 600, max: 2400 }}
-          shiftData={{start: element.start_time, end: element.end_time} } 
-          widthPercent = {widthPercent}
-          startPercent = {startPercent}
-        />
-      ))}
+        {shiftsDetailsArray.map((element, index) => {
+          var roundType = "";
+          if (element.user_id === "n/a") {
+            roundType = "nonOperational";
+          } else if (element.user_id === "1" || element.user_id === 1) {
+            roundType = "alertShift";
+          } else {
+            roundType = "active";
+          }
+          return (
+            < AdminShiftsCombinedRounds
+              key={index}
+              onClickAvailableDrivers={this.props.onClickAvailableDrivers}
+              type={roundType}
+              userId={element.user_id}
+              range={{ min: 600, max: 2400 }}
+              shiftData={{ start: element.start_time, end: element.end_time }}
+              widthPercent={widthPercent}
+              startPercent={startPercent} />
+          );
+        })}
       </div>
     );
   }

@@ -94,7 +94,7 @@ class ShiftsWeekDay extends React.Component {
             <div className="dateText">{dateText}</div>
             <div className="dayHours">{dayHoursRounded} {dayHoursRounded === 1 ? 'Hour' : 'Hours'}</div>
           </div>
-          <div className="shiftRowContainer">
+          <div className="shiftRowContainer w-100">
             <ShiftDisplayComponent
               test='1'
               type='active'
