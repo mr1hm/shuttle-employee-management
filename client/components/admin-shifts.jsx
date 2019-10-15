@@ -16,6 +16,7 @@ class AdminShiftsDay extends React.Component {
     const defaultDate = 1566273600;
     this.state = {
       rounds: null,
+
       availableOperators: [],
       queryString: `?date=${defaultDate}`,
       dateToPass: defaultDate
