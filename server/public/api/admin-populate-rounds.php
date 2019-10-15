@@ -238,7 +238,7 @@ function calculateShiftMinutes($startTime, $endTime){
 function determineNumberRoundsInShift($lineName){
   $shiftLength = [
     'C'=>3,
-    'D'=>5,
+    'D'=>4,
     'Hs'=>5,
     'S'=>5
   ];
@@ -443,22 +443,16 @@ function populateSchedule($operators, $rounds, $conn)  {
           continue;
         }
 
-        // //array of available time slots for one operator
-        // $availabilityArray = $operators[$operatorsIndex]['available_times'];
-        // //length of the times availability array
-        // $lengthTimesAvailableArray = count($availabilityArray);
+        // # of available times for the current operator
         $availableTimes = count($operators[$operatorsIndex]['available_times']);
 
-
         for ($timesIndex = 0; $timesIndex < $availableTimes; $timesIndex++) {
-
           //define available start and end times
           $availableStartTime = intval($operators[$operatorsIndex]['available_times'][$timesIndex][0]);
           $availableEndTime = intval($operators[$operatorsIndex]['available_times'][$timesIndex][1]);
 
           //Is shift within the available time range of operator?
           if ($availableStartTime <= intval($rounds[$roundsIndex]['round_start']) and $availableEndTime >= intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-
             //if operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
             $totalShiftTime = calculateShiftMinutes(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
             $totalMinutesInDay = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
@@ -500,36 +494,48 @@ function populateSchedule($operators, $rounds, $conn)  {
           }
         }
         if ($madeAssignment) {
+          enforceConditions($rounds, $operators, $operatorsIndex);
           break;
         }
       }
     }
   }
 
-  enforceConditions($rounds, $operators);
-
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
-  print_r($rounds);
-//  print_r($operators);
 
   return $operators;
 }
 
-function enforceConditions(&$rounds, &$operators) {
-  $totalOperators = count($operators);
-  for ($op = 0; $op < $totalOperators; ++$op) {
-    $totalAssignedTimes = count($operators[$op]['times_assigned']);
-    if ($totalAssignedTimes > 1) {
-      $start = intval($operators[$op]['times_assigned'][0][0]);
-      $end = intval($operators[$op]['times_assigned'][0][1]);
-      $block = calculateShiftMinutes($start, $end);
-      for ($assignedTime = 1; $assignedTime < $totalAssignedTimes; ++$assignedTime) {
-        if ($block == 300) {
-          if ((intval($operators[$op]['times_assigned'][$assignedTime][0]) - $end) < 30) {
-
+// Make sure there is a 30 minute break after 5 continuous hours
+function enforceConditions(&$rounds, &$operators, $opIndex) {
+  $totalAssignedTimes = count($operators[$opIndex]['times_assigned']);
+  if ($totalAssignedTimes > 1) {
+    $start = intval($operators[$opIndex]['times_assigned'][0][0]);
+    $end = intval($operators[$opIndex]['times_assigned'][0][1]);
+    $block = calculateShiftMinutes($start, $end);
+    for ($assignedTime = 1; $assignedTime < $totalAssignedTimes; ++$assignedTime) {
+      if ($block == 300) {
+        if ((intval($operators[$opIndex]['times_assigned'][$assignedTime][0]) - $end) < 30) {
+          $totalRounds = count($rounds);
+          for ($opRound = 0; $opRound < $totalRounds; ++$opRound) {
+            if (
+              $rounds[$opRound]['user_id'] === $operators[$opIndex]['user_id'] &&
+              intVal($rounds[$opRound]['round_start']) === intval($operators[$opIndex]['times_assigned'][$assignedTime][0])
+            ) {
+              $rounds[$opRound]['user_id'] = 1;
+              $rounds[$opRound]['first_name'] = 'unassigned';
+              $rounds[$opRound]['last_name'] = 'unassigned';
+              $rounds[$opRound]['status'] = 'unscheduled';
+              break;
+            }
           }
+          $operators[$opIndex]['times_assigned'][$assignedTime][0] = intval($operators[$opIndex]['times_assigned'][$assignedTime][0]) + 20;
         }
+      } else {
+        $start = intval($operators[$opIndex]['times_assigned'][$assignedTime][0]);
+        $end = intval($operators[$opIndex]['times_assigned'][$assignedTime][1]);
+        $block = calculateShiftMinutes($start, $end);
       }
     }
   }
@@ -538,15 +544,10 @@ function enforceConditions(&$rounds, &$operators) {
 //populate the first week
 function populateTemplateWeek ($conn, $rounds, $operators) {
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  // for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
-    $specificDayOfWeek = $dayOfWeek[0];
+  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
+    $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
-
-    // print('<pre>');
-    // print_r($operatorsForDay);
-    // print('<pre>');
-
     $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn);
     for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
       for ($revOperatorsSpecificDayIndex = 0; $revOperatorsSpecificDayIndex < count($revOperatorsSpecificDay); $revOperatorsSpecificDayIndex++) {
@@ -555,12 +556,7 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
         }
       }
     }
-  // }
-
-  // print('<pre>');
-  // print_r($operators);
-  // print('<pre>');
-
+  }
 }
 
 //**PROCESSING**/
@@ -569,18 +565,13 @@ $quarterEndTimestamp = 1576904400;
 $beginningOfWeekTimeStamp = $quarterStartTimestamp;
 
 //populate the entire quarater based on the template week
-// while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
+while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
   $rounds = [];
   $operators = [];
   $rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
   $operators = getOperatorsData($conn);
   populateTemplateWeek($conn, $rounds, $operators);
-
-  // print('<pre>');
-  // print_r($operators);
-  // print('<pre>');
-
   $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
-// }
+}
 
 ?>
