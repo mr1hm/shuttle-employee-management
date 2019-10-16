@@ -15,15 +15,16 @@ class AdminRoutes extends React.Component {
       session: null,
       routeInfo: [],
       busInfo: [],
-      editBusClicked: false,
+      addBusClicked: false,
       editLineClicked: false,
     }
     this.addBus = this.addBus.bind(this);
+    this.handleAddBusButton = this.handleAddBusButton.bind(this);
   }
 
-  handleEditBusButton() {
+  handleAddBusButton() {
     this.setState({
-      editBusClicked: !this.state.editBusClicked
+      addBusClicked: !this.state.addBusClicked
     })
   }
 
@@ -83,9 +84,6 @@ class AdminRoutes extends React.Component {
                   data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}>
                   Bus Details
                 </button>
-                <button className="btn btn-dark btn-sm collapsed" type="button" data-toggle="collapse" style={{ "fontSize": 24 }}
-                  data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}
-                  onClick={() => this.handleEditBusButton()} >+</button>
               </div>
             </div>
 
@@ -95,7 +93,7 @@ class AdminRoutes extends React.Component {
             <div className="row">
               <div className="col">
                 <div id="accordion">
-                  {this.state.editBusClicked ? <AddBus addBus={this.addBus}/> : ''}
+                  <AddBus addBusClicked={this.state.addBusClicked} addBusButton={this.handleAddBusButton} addBus={this.addBus}/>
                 </div>
               </div>
               </div>

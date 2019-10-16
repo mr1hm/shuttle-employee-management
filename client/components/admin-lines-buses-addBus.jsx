@@ -28,15 +28,20 @@ export default class AddBus extends React.Component {
     return (
       <div className="card">
         <div className="card-header" id="headingOne">
-          <div className="row">
-            <button className="btn btn-link" data-toggle="collapse" data-target="#collapseAddNewBus" aria-expanded="false" aria-controls="collapseOne">
-              Add New Bus
-              </button>
+          <div className="row align-items-center">
+            <div className="col">
+              <span className="mr-2">Add New Bus</span>
+              {this.props.addBusClicked ? <button className="btn btn-dark btn-sm collapsed" type="button" data-toggle="collapse" style={{ "fontSize": 20 }}
+                data-target="#collapseAddNewBus" aria-expanded="false" aria-controls="collapseAddNewBus"
+                onClick={() => this.props.addBusButton()}>-</button> : <button className="btn btn-dark btn-sm collapsed" type="button" data-toggle="collapse" style={{ "fontSize": 20 }}
+                  data-target="#collapseAddNewBus" aria-expanded="false" aria-controls="collapseAddNewBus"
+                  onClick={() => this.props.addBusButton()}>+</button>}
+            </div>
           </div>
 
         </div>
 
-        <div id="collapseAddNewBus" className="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+        <div id="collapseAddNewBus" className="collapse" aria-labelledby="headingOne" data-parent="#accordion">
           <div className="card-body">
             <form method="POST" action="/api/admin-lines-buses.php">
               <div className="row">
