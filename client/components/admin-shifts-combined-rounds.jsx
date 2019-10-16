@@ -14,8 +14,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     return hoursToMinutes + minutesFromTime;
   }
   handleClick(){
-    this.props.onClickAvailableDrivers();
-    // console.log('shift data click: ', this.props.shiftData.start, this.props.shiftData.end, this.props.userId);
+    this.props.onClickAvailableDrivers(this.props.shiftData.start, this.props.shiftData.end);
   }
   generateShiftHoverElement() {
     const shiftStartMeridian = convertMilitaryTime(this.props.shiftData.start);
