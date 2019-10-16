@@ -4,6 +4,7 @@ import TopMenuGeneral from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
 import {Grid} from '@material-ui/core';
 import Modal from '../../post-modal';
+import TradeSwap from '../../trade-swap-modal';
 import ShiftsDay from '../../shifts/day/shifts-day';
 import {OneOfMyShifts} from '../../shifts/day/shifts-day';
 import { createDateObjFromDateString, adjustLocalTimestampToUTCSeconds} from '../../../lib/time-functions';
@@ -15,7 +16,10 @@ class ShiftsDetails extends React.Component {
       this.state = {
         isModalOpen: false,
         shiftsDetailsInfo: [],
-        textFromCommentBox:""
+        textFromCommentBox:"",
+        modalType:"",
+        timeSpanOfShift:"",
+        dateAndRoundString:""
       }
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -26,6 +30,7 @@ class ShiftsDetails extends React.Component {
     this.checkedRoundIDs = [];
     this.handleTransactionLog = this.handleTransactionLog.bind(this);
     this.handleTextArea = this.handleTextArea.bind(this);
+    this.convertMilitaryTime = this.convertMilitaryTime.bind(this);
   }
 
   handleTextArea(event){
@@ -124,9 +129,12 @@ class ShiftsDetails extends React.Component {
     this.setState({
       isModalOpen: true,
       roundID: parseInt(roundIDs),
-      shiftsDetailsInfo: allShiftsToPass
+      shiftsDetailsInfo: allShiftsToPass,
+      modalType:modalType
     })
+    this.createSubHeaderTimeFrame();
   }
+
   closeModal() {
     this.setState({
       isModalOpen: false,
@@ -181,6 +189,12 @@ class ShiftsDetails extends React.Component {
     if (shiftDetails.length !== 0) {
       const shiftDurationStart = shiftDetails[0].start_time;
       const shiftDurationEnd = shiftDetails[shiftDetails.length - 1].end_time;
+      const timeSpanOfShift =  this.convertMilitaryTime(shiftDurationStart)+" - "+this.convertMilitaryTime(shiftDurationEnd);
+      const dateAndRoundString = `${fullDate} | Rounds: ${shiftDetails.length}`;
+      this.setState({
+        timeSpanOfShift:timeSpanOfShift,
+        dateAndRoundString:dateAndRoundString
+      });
       return (
         <div className="subHeaderInfoContainer">
           <div className="shiftTimeSpan">{this.convertMilitaryTime(shiftDurationStart)} - {this.convertMilitaryTime(shiftDurationEnd)}</div>
@@ -206,137 +220,146 @@ class ShiftsDetails extends React.Component {
     if (!this.state.shiftsDetailsInfo){
       return <div>No Shift Details Available</div>;
     }
-    const shiftDetails = this.state.shiftsDetailsInfo;
-    return (
-      <React.Fragment>
-        <TopMenuGeneral title="Shifts - DETAILS"/>
-        <div className="details subHeader">
-          <div className="busRouteIconContainer">
-              <RouteBusDisplay route={this.props.busLine[0]} bus={this.props.busNumber[0]}/>
+    else if (this.state.modalType === "trade") {
+      return (
+      <>
+        <TradeSwap route={this.props.busLine[0]} busNumber={this.props.busNumber[0]} timeHeader={this.createSubHeaderTimeFrame} timeSpan={this.state.timeSpanOfShift} dateAndRound={this.state.dateAndRoundString}/>
+      </>
+
+      )
+    }
+    else {
+      const shiftDetails = this.state.shiftsDetailsInfo;
+      return (
+        <React.Fragment>
+          <TopMenuGeneral title="Shifts - DETAILS"/>
+          <div className="details subHeader">
+            <div className="busRouteIconContainer">
+                <RouteBusDisplay route={this.props.busLine[0]} bus={this.props.busNumber[0]}/>
+            </div>
+              {/* {this.createSubHeaderTimeFrame()} */}
           </div>
-            {this.createSubHeaderTimeFrame()}
-        </div>
-        <div className="details mainContainer">
-          <Grid container className="flex-section roundsListGrid">
-            <Grid
-              item
-              xs={6}
-              className={"flex-col-scroll scrollableContainer"}
-            >
-              <div className="container">
-                <div className="row">
-                  <div className="col-12 fullWidthGridColumn">
-                    <table className="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th></th>
-                          {/* <div className="custom-control custom-checkbox checkboxElements">
-                            <input type="checkbox" className="custom-control-input" id="customCheckT0"></input>
-                            <label className="custom-control-label" htmlFor="customCheckT0">{""}</label>
-                          </div> */}
-                          <th scope="col">Start</th>
-                          <th scope="col">End</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {shiftDetails.map((object, index ) => { return (
-                          <tr key={index}>
-                            <td>
-                            {this.generateCheckboxElements(object)}
-                            </td>
-                            <td>{this.convertMilitaryTime(object.start_time)}</td>
-                            <td>{this.convertMilitaryTime(object.end_time)}</td>
-                          </tr>
-                        )})}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              className={"flex-col-scroll scrollableContainer"}
-            >
-              <div className="container inactive">
-                <div className="row">
-                  <div className="col-12 fullWidthGridColumn">
-                    <table className="table table-bordered">
-                      <thead>
-                        <tr>
-
-                          {/* <th></th> */}
-                          {/* <div className="custom-control custom-checkbox checkboxElements">
-                            <input type="checkbox" className="custom-control-input" id="customCheckD0"></input>
-                            <label className="custom-control-label" htmlFor="customCheckD0">{""}</label>
-                          </div> */}
-                          <th scope="col">Recurring Dates</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-
-                        {/* {shiftDetails.map(shiftDate => {return (
+          <div className="details mainContainer">
+            <Grid container className="flex-section roundsListGrid">
+              <Grid
+                item
+                xs={6}
+                className={"flex-col-scroll scrollableContainer"}
+              >
+                <div className="container">
+                  <div className="row">
+                    <div className="col-12 fullWidthGridColumn">
+                      <table className="table table-bordered">
+                        <thead>
                           <tr>
-                            <td>
-                            <div className="custom-control custom-checkbox checkboxElements">
-                              <input type="checkbox" className="custom-control-input" id={shiftDate}></input>
-                              <label className="custom-control-label" htmlFor={shiftDate}></label>
-                            </div>
-                            </td>
-                            <td>{shiftDate}</td>
+                            <th></th>
+                            {/* <div className="custom-control custom-checkbox checkboxElements">
+                              <input type="checkbox" className="custom-control-input" id="customCheckT0"></input>
+                              <label className="custom-control-label" htmlFor="customCheckT0">{""}</label>
+                            </div> */}
+                            <th scope="col">Start</th>
+                            <th scope="col">End</th>
                           </tr>
-                        )})} */}
-
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {shiftDetails.map((object, index ) => { return (
+                            <tr key={index}>
+                              <td>
+                              {this.generateCheckboxElements(object)}
+                              </td>
+                              <td>{this.convertMilitaryTime(object.start_time)}</td>
+                              <td>{this.convertMilitaryTime(object.end_time)}</td>
+                            </tr>
+                          )})}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                className={"flex-col-scroll scrollableContainer"}
+              >
+                <div className="container inactive">
+                  <div className="row">
+                    <div className="col-12 fullWidthGridColumn">
+                      <table className="table table-bordered">
+                        <thead>
+                          <tr>
+
+                            {/* <th></th> */}
+                            {/* <div className="custom-control custom-checkbox checkboxElements">
+                              <input type="checkbox" className="custom-control-input" id="customCheckD0"></input>
+                              <label className="custom-control-label" htmlFor="customCheckD0">{""}</label>
+                            </div> */}
+                            <th scope="col">Recurring Dates</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                          {/* {shiftDetails.map(shiftDate => {return (
+                            <tr>
+                              <td>
+                              <div className="custom-control custom-checkbox checkboxElements">
+                                <input type="checkbox" className="custom-control-input" id={shiftDate}></input>
+                                <label className="custom-control-label" htmlFor={shiftDate}></label>
+                              </div>
+                              </td>
+                              <td>{shiftDate}</td>
+                            </tr>
+                          )})} */}
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </Grid>
             </Grid>
-          </Grid>
-          <div className="buttonContainer">
-            <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs)}>
-            {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Cancel Post' : "Post" }</button>
-            <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs)}>Trade/Swap</button>
-            <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.props.goBack()}>My Shifts</button>
+            <div className="buttonContainer">
+              <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs,"post")}>
+              {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Cancel Post' : "Post" }</button>
+              <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.openModal(this.checkedRoundIDs,"trade")}>Trade/Swap</button>
+              <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.props.goBack()}>My Shifts</button>
+            </div>
           </div>
-        </div>
-        <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
-          <h2> PLEASE CONFIRM: <br></br>
-            {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted'
-              ? "Do you really want to cancel this/these post(s)?" : "Do you really want to post this/these shift(s)?"}</h2>
-          <table className='table table-striped'>
-            <tbody>
-              {
-                this.state.shiftsDetailsInfo.map((shifts, index) => {
+          <Modal open={this.state.isModalOpen} status={this.state.activeModal} shiftStatus={this.state.shiftsDetailsInfo.status}>
+            <h2> PLEASE CONFIRM: <br></br>
+              {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted'
+                ? "Do you really want to cancel this/these post(s)?" : "Do you really want to post this/these shift(s)?"}</h2>
+            <table className='table table-striped'>
+              <tbody>
+                {
+                  this.state.shiftsDetailsInfo.map((shifts, index) => {
 
-                  return (
+                    return (
 
-                    < OneOfMyShifts
-                      key={index}
-                      shifts={shifts}
-                      openDetails={this.openModal}
-                      view={this.props.view}
-                      modalStatus={this.state.isModalOpen}
-                      defaultDate= { this.props.unixDate }
+                      < OneOfMyShifts
+                        key={index}
+                        shifts={shifts}
+                        openDetails={this.openModal}
+                        view={this.props.view}
+                        modalStatus={this.state.isModalOpen}
+                        defaultDate= { this.props.unixDate }
 
-                    />
-                  );
-                })
-              }
-            </tbody>
-          </table>
-          <div className="form-group box">
-            <label className="boxComment" htmlFor="comment ">Comment:</label>
-            <textarea onChange={this.handleTextArea} className="form-control ml-3" rows="5" id="comment"></textarea>
-          </div>
-          <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Back to My Shifts</button></p>
-          <p onClick={(event) => this.handleTransactionLog(event)} ><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >
-            {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Yes, I want to cancel' : "Yes, I want to post"}</button></p>
-        </Modal>
-      </React.Fragment>
-    )
+                      />
+                    );
+                  })
+                }
+              </tbody>
+            </table>
+            <div className="form-group box">
+              <label className="boxComment" htmlFor="comment ">Comment:</label>
+              <textarea onChange={this.handleTextArea} className="form-control ml-3" rows="5" id="comment"></textarea>
+            </div>
+            <p><button className= "modalCancelButton btn-dark" onClick= {() => this.closeModal()}>Back to My Shifts</button></p>
+            <p onClick={(event) => this.handleTransactionLog(event)} ><button className= "modalConfirmButton btn-primary" onClick={this.handlePostButtonConfirmation} >
+              {this.state.shiftsDetailsInfo[0] && this.state.shiftsDetailsInfo[0].status === 'posted' ? 'Yes, I want to cancel' : "Yes, I want to post"}</button></p>
+          </Modal>
+        </React.Fragment>
+    )}
   }
 }
 
