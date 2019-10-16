@@ -109,6 +109,7 @@ class ShiftsDay extends React.Component {
                       openDetails={this.openModal}
                       view = {this.props.view}
                       modalStatus= {this.state.isModalOpen}
+                      queryString = {this.state.queryString}
                       openRouteDetails={this.props.openRouteDetails}
                     />
                   );

@@ -92,7 +92,7 @@ class ShiftsDetails extends React.Component {
       .catch(error => { throw (error); });
   }
   getAllShifts(query) {
-    const response = fetch(`/api/shifts-day.php` + query, {
+    const response = fetch(`/api/shifts-day.php` + this.props.queryString, {
       method: 'GET'
     });
 
@@ -102,6 +102,7 @@ class ShiftsDetails extends React.Component {
       .catch(error => { console.error(error); });
   }
   componentDidMount() {
+
     this.getAllShifts();
     let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();// converts unix time to date/at midnight 09/17/2019
     let shiftStart = this.props.blockStartTime ? this.props.blockStartTime : 600;

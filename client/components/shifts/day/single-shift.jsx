@@ -10,8 +10,8 @@ class SingleShift extends React.Component {
     this.openDetails = this.openDetails.bind(this);
   }
   openDetails() {
-    const { openRouteDetails, shifts } = this.props;
-    openRouteDetails(shifts.roundID, shifts.date);
+    const { openRouteDetails, shifts, queryString } = this.props;
+    openRouteDetails(shifts.roundID, shifts.date, queryString);
   }
 
   render() {
