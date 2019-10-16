@@ -2,10 +2,10 @@ import React from 'react';
 import './shifts-details.css';
 import TopMenuGeneral from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
-import { Grid } from '@material-ui/core';
+
 import Modal from '../../post-modal';
 import TradeSwap from '../../trade-swap';
-import { OneOfMyShifts } from '../../shifts/day/shifts-day';
+import SingleShift from '../../shifts/day/single-shift';
 import { Link } from 'react-router-dom';
 
 import { createDateObjFromDateString, adjustLocalTimestampToUTCSeconds } from '../../../lib/time-functions';
@@ -14,14 +14,10 @@ class ShiftsDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isModalOpen: false,
       shiftsDetailsInfo: [],
       textFromCommentBox: '',
       modalType: ''
     };
-    console.log('Props', props);
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
     this.createSubHeaderTimeFrame = this.createSubHeaderTimeFrame.bind(this);
     this.postShift = this.postShift.bind(this);
     this.pushRoundIDsToArray = this.pushRoundIDsToArray.bind(this);
@@ -31,7 +27,6 @@ class ShiftsDetails extends React.Component {
     this.handleTextArea = this.handleTextArea.bind(this);
     this.passCheckedRoundIds = this.passCheckedRoundIds.bind(this);
   }
-
   handleTextArea(event) {
     console.log('props in handleText', this.props.userID);
     console.log('props in handleText', this.props.busNumber);
@@ -72,12 +67,8 @@ class ShiftsDetails extends React.Component {
 
   getData(url, methodToUse) {
     fetch(url, { method: methodToUse })
-      .then(response => { return response.json(); })
-      .then(details => {
-        this.setState({
-          shiftsDetailsInfo: details
-        });
-      })
+      .then(response => response.json())
+      .then(details => this.setState({ shiftsDetailsInfo: details }))
       .catch(error => { throw (error); });
   }
   postShift(status, userID, roundID, transactionType) {
@@ -100,7 +91,18 @@ class ShiftsDetails extends React.Component {
       })
       .catch(error => { throw (error); });
   }
+  getAllShifts(query) {
+    const response = fetch(`/api/shifts-day.php` + query, {
+      method: 'GET'
+    });
+
+    response
+      .then(response => response.json())
+      .then(myJson => this.setState({ myShiftsToday: myJson }))
+      .catch(error => { console.error(error); });
+  }
   componentDidMount() {
+    this.getAllShifts();
     let date = createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime();// converts unix time to date/at midnight 09/17/2019
     let shiftStart = this.props.blockStartTime ? this.props.blockStartTime : 600;
     let shiftEnd = this.props.blockEndTime ? this.props.blockEndTime : 1100;
@@ -215,10 +217,11 @@ class ShiftsDetails extends React.Component {
     if (!this.state.shiftsDetailsInfo) {
       return <div>No Shift Details Available</div>;
     }
-    const shiftDetails = this.state.shiftsDetailsInfo;
+    // const shiftDetails = this.state.shiftsDetailsInfo;
     return (
       <React.Fragment>
-        <TopMenuGeneral title="Shifts - DETAILS"/>
+        <h1>{this.props.shiftId}</h1>
+        {/* <TopMenuGeneral title="Shifts - DETAILS"/>
         <div className="details subHeader">
           <div className="busRouteIconContainer">
             <RouteBusDisplay route={this.props.busLine[0]} bus={this.props.busNumber[0]}/>
@@ -277,7 +280,7 @@ class ShiftsDetails extends React.Component {
             </Link>
             <button type="button" className="btn btn-outline-dark btn-block" onClick={() => this.props.goBack()}>My Shifts</button>
           </div>
-        </div>
+        </div> */}
 
       </React.Fragment>
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { OneOfMyShifts } from './shifts/day/shifts-day';
+import SingleShift from './shifts/day/single-shift';
 
 class TradeSwap extends React.Component {
   constructor(props) {

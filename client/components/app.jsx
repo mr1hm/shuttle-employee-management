@@ -21,13 +21,13 @@ class App extends React.Component {
     this.state = {
       userLogin: false,
       userId: [],
-      // presetDateForTesting: 1566172800000
+      shiftId: null,
       presetDateForTesting: 1560409200000
-      // presetDateForTesting: 1563951600000
     };
     this.setLoginProps = this.setLoginProps.bind(this);
     this.getUserID = this.getUserID.bind(this);
     this.startSwapTradeTransaction = this.startSwapTradeTransaction.bind(this);
+    this.openRouteDetails = this.openRouteDetails.bind(this);
   }
 
   getUserID() {
@@ -35,18 +35,17 @@ class App extends React.Component {
   }
 
   setLoginProps(userIdNumber) {
-    console.log('from loginn', userIdNumber);
-    console.log('setloginprops', this.props.state);
     this.setState({
       userId: userIdNumber,
       userLogin: true
     });
-    console.log('app state', this.state);
   }
   startSwapTradeTransaction(roundIds) {
     console.log(roundIds);
   }
-
+  openRouteDetails(id) {
+    this.setState({ shiftId: id });
+  }
   render() {
     const userStateId = parseInt(this.state.userId);
     console.log('userNotLogin', this.state);
@@ -59,10 +58,10 @@ class App extends React.Component {
             <Route exact path={['/', '/welcome/']} render={props => <Welcome {...props} userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId ? this.state.userId : 17} get={this.getUserID} />} />
             <Route path="/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/day/shifts-day/:date?" render={props => <ShiftsDay {...props} userId={this.state.userId ? this.state.userId : 17} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
+            <Route path="/shifts/day/shifts-day/:date?" render={props => <ShiftsDay openRouteDetails={this.openRouteDetails} {...props} userId={this.state.userId ? this.state.userId : 17} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/month/shifts-month/:date?" render={props => <ShiftsMonth userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/available/:date?" render={props => <ShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/details/" render={props => <ShiftsDetails userId={this.state.userId ? this.state.userId : 17} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
+            <Route path="/shifts/details/" render={props => <ShiftsDetails userId={this.state.userId} shiftId={this.state.shiftId} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
             <Route path="/admin-day/" render={props => <AdminShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/trade-swap/" render={props => <TradeSwap {...props} />} />
           </Switch>
@@ -73,7 +72,6 @@ class App extends React.Component {
       console.log('false state', userStateId);
       return (
         <React.Fragment>
-
           <Switch>
             <Route exact path={['/', '/login/']} render={props => <Login {...props} onClick={this.setLoginProps} onChange={this.getUserID} />} />
             <Route path="/welcome/" render={props => <Welcome {...props} />}/>
