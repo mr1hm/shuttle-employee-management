@@ -15,6 +15,8 @@ class AdminShiftsDay extends React.Component {
     const defaultDate = 1566273600;
     this.state = {
       rounds: null,
+      operators: {},
+      operatorStats: {},
       availableOperators: [],
       queryString: `?date=${defaultDate}`,
       dateToPass: defaultDate
@@ -38,10 +40,11 @@ class AdminShiftsDay extends React.Component {
     })
       .then(response => response.json())
       .then(data => {
+        this.groupOperatorsAndOperatorData(data);
         this.setState({
           rounds: data
         });
-        console.log(data);
+        console.log('rounds: ', data);
       })
       .catch(error => { throw (error) });
   }
@@ -54,7 +57,6 @@ class AdminShiftsDay extends React.Component {
       .then(response => response.json())
       .then(data => {
         var groupedOperators =  this.groupOperatorsByUserId(data);
-        console.log('groupedOperators: ', groupedOperators);
         var operatorsAvailableFiltered = this.filterAvailableOperatorsByStartAndEndTimes(groupedOperators, startTime, endTime);
         this.setState({availableOperators: operatorsAvailableFiltered});
       })
@@ -75,10 +77,10 @@ class AdminShiftsDay extends React.Component {
     var filteredOperators = [];
     for (var key in groupedOperators){
       var operator = groupedOperators[key];
-      console.log('forin loop', operator);
       var operatorAvailable = true;
       for (var operatorIndex = 0; operatorIndex < operator.length; operatorIndex++){
         var operatorRoute = operator[operatorIndex];
+        console.log('operatorRoute: ', operatorRoute);
         if ((operatorRoute.end_time > startTime && operatorRoute.end_time <= endTime) ||
           (operatorRoute.start_time >= startTime && operatorRoute.start_time < endTime) ||
           (operatorRoute.start_time < startTime && operatorRoute.end_time > endTime)){
@@ -92,10 +94,9 @@ class AdminShiftsDay extends React.Component {
     return filteredOperators;
   }
   createAvailableOperatorElements(){
-    console.log('available operators: ', this.state.availableOperators);
     const availableOperatorsElements = this.state.availableOperators.map( operator => {
       return(
-        <div className="available-operator">
+        <div key={operator.id} className="available-operator">
           {`${operator.last_name}, ${operator.first_name}`}
         </div>
       );
@@ -146,11 +147,11 @@ class AdminShiftsDay extends React.Component {
     }
     return roundsForLine;
   }
-
-  //build an array of shifts for specific line and bus number
+  //build an array of shifts for specific line and bus number and group consecutive rounds with same id
   buildShiftsByLine(lineName, busNumber) {
     var shiftsForLine = [];
     var sortedLineAndBusArray = this.buildRoundsByLine(lineName, busNumber);
+    console.log('sortedLineArray: ', sortedLineAndBusArray);
     var previousUserId = null;
     for (var indexSortedArray = 0;  indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
       let currentUserId = sortedLineAndBusArray[indexSortedArray].user_id;
@@ -159,9 +160,10 @@ class AdminShiftsDay extends React.Component {
       let displayName = (firstName && lastName) ? lastName + ", " + firstName : "n/a";
       if (currentUserId == 1 || currentUserId === "n/a" || currentUserId !== previousUserId){
         shiftsForLine.push({
+          'line_name': lineName + busNumber,
           'start_time': sortedLineAndBusArray[indexSortedArray].round_start,
           'end_time': sortedLineAndBusArray[indexSortedArray].round_end,
-          'user_id': sortedLineAndBusArray[indexSortedArray].user_id, 
+          'user_id': sortedLineAndBusArray[indexSortedArray].user_id,
           'user_name': displayName
         });
       } else {
@@ -171,8 +173,55 @@ class AdminShiftsDay extends React.Component {
     }
     return shiftsForLine;
   }
-
+  // group operatorStats by id
+  groupOperatorsAndOperatorData(data){
+    const groupedOperatorData = {};
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++){
+      let currentUserId = data[dataIndex].user_id;
+      if (!groupedOperatorData[currentUserId]){
+        groupedOperatorData[currentUserId] = {};
+        groupedOperatorData[currentUserId].rounds = {};
+        groupedOperatorData[currentUserId].firstName = data[dataIndex].first_name;
+        groupedOperatorData[currentUserId].lastName = data[dataIndex].last_name;
+        groupedOperatorData[currentUserId].specialRoute = "";
+        groupedOperatorData[currentUserId].totalHours = null;
+      }
+      let currentLine = data[dataIndex].line_name + data[dataIndex].bus_number;
+      if (!groupedOperatorData[currentUserId].rounds[currentLine]){
+        groupedOperatorData[currentUserId].rounds[currentLine] = [];
+      }
+      groupedOperatorData[currentUserId].rounds[currentLine].push(data[dataIndex]);
+    }
+    for( var id in groupedOperatorData ){
+      var totalHours = 0;
+      var rounds = groupedOperatorData[id].rounds;
+      for ( var line in rounds){
+        console.log(totalHours);
+        totalHours += parseFloat(this.calculateTotalHours(rounds[line]));
+      }
+      groupedOperatorData[id].totalHours = totalHours;
+    }
+    this.setState({ operators: groupedOperatorData });
+    console.log('operators: ', groupedOperatorData);
+  }
+  calculateTotalHours(rounds){
+    var totalHours = 0;
+    for(var roundsIndex = 0; roundsIndex < rounds.length; roundsIndex++){
+      var startTime = this.convert24hrTimeToMinutes(parseInt(rounds[roundsIndex].round_start));
+      var endTime = this.convert24hrTimeToMinutes(parseInt(rounds[roundsIndex].round_end));
+      var totalMinutesDuringRound = endTime - startTime;
+      var totalHoursDuringRound = totalMinutesDuringRound / 60;
+      totalHours += totalHoursDuringRound;
+    }
+    return totalHours.toFixed(1);
+  }
+  convert24hrTimeToMinutes(time){
+    var hours = Math.floor(time / 100);
+    var minutes = time - hours * 100;
+    return minutes + hours * 60;
+  }
   shiftsGroupedByLineAndBus() {
+    var operatorStats = {};
     var busAndLineObject = {};
     var groupedShifts = [];
 
