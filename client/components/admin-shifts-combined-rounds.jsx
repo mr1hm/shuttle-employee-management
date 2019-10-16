@@ -1,4 +1,6 @@
 import React from "react";
+import AdminShiftsHoverDetails from './admin-shifts-hover-details';
+import {convertMilitaryTime} from '../lib/time-functions';
 import './admin-shifts-display.css';
 
 class AdminShiftsCombinedRounds extends React.Component {
@@ -13,7 +15,21 @@ class AdminShiftsCombinedRounds extends React.Component {
   }
   handleClick(){
     this.props.onClickAvailableDrivers();
-    console.log('shift data click: ', this.props.shiftData.start, this.props.shiftData.end, this.props.userId);
+    // console.log('shift data click: ', this.props.shiftData.start, this.props.shiftData.end, this.props.userId);
+  }
+  generateShiftHoverElement() {
+    const shiftStartMeridian = convertMilitaryTime(this.props.shiftData.start);
+    const shiftEndMeridian = convertMilitaryTime(this.props.shiftData.end);
+    const shiftTimeMeridian = shiftStartMeridian + " - " + shiftEndMeridian;
+    if (this.props.type === 'active') {
+      return (
+        <AdminShiftsHoverDetails
+          userName={this.props.userName}
+          shiftTime={shiftTimeMeridian}
+          rounds={this.props.rounds}
+        />
+      );
+    } else return <div></div>
   }
   render() {
     const rangeMax = this.timeInMinutesFromMidnight(this.props.range.max);
@@ -33,8 +49,10 @@ class AdminShiftsCombinedRounds extends React.Component {
           left: startPercent + "%",
           borderLeft: "1px solid black",
           borderRight: "1px solid black"
-        }}></div>
-    );
+        }}>
+          {this.generateShiftHoverElement()}
+        </div>
+    );      
   }
 }
 
