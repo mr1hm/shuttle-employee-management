@@ -200,6 +200,9 @@ function buildOperatorsByDay($operators, $day) {
       $content['times_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['times_assigned'];
       $content['continuous_minutes_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['continuous_minutes_assigned'];
       $content['total_daily_minutes'] = $operators[$operatorsIndex]['assignment_details'][$day]['total_daily_minutes'];
+
+      $content['working_past_10'] = false;
+
       array_push($dayOperators, $content);
     }
   }
@@ -326,6 +329,12 @@ function addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $n
       }
     }
   }
+
+  if ($operators[$operatorsIndex]['times_assigned'][count($operators[$operatorsIndex]['times_assigned'])-1][1] > 1000) {
+    $operators[$operatorsIndex]['working_past_10'] = true;
+    print_r($operators[$operatorsIndex]);
+  }
+
   return $operators;
 }
 
@@ -469,6 +478,11 @@ function populateSchedule($operators, $rounds, $conn)  {
             $blockTooBig = checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
             //if there is not a problem with continous block
             if (!$blockTooBig) {
+
+              if ($operators[$operatorsIndex]['working_past_10']) {
+                print(intval($rounds[$roundsIndex]['round_start']));
+              }
+
               //if all critera met, update the rounds in the schedule
               for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++) {
                 $rounds[$roundsIndex + $roundOfShift]['user_id'] = $operators[$operatorsIndex]['user_id'];
@@ -494,15 +508,21 @@ function populateSchedule($operators, $rounds, $conn)  {
           }
         }
         if ($madeAssignment) {
-          enforceBreakCondition($rounds, $operators, $operatorsIndex);
+
+          preventMorningAfterShift($rounds, $operators[$operatorsIndex]);
+          // enforceBreakCondition($rounds, $operators, $operatorsIndex);
           break;
         }
       }
     }
+    // print_r($operators);
   }
 
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
+
+  // print_r($rounds);
+
   return $operators;
 }
 
@@ -538,14 +558,17 @@ function enforceBreakCondition(&$rounds, &$operators, $opIndex) {
   }
 }
 
-function preventMorningAfterShift() {
+function preventMorningAfterShift(&$rounds, &$operator) {
+  if (intval($operator['times_assigned'][0][0]) < 800) {
+    $totalRounds = count($rounds);
 
+  }
 }
 
 //populate the first week
 function populateTemplateWeek ($conn, $rounds, $operators) {
-  $dayOfWeek = ['Sun', 'Mon'];//, 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 2; $dayOfWeekIndex++) {
+  $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 1; $dayOfWeekIndex++) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
