@@ -538,10 +538,14 @@ function enforceBreakCondition(&$rounds, &$operators, $opIndex) {
   }
 }
 
+function preventMorningAfterShift() {
+
+}
+
 //populate the first week
 function populateTemplateWeek ($conn, $rounds, $operators) {
-  $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
+  $dayOfWeek = ['Sun', 'Mon'];//, 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 2; $dayOfWeekIndex++) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
@@ -562,13 +566,13 @@ $quarterEndTimestamp = 1576904400;
 $beginningOfWeekTimeStamp = $quarterStartTimestamp;
 
 //populate the entire quarter based on the template week
-while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
+// while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
   $rounds = [];
   $operators = [];
   $rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
   $operators = getOperatorsData($conn);
   populateTemplateWeek($conn, $rounds, $operators);
   $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
-}
+// }
 
 ?>
