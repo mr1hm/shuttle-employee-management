@@ -34,12 +34,12 @@ class AdminRoutes extends React.Component {
     })
   }
 
-  // componentDidCatch(error) {
-  //   console.error(error);
+  // getBusId() {
+
   // }
 
- addBus(newBus) {
-   // fetch with post method, add new bus to line.
+  addBus(newBus) {
+   // fetch with post method, add new bus to database and line.
    const myInit = {
     method: 'POST',
     body: JSON.stringify(newBus),
@@ -49,13 +49,15 @@ class AdminRoutes extends React.Component {
    };
    fetch('/api/admin-lines-buses.php', myInit)
     .then(response => response.json())
-    .then(bus => this.setState({
-      busInfo: this.state.busInfo.concat(bus)
-    }))
-  //  if (this.state.editBusClicked) {
-  //
+    .then(busToBeAdded => {
+      let newBusInfo = this.state.busInfo.slice();
+      newBusInfo.push(busToBeAdded);
+      this.setState({
+        busInfo: newBusInfo
+      })
+    })
+    .catch(error => console.error(error));
  }
-
 
   readRouteBusComponent(routeInfo){
     if (!routeInfo){
@@ -114,15 +116,14 @@ class AdminRoutes extends React.Component {
                           <th scope="col">Edit</th>
                         </tr>
                       </thead>
-                      <BusesTable routeInfo={routeInfo} />
+                      <BusesTable busInfo={this.state.busInfo} routeInfo={routeInfo} />
                     </table>
                   </div>
                 </div>
               </div>
             </div>
-
-        )
-            }
+          );
+        }
 
 
       {/* returns JUST the bus # if the # is already associated with a route/line name */}
@@ -143,32 +144,33 @@ class AdminRoutes extends React.Component {
                       <th scope="col">Edit</th>
                     </tr>
                   </thead>
-                  <BusesTable routeInfo={routeInfo} />
+                  <BusesTable busInfo={this.state.busInfo} routeInfo={routeInfo} />
                 </table>
               </div>
             </div>
           </div>
         </div>
-          )
+          );
         }
-      ))
-    }
+      )
+    );
+  }
 
   componentDidMount(){
     this.handleRoutesInformation('api/admin-lines-buses.php', 'GET');
     this.handleBusesInformation('api/admin-lines-buses.php', 'GET');
   }
 
-  handleRoutesInformation(url, method){
-          fetch(url, { method: method })
-             .then(response => { return response.json() })
-            .then(routeInfo => {
-            this.setState({
-             routeInfo: routeInfo
-            })
-            console.log(routeInfo);
-        })
-      }
+  handleRoutesInformation(url, method) {
+    fetch(url, { method: method })
+        .then(response => { return response.json() })
+      .then(routeInfo => {
+      this.setState({
+        routeInfo: routeInfo
+      });
+      console.log(routeInfo);
+    });
+  }
 
   handleBusesInformation(url, method) {
     fetch(url, { method: method })
@@ -181,7 +183,7 @@ class AdminRoutes extends React.Component {
       })
   }
 
-    render(){
+    render() {
         if (this.state.editLineClicked) {
           return (
             <React.Fragment>
@@ -192,12 +194,12 @@ class AdminRoutes extends React.Component {
                   <form onSubmit={this.handleSubmit}>
                     <label >
                       Start Date:
-          <input type="text" value={this.state.value} onChange={this.handleChange} />
+                      <input type="text" value={this.state.value} onChange={this.handleChange} />
                     </label>
                     <input type="submit" value="Submit" />
                     <label>
                       End Date:
-          <input type="text" value={this.state.value} onChange={this.handleChange} />
+                      <input type="text" value={this.state.value} onChange={this.handleChange} />
                     </label>
                     <input type="submit" value="Submit" />
                   </form>

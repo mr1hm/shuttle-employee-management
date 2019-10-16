@@ -4,14 +4,16 @@ export default class AddBus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      busNumber: null,
-      startTime: null,
-      endTime: null,
+      bus_number: null,
+      route_id: null,
+      vehicle_id: null,
+      start_time: null,
+      end_time: null,
       openDur: null,
-      closeDur: null,
-      rounds: null,
-      roundsDur: null,
-      days: null
+      closeDur: null
+      // rounds: null,
+      // roundsDur: null,
+      // days: null
     }
     this.handleChange = this.handleChange.bind(this);
   }
@@ -79,22 +81,19 @@ export default class AddBus extends React.Component {
                 </div>
                 <div className="col">
                   <label>Select Days</label>
-                  <select onChange={this.handleChange} name="days" className="col border border-primary">
-                    <option>Monday</option>
-                    <option>Tuesday</option>
-                    <option>Wednesday</option>
-                    <option>Thursday</option>
-                    <option>Friday</option>
-                    <option>Saturday</option>
-                    <option>Sunday</option>
-                  </select>
+                    <select className="custom-select" id="basic" multiple="multiple">
+                      <option value="Monday">Monday</option>
+                      <option value="Tuesday">Tuesday</option>
+                      <option value="Wednesday">Wednesday</option>
+                      <option value="Thursday">Thursday</option>
+                      <option value="Friday">Friday</option>
+                      <option value="Saturday">Saturday</option>
+                    </select>
                 </div>
-
+              </div>
 
                 {/* <div className="col">{routeInfo.public.toString()}</div> */}
                 {/* <div className="col">{routeInfo.regular_service.toString()}</div> */}
-
-              </div>
               <div className="row align-items-center">
                 <div className="col offset-2">
                   <label>Open Length</label>
@@ -112,9 +111,9 @@ export default class AddBus extends React.Component {
                   <input onChange={this.handleChange} name="roundsDur" type="text" className="col border border-primary"></input>
                 </div>
                 <div className="col d-flex align-self-end">
-                  {/* <button onSubmit={() => this.props.addBus(INSERT NEW BUS INFO HERE)} className="w-100 addNewBusBtn btn btn-primary" type="submit" name="submit" >
+                  <button onSubmit={() => this.props.addBus(this.state)} className="w-100 addNewBusBtn btn btn-primary" type="submit" name="submit" >
                     Save & Add
-                  </button> */}
+                  </button>
                 </div>
               </div>
             </form>

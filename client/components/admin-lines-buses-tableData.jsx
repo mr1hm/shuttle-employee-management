@@ -1,6 +1,6 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
-import Modal from './admin-lines-buses-editModal';
+import EditBusModal from './admin-lines-buses-editBusModal';
 import AdminRoutes from './admin-lines-buses';
 
 export default class BusesTable extends React.Component {
@@ -22,8 +22,8 @@ export default class BusesTable extends React.Component {
     if (this.state.showModal) {
       return (
         <div className="container editModal">
-          <Modal onClose={this.handleClick} showModal={this.state.showModal}>
-          </Modal>/>
+          <EditBusModal onClose={this.handleClick} showModal={this.state.showModal} />
+
         </div>
       );
     }
@@ -42,8 +42,24 @@ export default class BusesTable extends React.Component {
         <tr>
           <td className="startTimeDuration">{this.props.routeInfo.opening_duration + "min."}</td>
           <td className="endTimeDuration">{this.props.routeInfo.closing_duration + "min."}</td>
-          <td className="rounds">30min</td>
-          <td className="roundDuration">{this.props.routeInfo.round_dur}</td>
+          <td className="roundsDuration">30min</td>
+          {/* <td className="days">
+            <div className="dropdown bootstrap-select show-tick">
+              <select className="selectpicker" multiple tabindex="-98">
+                <option>Monday</option>
+                <option>Tuesday</option>
+                <option>Wednesday</option>
+              </select>
+              <button type="button" className="btn dropdown-toggle btn-light" data-toggle="dropdown" role="button" title="Monday" aria-expanded="false">
+                <div className="filter-option">
+                  <div className="filter-option-inner">
+                    <div className="filter-option-inner-inner">Monday</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </td> */}
+          {/* <td className="Day">{this.props.routeInfo.round_dur}</td> */}
         </tr>
       </tbody>
     );
