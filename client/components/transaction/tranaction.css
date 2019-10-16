@@ -1,0 +1,9 @@
+.row-fluid{
+    justify-content: space-around;
+    display: inline-flex;
+    background-color: purple;
+    height: 80vh;
+    width: 60vw;
+    margin-top: 5%;
+    margin-left: 2%;
+}
