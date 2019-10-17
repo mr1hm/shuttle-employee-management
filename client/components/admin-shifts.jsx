@@ -153,7 +153,7 @@ class AdminShiftsDay extends React.Component {
       let currentUserId = sortedLineAndBusArray[indexSortedArray].user_id;
       const firstName = sortedLineAndBusArray[indexSortedArray].first_name;
       const lastName = sortedLineAndBusArray[indexSortedArray].last_name;
-      let displayName = (firstName && lastName) ? lastName + ", " + firstName : "n/a";
+      // let displayName = (firstName && lastName) ? lastName + ", " + firstName : "n/a";
       if (currentUserId == 1 || currentUserId === "n/a" || currentUserId !== previousUserId){
         roundCounter = 0;
         shiftsForLine.push({
@@ -161,7 +161,12 @@ class AdminShiftsDay extends React.Component {
           'start_time': sortedLineAndBusArray[indexSortedArray].round_start,
           'end_time': sortedLineAndBusArray[indexSortedArray].round_end,
           'user_id': sortedLineAndBusArray[indexSortedArray].user_id,
-          'user_name': displayName,
+          'user_name': {
+            'first': firstName ? firstName : "n/a",
+            'last': lastName ? lastName : "n/a"
+          },
+          // 'user_first_name': firstName ? firstname : "n/a",
+          // 'user_last_name': lastName ? lastName : "n/a",
           'rounds': roundCounter+1
         });
         roundCounter = 0;
