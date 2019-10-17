@@ -1,20 +1,22 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
-
+import TradeModal from './trade-modal';
+import SwapModal from './swap-modal';
 
 class TradeSwap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      view:""
     }
+
   }
 
   render() {
+    debugger;
+    const rounds = this.props.roundArray;
     const timeSpan = this.props.timeSpan;
     const dateAndRound = this.props.dateAndRound;
       return (
-
         <div className="container d-flex flex-column justify-content-around h-100">
           <div className="row">
             <h1> Trade/Swap </h1>
@@ -46,33 +48,19 @@ class TradeSwap extends React.Component {
             </div>
             <div className="col h-50 d-flex justify-content-center">
               <button type="button" data-toggle="modal" data-target="#tradeModal" className="btn btn-lg btn-success w-75">Trade</button>
-              <div className="modal fade" id="tradeModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5 className="modal-title" id="exampleModalLongTitle">Confirm Shift Trade</h5>
-                      <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div className="modal-body">
-                      ...
-                    </div>
-                    <div className="modal-footer">
-                      <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <button type="button" className="btn btn-primary">Save changes</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <>
+                <TradeModal time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} />
+              </>
             </div>
             <div className="col h-50 d-flex justify-content-center">
-              <button type="button" className="btn btn-lg btn-primary w-75">Swap</button>
+              <button type="button" data-toggle="modal" data-target="#swapModal" className="btn btn-lg btn-primary w-75">Swap</button>
+              <>
+              <SwapModal time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} />
+              </>
             </div>
           </div>
         </div>
       );
-
   }
 }
 

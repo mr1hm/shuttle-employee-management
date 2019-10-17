@@ -236,7 +236,7 @@ class ShiftsDetails extends React.Component {
     else if (this.state.modalType === "trade") {
       return (
       <>
-        <TradeSwap route={this.props.busLine[0]} busNumber={this.props.busNumber[0]}  timeSpan={this.state.timeSpanOfShift} dateAndRound={this.state.dateAndRoundString} close={this.closeModal}/>
+          <TradeSwap roundArray={this.state.shiftsDetailsInfo} route={this.props.busLine[0]} busNumber={this.props.busNumber[0]}  timeSpan={this.state.timeSpanOfShift} dateAndRound={this.state.dateAndRoundString} close={this.closeModal}/>
       </>
 
       )
