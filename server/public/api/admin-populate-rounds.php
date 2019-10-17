@@ -578,9 +578,9 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
         if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['user_id'] === $operators[$operatorsIndex]['user_id']) {
         $operators[$operatorsIndex]['total_weekly_minutes'] = $revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['total_weekly_minutes'];
         }
-        if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['shift_restrictions']['worked_passed_10']['current_day'] === 1) {
-          $operators[$operatorsIndex]['assignment_details'][$dayOfWeek[3]]['shift_restrictions']['worked_passed_10']['prior_day'] = 1;
-        }
+      if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['shift_restrictions']['worked_passed_10']['current_day'] === 1) {
+        $operators[$operatorsIndex]['assignment_details'][$dayOfWeek[3]]['shift_restrictions']['worked_passed_10']['prior_day'] = 1;
+      }
       }
     }
   // }
@@ -597,14 +597,12 @@ $prevOperators = [];
 
 //populate the entire quarter based on the template week
 // while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
-$rounds = [];
-$operators = [];
-$rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
-$operators = getOperatorsData($conn);
-populateTemplateWeek($conn, $rounds, $operators, $prevOperators);
-$beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
+  $rounds = [];
+  $operators = [];
+  $rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
+  $operators = getOperatorsData($conn);
+  populateTemplateWeek($conn, $rounds, $operators, $prevOperators);
+  $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
 // }
-
-//SELECT * FROM `round` WHERE user_id = 15 ORDER BY `date` DESC, `start_time` ASC
 
 ?>
