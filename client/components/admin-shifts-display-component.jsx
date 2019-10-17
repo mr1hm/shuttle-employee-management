@@ -28,8 +28,6 @@ class AdminShiftsDisplayComponent extends React.Component {
     const endPercent = ((shiftData.end - range.min) / rangeDistance) * 100;
     const widthPercent = endPercent - startPercent;
     const shiftsDetailsArray = this.props.children;
-    // console.log('shiftDetails: ', this.props.children);
-    // console.log('shift data: ', this.props.shiftData)
     return (
       <div
         className={`shift shiftBase ${this.props.type}`}

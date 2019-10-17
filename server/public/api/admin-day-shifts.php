@@ -16,13 +16,14 @@ $query = "SELECT
           us.id AS user_id,
           us.last_name,
           us.first_name,
+          us.special_route_ok,
           rd.date,
           rd.status
           FROM route AS rt
           JOIN bus_info AS bi ON bi.route_id = rt.id
           JOIN round AS rd ON rd.bus_info_id = bi.id
           JOIN user AS us ON rd.user_id = us.id
-          WHERE rd.date = 1566100800
+          WHERE rd.date = 1566273600
           ORDER BY line_name ASC, bus_number ASC, round_start ASC";
 
 $result = mysqli_query($conn, $query);
