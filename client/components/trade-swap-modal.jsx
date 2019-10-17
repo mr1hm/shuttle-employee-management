@@ -2,7 +2,7 @@ import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import TradeModal from './trade-modal';
 import SwapModal from './swap-modal';
-import {calcShiftLengthInHourMinFormat} from '../lib/time-functions';
+import {calcShiftLenghtInHourMinFormat} from '../lib/time-functions';
 
 class TradeSwap extends React.Component {
   constructor(props) {
@@ -36,7 +36,6 @@ class TradeSwap extends React.Component {
   }
 
   render() {
-    debugger;
     const rounds = this.props.roundArray;
     const timeSpan = this.props.timeSpan;
     const dateAndRound = this.props.dateAndRound;
@@ -61,11 +60,12 @@ class TradeSwap extends React.Component {
           {/* <div className="row justify-content-center h-25"> */}
             {rounds.map(oneShift => {
               return (
-                <tr key={oneShift.roundID} className="row">
+                <tr key={oneShift.roundID} className="row justify-content-center">
                   <td>
                     <RouteBusDisplay route={this.props.route} bus={this.props.busNumber} />
                   </td>
                   <td>{oneShift.start_time}-{oneShift.end_time}</td>
+                  <td>{calcShiftLenghtInHourMinFormat(oneShift.start_time,oneShift.end_time)}</td>
                   {/* <div className="col-4">{calcShiftLengthInHourMinFormat(oneShift.start_time,oneShift.end_time)}</div> */}
                 </tr>
               )
