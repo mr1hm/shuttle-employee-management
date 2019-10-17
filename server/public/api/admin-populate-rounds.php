@@ -200,9 +200,6 @@ function buildOperatorsByDay($operators, $day) {
       $content['times_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['times_assigned'];
       $content['continuous_minutes_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['continuous_minutes_assigned'];
       $content['total_daily_minutes'] = $operators[$operatorsIndex]['assignment_details'][$day]['total_daily_minutes'];
-
-      $content['working_past_10'] = false;
-
       array_push($dayOperators, $content);
     }
   }
@@ -240,7 +237,7 @@ function calculateShiftMinutes($startTime, $endTime){
 //determine the number of rounds in a shift based on the line
 function determineNumberRoundsInShift($lineName){
   $shiftLength = [
-    'C'=>3,
+    'C'=>5,
     'D'=>4,
     'Hs'=>5,
     'S'=>5
@@ -330,11 +327,6 @@ function addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $n
     }
   }
 
-  if ($operators[$operatorsIndex]['times_assigned'][count($operators[$operatorsIndex]['times_assigned'])-1][1] > 1000) {
-    $operators[$operatorsIndex]['working_past_10'] = true;
-    print_r($operators[$operatorsIndex]);
-  }
-
   return $operators;
 }
 
@@ -393,7 +385,7 @@ function checkSpecialStatus($rounds, $roundsIndex, $operators, $operatorsIndex) 
   }
 }
 
-function populateSchedule($operators, $rounds, $conn)  {
+function populateSchedule($operators, $rounds, $conn, &$prevOperators)  {
 //populate the schedule for a particular day
   $lengthOperatorsArray = count($operators);
   $lengthRoundsArray = count($rounds);
@@ -437,6 +429,10 @@ function populateSchedule($operators, $rounds, $conn)  {
       }
     }
 
+    // print('<pre>');
+    // print_r($rounds[$roundsIndex]);
+    // print('<pre>');
+
     //Are there adequate unassigned rounds, rounds on the same line, rounds on the same bus?
     if ($unassignedRoundsAvailable === $numberRounds and $roundsOnLineAvailable === $numberRounds - 1 and $roundsOnBusAvailable === $numberRounds - 1) {
 
@@ -479,9 +475,7 @@ function populateSchedule($operators, $rounds, $conn)  {
             //if there is not a problem with continous block
             if (!$blockTooBig) {
 
-              if ($operators[$operatorsIndex]['working_past_10']) {
-                print(intval($rounds[$roundsIndex]['round_start']));
-              }
+              if (preventMorningAfterShift($rounds[$roundsIndex], $operators[$operatorsIndex], $prevOperators)) continue;
 
               //if all critera met, update the rounds in the schedule
               for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++) {
@@ -504,18 +498,18 @@ function populateSchedule($operators, $rounds, $conn)  {
 
               //adjust the times the operator is available
               $operators = adjustAvailableTimes ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds, $availableStartTime, $availableEndTime, $timesIndex);
+
+              $prevOperators = $operators;
+
             }
           }
         }
         if ($madeAssignment) {
-
-          preventMorningAfterShift($rounds, $operators[$operatorsIndex]);
-          // enforceBreakCondition($rounds, $operators, $operatorsIndex);
+          enforceBreakCondition($rounds, $operators, $operatorsIndex);
           break;
         }
       }
     }
-    // print_r($operators);
   }
 
   updateRoundsInDatabase($conn, $rounds);
@@ -558,21 +552,90 @@ function enforceBreakCondition(&$rounds, &$operators, $opIndex) {
   }
 }
 
-function preventMorningAfterShift(&$rounds, &$operator) {
-  if (intval($operator['times_assigned'][0][0]) < 800) {
-    $totalRounds = count($rounds);
+function preventMorningAfterShift($round, &$operator, $prevOperators) {
+  $prevOp = null;
 
+  $prevOperatorsLength = count($prevOperators);
+  for ($index = 0; $index < $prevOperatorsLength; ++$index) {
+    if (intval($prevOperators[$index]['user_id']) === intval($operator['user_id'])) {
+      $prevOp = $prevOperators[$index];
+      break;
+    }
   }
+
+  print('<pre>');
+  print('Previous op :');
+  print_r($prevOp);
+  print('Current op :');
+  print_r($operator);
+  print('Current round :');
+  print_r($round);
+  print('<pre>');
+
+  if ($prevOp && $prevOp['times_assigned']) {
+    $lastShiftIndex = count($prevOp['times_assigned']) - 1;
+    if (intval($round['round_start']) < 800) {
+      print('shift is < 800');
+      if (intval($prevOp['times_assigned'][$lastShiftIndex][1]) > 1800) {
+        $operator['available_times'][0] = [800, $operator['available_times'][0][1]];
+        print('previous shift is > 1800 (6pm)');
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
+// function preventMorningAfterShift(&$round, &$operator, $prevOperators) {
+//   $prevOp = null;
+
+//   $prevOperatorsLength = count($prevOperators);
+//   for ($index = 0; $index < $prevOperatorsLength; ++$index) {
+//     if (intval($prevOperators[$index]['user_id']) === intval($operator['user_id'])) {
+//       $prevOp = $prevOperators[$index];
+//       break;
+//     }
+//   }
+//   if ($prevOp && $prevOp['times_assigned']) {
+//     $lastShiftIndex = count($prevOp['times_assigned']) - 1;
+//     if (intval($prevOp['times_assigned'][$lastShiftIndex][1]) > 1800) {
+//         // intval($round['round_start']) < 800) {
+//       print('<pre>');
+//       print('previous :  ');
+//       print_r($prevOp);
+//       print('<pre>');
+//       print('current :  ');
+//       print_r($operator);
+//       print('<pre>');
+//       print('current round :  ');
+//       print_r($round);
+//       print('<pre>');
+
+//       $round['user_id'] = 1;
+//       $round['first_name'] = 'unassigned';
+//       $round['last_name'] = 'unassigned';
+//       $round['status'] = 'unscheduled';
+
+//       $operator['available_times'][0] = [800, $operator['available_times'][1][1]];
+//       array_pop($operator['available_times']);
+//       $operator['times_assigned'] = [];
+//       $operator['total_weekly_minutes'] -= $operator['total_daily_minutes'];
+//       $operator['total_daily_minutes'] = 0;
+//       // print_r($operator);
+//     }
+//   }
+// }
+
 //populate the first week
-function populateTemplateWeek ($conn, $rounds, $operators) {
-  $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 1; $dayOfWeekIndex++) {
+function populateTemplateWeek ($conn, $rounds, $operators, &$prevOperators) {
+  // $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  $dayOfWeek = ['Sun', 'Tue'];
+
+  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 2; $dayOfWeekIndex++) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
-    $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn);
+    $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn, $prevOperators);
     for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
       for ($revOperatorsSpecificDayIndex = 0; $revOperatorsSpecificDayIndex < count($revOperatorsSpecificDay); $revOperatorsSpecificDayIndex++) {
         if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['user_id'] === $operators[$operatorsIndex]['user_id']) {
@@ -580,7 +643,15 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
         }
       }
     }
+    // $prevOperators = $operatorsForDay;
+    print("end of $dayOfWeek[$dayOfWeekIndex]");
+    print('<pre>');
+    // $prevOperators = $operatorsForDay;
+    // print_r($prevOperators);
   }
+  // print('<pre>');
+  // print_r($operators);
+  // print('<pre>');
 }
 
 //**PROCESSING**/
@@ -588,14 +659,19 @@ $quarterStartTimestamp = 1566100800;
 $quarterEndTimestamp = 1576904400;
 $beginningOfWeekTimeStamp = $quarterStartTimestamp;
 
+$prevOperators = [];
+
 //populate the entire quarter based on the template week
 // while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
-  $rounds = [];
-  $operators = [];
-  $rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
-  $operators = getOperatorsData($conn);
-  populateTemplateWeek($conn, $rounds, $operators);
-  $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
+$rounds = [];
+$operators = [];
+$rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
+$operators = getOperatorsData($conn);
+populateTemplateWeek($conn, $rounds, $operators, $prevOperators);
+$beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
 // }
+
+// print_r(date('M-d-Y', 1566100800));
+// print_r(date('M-d-Y', 1566273600));
 
 ?>
