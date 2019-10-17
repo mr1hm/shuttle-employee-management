@@ -10,7 +10,6 @@ $outputStorage = [];
 //pull the rounds for the first week from the db
 function getRoundsData($conn, $quarterStartTimestamp) {
   //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
-
   $templateDates = [];
   $timestamp = $quarterStartTimestamp;
 
@@ -568,8 +567,8 @@ function enforceBreakCondition(&$rounds, &$operators, $opIndex) {
 //populate the first week
 function populateTemplateWeek ($conn, $rounds, $operators) {
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  // for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
-    $specificDayOfWeek = $dayOfWeek[2];
+  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
+    $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
     $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn, $prevOperators);
@@ -583,7 +582,7 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
       }
       }
     }
-  // }
+  }
 }
 
 
@@ -596,13 +595,13 @@ $beginningOfWeekTimeStamp = $quarterStartTimestamp;
 $prevOperators = [];
 
 //populate the entire quarter based on the template week
-// while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
+while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
   $rounds = [];
   $operators = [];
   $rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
   $operators = getOperatorsData($conn);
   populateTemplateWeek($conn, $rounds, $operators, $prevOperators);
   $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
-// }
+}
 
 ?>
