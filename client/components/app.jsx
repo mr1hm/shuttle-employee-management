@@ -43,9 +43,8 @@ class App extends React.Component {
   startSwapTradeTransaction(roundIds) {
     console.log('roundIds:', roundIds);
   }
-  openRouteDetails(id, date, queryString) {
-    console.log(queryString);
-    this.setState({ shiftId: id, queryString: queryString });
+  openRouteDetails(id, date) {
+    this.setState({ shiftId: id, date: date });
   }
   render() {
     const userStateId = parseInt(this.state.userId);
@@ -59,7 +58,7 @@ class App extends React.Component {
             <Route path="/shifts/day/shifts-day/:date?" render={props => <ShiftsDay openRouteDetails={this.openRouteDetails} {...props} userId={this.state.userId ? this.state.userId : 17} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/month/shifts-month/:date?" render={props => <ShiftsMonth userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/available/:date?" render={props => <ShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/details/" render={props => <ShiftsDetails userId={this.state.userId} shiftId={this.state.shiftId} queryString={this.state.queryString} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
+            <Route path="/shifts/details/" render={props => <ShiftsDetails userId={this.state.userId} date={this.state.date} shiftId={this.state.shiftId} queryString={this.state.queryString} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
             <Route path="/admin-day/" render={props => <AdminShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/trade-swap/" render={props => <TradeSwap {...props} />} />
           </Switch>

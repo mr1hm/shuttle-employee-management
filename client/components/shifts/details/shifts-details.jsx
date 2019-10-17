@@ -1,60 +1,22 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { createDateObjFromDateString, adjustLocalTimestampToUTCSeconds } from '../../../lib/time-functions';
+import RouteBusDisplay from '../../route-bus-display';
 
 class ShiftsDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       shiftOverview: null,
-      shiftDetails: null
+      shiftDetails: null,
+      checkedRounds: []
     };
-    this.checkedRoundIDs = [];
-    this.createSubHeaderTimeFrame = this.createSubHeaderTimeFrame.bind(this);
-    this.pushRoundIDsToArray = this.pushRoundIDsToArray.bind(this);
     this.passCheckedRoundIds = this.passCheckedRoundIds.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
-  handleTransactionLog(event) {
-    let text = event.currentTarget.textContent;
-    let type = null;
-    switch (text) {
-      case 'Yes, I want to cancel':
-        type = 'cancel';
-        break;
-      case 'Yes, I want to post':
-        type = 'post';
-        break;
-    }
-    console.log('type', type);
-    fetch('/api/transaction.php', {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        text: this.state.textFromCommentBox,
-        user_id: this.props.userID,
-        bus_id: this.props.busNumber,
-        type: type
-      })
-    })
-      .then(response => {
-        console.log('transaction', response.json());
-      });
-  }
-
-  getData(url, methodToUse) {
-    fetch(url, { method: methodToUse })
-      .then(response => response.json())
-      .then(details => this.setState({ shiftsDetailsInfo: details }))
-      .catch(error => { throw (error); });
-  }
-
   getShifts(query) {
-    const response = fetch(`/api/shifts-day.php` + this.props.queryString, {
-      method: 'GET'
-    });
-
+    const { date, userId } = this.props;
+    const response = fetch(`/api/shifts-day.php?date=${date}&userID=${userId}`);
     response
       .then(response => response.json())
       .then(json => {
@@ -66,62 +28,32 @@ class ShiftsDetails extends React.Component {
   }
   getShiftDetails() {
     const { start_time, end_time, user_id } = this.state.shiftOverview;
-    const unixDate = 1566100800;
-    const response = fetch(`/api/shifts-details.php?unixdate=${unixDate}&start_time=${start_time}&end_time=${end_time}&user_id=${user_id}`)
-    ;
+    const { date } = this.props;
+    const response = fetch(`/api/shifts-details.php?unixdate=${date}&start_time=${start_time}&end_time=${end_time}&user_id=${user_id}`);
     response
       .then(res => res.json())
       .then(json => this.setState({ shiftDetails: json }))
       .catch(error => console.error(error));
   }
+
   componentDidMount() {
     this.getShifts();
   }
-
-  openModal(roundIDs) {
-    if (!Array.isArray(roundIDs)) {
-      roundIDs = [roundIDs];
-    }
-    let allShiftsToPass = [];
-    for (var roundIndex = 0; roundIndex < roundIDs.length; roundIndex++) {
-      let currentRound = parseInt(roundIDs[roundIndex]);
-      let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.roundID) === currentRound));
-      allShiftsToPass = allShiftsToPass.concat(shiftsToPass);
-    }
-    this.setState({
-      isModalOpen: true,
-      roundID: parseInt(roundIDs),
-      shiftsDetailsInfo: allShiftsToPass
-    });
-  }
-  pushRoundIDsToArray(number) {
-    const index = this.checkedRoundIDs.findIndex(element => element === number); // findIndex returns index of matching element if it exists in array, otherwise returns -1.
-    if (index < 0) { // if index doesnt exist,
-      this.checkedRoundIDs.push(number); // push the element id into the array
-    } else this.checkedRoundIDs.splice(index, 1); // otherwise, the element is already in the array and clicking again must remove, so splicing.
-  }
-  convertMilitaryTime(militaryTime) {
-    if (militaryTime.length < 4) {
-      militaryTime = '0' + militaryTime;
-    }
-    let hour = parseInt(militaryTime.slice(0, 2));
-    const minute = militaryTime.slice(2);
-    let meridiem;
-    if (hour < 12) {
-      meridiem = 'AM';
+  handleChange(e) {
+    const { checkedRounds } = this.state;
+    const { id } = e.currentTarget;
+    if (checkedRounds.includes(id)) {
+      checkedRounds.splice(checkedRounds.indexOf(id), 1);
     } else {
-      meridiem = 'PM';
-      if (hour > 12) {
-        hour -= 12;
-      }
+      checkedRounds.push(id);
     }
-    return hour + ':' + minute + ' ' + meridiem;
-  }
+    this.setState({ checkedRounds: checkedRounds });
 
+  }
   passCheckedRoundIds() { // callback method for post/trade/swap
-    this.props.startSwapTradeTransaction(this.checkedRoundIDs);
+    const shiftDetails = this.state.shiftDetails.filter(shift => this.state.checkedRounds.includes(shift.roundID));
+    this.props.startSwapTradeTransaction(shiftDetails);
   }
-
   render() {
     if (!this.state.shiftDetails) {
       return (
@@ -133,13 +65,12 @@ class ShiftsDetails extends React.Component {
           </div>
         </div>);
     }
-
     const rounds = this.state.shiftDetails.map((shift, index) => {
       return (
         <tr key={shift.roundID}>
           <td>
             <div className="form-check">
-              <input className="form-check-input" type="checkbox" />
+              <input id={shift.roundID} className="form-check-input" type="checkbox" onChange={this.handleChange}/>
             </div>
           </td>
           <td>{shift.start_time}</td>
@@ -156,8 +87,11 @@ class ShiftsDetails extends React.Component {
         </div>
         <div className="row">
           <div className="col">
-
+            <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.roundID}/>
           </div>
+        </div>
+        <div className="row">
+          <div className="col text-center"><h5>Select the shifts you want to change</h5></div>
         </div>
         <div className="row">
           <div className="col">
@@ -173,6 +107,11 @@ class ShiftsDetails extends React.Component {
                 {rounds}
               </tbody>
             </table>
+          </div>
+          <div className="col-2 d-flex flex-column justify-content-space-between">
+            <button className="btn btn-primary mb-2">Post</button>
+            <Link to='/trade-swap' className="btn btn-primary mb-2" onClick={this.passCheckedRoundIds}>Trade/Swap</Link>
+            <button className="btn btn-primary">My Shifts</button>
           </div>
         </div>
       </div>
@@ -205,4 +144,51 @@ PUT IN POST MODAL
 //       return response.json();
 //     })
 //     .catch(error => { throw (error); });
+// }
+
+// handleTransactionLog(event) {
+//   let text = event.currentTarget.textContent;
+//   let type = null;
+//   switch (text) {
+//     case 'Yes, I want to cancel':
+//       type = 'cancel';
+//       break;
+//     case 'Yes, I want to post':
+//       type = 'post';
+//       break;
+//   }
+//   console.log('type', type);
+//   fetch('/api/transaction.php', {
+//     headers: {
+//       'Accept': 'application/json',
+//       'Content-Type': 'application/json'
+//     },
+//     method: 'POST',
+//     body: JSON.stringify({
+//       text: this.state.textFromCommentBox,
+//       user_id: this.props.userID,
+//       bus_id: this.props.busNumber,
+//       type: type
+//     })
+//   })
+//     .then(response => {
+//       console.log('transaction', response.json());
+//     });
+// }
+
+// openModal(roundIDs) {
+//   if (!Array.isArray(roundIDs)) {
+//     roundIDs = [roundIDs];
+//   }
+//   let allShiftsToPass = [];
+//   for (var roundIndex = 0; roundIndex < roundIDs.length; roundIndex++) {
+//     let currentRound = parseInt(roundIDs[roundIndex]);
+//     let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.roundID) === currentRound));
+//     allShiftsToPass = allShiftsToPass.concat(shiftsToPass);
+//   }
+//   this.setState({
+//     isModalOpen: true,
+//     roundID: parseInt(roundIDs),
+//     shiftsDetailsInfo: allShiftsToPass
+//   });
 // }

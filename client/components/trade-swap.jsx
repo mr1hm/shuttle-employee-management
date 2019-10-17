@@ -3,7 +3,9 @@ import SingleShift from './shifts/day/single-shift';
 
 class TradeSwap extends React.Component {
   constructor(props) {
+
     super(props);
+    console.log(this.props.match.params);
     this.state = {
 
     };

@@ -86,37 +86,37 @@ class ShiftsDay extends React.Component {
     if (this.props.view === 'myShifts') {
       return (
         <>
-          <div><Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link></div>
+          <Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link>
           <TopMenuShift title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} />
-          <table className='table table-striped'>
-            <thead>
-              <tr>
-                <td>Line/#</td>
-                <td>Start-End</td>
-                <td>Rounds</td>
-                <td>Shift Hours</td>
-                <td>Post Status</td>
-                <td>Action</td>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                this.state.myShiftsToday.map((shifts, index) => {
-                  return (
-                    < SingleShift
-                      key={index}
-                      shifts={shifts}
-                      openDetails={this.openModal}
-                      view = {this.props.view}
-                      modalStatus= {this.state.isModalOpen}
-                      queryString = {this.state.queryString}
-                      openRouteDetails={this.props.openRouteDetails}
-                    />
-                  );
-                })
-              }
-            </tbody>
-          </table>
+            <table className='table table-striped text-center'>
+              <thead>
+                <tr>
+                  <th>Line/#</th>
+                  <th>Start-End</th>
+                  <th>Rounds</th>
+                  <th>Shift Hours</th>
+                  <th>Post Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  this.state.myShiftsToday.map((shifts, index) => {
+                    return (
+                      < SingleShift
+                        key={index}
+                        shifts={shifts}
+                        openDetails={this.openModal}
+                        view={this.props.view}
+                        modalStatus={this.state.isModalOpen}
+                        queryString={this.state.queryString}
+                        openRouteDetails={this.props.openRouteDetails}
+                      />
+                    );
+                  })
+                }
+              </tbody>
+            </table>
         </>
       );
     } else {
