@@ -10,7 +10,7 @@ $start_time = $_GET['start_time'];
 $end_time = $_GET['end_time'];
 
 
-$query = "SELECT `id`, `first_name`, `last_name` FROM `user`
+$query = "SELECT `id` AS `user_id`, `first_name`, `last_name` FROM `user`
           WHERE `id` NOT IN
           (
               SELECT `user_id` FROM `round`
