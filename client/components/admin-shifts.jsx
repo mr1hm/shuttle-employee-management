@@ -12,12 +12,14 @@ class AdminShiftsDay extends React.Component {
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
+    this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
     const defaultDate = 1566619200;
     this.state = {
       rounds: null,
       availableOperators: [],
       queryString: `?date=${defaultDate}`,
-      dateToPass: defaultDate
+      dateToPass: defaultDate,
+      roundsSelected: []
     }
   }
   //updating the db with the autopopulated rounds
@@ -46,15 +48,25 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error) });
   }
-  getAvailableDrivers(startTime, endTime, roundId){
+  getAvailableDrivers(startTime, endTime, roundId, userId){
+    if (userId !== 1){
+      this.setState({
+        availableOperators: [],
+        roundsSelected: []
+      });
+      return;
+    }
     var roundTimes = JSON.stringify([{ "start_time": startTime, "stop_time": endTime }]);
     fetch(`/api/admin-available-operators.php?date=1566619200&round_time=${roundTimes}`, {
       method: 'GET'
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
-        this.setState({availableOperators: data});
+        this.fetchCallMethod
+        this.setState({
+          availableOperators: data,
+          roundsSelected: roundId
+        });
       })
       .catch(error => { throw (error) });
   }
@@ -69,36 +81,60 @@ class AdminShiftsDay extends React.Component {
     }
     return groupedOperators;
   }
-  filterAvailableOperatorsByStartAndEndTimes(groupedOperators, startTime, endTime){
-    var filteredOperators = [];
-    for (var key in groupedOperators){
-      var operator = groupedOperators[key];
-      console.log('forin loop', operator);
-      var operatorAvailable = true;
-      for (var operatorIndex = 0; operatorIndex < operator.length; operatorIndex++){
-        var operatorRoute = operator[operatorIndex];
-        if ((operatorRoute.end_time > startTime && operatorRoute.end_time <= endTime) ||
-          (operatorRoute.start_time >= startTime && operatorRoute.start_time < endTime) ||
-          (operatorRoute.start_time < startTime && operatorRoute.end_time > endTime)){
-          operatorAvailable = false;
-        }
-      }
-      if(operatorAvailable){
-        filteredOperators.push(operator[0]);
-      }
-    }
-    return filteredOperators;
-  }
+  // filterAvailableOperatorsByStartAndEndTimes(groupedOperators, startTime, endTime){
+  //   var filteredOperators = [];
+  //   for (var key in groupedOperators){
+  //     var operator = groupedOperators[key];
+  //     console.log('forin loop', operator);
+  //     var operatorAvailable = true;
+  //     for (var operatorIndex = 0; operatorIndex < operator.length; operatorIndex++){
+  //       var operatorRoute = operator[operatorIndex];
+  //       if ((operatorRoute.end_time > startTime && operatorRoute.end_time <= endTime) ||
+  //         (operatorRoute.start_time >= startTime && operatorRoute.start_time < endTime) ||
+  //         (operatorRoute.start_time < startTime && operatorRoute.end_time > endTime)){
+  //         operatorAvailable = false;
+  //       }
+  //     }
+  //     if(operatorAvailable){
+  //       filteredOperators.push(operator[0]);
+  //     }
+  //   }
+  //   return filteredOperators;
+  // }
   createAvailableOperatorElements(){
-    // console.log('available operators: ', this.state.availableOperators);
     const availableOperatorsElements = this.state.availableOperators.map( operator => {
       return(
-        <div key={operator.id}className="available-operator">
+        <div
+          key={operator.id}
+          id={operator.id}
+          className="availableOperator rounded border d-flex justify-content-center align-items-center"
+          onClick={this.handleClickAssignShift}>
           {`${operator.lastName}, ${operator.firstName}`}
         </div>
       );
     });
     return availableOperatorsElements;
+  }
+  handleClickAssignShift(event){
+    console.log(event.target.id, this.state.roundsSelected);
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'user_id': event.target.id,
+        'round_id': this.state.roundsSelected
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    }
+    fetch(`/api/admin-update-shifts.php`, data)
+      .then(response => {})
+      .then(data => {
+        this.fetchCallMethod();
+        this.setState({
+          availableOperators: [],
+          roundsSelected: []
+        });
+      })
+      .catch(error => {throw(error)});
   }
   componentDidMount() {
     this.fetchCallMethod();
@@ -106,7 +142,6 @@ class AdminShiftsDay extends React.Component {
   dataDidUpdate(){
     this.fetchCallMethod();
   }
-
   //build array for a specific line and busNumber and sort by start time
   buildRoundsByLine(lineName, busNumber) {
     var roundsForLine = [];
@@ -163,7 +198,8 @@ class AdminShiftsDay extends React.Component {
           'end_time': sortedLineAndBusArray[indexSortedArray].round_end,
           'user_id': sortedLineAndBusArray[indexSortedArray].user_id,
           'user_name': displayName,
-          'rounds': roundCounter+1
+          'rounds': roundCounter+1,
+          'round_id': sortedLineAndBusArray[indexSortedArray].round_id
         });
         roundCounter = 0;
       } else {
@@ -191,7 +227,7 @@ class AdminShiftsDay extends React.Component {
         var busNumber = busAndLineObject[key][1];
         groupedShifts.push([lineName, busNumber, this.buildShiftsByLine(lineName, busNumber)]);
       }
-      // console.log('groupedShifts: ', groupedShifts);
+      console.log('groupedShifts: ', groupedShifts);
       var elements = [];
       var busLineElements = [];
       var shiftRowElements = [];
@@ -243,7 +279,7 @@ class AdminShiftsDay extends React.Component {
               </div>
               {elements[1]}
             </div>
-            <div className="additional-info-container container d-flex flex-column col-3 adminShiftRow">
+            <div className="additional-info-container container d-flex flex-column col-2 adminShiftRow">
               <div className="available-operators">available operators</div>
               {this.createAvailableOperatorElements()}
             </div>

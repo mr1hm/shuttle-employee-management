@@ -57,6 +57,7 @@ class AdminShiftsDisplayComponent extends React.Component {
               userId={element.user_id}
               userName={element.user_name}
               rounds={element.rounds}
+              roundId={element.round_id}
               range={{ min: 600, max: 2400 }}
               shiftData={{ start: element.start_time, end: element.end_time }}
               widthPercent={widthPercent}
