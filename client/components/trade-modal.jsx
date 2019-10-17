@@ -2,7 +2,7 @@ import React from 'react';
 import './trade-modal.css';
 import RouteBusDisplay from './route-bus-display';
 
-function TradeModal(props){
+function TradeModal(props) {
   return (
     <div className="modal fade" id="tradeModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div className="modal-dialog modal-dialog-centered" role="document">
@@ -34,7 +34,7 @@ function TradeModal(props){
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default TradeModal;

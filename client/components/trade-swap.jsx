@@ -7,6 +7,7 @@ import { calcShiftLenghtInHourMinFormat } from '../lib/time-functions';
 class TradeSwap extends React.Component {
   constructor(props) {
     super(props);
+    console.log(props);
     this.state = {
       availableDrivers: [],
       selectedDriver: {}
@@ -36,9 +37,9 @@ class TradeSwap extends React.Component {
   }
 
   render() {
-    const rounds = this.props.roundArray;
-    const timeSpan = this.props.timeSpan;
-    const dateAndRound = this.props.dateAndRound;
+
+    const rounds = this.props.shiftDetails;
+
     const confirmationText = (Object.keys(this.state.selectedDriver).length !== 0) ? `Trade or Swap with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name}?` : 'Select Coworker';
     return (
       <div className="container d-flex flex-column justify-content-around h-100">
@@ -57,7 +58,6 @@ class TradeSwap extends React.Component {
             </div>
           </div>
         </div>
-        {/* <div className="row justify-content-center h-25"> */}
         {rounds.map(oneShift => {
           return (
             <tr key={oneShift.roundID} className="row justify-content-center">
@@ -66,20 +66,9 @@ class TradeSwap extends React.Component {
               </td>
               <td>{oneShift.start_time}-{oneShift.end_time}</td>
               <td>{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</td>
-              {/* <div className="col-4">{calcShiftLengthInHourMinFormat(oneShift.start_time,oneShift.end_time)}</div> */}
             </tr>
           );
         })}
-        {/* <div className="col-1">
-              <RouteBusDisplay route={this.props.route} bus={this.props.busNumber} />
-            </div>
-            <div className="col-4">
-              {timeSpan}
-              <div>
-                {dateAndRound}
-              </div>
-            </div> */}
-        {/* </div> */}
         <div className="row h-25 justify-content-center">
           <div className="col h-50 d-flex justify-content-center ">
             <button type="button" onClick={() => this.props.close()} className="btn btn-lg btn-light w-75">Cancel</button>
@@ -87,13 +76,13 @@ class TradeSwap extends React.Component {
           <div className="col h-50 d-flex justify-content-center">
             <button type="button" data-toggle="modal" data-target="#tradeModal" className="btn btn-lg btn-success w-75">Trade</button>
               <>
-                <TradeModal selectedDriver={this.state.selectedDriver} time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} />
+                {/* <TradeModal selectedDriver={this.state.selectedDriver} time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} /> */}
               </>
           </div>
           <div className="col h-50 d-flex justify-content-center">
             <button type="button" data-toggle="modal" data-target="#swapModal" className="btn btn-lg btn-primary w-75">Swap</button>
               <>
-              <SwapModal selectedDriver={this.state.selectedDriver} time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} />
+              {/* <SwapModal selectedDriver={this.state.selectedDriver} time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} /> */}
               </>
           </div>
         </div>

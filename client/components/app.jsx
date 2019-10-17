@@ -40,8 +40,8 @@ class App extends React.Component {
       userLogin: true
     });
   }
-  startSwapTradeTransaction(roundIds) {
-    console.log('roundIds:', roundIds);
+  startSwapTradeTransaction(shiftDetails) {
+    this.setState({ shiftDetails: shiftDetails });
   }
   openRouteDetails(id, date) {
     this.setState({ shiftId: id, date: date });
@@ -60,7 +60,7 @@ class App extends React.Component {
             <Route path="/shifts/available/:date?" render={props => <ShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/details/" render={props => <ShiftsDetails userId={this.state.userId} date={this.state.date} shiftId={this.state.shiftId} queryString={this.state.queryString} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
             <Route path="/admin-day/" render={props => <AdminShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/trade-swap/" render={props => <TradeSwap {...props} />} />
+            <Route path="/trade-swap/" render={props => <TradeSwap {...props} shiftDetails={this.state.shiftDetails} />} />
           </Switch>
         </React.Fragment>
       );
