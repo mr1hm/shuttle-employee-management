@@ -1,7 +1,7 @@
 import React from "react";
 import './admin-shifts-display.css';
 
-class AdminShiftsHoverDetails extends React.Component {
+class AdminShiftsHoverDetailsAndLabels extends React.Component {
   constructor(props) {
     super(props);
     this.startTimer = this.startTimer.bind(this);
@@ -45,18 +45,28 @@ class AdminShiftsHoverDetails extends React.Component {
         onMouseOut={this.handleMouseOut}
         className="hoverDetailContainer"
       >
+        <div 
+          onMouseEnter={this.startTimer} 
+          onMouseOut={this.handleMouseOut} 
+          className="shiftOwnerLabel"
+          >{this.props.userName.last}</div>
+        <div 
+          onMouseEnter={this.startTimer} 
+          onMouseOut={this.handleMouseOut} 
+          className="shiftOwnerLabel"
+          >ID# {this.props.userId}</div>
         <div
           className="hoverMessage"
           style={{ display: this.state.showing ? "flex" : "none" }}
         >
           <i></i>
-          <div>{this.props.userName}</div>
+          <div>{this.props.userName.last}, {this.props.userName.first}</div>
           <div>{this.props.shiftTime}</div>
-          <div># of rounds: {this.props.rounds}</div>
+          <div>Rounds: {this.props.rounds}</div>
         </div>
       </div>
     );
   }
 }
 
-export default AdminShiftsHoverDetails;
+export default AdminShiftsHoverDetailsAndLabels;
