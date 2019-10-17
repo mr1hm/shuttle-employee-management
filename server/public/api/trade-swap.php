@@ -11,7 +11,7 @@ $start_time = $_GET['start_time'];
 $end_time = $_GET['end_time'];
 
 
-$query = "SELECT `id` FROM `user`
+$query = "SELECT `id`, `first_name`, `last_name` FROM `user`
           WHERE `id` NOT IN
           (
               SELECT `user_id` FROM `round`
@@ -22,5 +22,11 @@ $query = "SELECT `id` FROM `user`
 
 $result = mysqli_query($conn, $query);
 
+$output = [];
 
+while($row = mysqli_fetch_assoc($result)){
+  $output[] = $row;
+}
+
+print($json_encode($output));
 ?>
