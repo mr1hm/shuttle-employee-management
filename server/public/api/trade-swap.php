@@ -1,11 +1,10 @@
 <?php
 
-require_once("functions.php");
-set_exception_handler('error_handler');
+// require_once("functions.php");
+// set_exception_handler('error_handler');
 require_once("db_connection.php");
 
 
-$round_id = $_GET['round_id'];
 $date = $_GET['date'];
 $start_time = $_GET['start_time'];
 $end_time = $_GET['end_time'];
@@ -28,5 +27,5 @@ while($row = mysqli_fetch_assoc($result)){
   $output[] = $row;
 }
 
-print($json_encode($output));
+print(json_encode($output));
 ?>
