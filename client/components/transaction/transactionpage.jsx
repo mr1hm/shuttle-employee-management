@@ -1,6 +1,7 @@
 import React from 'react';
 import './tranaction.css';
 import TopMenuGeneral from '../topmenu/topmenu-general';
+import { convertUnixMonthDay } from '../../lib/time-functions';
 
 class Transaction extends React.Component {
   constructor(props) {
@@ -8,26 +9,79 @@ class Transaction extends React.Component {
     console.log("tran", this.props);
     this.state = {
       editButton: false,
-      userInfo: [],
+      transactionInfo: [],
       userId: null,
       cellProvider: []
     }
+    this.getTransactionLog = this.getTransactionLog.bind(this);
+    this.getTransactionLog = this.getDateAndTime.bind(this);
   }
 
+  componentDidMount(){
+    this.getTransactionLog();
+    fetch(`/api/transaction-page.php`, {
+      method: 'GET'
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(response => {
+        this.setState({
+          transactionInfo: response
+        })
+      })
+      .catch(error => { throw (error) });
+  }
+  getTransactionLog(){
+    fetch(`/api/transaction-page.php`,{
+      method: 'GET'
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(response => {
+        this.setState({
+          transactionInfo: response
+        })
+      })
+      .catch(error => { throw (error) });
+  }
+
+  getDateAndTime(timestamp){
+    let time = convertUnixMonthDay(timestamp);
+    return time;
+  }
 
   render() {
+    // { this.state.cellProvider.map((cell, index) => <option key={index} value={cell.cell_provider}>{cell.cell_provider}</option>) }
+    console.log("transaction", this.state.transactionInfo);
+    let log = this.state.transactionInfo.map((log, index) => {
+       return(
+
+        <div key={index} className="row-fluid ">
+        <div  value={log.date} className="span2 offset1">{convertUnixMonthDay(parseInt(log.date))}</div>
+           <div className="col-md-4 ml-1">{log.type}</div>
+           <div className="col-md-4 ml-1">{log.round_id}</div>
+           <div className="col-md-4 ml-1">{log.first_name + " " + log.last_name}</div>
+           <div className="col-md-4 commentFlow">{log.comment}</div>
+        </div>
+
+     ) });
       return (
         <React.Fragment>
           <TopMenuGeneral title="Transaction Log" />
-          <div className="row-fluid">
-            <div className="span2 offset1">1</div>
-            <div className="span2">2</div>
-            <div className="span2">3</div>
-            <div className="span2">4</div>
-            <div className="span2">5</div>
+          <div className="span2 offset1 headtable">
+            <div className="col-md-4 ml-1 dateRight">Date</div>
+            <div className="col-md-4 ml-1 typeRight">type</div>
+            <div className="col-md-4 ml-1 busRight">Bus Number</div>
+            <div className="col-md-4 ml-1 nameRight">Name</div>
+            <div className="col-md-4 ">Comments</div>
           </div>
-          <div className="row">
-            <div className="col-6">Shirt Size</div>
+          <div className="overflow-auto logFlow">
+          {log}
+          </div>
+          <div className="row fill1">
+            <div className="col-6">Serch By Name</div>
             <select className="col-6 mb-2 editInput" placeholder="Shirt Size" type="text" name="shirtSize">
               <option value="S">S</option>
               <option value="M">M</option>

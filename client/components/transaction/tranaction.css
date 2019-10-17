@@ -1,9 +1,46 @@
 .row-fluid{
-    justify-content: space-around;
-    display: inline-flex;
-    background-color: purple;
-    height: 80vh;
-    width: 60vw;
+    display: -webkit-box;
+    background-color: white;
+    height: 4vh;
+    width: 44vw;
     margin-top: 5%;
+    margin-left: 1%;
+}
+.logFlow{
+    background-color: wheat;
+    width: 60vw;
     margin-left: 2%;
+    height: 80vh;
+}
+.commentFlow{
+    text-align: center;
+    background-color: white;
+    margin-left: -16%;
+}
+.fill1{
+    float: right;
+    display: inline-flex;
+    margin-right: 15%;
+    margin-top: -35%;
+}
+.headtable{
+    color: aliceblue;
+    margin-top: 2%;
+    height: 5vh;
+    margin-left: 2%;
+    width: 60vw;
+    background-color: purple;
+    display: inline-flex;
+}
+.dateRight{
+    margin-right: -22%;
+}
+.typeRight{
+    margin-right: -13%;
+}
+.busRight{
+    margin-right: -3%;
+}
+.nameRight{
+    margin-right: -17%;
 }
