@@ -72,7 +72,7 @@ function getOperatorsData($conn) {
   $baseDayStructure = [
     'available_times'=>[],
     'times_assigned'=>[],
-    'continuous_minutes_assigned'=>0,
+    'shift_restrictions'=>['prior_day' => 0, 'current_day' => 0],
     'total_daily_minutes'=>0
   ];
 
@@ -198,7 +198,8 @@ function buildOperatorsByDay($operators, $day) {
       $content['total_weekly_minutes'] = $operators[$operatorsIndex]['total_weekly_minutes'];
       $content['available_times'] = $operators[$operatorsIndex]['assignment_details'][$day]['available_times'];
       $content['times_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['times_assigned'];
-      $content['continuous_minutes_assigned'] = $operators[$operatorsIndex]['assignment_details'][$day]['continuous_minutes_assigned'];
+      $content['shift_restrictions']['prior_day'] = $operators[$operatorsIndex]['assignment_details'][$day]['shift_restrictions']['prior_day'];
+      $content['shift_restrictions']['current_day'] = $operators[$operatorsIndex]['assignment_details'][$day]['shift_restrictions']['current_day'];
       $content['total_daily_minutes'] = $operators[$operatorsIndex]['assignment_details'][$day]['total_daily_minutes'];
       array_push($dayOperators, $content);
     }
@@ -451,6 +452,11 @@ function populateSchedule($operators, $rounds, $conn, &$prevOperators)  {
         // # of available times for the current operator
         $availableTimes = count($operators[$operatorsIndex]['available_times']);
 
+        //if the the driver worked past 10 pm the night before and the shift is before 8 am skip the operator
+        if ($rounds[$roundsIndex]['round_start'] < 800 and $operators[$operatorsIndex]['shift_restrictions']['prior_day'] === 1) {
+          continue;
+        }
+
         for ($timesIndex = 0; $timesIndex < $availableTimes; $timesIndex++) {
           //define available start and end times
           $availableStartTime = intval($operators[$operatorsIndex]['available_times'][$timesIndex][0]);
@@ -499,8 +505,10 @@ function populateSchedule($operators, $rounds, $conn, &$prevOperators)  {
               //adjust the times the operator is available
               $operators = adjustAvailableTimes ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds, $availableStartTime, $availableEndTime, $timesIndex);
 
-              $prevOperators = $operators;
-
+              //set the flag for after 10 pm shift
+              if (intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']) > 2000) {
+                $operators[$operatorsIndex]['shift_restrictions']['current_day'] = 1;
+              }
             }
           }
         }
@@ -514,9 +522,7 @@ function populateSchedule($operators, $rounds, $conn, &$prevOperators)  {
 
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
-
-  // print_r($rounds);
-
+  print_r($rounds);
   return $operators;
 }
 
@@ -627,19 +633,28 @@ function preventMorningAfterShift($round, &$operator, $prevOperators) {
 // }
 
 //populate the first week
-function populateTemplateWeek ($conn, $rounds, $operators, &$prevOperators) {
-  // $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  $dayOfWeek = ['Sun', 'Tue'];
-
-  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 2; $dayOfWeekIndex++) {
+function populateTemplateWeek ($conn, $rounds, $operators) {
+  // print('<pre>');
+  // print('operators inside populateTemplateWeek');
+  // print_r($operators);
+  // print('</pre>');
+  $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
     $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn, $prevOperators);
     for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
+      //initialize the shift restrictions each time you go through the array
+      //this is the default, shift does not have late or early
+      $operators[$operatorsIndex]['shift_restrictions']['prior_day'] = 0;
+
       for ($revOperatorsSpecificDayIndex = 0; $revOperatorsSpecificDayIndex < count($revOperatorsSpecificDay); $revOperatorsSpecificDayIndex++) {
         if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['user_id'] === $operators[$operatorsIndex]['user_id']) {
         $operators[$operatorsIndex]['total_weekly_minutes'] = $revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['total_weekly_minutes'];
+        }
+        if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['shift_restrictions']['current_day'] === 1) {
+          $operators[$operatorsIndex]['restricted_shift']['prior_day'] = 1;
         }
       }
     }
@@ -653,6 +668,8 @@ function populateTemplateWeek ($conn, $rounds, $operators, &$prevOperators) {
   // print_r($operators);
   // print('<pre>');
 }
+
+
 
 //**PROCESSING**/
 $quarterStartTimestamp = 1566100800;

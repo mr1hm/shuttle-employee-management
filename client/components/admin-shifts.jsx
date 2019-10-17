@@ -41,7 +41,7 @@ class AdminShiftsDay extends React.Component {
         this.setState({
           rounds: data
         });
-        console.log(data);
+        // console.log(data);
       })
       .catch(error => { throw (error) });
   }
@@ -92,7 +92,7 @@ class AdminShiftsDay extends React.Component {
     return filteredOperators;
   }
   createAvailableOperatorElements(){
-    console.log('available operators: ', this.state.availableOperators);
+    // console.log('available operators: ', this.state.availableOperators);
     const availableOperatorsElements = this.state.availableOperators.map( operator => {
       return(
         <div className="available-operator">
@@ -152,20 +152,26 @@ class AdminShiftsDay extends React.Component {
     var shiftsForLine = [];
     var sortedLineAndBusArray = this.buildRoundsByLine(lineName, busNumber);
     var previousUserId = null;
+    let roundCounter = 0;
     for (var indexSortedArray = 0;  indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
       let currentUserId = sortedLineAndBusArray[indexSortedArray].user_id;
       const firstName = sortedLineAndBusArray[indexSortedArray].first_name;
       const lastName = sortedLineAndBusArray[indexSortedArray].last_name;
       let displayName = (firstName && lastName) ? lastName + ", " + firstName : "n/a";
       if (currentUserId == 1 || currentUserId === "n/a" || currentUserId !== previousUserId){
+        roundCounter = 0;
         shiftsForLine.push({
           'start_time': sortedLineAndBusArray[indexSortedArray].round_start,
           'end_time': sortedLineAndBusArray[indexSortedArray].round_end,
           'user_id': sortedLineAndBusArray[indexSortedArray].user_id, 
-          'user_name': displayName
+          'user_name': displayName,
+          'rounds': roundCounter+1
         });
+        roundCounter = 0;
       } else {
+        ++roundCounter;
         shiftsForLine[shiftsForLine.length - 1].end_time = sortedLineAndBusArray[indexSortedArray].round_end;
+        shiftsForLine[shiftsForLine.length - 1].rounds = roundCounter+1;
       }
       previousUserId = currentUserId;
     }
@@ -187,7 +193,7 @@ class AdminShiftsDay extends React.Component {
         var busNumber = busAndLineObject[key][1];
         groupedShifts.push([lineName, busNumber, this.buildShiftsByLine(lineName, busNumber)]);
       }
-      console.log('groupedShifts: ', groupedShifts);
+      // console.log('groupedShifts: ', groupedShifts);
       var elements = [];
       var busLineElements = [];
       var shiftRowElements = [];
