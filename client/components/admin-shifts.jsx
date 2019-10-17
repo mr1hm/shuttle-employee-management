@@ -13,13 +13,15 @@ class AdminShiftsDay extends React.Component {
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     const defaultDate = 1566273600;
+    const defaultWeekStart = 1566273600;
+    const defaultWeekEnd =
     this.state = {
       rounds: null,
       operators: {},
       operatorStats: {},
       availableOperators: [],
       queryString: `?date=${defaultDate}`,
-      dateToPass: defaultDate
+      dateToPass: 1566273600
     }
   }
   //updating the db with the autopopulated rounds
@@ -35,30 +37,24 @@ class AdminShiftsDay extends React.Component {
 
   // get assigned rounds from admin-day-shifts.php
   fetchCallMethod() {
-    fetch(`/api/admin-day-shifts.php`, {
-      method: 'GET'
-    })
+    fetch(`/api/admin-day-shifts.php`)
       .then(response => response.json())
       .then(data => {
         this.groupOperatorsAndOperatorData(data);
         this.setState({
           rounds: data
         });
-        console.log('rounds: ', data);
       })
       .catch(error => { throw (error) });
   }
   getAvailableDrivers(startTime, endTime, roundId){
-    var startTimeQuery = '';
-    if(startTime){
-      startTimeQuery = `&start_time=${startTime}`;
-    }
-    fetch(`/api/admin-available-drivers.php?date=${this.state.dateToPass}${startTimeQuery}`)
+    var roundTimes = JSON.stringify([{"start_time":startTime,"stop_time":endTime}]);
+    fetch(`/api/admin-available-operators.php?date=1566273600&round_time=${roundTimes}`, {
+      method: 'GET'
+    })
       .then(response => response.json())
       .then(data => {
-        var groupedOperators =  this.groupOperatorsByUserId(data);
-        var operatorsAvailableFiltered = this.filterAvailableOperatorsByStartAndEndTimes(groupedOperators, startTime, endTime);
-        this.setState({availableOperators: operatorsAvailableFiltered});
+        this.setState({availableOperators: data});
       })
       .catch(error => { throw (error) });
   }
@@ -80,11 +76,11 @@ class AdminShiftsDay extends React.Component {
       var operatorAvailable = true;
       for (var operatorIndex = 0; operatorIndex < operator.length; operatorIndex++){
         var operatorRoute = operator[operatorIndex];
-        console.log('operatorRoute: ', operatorRoute);
         if ((operatorRoute.end_time > startTime && operatorRoute.end_time <= endTime) ||
           (operatorRoute.start_time >= startTime && operatorRoute.start_time < endTime) ||
           (operatorRoute.start_time < startTime && operatorRoute.end_time > endTime)){
           operatorAvailable = false;
+          break;
         }
       }
       if(operatorAvailable){
@@ -97,7 +93,7 @@ class AdminShiftsDay extends React.Component {
     const availableOperatorsElements = this.state.availableOperators.map( operator => {
       return(
         <div key={operator.id} className="available-operator">
-          {`${operator.last_name}, ${operator.first_name}`}
+          {`${operator.lastName}, ${operator.firstName}`}
         </div>
       );
     });
@@ -151,7 +147,6 @@ class AdminShiftsDay extends React.Component {
   buildShiftsByLine(lineName, busNumber) {
     var shiftsForLine = [];
     var sortedLineAndBusArray = this.buildRoundsByLine(lineName, busNumber);
-    console.log('sortedLineArray: ', sortedLineAndBusArray);
     var previousUserId = null;
     for (var indexSortedArray = 0;  indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
       let currentUserId = sortedLineAndBusArray[indexSortedArray].user_id;
@@ -178,31 +173,30 @@ class AdminShiftsDay extends React.Component {
     const groupedOperatorData = {};
     for (let dataIndex = 0; dataIndex < data.length; dataIndex++){
       let currentUserId = data[dataIndex].user_id;
+      let operatorData = data[dataIndex];
       if (!groupedOperatorData[currentUserId]){
         groupedOperatorData[currentUserId] = {};
         groupedOperatorData[currentUserId].rounds = {};
-        groupedOperatorData[currentUserId].firstName = data[dataIndex].first_name;
-        groupedOperatorData[currentUserId].lastName = data[dataIndex].last_name;
-        groupedOperatorData[currentUserId].specialRoute = "";
+        groupedOperatorData[currentUserId].firstName = operatorData.first_name;
+        groupedOperatorData[currentUserId].lastName = operatorData.last_name;
+        groupedOperatorData[currentUserId].specialRoute = (operatorData.special_route_ok == 1) ? true : false;
         groupedOperatorData[currentUserId].totalHours = null;
       }
-      let currentLine = data[dataIndex].line_name + data[dataIndex].bus_number;
+      let currentLine = operatorData.line_name + operatorData.bus_number;
       if (!groupedOperatorData[currentUserId].rounds[currentLine]){
         groupedOperatorData[currentUserId].rounds[currentLine] = [];
       }
-      groupedOperatorData[currentUserId].rounds[currentLine].push(data[dataIndex]);
+      groupedOperatorData[currentUserId].rounds[currentLine].push(operatorData);
     }
     for( var id in groupedOperatorData ){
       var totalHours = 0;
       var rounds = groupedOperatorData[id].rounds;
       for ( var line in rounds){
-        console.log(totalHours);
         totalHours += parseFloat(this.calculateTotalHours(rounds[line]));
       }
       groupedOperatorData[id].totalHours = totalHours;
     }
     this.setState({ operators: groupedOperatorData });
-    console.log('operators: ', groupedOperatorData);
   }
   calculateTotalHours(rounds){
     var totalHours = 0;
