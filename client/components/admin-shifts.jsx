@@ -12,7 +12,7 @@ class AdminShiftsDay extends React.Component {
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
-    const defaultDate = 1566273600;
+    const defaultDate = 1566619200;
     this.state = {
       rounds: null,
       availableOperators: [],
@@ -38,6 +38,7 @@ class AdminShiftsDay extends React.Component {
     })
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         this.setState({
           rounds: data
         });
@@ -46,17 +47,14 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error) });
   }
   getAvailableDrivers(startTime, endTime, roundId){
-    var startTimeQuery = '';
-    if(startTime){
-      startTimeQuery = `&start_time=${startTime}`;
-    }
-    fetch(`/api/admin-available-drivers.php?date=${this.state.dateToPass}${startTimeQuery}`)
+    var roundTimes = JSON.stringify([{ "start_time": startTime, "stop_time": endTime }]);
+    fetch(`/api/admin-available-operators.php?date=1566619200&round_time=${roundTimes}`, {
+      method: 'GET'
+    })
       .then(response => response.json())
       .then(data => {
-        var groupedOperators =  this.groupOperatorsByUserId(data);
-        console.log('groupedOperators: ', groupedOperators);
-        var operatorsAvailableFiltered = this.filterAvailableOperatorsByStartAndEndTimes(groupedOperators, startTime, endTime);
-        this.setState({availableOperators: operatorsAvailableFiltered});
+        console.log(data);
+        this.setState({availableOperators: data});
       })
       .catch(error => { throw (error) });
   }
@@ -95,8 +93,8 @@ class AdminShiftsDay extends React.Component {
     // console.log('available operators: ', this.state.availableOperators);
     const availableOperatorsElements = this.state.availableOperators.map( operator => {
       return(
-        <div className="available-operator">
-          {`${operator.last_name}, ${operator.first_name}`}
+        <div key={operator.id}className="available-operator">
+          {`${operator.lastName}, ${operator.firstName}`}
         </div>
       );
     });
@@ -163,7 +161,7 @@ class AdminShiftsDay extends React.Component {
         shiftsForLine.push({
           'start_time': sortedLineAndBusArray[indexSortedArray].round_start,
           'end_time': sortedLineAndBusArray[indexSortedArray].round_end,
-          'user_id': sortedLineAndBusArray[indexSortedArray].user_id, 
+          'user_id': sortedLineAndBusArray[indexSortedArray].user_id,
           'user_name': displayName,
           'rounds': roundCounter+1
         });
