@@ -4,6 +4,8 @@ import TopMenuGeneral from './topmenu/topmenu-general';
 import TopMenuHamburger from './topmenu/topmenu-hamburger';
 import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
+import BusesTable from './admin-lines-buses-tableData';
+import AddBus from './admin-lines-buses-addBus';
 
 
 class AdminRoutes extends React.Component {
@@ -14,13 +16,14 @@ class AdminRoutes extends React.Component {
       routeInfo: [],
       busInfo: [],
       editBusClicked: false,
-      editLineClicked: false
+      editLineClicked: false,
     }
+    this.addBus = this.addBus.bind(this);
   }
 
   handleEditBusButton() {
     this.setState({
-      editBusClicked: true
+      editBusClicked: !this.state.editBusClicked
     })
   }
 
@@ -29,6 +32,28 @@ class AdminRoutes extends React.Component {
       editLineClicked: true
     })
   }
+
+  // componentDidCatch(error) {
+  //   console.error(error);
+  // }
+
+ addBus(newBus) {
+   // fetch with post method, add new bus to line.
+   const myInit = {
+    method: 'POST',
+    body: JSON.stringify(newBus),
+    header: {
+      'Content-Type': 'application/json'
+    }
+   };
+   fetch('/api/admin-lines-buses.php', myInit)
+    .then(response => response.json())
+    .then(bus => this.setState({
+      busInfo: this.state.busInfo.concat(bus)
+    }))
+  //  if (this.state.editBusClicked) {
+  //
+ }
 
 
   readRouteBusComponent(routeInfo){
@@ -39,104 +64,102 @@ class AdminRoutes extends React.Component {
 
     {/** if the edit routes button is not clicked, we will render this**/}
     return(
-    routeInfo.map((routeInfo, index) => {
-
-      let currentLine = routeInfo.line_name;
-      if (currentLine !== prevLine){
+      routeInfo.map((routeInfo, index) => {
+        let currentLine = routeInfo.line_name;
+        if (currentLine !== prevLine) {
         prevLine = routeInfo.line_name;
-        {/* returns the route/line name and bus # if the route has not been displayed already */ }
-      return (
-
-        <div className = "card" key = {routeInfo.line_name + routeInfo.bus_number}>
-        <div className="card-header" id={"heading" + routeInfo.line_name}>
-            <div className="row" id={index}>
-              <div className="col">
-                <RouteBusDisplay route={routeInfo.line_name}></RouteBusDisplay>
+        //{/* returns the route/line name and bus # if the route has not been displayed already */ }
+        return (
+          <div className="card" key={routeInfo.line_name + routeInfo.bus_number}>
+            <div className="card-header" id={"heading" + routeInfo.line_name}>
+              <div className="row" id={index}>
+                <div className="col">
+                  <RouteBusDisplay  route={routeInfo.line_name}></RouteBusDisplay>
+                </div>
+                <div className="col">{routeInfo.status}</div>
+                <div className="col">true</div>
+                <div className="col">true</div>
+                <button className="btn btn-link  collapsed dropdown-toggle" type="button" data-toggle="collapse"
+                  data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}>
+                  Bus Details
+                </button>
+                <button className="btn btn-dark btn-sm collapsed" type="button" data-toggle="collapse" style={{ "fontSize": 24 }}
+                  data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}
+                  onClick={() => this.handleEditBusButton()} >+</button>
               </div>
-              <div className="col">{routeInfo.status}</div>
-              <div className="col">true</div>
-              <div className="col">true</div>
-              {/* <div className="col">{routeInfo.public.toString()}</div> */}
-              {/* <div className="col">{routeInfo.regular_service.toString()}</div> */}
-              <button className="btn btn-link  collapsed dropdown-toggle" type="button" data-toggle="collapse"
-              data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}>
-                Bus Details
-      </button>
-              <button className="btn btn-dark btn-sm collapsed  " type="button" data-toggle="collapse" style={{ "fontSize": 24 }}
-                data-target={"#collapse" + routeInfo.line_name} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}
-                onClick={() => this.handleEditBusButton()} > +</button>
             </div>
-         </div>
 
+            <div id={"collapse" + routeInfo.line_name} className="collapse" aria-labelledby={"heading" + routeInfo.line_name}
+              data-parent="#accordionExample">
 
-        <div id={"collapse" +  routeInfo.line_name } className="collapse" aria-labelledby={"heading" + routeInfo.line_name}
-          data-parent="#accordionExample">
-          <div className="card-body">
+            <div className="row">
+              <div className="col">
+                <div id="accordion">
+                  {this.state.editBusClicked ? <AddBus addBus={this.addBus}/> : ''}
+                </div>
+              </div>
+              </div>
               <div className="row">
-
-                <div className="col-sm-2 border border-dark">Line #</div>
-                <div className="col-sm-2 border border-dark">Start Time</div>
-                <div className="col-sm-2 border border-dark">End Time</div>
-                {/* <div className="col-sm-2 border border-dark">Rd. Duration</div> */}
-                <div className="col-sm-2 border border-dark">Start Up</div>
-                <div className="col-sm-2 border border-dark">Close Down</div>
+                <div className="card col-12">
+                  <div className="card-header">
+                    Buses Active
+                 {/* making table main header clickable to collapse accordion */}
+                  </div>
+                    <table className="card-table table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Bus Number</th>
+                          <th scope="col">Start Time</th>
+                          <th scope="col">End Time</th>
+                          <th scope="col">Rounds</th>
+                          <th scope="col">Days</th>
+                          <th scope="col">Edit</th>
+                        </tr>
+                      </thead>
+                      <BusesTable routeInfo={routeInfo} />
+                    </table>
+                  </div>
+                </div>
               </div>
-              <div className = "row">
-                <div className="col-sm-2 mr-0 border border-dark">
-                  <RouteBusDisplay bus={routeInfo.bus_number}></RouteBusDisplay>
-              </div>
-                <div className="col-sm-2 border border-dark">{routeInfo.start_time}</div>
-                <div className="col-sm-2 border border-dark">{routeInfo.end_time}</div>
-                {/* <div className="col-sm-2 border border-dark">{routeInfo.round_dur}</div> */}
-                <div className="col-sm-2 border border-dark">{routeInfo.opening_duration + "min."}</div>
-                <div className="col-sm-2 border border-dark">{routeInfo.closing_duration + "min."}</div>
-              </div>
-      </div>
-      {/*collapse  */}
-        </div>
-        </div>
-
+            </div>
 
         )
-      }
+            }
+
+
       {/* returns JUST the bus # if the # is already associated with a route/line name */}
       return (
         <div key={routeInfo.line_name + routeInfo.bus_number} id={"collapse" + routeInfo.line_name} className="collapse" aria-labelledby={"heading" + routeInfo.line_name}
           data-parent="#accordionExample">
-          <div className="card-body">
-            <div className="row">
-
-              <div className="col-sm-2 border border-dark">Line #</div>
-              <div className="col-sm-2 border border-dark">Start Time</div>
-              <div className="col-sm-2 border border-dark">End Time</div>
-              {/* <div className="col-sm-2 border border-dark">Rd. Duration</div> */}
-              <div className="col-sm-2 border border-dark">Start Up</div>
-              <div className="col-sm-2 border border-dark">Close Down</div>
-            </div>
-            <div className="row">
-              <div className="col-sm-2 mr-0 border border-dark">
-                <RouteBusDisplay bus={routeInfo.bus_number}></RouteBusDisplay>
+          <div className="row">
+            <div className="card col-12">
+              <div id="collapseBusesActive"> {/* setting table to be a part of accordion component */}
+                <table className="card-table table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Bus Number</th>
+                      <th scope="col">Start Time</th>
+                      <th scope="col">End Time</th>
+                      <th scope="col">Rounds</th>
+                      <th scope="col">Days</th>
+                      <th scope="col">Edit</th>
+                    </tr>
+                  </thead>
+                  <BusesTable routeInfo={routeInfo} />
+                </table>
               </div>
-              <div className="col-sm-2 border border-dark">{routeInfo.start_time}</div>
-              <div className="col-sm-2 border border-dark">{routeInfo.end_time}</div>
-              {/* <div className="col-sm-2 border border-dark">{routeInfo.round_dur}</div> */}
-              <div className="col-sm-2 border border-dark">{routeInfo.opening_duration + "min."}</div>
-              <div className="col-sm-2 border border-dark">{routeInfo.closing_duration + "min."}</div>
             </div>
           </div>
-          {/*collapse  */}
         </div>
-
-      )
+          )
+        }
+      ))
     }
-    ))
 
+  componentDidMount(){
+    this.handleRoutesInformation('api/admin-lines-buses.php', 'GET');
+    this.handleBusesInformation('api/admin-lines-buses.php', 'GET');
   }
-
-      componentDidMount(){
-        this.handleRoutesInformation('api/admin-lines-buses.php', 'GET');
-        this.handleBusesInformation('api/admin-lines-buses.php', 'GET');
-      }
 
   handleRoutesInformation(url, method){
           fetch(url, { method: method })
@@ -148,6 +171,7 @@ class AdminRoutes extends React.Component {
             console.log(routeInfo);
         })
       }
+
   handleBusesInformation(url, method) {
     fetch(url, { method: method })
       .then(response => { return response.json() })
@@ -158,6 +182,7 @@ class AdminRoutes extends React.Component {
         console.log(busInfo);
       })
   }
+
     render(){
         if (this.state.editLineClicked) {
           return (
@@ -183,7 +208,6 @@ class AdminRoutes extends React.Component {
                   <div className="btn btn-outline-dark " onClick={() => this.handleEditRouteButton()}> Add Line + </div>
                 </div>
               </div>
-
 
               <div className="container mt-2">
                 <div className="row">
@@ -232,12 +256,11 @@ class AdminRoutes extends React.Component {
                   </form>
 
                 </div>
-                </div>
+              </div>
             </React.Fragment>
           );
 
         }
-
 
       return (
         <React.Fragment>
@@ -276,7 +299,7 @@ class AdminRoutes extends React.Component {
 
             {this.readRouteBusComponent(this.state.routeInfo)}
 
-    </div>
+          </div>
         </React.Fragment>
       );
     }

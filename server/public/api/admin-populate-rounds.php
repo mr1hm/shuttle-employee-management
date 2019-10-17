@@ -21,24 +21,24 @@ function getRoundsData($conn, $quarterStartTimestamp) {
 
   $templateDatesCSV = implode(',', $templateDates);
 
-  $roundsQuery = "SELECT 
+  $roundsQuery = "SELECT
                   rd.id,
-                  rt.line_name, 
-                  bi.bus_number, 
-                  rd.start_time AS round_start, 
+                  rt.line_name,
+                  bi.bus_number,
+                  rd.start_time AS round_start,
                   rd.end_time AS round_end,
-                  us.id AS user_id, 
-                  us.last_name, 
+                  us.id AS user_id,
+                  us.last_name,
                   us.first_name,
                   rd.date,
                   rd.status
-                  FROM route AS rt 
-                  JOIN bus_info AS bi ON bi.route_id = rt.id 
-                  JOIN round AS rd ON rd.bus_info_id = bi.id 
+                  FROM route AS rt
+                  JOIN bus_info AS bi ON bi.route_id = rt.id
+                  JOIN round AS rd ON rd.bus_info_id = bi.id
                   JOIN user AS us ON rd.user_id = us.id
                   WHERE rd.session_id = 1 AND rd.date IN ({$templateDatesCSV})
                   ORDER BY date ASC,line_name ASC, bus_number ASC, round_start ASC, round_end ASC";
-          
+
   $result = mysqli_query($conn, $roundsQuery);
   if(!$result){
     throw new Exception('MySQL error: '.mysqli_error($conn));
@@ -53,12 +53,12 @@ function getRoundsData($conn, $quarterStartTimestamp) {
 
 //get data on the operators from the db
 function getOperatorsData($conn) {
-  $operatorsUserDetailsQuery = "SELECT 
-                                id AS user_id, 
-                                last_name, 
+  $operatorsUserDetailsQuery = "SELECT
+                                id AS user_id,
+                                last_name,
                                 first_name,
                                 special_route_ok
-                                FROM user 
+                                FROM user
                                 WHERE role = 'operator' AND status = 'active'";
 
   $resultOperatorsUserDetailsQuery = mysqli_query($conn, $operatorsUserDetailsQuery);
@@ -92,11 +92,11 @@ function getOperatorsData($conn) {
   }
   $operatorCSV = implode(',', $fetchedUserIDs);
 
-  $operatorAvailabilityQuery = "SELECT 
-                                user_id, 
-                                day_of_week, 
-                                CONCAT(start_time, ' , ', end_time) AS availability 
-                                FROM `operator_availability` 
+  $operatorAvailabilityQuery = "SELECT
+                                user_id,
+                                day_of_week,
+                                CONCAT(start_time, ' , ', end_time) AS availability
+                                FROM `operator_availability`
                                 WHERE session_id = 1 AND user_id IN ({$operatorCSV})";
 
   $resultAvailabilityQuery = mysqli_query($conn, $operatorAvailabilityQuery);
@@ -126,7 +126,7 @@ function getOperatorsData($conn) {
     //for each record that has that user_id
     $userAvailabilityLength = count($userAvailability);
     for ($availabilityIndex = 0; $availabilityIndex < $userAvailabilityLength; $availabilityIndex++) {
-      
+
       $currentDay = $userAvailability[$availabilityIndex]['day_of_week'];
       $operatorsUserDetails[$userID]['assignment_details'][$currentDay]['available_times'][] = $userAvailability[$availabilityIndex]['availability'];
     }
@@ -188,7 +188,7 @@ function operatorsSort($a, $b) {
 //returns an array of operators that are available for one day (Sun, Mon, Tue, etc.)
 function buildOperatorsByDay($operators, $day) {
   $dayOperators = [];
-  
+
   for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
     if(count($operators[$operatorsIndex]['assignment_details'][$day]['available_times'])) {
       $content['user_id'] = $operators[$operatorsIndex]['user_id'];
@@ -211,7 +211,7 @@ function buildOperatorsByDay($operators, $day) {
 
 function buildRoundsByDay($rounds, $day) {
   $dayRounds = [];
-  
+
   for($roundsIndex = 0; $roundsIndex < count($rounds); $roundsIndex++) {
     if($rounds[$roundsIndex]['day'] === $day) {
       array_push($dayRounds, $rounds[$roundsIndex]);
@@ -221,7 +221,7 @@ function buildRoundsByDay($rounds, $day) {
 }
 
 //takes start and end time and calculates total
-function calculateShiftHours($startTime, $endTime){
+function calculateShiftMinutes($startTime, $endTime){
   $startHourDigits = floor($startTime/100);
   $startMinuteDigits = $startTime/100 - $startHourDigits;
 
@@ -232,14 +232,14 @@ function calculateShiftHours($startTime, $endTime){
   $endTimeInMinutes = $endHourDigits*60 + $endMinuteDigits*100;
 
   $shiftLengthInMinutes = $endTimeInMinutes - $startTimeInMinutes;
-  return round($shiftLengthInMinutes); 
+  return round($shiftLengthInMinutes);
 }
 
 //determine the number of rounds in a shift based on the line
 function determineNumberRoundsInShift($lineName){
   $shiftLength = [
-    'C'=>3, 
-    'D'=>4, 
+    'C'=>3,
+    'D'=>4,
     'Hs'=>5,
     'S'=>5
   ];
@@ -254,9 +254,9 @@ function updateRoundsInDatabase($conn, $rounds) {
     $roundsStatus = $rounds[$rowIndex]['status'];
 
     if($roundsStatus === 'scheduled') {
-      $updateQuery = "UPDATE round 
+      $updateQuery = "UPDATE round
                       SET user_id = $userId,
-                          status = 'scheduled'    
+                          status = 'scheduled'
                       WHERE id = $roundsId";
 
       $result = mysqli_query($conn, $updateQuery);
@@ -275,23 +275,23 @@ function addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $n
   //nothing is the assigned times array
   if (empty($assignedTimesArray)) {
       array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
-  } 
+  }
   //one item in the assigned times array
   else if ($lengthAssignedTimesArray === 1) {
     //the ending time of new entry is the same as the start of the item in the assigned times array
     if (intval($operators[$operatorsIndex]['times_assigned'][0][0]) === intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
       $operators[$operatorsIndex]['times_assigned'][0][0] = intval($rounds[$roundsIndex]['round_start']);
-    } 
+    }
     //the starting time of the new entry is the same as the end of the item in the assigned times array
     else if (intval($operators[$operatorsIndex]['times_assigned'][0][1]) === intval($rounds[$roundsIndex]['round_start'])) {
       $operators[$operatorsIndex]['times_assigned'][0][1] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
-    } 
-    //neither the starting time or ending time of new entry is the same of start or item in the asssigned times array
-    else if (intval($operators[$operatorsIndex]['times_assigned'][0][1]) !== intval($rounds[$roundsIndex]['round_start']) and intval($operators[$operatorsIndex]['times_assigned'][0][0]) !== 
+    }
+    //neither the starting time or ending time of new entry is the same of start or end item in the assigned times array
+    else if (intval($operators[$operatorsIndex]['times_assigned'][0][1]) !== intval($rounds[$roundsIndex]['round_start']) and intval($operators[$operatorsIndex]['times_assigned'][0][0]) !==
     intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
       array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
     }
-  } 
+  }
   //more than one item in the assigned times array
   else {
     $middle = false;
@@ -309,16 +309,16 @@ function addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $n
     if (!$middle) {
       //the ending time of new entry is the same as the start of the item in the assigned times array
       for ($assignedTimeIndex = 0; $assignedTimeIndex < $lengthAssignedTimesArray; $assignedTimeIndex++) {
-        if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]) === 
+        if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]) ===
         intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
           $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0] = intval($rounds[$roundsIndex]['round_start']);
           break;
-        } 
+        }
          //the starting time of the new entry is the same as the end of the item in the assigned times array
         if (intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1]) === intval($rounds[$roundsIndex]['round_start'])) {
           $operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1] = intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']);
           break;
-        } 
+        }
         //neither the starting time or ending time of new entry is the same of start or item in the asssigned times array
         if ($assignedTimeIndex === $lengthAssignedTimesArray - 1){
           array_push($operators[$operatorsIndex]['times_assigned'], [intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])]);
@@ -357,11 +357,13 @@ function adjustAvailableTimes($operators, $rounds, $operatorsIndex, $roundsIndex
 function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds) {
   $blockTooBig = false;
   $operators = addAssignedTime($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
+
   $lengthAssignedTimesArray = count($operators[$operatorsIndex]['times_assigned']);
+
   for ($assignedTimeIndex = 0; $assignedTimeIndex < $lengthAssignedTimesArray; $assignedTimeIndex++) {
     $endTime = intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][1]);
     $startTime = intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]);
-    $blockTime = calculateShiftHours($startTime, $endTime);
+    $blockTime = calculateShiftMinutes($startTime, $endTime);
     if ($blockTime > 300) {
       $blockTooBig = true;
       break;
@@ -382,9 +384,9 @@ function checkSpecialStatus($rounds, $roundsIndex, $operators, $operatorsIndex) 
     }
   }
 }
-  
-//populate the schedule for a particular day
+
 function populateSchedule($operators, $rounds, $conn)  {
+//populate the schedule for a particular day
   $lengthOperatorsArray = count($operators);
   $lengthRoundsArray = count($rounds);
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray; $roundsIndex++) {
@@ -398,9 +400,9 @@ function populateSchedule($operators, $rounds, $conn)  {
 
     $madeAssignment = false;
     $specialStatusRequired = false;
-    
+
     //sort the operator array, put operator with fewest weekly hours at the top
-    uasort($operators, 'operatorsSort'); 
+    uasort($operators, 'operatorsSort');
     $operators = array_values($operators);
 
     //set the unassigned rounds, rounds on an available line, and rounds on specific bus to 0.
@@ -432,7 +434,7 @@ function populateSchedule($operators, $rounds, $conn)  {
 
       //length of the operator array
       $lengthOperatorsArray = count($operators);
-      
+
       //yes, iterate through each operator
       for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
 
@@ -442,37 +444,33 @@ function populateSchedule($operators, $rounds, $conn)  {
           continue;
         }
 
-        //if operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
-        $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
-        $totalMinutesInDay = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
-        if ($totalMinutesInDay > 480) {
-          continue;
-        }
-        //if the total weekly minutes exceeds 29 hours (1740 minutes) once the shift is added, skip the operator
-        $totalWeeklyMinutes = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
-        if ($totalWeeklyMinutes > 1740) {
-          continue;
-        }
-
+        // # of available times for the current operator
+        $availableTimes = count($operators[$operatorsIndex]['available_times']);
+        
         //if the the driver worked past 10 pm the night before and the shift is before 8 am skip the operator
         if ($rounds[$roundsIndex]['round_start'] < 800 and $operators[$operatorsIndex]['shift_restrictions']['prior_day'] === 1) {
           continue;
         } 
-
-        //array of available time slots for one operator
-        $availabilityArray = $operators[$operatorsIndex]['available_times']; 
-        //length of the times availability array
-        $lengthTimesAvailableArray = count($availabilityArray); 
     
-        for ($timesIndex = 0; $timesIndex < $lengthTimesAvailableArray; $timesIndex++) {
-  
+        for ($timesIndex = 0; $timesIndex < $availableTimes; $timesIndex++) {
           //define available start and end times
           $availableStartTime = intval($operators[$operatorsIndex]['available_times'][$timesIndex][0]);
           $availableEndTime = intval($operators[$operatorsIndex]['available_times'][$timesIndex][1]);
 
           //Is shift within the available time range of operator?
           if ($availableStartTime <= intval($rounds[$roundsIndex]['round_start']) and $availableEndTime >= intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-  
+            //if operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
+            $totalShiftTime = calculateShiftMinutes(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
+            $totalMinutesInDay = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
+            if ($totalMinutesInDay > 480) {
+              break;
+            }
+            //if the total weekly minutes exceeds 29 hours (1740 minutes) once the shift is added, skip the operator
+            $totalWeeklyMinutes = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
+            if ($totalWeeklyMinutes > 1740) {
+              break;
+            }
+
             // Check to see if the operator will have too many hours if the shift is added. If so, skip that operator
             $blockTooBig = checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
             //if there is not a problem with continous block
@@ -486,16 +484,16 @@ function populateSchedule($operators, $rounds, $conn)  {
                 $rounds[$roundsIndex + $roundOfShift]['status'] = 'scheduled';
               }
               //adjust total daily and weekly hours
-              $totalShiftTime = calculateShiftHours(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
+              $totalShiftTime = calculateShiftMinutes(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
               $operators[$operatorsIndex]['total_weekly_minutes'] = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
               $operators[$operatorsIndex]['total_daily_minutes'] = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
-  
+
               //shift assignment was made
               $madeAssignment = true;
-  
+
               //add the time added to assigned times for the operator
               $operators = addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
-  
+
               //adjust the times the operator is available
               $operators = adjustAvailableTimes ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds, $availableStartTime, $availableEndTime, $timesIndex);
 
@@ -507,15 +505,49 @@ function populateSchedule($operators, $rounds, $conn)  {
           }
         }
         if ($madeAssignment) {
+          enforceBreakCondition($rounds, $operators, $operatorsIndex);
           break;
         }
       }
     }
   }
+
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
   print_r($rounds);
   return $operators;
+}
+
+// Make sure there is a 30 minute break after 5 continuous hours
+function enforceBreakCondition(&$rounds, &$operators, $opIndex) {
+  $totalAssignedTimes = count($operators[$opIndex]['times_assigned']);
+  if ($totalAssignedTimes > 1) {
+    $start = intval($operators[$opIndex]['times_assigned'][0][0]);
+    $end = intval($operators[$opIndex]['times_assigned'][0][1]);
+    $block = calculateShiftMinutes($start, $end);
+    for ($assignedTime = 1; $assignedTime < $totalAssignedTimes; ++$assignedTime) {
+      if ($block == 300) {
+        if ((intval($operators[$opIndex]['times_assigned'][$assignedTime][0]) - $end) < 30) {
+          $totalRounds = count($rounds);
+          for ($opRound = 0; $opRound < $totalRounds; ++$opRound) {
+            if ($rounds[$opRound]['user_id'] === $operators[$opIndex]['user_id'] &&
+                intVal($rounds[$opRound]['round_start']) === intval($operators[$opIndex]['times_assigned'][$assignedTime][0])) {
+              $rounds[$opRound]['user_id'] = 1;
+              $rounds[$opRound]['first_name'] = 'unassigned';
+              $rounds[$opRound]['last_name'] = 'unassigned';
+              $rounds[$opRound]['status'] = 'unscheduled';
+              break;
+            }
+          }
+          $operators[$opIndex]['times_assigned'][$assignedTime][0] = intval($operators[$opIndex]['times_assigned'][$assignedTime][0]) + 20;
+        }
+      } else {
+        $start = intval($operators[$opIndex]['times_assigned'][$assignedTime][0]);
+        $end = intval($operators[$opIndex]['times_assigned'][$assignedTime][1]);
+        $block = calculateShiftMinutes($start, $end);
+      }
+    }
+  }
 }
 
 //populate the first week
@@ -529,7 +561,7 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
-    $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn); 
+    $revOperatorsSpecificDay = populateSchedule($operatorsForDay, $roundsForDay, $conn);
     for($operatorsIndex = 0; $operatorsIndex < count($operators); $operatorsIndex++) {
       //initialize the shift restrictions each time you go through the array
       //this is the default, shift does not have late or early
@@ -554,7 +586,7 @@ $quarterStartTimestamp = 1566100800;
 $quarterEndTimestamp = 1576904400;
 $beginningOfWeekTimeStamp = $quarterStartTimestamp;
 
-//populate the entire quarater based on the template week
+//populate the entire quarter based on the template week
 while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
   $rounds = [];
   $operators = [];
