@@ -2,6 +2,7 @@ import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import TradeModal from './trade-modal';
 import SwapModal from './swap-modal';
+import {calcShiftLengthInHourMinFormat} from '../lib/time-functions';
 
 class TradeSwap extends React.Component {
   constructor(props) {
@@ -17,7 +18,6 @@ class TradeSwap extends React.Component {
   }
 
   handleDriverClick(event){
-    debugger;
     const driverId= event.target.id;
     const selectedDriver=this.state.availableDrivers.find(driver => driver.user_id === driverId);
     this.setState({
@@ -36,10 +36,11 @@ class TradeSwap extends React.Component {
   }
 
   render() {
+    debugger;
     const rounds = this.props.roundArray;
     const timeSpan = this.props.timeSpan;
     const dateAndRound = this.props.dateAndRound;
-    const confirmationText= (this.state.selectedDriver.length >0) ? `Trade or Swap with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name} ?` : "Please Select Driver";
+    const confirmationText= (Object.keys(this.state.selectedDriver).length !== 0) ? `Trade or Swap with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name}?` : "Select Coworker";
       return (
         <div className="container d-flex flex-column justify-content-around h-100">
           <div className="row">
@@ -48,7 +49,7 @@ class TradeSwap extends React.Component {
           <div className="row justify-content-center">
             <div className="btn-group w-50">
               <button className="btn btn-secondary btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Select Coworker
+                {confirmationText}
             </button>
               <div className="dropdown-menu w-100">
                 {this.state.availableDrivers.map(singleDriver => {
@@ -57,11 +58,19 @@ class TradeSwap extends React.Component {
             </div>
             </div>
           </div>
-          <div className="row justify-content-center">
-            <div>{confirmationText}</div>
-          </div>
-          <div className="row justify-content-center h-25">
-            <div className="col-1">
+          {/* <div className="row justify-content-center h-25"> */}
+            {rounds.map(oneShift => {
+              return (
+                <tr key={oneShift.roundID} className="row">
+                  <td>
+                    <RouteBusDisplay route={this.props.route} bus={this.props.busNumber} />
+                  </td>
+                  <td>{oneShift.start_time}-{oneShift.end_time}</td>
+                  {/* <div className="col-4">{calcShiftLengthInHourMinFormat(oneShift.start_time,oneShift.end_time)}</div> */}
+                </tr>
+              )
+            })}
+            {/* <div className="col-1">
               <RouteBusDisplay route={this.props.route} bus={this.props.busNumber} />
             </div>
             <div className="col-4">
@@ -69,8 +78,8 @@ class TradeSwap extends React.Component {
               <div>
                 {dateAndRound}
               </div>
-            </div>
-          </div>
+            </div> */}
+          {/* </div> */}
           <div className="row h-25 justify-content-center">
             <div className="col h-50 d-flex justify-content-center ">
               <button type="button" onClick={()=>this.props.close()} className="btn btn-lg btn-light w-75">Cancel</button>
@@ -78,13 +87,13 @@ class TradeSwap extends React.Component {
             <div className="col h-50 d-flex justify-content-center">
               <button type="button" data-toggle="modal" data-target="#tradeModal" className="btn btn-lg btn-success w-75">Trade</button>
               <>
-                <TradeModal time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} />
+                <TradeModal selectedDriver={this.state.selectedDriver} time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} />
               </>
             </div>
             <div className="col h-50 d-flex justify-content-center">
               <button type="button" data-toggle="modal" data-target="#swapModal" className="btn btn-lg btn-primary w-75">Swap</button>
               <>
-              <SwapModal time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} />
+              <SwapModal selectedDriver={this.state.selectedDriver} time={timeSpan} date={dateAndRound} route={this.props.route} bus={this.props.busNumber} />
               </>
             </div>
           </div>
