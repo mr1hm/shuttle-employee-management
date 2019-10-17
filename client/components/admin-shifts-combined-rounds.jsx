@@ -1,5 +1,5 @@
 import React from "react";
-import AdminShiftsHoverDetails from './admin-shifts-hover-details';
+import AdminShiftsHoverDetailsAndLabels from './admin-shifts-hover-details-and-labels';
 import {convertMilitaryTime} from '../lib/time-functions';
 import './admin-shifts-display.css';
 
@@ -22,8 +22,9 @@ class AdminShiftsCombinedRounds extends React.Component {
     const shiftTimeMeridian = shiftStartMeridian + " - " + shiftEndMeridian;
     if (this.props.type === 'active') {
       return (
-        <AdminShiftsHoverDetails
+        <AdminShiftsHoverDetailsAndLabels
           userName={this.props.userName}
+          userId={this.props.userId}
           shiftTime={shiftTimeMeridian}
           rounds={this.props.rounds}
         />
