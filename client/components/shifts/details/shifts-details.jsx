@@ -31,6 +31,7 @@ class ShiftsDetails extends React.Component {
     this.handleTransactionLog = this.handleTransactionLog.bind(this);
     this.handleTextArea = this.handleTextArea.bind(this);
     this.convertMilitaryTime = this.convertMilitaryTime.bind(this);
+    this.createDate = this.createDate.bind(this);
   }
 
   handleTextArea(event){
@@ -176,16 +177,20 @@ class ShiftsDetails extends React.Component {
     }
     return hour + ":" + minute + " " + meridiem;
   }
-  createSubHeaderTimeFrame() {
-    const shiftDetails = this.state.shiftsDetailsInfo;
+  createDate() {
     let date = new Date(createDateObjFromDateString(this.props.unixDate ? this.props.unixDate : 1560409200000).getTime());// converts unix time to date/at midnight
     const daysArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const monthsArray = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthsArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const year = date.getFullYear();
     const month = monthsArray[date.getMonth()];
     const calendarDate = date.getDate();
     const day = daysArray[date.getDay()];
     const fullDate = day + ", " + month + " " + calendarDate + ", " + year;
+    return fullDate;
+  }
+  createSubHeaderTimeFrame() {
+    const shiftDetails = this.state.shiftsDetailsInfo;
+    const fullDate=this.createDate();
     if (shiftDetails.length !== 0) {
       const shiftDurationStart = shiftDetails[0].start_time;
       const shiftDurationEnd = shiftDetails[shiftDetails.length - 1].end_time;
@@ -195,6 +200,14 @@ class ShiftsDetails extends React.Component {
         timeSpanOfShift:timeSpanOfShift,
         dateAndRoundString:dateAndRoundString
       });
+    }
+  }
+  renderSubHeaderTimeFrame() {
+    const shiftDetails = this.state.shiftsDetailsInfo;
+    const fullDate=this.createDate();
+    if (shiftDetails.length !== 0) {
+      const shiftDurationStart = shiftDetails[0].start_time;
+      const shiftDurationEnd = shiftDetails[shiftDetails.length - 1].end_time;
       return (
         <div className="subHeaderInfoContainer">
           <div className="shiftTimeSpan">{this.convertMilitaryTime(shiftDurationStart)} - {this.convertMilitaryTime(shiftDurationEnd)}</div>
@@ -223,7 +236,7 @@ class ShiftsDetails extends React.Component {
     else if (this.state.modalType === "trade") {
       return (
       <>
-        <TradeSwap route={this.props.busLine[0]} busNumber={this.props.busNumber[0]} timeHeader={this.createSubHeaderTimeFrame} timeSpan={this.state.timeSpanOfShift} dateAndRound={this.state.dateAndRoundString}/>
+        <TradeSwap route={this.props.busLine[0]} busNumber={this.props.busNumber[0]}  timeSpan={this.state.timeSpanOfShift} dateAndRound={this.state.dateAndRoundString} close={this.closeModal}/>
       </>
 
       )
@@ -237,6 +250,11 @@ class ShiftsDetails extends React.Component {
             <div className="busRouteIconContainer">
                 <RouteBusDisplay route={this.props.busLine[0]} bus={this.props.busNumber[0]}/>
             </div>
+            <div className="subHeaderInfoContainer">
+              <div className="shiftTimeSpan">{this.state.timeSpanOfShift}</div>
+              <div className="subHeaderDayAndRoundsInfo">{this.state.dateAndRoundString}</div>
+            </div>
+            {this.renderSubHeaderTimeFrame()}
               {/* {this.createSubHeaderTimeFrame()} */}
           </div>
           <div className="details mainContainer">

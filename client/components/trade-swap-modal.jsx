@@ -5,6 +5,9 @@ import RouteBusDisplay from './route-bus-display';
 class TradeSwap extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      view:""
+    }
   }
 
   render() {
@@ -39,10 +42,29 @@ class TradeSwap extends React.Component {
           </div>
           <div className="row h-25 justify-content-center">
             <div className="col h-50 d-flex justify-content-center ">
-              <button type="button" className="btn btn-lg btn-light w-75">Cancel</button>
+              <button type="button" onClick={()=>this.props.close()} className="btn btn-lg btn-light w-75">Cancel</button>
             </div>
             <div className="col h-50 d-flex justify-content-center">
-              <button type="button" className="btn btn-lg btn-success w-75">Trade</button>
+              <button type="button" data-toggle="modal" data-target="#tradeModal" className="btn btn-lg btn-success w-75">Trade</button>
+              <div className="modal fade" id="tradeModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="exampleModalLongTitle">Confirm Shift Trade</h5>
+                      <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div className="modal-body">
+                      ...
+                    </div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" className="btn btn-primary">Save changes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="col h-50 d-flex justify-content-center">
               <button type="button" className="btn btn-lg btn-primary w-75">Swap</button>
@@ -50,6 +72,7 @@ class TradeSwap extends React.Component {
           </div>
         </div>
       );
+
   }
 }
 
