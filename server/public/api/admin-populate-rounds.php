@@ -456,8 +456,8 @@ function populateSchedule($operators, $rounds, $conn, &$prevOperators)  {
           continue;
         }
 
-        //if the operator has a shift before 8am, they cannot take a shift that starts later than 9pm
-        if (intval($rounds[$roundsIndex]['round_start']) > 2100 && $operators[$operatorsIndex]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] < 800) {
+        //if the operator has a shift before 8am, they cannot take a shift that ends later than 9pm
+        if (intval($rounds[$roundsIndex]['round_end']) > 2100 && $operators[$operatorsIndex]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] < 800) {
           continue;
         }
 
