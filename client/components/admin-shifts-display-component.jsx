@@ -53,6 +53,8 @@ class AdminShiftsDisplayComponent extends React.Component {
               onClickAvailableDrivers={this.props.onClickAvailableDrivers}
               type={roundType}
               userId={element.user_id}
+              userName={element.user_name}
+              rounds={element.rounds}
               range={{ min: 600, max: 2400 }}
               shiftData={{ start: element.start_time, end: element.end_time }}
               widthPercent={widthPercent}
