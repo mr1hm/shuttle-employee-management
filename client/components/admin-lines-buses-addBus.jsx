@@ -4,16 +4,9 @@ export default class AddBus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      bus_number: null,
-      route_id: null,
-      vehicle_id: null,
+      busNumber: null,
       start_time: null,
-      end_time: null,
-      openDur: null,
-      closeDur: null
-      // rounds: null,
-      // roundsDur: null,
-      // days: null
+      end_time: null
     }
     this.handleChange = this.handleChange.bind(this);
   }
@@ -28,22 +21,22 @@ export default class AddBus extends React.Component {
 
   render() {
     return (
-      <div className="card">
+      <div className="card addNewBusCard">
         <div className="card-header" id="headingOne">
           <div className="row align-items-center">
             <div className="col">
               <span className="mr-2">Add New Bus</span>
               {this.props.addBusClicked ? <button className="btn btn-dark btn-sm collapsed" type="button" data-toggle="collapse" style={{ "fontSize": 20 }}
-                data-target="#collapseAddNewBus" aria-expanded="false" aria-controls="collapseAddNewBus"
-                onClick={() => this.props.addBusButton()}>-</button> : <button className="btn btn-dark btn-sm collapsed" type="button" data-toggle="collapse" style={{ "fontSize": 20 }}
-                  data-target="#collapseAddNewBus" aria-expanded="false" aria-controls="collapseAddNewBus"
-                  onClick={() => this.props.addBusButton()}>+</button>}
+                data-target={`#collapseAddBus${this.props.accordionID}`} aria-expanded="false" aria-controls={`#collapseAddBus${this.props.accordionID}`}
+                onClick={this.props.handleAddBusButton}>-</button> : <button className="btn btn-dark btn-sm collapsed" type="button" data-toggle="collapse" style={{ "fontSize": 20 }}
+                  data-target={`#collapseAddBus${this.props.accordionID}`} aria-expanded="false" aria-controls={`#collapseAddBus${this.props.accordionID}`}
+                  onClick={this.props.handleAddBusButton}>+</button>}
             </div>
           </div>
 
         </div>
 
-        <div id="collapseAddNewBus" className="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+        <div id={`collapseAddBus${this.props.accordionID}`} className="collapse" aria-labelledby="headingOne" data-parent="#accordion">
           <div className="card-body">
             <form method="POST" action="/api/admin-lines-buses.php">
               <div className="row">
@@ -80,8 +73,13 @@ export default class AddBus extends React.Component {
                   <input onChange={this.handleChange} className="col border border-primary" type="text" name="rounds"></input>
                 </div>
                 <div className="col">
+                  <label>Gap</label>
+                  <input placeholder="Start Time"className="col border border-primary" type="text" name="gap"></input>
+                </div>
+                <div className="col">
                   <label>Select Days</label>
                     <select className="custom-select" id="basic" multiple="multiple">
+                      <option value="Saturday">Sunday</option>
                       <option value="Monday">Monday</option>
                       <option value="Tuesday">Tuesday</option>
                       <option value="Wednesday">Wednesday</option>
@@ -95,7 +93,33 @@ export default class AddBus extends React.Component {
                 {/* <div className="col">{routeInfo.public.toString()}</div> */}
                 {/* <div className="col">{routeInfo.regular_service.toString()}</div> */}
               <div className="row align-items-center">
-                <div className="col offset-2">
+                <div className="col-2">
+                  <label>Vehicle ID</label>
+                  <select className="col border border-primary" name="vehicleID">
+                    <option>AE-01</option>
+                    <option>AE-02</option>
+                    <option>AE-03</option>
+                    <option>AE-04</option>
+                    <option>AE-05</option>
+                    <option>AE-06</option>
+                    <option>AE-07</option>
+                    <option>AE-08</option>
+                    <option>AE-09</option>
+                    <option>AE-10</option>
+                    <option>AE-11</option>
+                    <option>AE-12</option>
+                    <option>AE-13</option>
+                    <option>AE-14</option>
+                    <option>AE-15</option>
+                    <option>AE-16</option>
+                    <option>AE-17</option>
+                    <option>AE-18</option>
+                    <option>AE-19</option>
+                    <option>AE-20</option>
+                    <option>AE-21</option>
+                  </select>
+                </div>
+                <div className="col">
                   <label>Open Length</label>
                   <br />
                   <input onChange={this.handleChange} name="openDur" className="col border border-primary" type="text" placeholder="Duration"></input>
@@ -109,6 +133,11 @@ export default class AddBus extends React.Component {
                   <label>Duration</label>
                   <br />
                   <input onChange={this.handleChange} name="roundsDur" type="text" className="col border border-primary"></input>
+                </div>
+                <div className="col">
+                  <label>Gap Duration</label>
+                  <br />
+                  <input onChange={this.handleChange} name="gapDuration" type="text" className="col border border-primary"></input>
                 </div>
                 <div className="col d-flex align-self-end">
                   <button onSubmit={() => this.props.addBus(this.state)} className="w-100 addNewBusBtn btn btn-primary" type="submit" name="submit" >

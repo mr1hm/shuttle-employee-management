@@ -1,4 +1,5 @@
 import React from 'react';
+import './linesBusesStyle';
 
 function RouteBusDisplay(props) {
 
@@ -10,9 +11,9 @@ function RouteBusDisplay(props) {
     };
 
     return (
-        <div className="container d-inline-flex align-bottom">
-            <h3 style={routeColorPackage}>{props.route}</h3>
-            <h3 className="align-text-bottom" style={{'backgroundColor': 'black', 'color': 'white'}}>{props.bus} </h3>
+        <div className="d-inline-flex">
+          <h3 style={routeColorPackage}>{props.route}</h3>
+          <h3 className="align-text-bottom" style={{'backgroundColor': 'black', 'color': 'white'}}>{props.bus}</h3>
         </div>
     );
 }

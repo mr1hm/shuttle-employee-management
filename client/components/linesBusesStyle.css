@@ -1,0 +1,30 @@
+.lineHeader {
+  font-size: 18px;
+  font-weight: 600;
+  font-style: italic;
+  /* margin-bottom: 2px; */
+}
+
+.lineCardHeader {
+  border: 1px solid black;
+}
+
+.lineHeaderFirstRow {
+  border-bottom: 1px dotted black;
+}
+
+.addNewBusCard {
+  border: 1px solid black;
+}
+
+.onlineIcon {
+  color: green;
+}
+
+.busActiveIcon {
+  color: green;
+}
+
+.busInactiveIcon {
+  color: red;
+}

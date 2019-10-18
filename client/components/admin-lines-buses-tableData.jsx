@@ -7,9 +7,17 @@ export default class BusesTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false
+      showModal: false,
+      busExistsOnRoute: false
     }
     this.handleClick = this.handleClick.bind(this);
+  }
+
+  checkForActiveBuses() {
+    if (line.buses.busNumber)
+    this.setState({
+      busExistsOnRoute: true
+    })
   }
 
   handleClick() {
@@ -19,6 +27,9 @@ export default class BusesTable extends React.Component {
   }
 
   render() {
+    const { line } = this.props;
+    const { busInfo } = this.props;
+    console.log(busInfo);
     if (this.state.showModal) {
       return (
         <div className="container editModal">
@@ -26,40 +37,35 @@ export default class BusesTable extends React.Component {
 
         </div>
       );
+    } else if (!line.line_name) {
+      return null;
+    }
+    if (line.activeBuses.length === 0) {
+      return (
+        <tbody>
+          <tr>
+            <td className="busNumber" rowSpan="3">THERE ARE NO ACTIVE BUSES</td>
+          </tr>
+        </tbody>
+      );
     }
     return (
       <tbody>
         <tr>
-          <td className="busNumber" rowSpan="3"><RouteBusDisplay bus={this.props.routeInfo.bus_number}></RouteBusDisplay></td>
-          <td>{this.props.routeInfo.start_time}</td>
-          <td>{this.props.routeInfo.end_time}</td>
-          <td>24 Rds</td>
+          <td className="busNumber" rowSpan="3"><RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay></td>
+          <td>{busInfo.startTime}</td>
+          <td>{busInfo.endTime}</td>
+          {/* <td>24 Rds</td> */}
           <td>Day Selection</td>
+          <td>GAP TIME</td>
           <td>
             <button onClick={this.handleClick} className="btn btn-danger">EDIT</button>
           </td>
         </tr>
         <tr>
-          <td className="startTimeDuration">{this.props.routeInfo.opening_duration + "min."}</td>
-          <td className="endTimeDuration">{this.props.routeInfo.closing_duration + "min."}</td>
-          <td className="roundsDuration">30min</td>
-          {/* <td className="days">
-            <div className="dropdown bootstrap-select show-tick">
-              <select className="selectpicker" multiple tabindex="-98">
-                <option>Monday</option>
-                <option>Tuesday</option>
-                <option>Wednesday</option>
-              </select>
-              <button type="button" className="btn dropdown-toggle btn-light" data-toggle="dropdown" role="button" title="Monday" aria-expanded="false">
-                <div className="filter-option">
-                  <div className="filter-option-inner">
-                    <div className="filter-option-inner-inner">Monday</div>
-                  </div>
-                </div>
-              </button>
-            </div>
-          </td> */}
-          {/* <td className="Day">{this.props.routeInfo.round_dur}</td> */}
+          <td className="startTimeDuration">{line.opening_duration + "min."}</td>
+          <td className="endTimeDuration">{line.closing_duration + "min."}</td>
+          {/* <td className="roundsDuration">30min</td> */}
         </tr>
       </tbody>
     );
