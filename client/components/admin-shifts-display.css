@@ -179,6 +179,14 @@
     height: 50px;
     margin: 5px 0;
 }
+.additional-info-container {
+  display: flex;
+}
+.adminShiftDetails {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid grey;
+}
 .hoverDetailContainer {
   display: flex;
   flex-direction: column;
