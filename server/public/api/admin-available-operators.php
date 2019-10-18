@@ -262,6 +262,10 @@ function operatorsAvailableForShift($operators, $times){
             $operator_available = false;
             break;
           }
+          if (($times[$times_index]['stop_time']) > 2100 && (int)$line[$line_index]['start_time'] < 800){
+            $operator_available = false;
+            break;
+          }
         }
         if(!$operator_available){
           break;
