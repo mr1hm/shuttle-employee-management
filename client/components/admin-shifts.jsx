@@ -272,9 +272,7 @@ class AdminShiftsDay extends React.Component {
   }
   handleShiftClick(response) {
     if (response.shift_type === "nonOperational") return
-    // else if (response.shift_type === "active") console.log("active shift clicked.")
-    else this.setState({shiftDetailsFromClick: response}, () => console.log("Shift Details from Click:", this.state.shiftDetailsFromClick));
-    ;
+    else this.setState({shiftDetailsFromClick: response});
   }
   generateShiftDetailsComponent() {
     if (this.state.shiftDetailsFromClick) {
