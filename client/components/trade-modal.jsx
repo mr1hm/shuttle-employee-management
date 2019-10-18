@@ -1,8 +1,9 @@
 import React from 'react';
 import './trade-modal.css';
 import RouteBusDisplay from './route-bus-display';
+import { convertMilitaryTime, calcShiftLenghtInHourMinFormat } from '../lib/time-functions';
 
-function TradeModal(props){
+function TradeModal(props) {
   return (
     <div className="modal fade" id="tradeModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div className="modal-dialog modal-dialog-centered" role="document">
@@ -14,17 +15,17 @@ function TradeModal(props){
             </button>
           </div>
           <div className="modal-body">
-            <div className="row justify-content-center">
-              <div className="col-1 mr-2">
-                <RouteBusDisplay route={props.route} bus={props.bus} />
-              </div>
-              <div className="col-8">
-                {props.time}
-                <div>
-                  {props.date}
+            {props.allShifts.map(oneShift => {
+              return (
+                <div key={oneShift.roundID} className="row justify-content-center text-center">
+                  <div className="col">
+                    <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
+                  </div>
+                  <div className="col-6">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
+                  <div className="col">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>
                 </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
           <div className="modal-footer justify-content-center">
             <button type="button" className="btn btn-primary">Yes</button>
@@ -34,7 +35,7 @@ function TradeModal(props){
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default TradeModal;

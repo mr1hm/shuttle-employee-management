@@ -38,7 +38,11 @@ function convertUnixTime(time) { // converts unix time to date/time for example:
   const convertedDate = new Date(time);
   return convertedDate.toString();// output: "Mon Sep 16 2019 14:52:28 GMT-0700 (Pacific Daylight Time)"
 }
+<<<<<<< HEAD
 function convertUnixMonthDay(time) { // input:convertUnixMonthDay(156859200) 09/17/2019
+=======
+function convertUnixMonthDay(time) { // This could be added to time-function.jsx  input:convertUnixMonthDay(156859200) 09/17/2019
+>>>>>>> 48aafbf23b0a06f79c61f28616470d2a296a931d
   const getTheDate = new Date(time);
   const dateString = getTheDate.getFullYear() + '-' + ('0' + getTheDate.getDate()).slice(-2) +
     '-' + ('0' + (getTheDate.getMonth() + 1)).slice(-2);
