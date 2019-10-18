@@ -13,13 +13,17 @@ class AdminShiftsDay extends React.Component {
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
+    this.handleClickSelectShifts = this.handleClickSelectShifts.bind(this);
+    this.handleClickCancel = this.handleClickCancel.bind(this);
     const defaultDate = 1566619200;
     this.state = {
       rounds: null,
       availableOperators: [],
       queryString: `?date=${defaultDate}`,
       dateToPass: defaultDate,
-      roundsSelected: []
+      roundsSelected: [],
+      roundTimes: [],
+      selecting: false
     }
   }
   //updating the db with the autopopulated rounds
@@ -49,23 +53,26 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error) });
   }
   getAvailableDrivers(startTime, endTime, roundId, userId){
-    if (userId !== 1){
-      this.setState({
-        availableOperators: [],
-        roundsSelected: []
-      });
+    if (!this.state.selecting || userId != 1) {
       return;
     }
-    var roundTimes = JSON.stringify([{ "start_time": startTime, "stop_time": endTime }]);
+    var roundsSelected = this.state.roundsSelected;
+    var roundTimes = this.state.roundTimes;
+    roundsSelected.push(roundId);
+    roundTimes.push({
+      "start_time": startTime,
+      "stop_time": endTime
+    })
+    var roundTimes = JSON.stringify(this.state.roundTimes);
     fetch(`/api/admin-available-operators.php?date=1566619200&round_time=${roundTimes}`, {
       method: 'GET'
     })
       .then(response => response.json())
       .then(data => {
-        this.fetchCallMethod
+        console.log(data);
         this.setState({
           availableOperators: data,
-          roundsSelected: roundId
+          roundsSelected: roundsSelected
         });
       })
       .catch(error => { throw (error) });
@@ -81,39 +88,26 @@ class AdminShiftsDay extends React.Component {
     }
     return groupedOperators;
   }
-  // filterAvailableOperatorsByStartAndEndTimes(groupedOperators, startTime, endTime){
-  //   var filteredOperators = [];
-  //   for (var key in groupedOperators){
-  //     var operator = groupedOperators[key];
-  //     console.log('forin loop', operator);
-  //     var operatorAvailable = true;
-  //     for (var operatorIndex = 0; operatorIndex < operator.length; operatorIndex++){
-  //       var operatorRoute = operator[operatorIndex];
-  //       if ((operatorRoute.end_time > startTime && operatorRoute.end_time <= endTime) ||
-  //         (operatorRoute.start_time >= startTime && operatorRoute.start_time < endTime) ||
-  //         (operatorRoute.start_time < startTime && operatorRoute.end_time > endTime)){
-  //         operatorAvailable = false;
-  //       }
-  //     }
-  //     if(operatorAvailable){
-  //       filteredOperators.push(operator[0]);
-  //     }
-  //   }
-  //   return filteredOperators;
-  // }
   createAvailableOperatorElements(){
     const availableOperatorsElements = this.state.availableOperators.map( operator => {
       return(
-        <div
-          key={operator.id}
-          id={operator.id}
-          className="availableOperator rounded border d-flex justify-content-center align-items-center"
-          onClick={this.handleClickAssignShift}>
-          {`${operator.lastName}, ${operator.firstName}`}
-        </div>
+          <div
+            key={operator.id}
+            id={operator.id}
+            className="availableOperator rounded border d-flex justify-content-center align-items-center"
+            onClick={this.handleClickAssignShift}>
+            {`${operator.lastName}, ${operator.firstName}`}
+          </div>
       );
     });
-    return availableOperatorsElements;
+    if (availableOperatorsElements.length){
+      return (
+        <React.Fragment>
+          <div className="available-operators">Available Operators</div>
+          {availableOperatorsElements}
+        </React.Fragment>
+      );
+    }
   }
   handleClickAssignShift(event){
     console.log(event.target.id, this.state.roundsSelected);
@@ -121,7 +115,7 @@ class AdminShiftsDay extends React.Component {
       method: 'POST',
       body: JSON.stringify({
         'user_id': event.target.id,
-        'round_id': this.state.roundsSelected
+        'rounds': this.state.roundsSelected
       }),
       headers: { 'Content-Type': 'application/json' }
     }
@@ -241,13 +235,14 @@ class AdminShiftsDay extends React.Component {
             />
           </div>);
         shiftRowElements.push(
-          <div key={index} className="shiftRowContainer adminShiftRow container w-100">
+          <div key={index} className="shiftRowContainer adminShiftRow w-100">
             < AdminShiftsDisplayComponent
               onClickAvailableDrivers={this.getAvailableDrivers}
               range={range}
               shiftData={{ start: 600, end: 2400 }}
               children={element[2]}
               type={'alertShift'}
+              selecting={this.state.selecting}
             />
           </div>
         );
@@ -257,7 +252,22 @@ class AdminShiftsDay extends React.Component {
       return elements;
     }
   }
-
+  handleClickSelectShifts(){
+    this.setState({ selecting: true });
+  }
+  handleClickCancel(){
+    this.setState({
+      selecting: false,
+      availableOperators: [],
+      roundsSelected: [],
+      roundTimes: []
+    });
+  }
+  showCancelButton(){
+    if(this.state.selecting){
+      return <button className="cancelButton btn btn-secondary" onClick={this.handleClickCancel}>Cancel</button>
+    }
+  }
   render() {
     if (!this.state.rounds) {
       return <div>Retrieving Data</div>;
@@ -267,22 +277,25 @@ class AdminShiftsDay extends React.Component {
         <div>
           <TopMenuShift title="Admin" page='day' date={this.state.dateToPass} />
           <div className="main-container d-flex h-100">
-            <div className="auto-populate-bus-line-container container d-flex flex-column justify-content-center col-2">
+            <div className="auto-populate-bus-line-container container d-flex flex-column justify-content-center col-1 p-0 mx-2">
               <div className="auto-populate-button-container d-flex justify-content-center align-items-center adminShiftRow">
                 <button className="btn btn-primary" onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
               </div>
               {elements[0]}
             </div>
-            <div className="hours-populated-shifts-container container d-flex flex-column">
+            <div className="hours-populated-shifts-container container d-flex flex-column col-9 mx-2">
               <div className="view-hours-container d-flex align-items-end adminShiftRow">
                 <HoursOfOperation />
               </div>
               {elements[1]}
             </div>
             <div className="additional-info-container container d-flex flex-column col-2 adminShiftRow">
-              <div className="available-operators">available operators</div>
               {this.createAvailableOperatorElements()}
             </div>
+          </div>
+          <div className="selectShiftsButtonContainer">
+            <button className="selectShiftsButton btn btn-primary" onClick={this.handleClickSelectShifts}>Select Shifts to Assign</button>
+            {this.showCancelButton()}
           </div>
         </div>
       )

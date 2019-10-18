@@ -176,7 +176,7 @@
     background-color: lightgray;
 }
 .adminShiftRow {
-    height: 50px;
+    height: 80px;
     margin: 5px 0;
 }
 .hoverDetailContainer {
@@ -206,4 +206,7 @@
 .availableOperator:hover {
     cursor: pointer;
     background-color: lightgray;
+}
+.shiftSelected{
+    filter: contrast(.5);
 }

@@ -5,12 +5,21 @@ require_once 'db_connection.php';
 
 $data = getBodyData();
 $user_id = $data['user_id'];
-$round_id = $data['round_id'];
+$rounds = $data['rounds'];
 
 //UPDATE round SET user_id = 1, status = 'unscheduled'
+$rounds_string = "(";
+for ($rounds_index = 0; $rounds_index < count($rounds); $rounds_index++){
+  $current_round = (int)$rounds[$rounds_index];
+  $rounds_string = $rounds_string . "$current_round";
+  if($rounds_index < count($rounds) - 1){
+    $rounds_string = $rounds_string . ", ";
+  }
+}
+$rounds_string = $rounds_string . ")";
 $query = "UPDATE `round`
             SET `user_id` = $user_id, `status` = 'scheduled'
-            WHERE `id` = $round_id";
+            WHERE `id` IN $rounds_string";
 
 $result = mysqli_query($conn, $query);
 if(!$result){

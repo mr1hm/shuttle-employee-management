@@ -7,6 +7,10 @@ class AdminShiftsCombinedRounds extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.state = {
+      selecting: this.props.selecting,
+      selected: false
+    }
   }
   timeInMinutesFromMidnight(time){
     let hoursToMinutes = Math.floor(time / 100) * 60;
@@ -14,6 +18,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     return hoursToMinutes + minutesFromTime;
   }
   handleClick(){
+    this.setState( {selected: !this.state.selected} );
     console.log(this.props.shiftData, parseInt(this.props.roundId), this.props.userId);
     this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
   }
@@ -43,7 +48,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     return (
       <div
         onClick={this.handleClick}
-        className={`shift shiftBase ${this.props.type}`}
+        className={`shift shiftBase ${this.props.type} ${this.state.selected ? "shiftSelected": ""}`}
         style={{
           width: widthPercent + "%",
           left: startPercent + "%",
