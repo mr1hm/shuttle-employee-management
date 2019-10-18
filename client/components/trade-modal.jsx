@@ -16,24 +16,22 @@ class TradeModal extends React.Component {
     for (let integerI = 0; integerI < this.props.allShifts.length; integerI++) {
       arrayOfRoundIds.push(this.props.allShifts[integerI].roundID);
     }
-      const selectedDriverToTradeWith = {
-        user_id: this.props.allShifts[0].user_id,
-        target_id: this.props.selectedDriver.user_id,
-        user_round: arrayOfRoundIds
-      };
-      const headers = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
-      fetch('/api/orders.php', {
-        method: 'POST',
-        body: JSON.stringify(selectedDriverToTradeWith),
-        headers: headers
+    const selectedDriverToTradeWith = {
+      user_id: this.props.allShifts[0].user_id,
+      target_id: this.props.selectedDriver.user_id,
+      user_round: arrayOfRoundIds
+    };
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    fetch('/api/make-shift-trade.php', {
+      method: 'POST',
+      body: JSON.stringify(selectedDriverToTradeWith),
+      headers: headers
+    })
+      .then(response => response.json())
+      .then(data => {
       })
-        .then(response => response.json())
-        .then(data => {
-
-        })
-        .catch(error => console.error('Fetch failed', error));
-    }
+      .catch(error => console.error('Fetch failed', error));
   }
   render() {
     return (
