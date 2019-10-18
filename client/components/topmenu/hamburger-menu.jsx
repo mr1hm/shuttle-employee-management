@@ -7,7 +7,7 @@ class HamburgerMenu extends React.Component {
     super(props);
     this.state = {
       open: false
-    }
+    };
     this.toggleOpen = this.toggleOpen.bind(this);
   }
   toggleOpen() {
@@ -17,14 +17,12 @@ class HamburgerMenu extends React.Component {
   }
   render() {
     return (
-      <div className = "container d-flex flex-row-reverse">
-        <div className = "dropdown p-0 m-0" onClick = {this.toggleOpen}>
-          <button className = "btn btn-light" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-haspopup = "true">
-            <FontAwesomeIcon icon = {this.state.open ? faTimes : faBars}/>
-          </button>
-          <div className = {`dropdown-menu dropdown-menu-right ${this.state.open ? 'show' : ''}`} aria-labelledby = "dropdownMenuButton">
-            {this.props.children}
-          </div>
+      <div className = "text-dark dropdown p-0 m-0" onClick = {this.toggleOpen}>
+        <button className = "btn btn-light" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-haspopup = "true">
+          <FontAwesomeIcon icon = {this.state.open ? faTimes : faBars}/>
+        </button>
+        <div className = {`dropdown-menu dropdown-menu-right ${this.state.open ? 'show' : ''}`} aria-labelledby = "dropdownMenuButton">
+          {this.props.children}
         </div>
       </div>
     );
