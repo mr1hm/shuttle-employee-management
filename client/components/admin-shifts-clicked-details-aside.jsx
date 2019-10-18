@@ -4,10 +4,14 @@ import './admin-shifts-display.css';
 class AdminClickedShiftDetailsAside extends React.Component {
   constructor(props) {
     super(props);
+    this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
+  }
+  handleClickUnassignOperator(){
+    this.props.onClickUnassignOperator(this.props.roundId);
   }
   generateConditionalElement() {
     if (this.props.shiftType === "active") {
-      return <button>Unassign Driver</button>;
+      return <button onClick={this.handleClickUnassignOperator}>Unassign Driver</button>;
     } else if (this.props.shiftType === "alertShift") {
       return <div>**Please select from the Available Drivers below.**</div>;
     }
