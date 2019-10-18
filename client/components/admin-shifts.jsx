@@ -207,6 +207,7 @@ class AdminShiftsDay extends React.Component {
       if (currentUserId == 1 || currentUserId === "n/a" || currentUserId !== previousUserId ){ //
         roundCounter = 0;
         shiftsForLine.push({
+          'round_id': sortedLineAndBusArray[indexSortedArray].round_id,
           'line_name': lineName + busNumber,
           'start_time': sortedLineAndBusArray[indexSortedArray].round_start,
           'end_time': sortedLineAndBusArray[indexSortedArray].round_end,
