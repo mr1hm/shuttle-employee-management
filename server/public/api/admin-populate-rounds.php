@@ -560,7 +560,7 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
         $operators[$operatorsIndex]['total_weekly_minutes'] = $revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['total_weekly_minutes'];
         }
       if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['shift_restrictions']['worked_passed_10']['current_day'] === 1) {
-        $operators[$operatorsIndex]['assignment_details'][$dayOfWeek[3]]['shift_restrictions']['worked_passed_10']['prior_day'] = 1;
+        $operators[$operatorsIndex]['assignment_details'][$dayOfWeek[$dayOfWeekIndex]]['shift_restrictions']['worked_passed_10']['prior_day'] = 1;
       }
       }
     }
