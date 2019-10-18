@@ -40,25 +40,16 @@ class AdminShiftsHoverDetailsAndLabels extends React.Component {
   }
   render() {
     return (
-      <div
-        onMouseEnter={this.startTimer}
-        onMouseOut={this.handleMouseOut}
-        className="hoverDetailContainer"
-      >
-        <div 
-          onMouseEnter={this.startTimer} 
-          onMouseOut={this.handleMouseOut} 
-          className="shiftOwnerLabel"
-          >{this.props.userName.last}</div>
-        <div 
-          onMouseEnter={this.startTimer} 
-          onMouseOut={this.handleMouseOut} 
-          className="shiftOwnerLabel"
-          >ID# {this.props.userId}</div>
-        <div
-          className="hoverMessage"
-          style={{ display: this.state.showing ? "flex" : "none" }}
-        >
+      <div className="hoverDetailContainer">
+        <div onMouseEnter={this.startTimer} 
+             onMouseOut={this.handleMouseOut} 
+             className="shiftOwnerLabel">
+          {this.props.userName.last}
+        </div>
+        <div className="shiftOwnerLabel">
+          ID# {this.props.userId}</div>
+        <div className="hoverMessage"
+             style={{ display: this.state.showing ? "flex" : "none" }}>
           <i></i>
           <div>{this.props.userName.last}, {this.props.userName.first}</div>
           <div>{this.props.shiftTime}</div>

@@ -3,23 +3,24 @@ import TopMenuShift from './topmenu/topmenu-shift';
 import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
 import AdminShiftsDisplayComponent from './admin-shifts-display-component';
+import AdminClickedShiftDetailsAside from './admin-shifts-clicked-details-aside';
 import './admin-shifts-display.css';
 class AdminShiftsDay extends React.Component {
   constructor(props) {
     super(props);
     this.query = ``;
+    this.handleShiftClick = this.handleShiftClick.bind(this);
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     const defaultDate = 1566273600;
-    const defaultWeekStart = 1566273600;
-    const defaultWeekEnd =
     this.state = {
       rounds: null,
       operators: {},
       operatorStats: {},
       availableOperators: [],
+      shiftDetailsFromClick: null,
       queryString: `?date=${defaultDate}`,
       dateToPass: 1566273600
     }
@@ -153,7 +154,6 @@ class AdminShiftsDay extends React.Component {
       let currentUserId = sortedLineAndBusArray[indexSortedArray].user_id;
       const firstName = sortedLineAndBusArray[indexSortedArray].first_name;
       const lastName = sortedLineAndBusArray[indexSortedArray].last_name;
-      // let displayName = (firstName && lastName) ? lastName + ", " + firstName : "n/a";
       if (currentUserId == 1 || currentUserId === "n/a" || currentUserId !== previousUserId){
         roundCounter = 0;
         shiftsForLine.push({
@@ -165,8 +165,6 @@ class AdminShiftsDay extends React.Component {
             'first': firstName ? firstName : "n/a",
             'last': lastName ? lastName : "n/a"
           },
-          // 'user_first_name': firstName ? firstname : "n/a",
-          // 'user_last_name': lastName ? lastName : "n/a",
           'rounds': roundCounter+1
         });
         roundCounter = 0;
@@ -258,6 +256,7 @@ class AdminShiftsDay extends React.Component {
           <div key={index} className="shiftRowContainer adminShiftRow container w-100">
             < AdminShiftsDisplayComponent
               onClickAvailableDrivers={this.getAvailableDrivers}
+              onClickShifts={this.handleShiftClick}
               range={range}
               shiftData={{ start: 600, end: 2400 }}
               children={element[2]}
@@ -269,6 +268,23 @@ class AdminShiftsDay extends React.Component {
       elements.push(busLineElements);
       elements.push(shiftRowElements);
       return elements;
+    }
+  }
+  handleShiftClick(response) {
+    if (response.shift_type === "nonOperational") return
+    else this.setState({shiftDetailsFromClick: response});
+  }
+  generateShiftDetailsComponent() {
+    if (this.state.shiftDetailsFromClick) {
+      return (
+        <AdminClickedShiftDetailsAside
+        userName={this.state.shiftDetailsFromClick.user_name}
+        userId={this.state.shiftDetailsFromClick.user_id}
+        shiftTime={this.state.shiftDetailsFromClick.shift_time}
+        rounds={this.state.shiftDetailsFromClick.rounds}
+        shiftType={this.state.shiftDetailsFromClick.shift_type}
+      />        
+      );
     }
   }
 
@@ -294,6 +310,7 @@ class AdminShiftsDay extends React.Component {
               {elements[1]}
             </div>
             <div className="additional-info-container container d-flex flex-column col-3 adminShiftRow">
+              {this.generateShiftDetailsComponent()}
               <div className="available-operators">available operators</div>
               {this.createAvailableOperatorElements()}
             </div>
