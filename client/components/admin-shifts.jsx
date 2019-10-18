@@ -139,7 +139,8 @@ class AdminShiftsDay extends React.Component {
         this.fetchCallMethod();
         this.setState({
           availableOperators: [],
-          roundsSelected: []
+          roundsSelected: [],
+          selecting: false
         });
       })
       .catch(error => { throw (error) });
@@ -199,7 +200,7 @@ class AdminShiftsDay extends React.Component {
       const firstName = sortedLineAndBusArray[indexSortedArray].first_name;
       const lastName = sortedLineAndBusArray[indexSortedArray].last_name;
       let displayName = (firstName && lastName) ? lastName + ", " + firstName : "n/a";
-      if (currentUserId == 1 || currentUserId === "n/a" || currentUserId !== previousUserId) {
+      if (currentUserId == 1 || currentUserId === "n/a" || currentUserId !== previousUserId ){ //
         roundCounter = 0;
         shiftsForLine.push({
           'start_time': sortedLineAndBusArray[indexSortedArray].round_start,
@@ -271,7 +272,7 @@ class AdminShiftsDay extends React.Component {
     var elements = [];
     for (var groupIndex = 0; groupIndex < shiftsGroupedByLine.length; groupIndex++) {
       elements.push(
-        <div key={groupIndex} className="shiftRowContainer adminShiftRow container border border-dark w-100">
+        <div key={groupIndex} className="shiftRowContainer adminShiftRow d-flex border border-dark w-100">
           {shiftsGroupedByLine[groupIndex][2].map((element, index) => {
             var roundType = "";
             if (element.user_id === "n/a") {

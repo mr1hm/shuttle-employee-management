@@ -8,7 +8,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.state = {
-      selected: false
+      selected: this.props.selecting
     }
   }
   timeInMinutesFromMidnight(time){
@@ -38,6 +38,11 @@ class AdminShiftsCombinedRounds extends React.Component {
       );
     } else return <div></div>
   }
+  componentDidUpdate(prevProps){
+    if(this.props.selecting !== prevProps.selecting){
+      this.setState({ selected: this.props.selected });
+    }
+  }
   render() {
     const rangeMax = this.timeInMinutesFromMidnight(this.props.range.max);
     const rangeMin = this.timeInMinutesFromMidnight(this.props.range.min);
@@ -50,7 +55,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     return (
       <div
         onClick={this.handleClick}
-        className={`shift shiftBase ${this.props.type} ${this.state.selected ? "shiftSelected": ""}`}
+        className={`shift shiftBase h-100 ${this.props.type} ${this.state.selected ? "shiftSelected": ""}`}
         style={{
           width: widthPercent + "%",
           left: startPercent + "%",
