@@ -1,6 +1,7 @@
 import React from 'react';
 import './trade-modal.css';
 import RouteBusDisplay from './route-bus-display';
+import { Link } from 'react-router-dom';
 import { convertMilitaryTime, calcShiftLenghtInHourMinFormat } from '../lib/time-functions';
 
 class TradeModal extends React.Component {
@@ -32,6 +33,7 @@ class TradeModal extends React.Component {
       .then(data => {
       })
       .catch(error => console.error('Fetch failed', error));
+
   }
   render() {
     return (
@@ -58,7 +60,7 @@ class TradeModal extends React.Component {
               })}
             </div>
             <div className="modal-footer justify-content-center">
-              <button onClick={this.giveShifttoSelectedDriver} type="button" className="btn btn-primary">Yes</button>
+              <Link to="/shifts/details/" onClick={this.giveShifttoSelectedDriver} className="btn btn-primary">Yes</Link>
               <button type="button" className="btn btn-secondary" data-dismiss="modal">No</button>
 
             </div>
