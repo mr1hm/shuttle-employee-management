@@ -84,6 +84,7 @@ class ShiftsDay extends React.Component {
 
     }
     if (this.props.view === 'myShifts') {
+      console.log('HI');
       return (
         <>
           <Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link>
