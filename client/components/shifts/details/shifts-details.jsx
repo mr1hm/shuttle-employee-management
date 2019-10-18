@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createDateObjFromDateString, adjustLocalTimestampToUTCSeconds } from '../../../lib/time-functions';
+import { convertMilitaryTime, createFormattedDate } from '../../../lib/time-functions';
 import RouteBusDisplay from '../../route-bus-display';
 
 class ShiftsDetails extends React.Component {
@@ -78,6 +78,19 @@ class ShiftsDetails extends React.Component {
         </tr>
       );
     });
+    const { start_time, end_time, date } = this.state.shiftOverview;
+    console.log(createFormattedDate(date));
+    const dateStr = `${regularDate.getDay()}, ${regularDate.getMonth()} ${regularDate.getDay()}, ${regularDate.getFullYear()}`;
+    const timeDisplay = (
+      <>
+      <div>
+        {`${convertMilitaryTime(start_time)} - ${convertMilitaryTime(end_time)}`}
+      </div>
+      <div>
+        {`${dateStr}`}
+      </div>
+      </>
+    );
     return (
       <div className="container">
         <div className="row">
@@ -85,13 +98,16 @@ class ShiftsDetails extends React.Component {
             <h1>Shift Details</h1>
           </div>
         </div>
-        <div className="row">
-          <div className="col">
-            <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.roundID}/>
+        <div className="row mb-2">
+          <div className="col-1">
+            <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.bus_info_id}/>
+          </div>
+          <div className="col-4">
+            {timeDisplay}
           </div>
         </div>
         <div className="row">
-          <div className="col text-center"><h5>Select the shifts you want to change</h5></div>
+          <div className="col text-left"><h5>Select the shifts you want to change</h5></div>
         </div>
         <div className="row">
           <div className="col">
@@ -120,75 +136,3 @@ class ShiftsDetails extends React.Component {
 }
 
 export default ShiftsDetails;
-
-/* ***
-PUT IN POST MODAL
-***
-*/
-// postShift(status, userID, roundID, transactionType) {
-//   fetch('/api/driver-shift.php' + '?status=' + status + '&user_id=' + userID + '&id=' + roundID + '&transaction=' + transactionType, {
-//     headers: {
-//       'Accept': 'application/json',
-//       'Content-Type': 'application/json'
-//     },
-//     method: 'PATCH',
-//     body: JSON.stringify({
-//       status: status,
-//       user_id: userID,
-//       id: roundID,
-//       transaction: transactionType
-//     })
-//   })
-//     .then(response => {
-//       this.props.dataDidUpdateCallback();
-//       return response.json();
-//     })
-//     .catch(error => { throw (error); });
-// }
-
-// handleTransactionLog(event) {
-//   let text = event.currentTarget.textContent;
-//   let type = null;
-//   switch (text) {
-//     case 'Yes, I want to cancel':
-//       type = 'cancel';
-//       break;
-//     case 'Yes, I want to post':
-//       type = 'post';
-//       break;
-//   }
-//   console.log('type', type);
-//   fetch('/api/transaction.php', {
-//     headers: {
-//       'Accept': 'application/json',
-//       'Content-Type': 'application/json'
-//     },
-//     method: 'POST',
-//     body: JSON.stringify({
-//       text: this.state.textFromCommentBox,
-//       user_id: this.props.userID,
-//       bus_id: this.props.busNumber,
-//       type: type
-//     })
-//   })
-//     .then(response => {
-//       console.log('transaction', response.json());
-//     });
-// }
-
-// openModal(roundIDs) {
-//   if (!Array.isArray(roundIDs)) {
-//     roundIDs = [roundIDs];
-//   }
-//   let allShiftsToPass = [];
-//   for (var roundIndex = 0; roundIndex < roundIDs.length; roundIndex++) {
-//     let currentRound = parseInt(roundIDs[roundIndex]);
-//     let shiftsToPass = this.state.shiftsDetailsInfo.filter(shift => (parseInt(shift.roundID) === currentRound));
-//     allShiftsToPass = allShiftsToPass.concat(shiftsToPass);
-//   }
-//   this.setState({
-//     isModalOpen: true,
-//     roundID: parseInt(roundIDs),
-//     shiftsDetailsInfo: allShiftsToPass
-//   });
-// }
