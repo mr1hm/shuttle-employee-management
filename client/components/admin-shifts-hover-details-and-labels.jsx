@@ -50,6 +50,7 @@ class AdminShiftsHoverDetailsAndLabels extends React.Component {
           ID# {this.props.userId}</div>
         <div className="hoverMessage"
              style={{ display: this.state.showing ? "flex" : "none" }}>
+          <i></i>
           <div>{this.props.userName.last}, {this.props.userName.first}</div>
           <div>{this.props.shiftTime}</div>
           <div>Rounds: {this.props.rounds}</div>
