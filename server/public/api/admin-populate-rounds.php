@@ -395,7 +395,12 @@ function populateSchedule($operators, $rounds, $conn)  {
 //populate the schedule for a particular day
   $lengthOperatorsArray = count($operators);
   $lengthRoundsArray = count($rounds);
+
+  $leftovers = [];
+  $previousOperator = '';
+
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray; $roundsIndex++) {
+
    //determine the line and assign number of rounds to that line
     $lineName = $rounds[$roundsIndex]['line_name'];
 
@@ -524,6 +529,8 @@ function populateSchedule($operators, $rounds, $conn)  {
                 $operators[$operatorsIndex]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = $rounds[$roundsIndex]['round_start'];
               }
 
+              $previousOperator = $operators[$operatorsIndex];
+
             } else {
               //set the flag for the required 30 minute break after working 5 continuous hours
               $latestShiftIndex = count($operators[$operatorsIndex]['times_assigned']) - 1;
@@ -539,7 +546,21 @@ function populateSchedule($operators, $rounds, $conn)  {
         }
       }
     }
+
+    if (intval($rounds[$roundsIndex]['user_id']) === 1) {
+      array_push($leftovers, [
+        'previousOperator' => $previousOperator,
+        'followingOperator' => '',
+        'unassignedRound' => $rounds[$roundsIndex]
+      ]);
+      $previousOperator = '';
+    }
+
   }
+
+  print('<pre>');
+  print_r($leftovers);
+  print('<pre>');
 
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
@@ -559,9 +580,9 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
         if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['user_id'] === $operators[$operatorsIndex]['user_id']) {
         $operators[$operatorsIndex]['total_weekly_minutes'] = $revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['total_weekly_minutes'];
         }
-      if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['shift_restrictions']['worked_passed_10']['current_day'] === 1) {
-        $operators[$operatorsIndex]['assignment_details'][$dayOfWeek[$dayOfWeekIndex]]['shift_restrictions']['worked_passed_10']['prior_day'] = 1;
-      }
+        if ($revOperatorsSpecificDay[$revOperatorsSpecificDayIndex]['shift_restrictions']['worked_passed_10']['current_day'] === 1) {
+          $operators[$operatorsIndex]['assignment_details'][$dayOfWeek[$dayOfWeekIndex]]['shift_restrictions']['worked_passed_10']['prior_day'] = 1;
+        }
       }
     }
   }
@@ -575,13 +596,13 @@ $quarterEndTimestamp = 1576904400;
 $beginningOfWeekTimeStamp = $quarterStartTimestamp;
 
 //populate the entire quarter based on the template week
-while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
+// while ($beginningOfWeekTimeStamp < $quarterEndTimestamp ) {
   $rounds = [];
   $operators = [];
   $rounds = getRoundsData($conn, $beginningOfWeekTimeStamp);
   $operators = getOperatorsData($conn);
   populateTemplateWeek($conn, $rounds, $operators);
   $beginningOfWeekTimeStamp = strtotime('+7 days', $beginningOfWeekTimeStamp);
-}
+// }
 
 ?>
