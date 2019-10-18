@@ -1,11 +1,14 @@
 import React from "react";
-import AdminShiftsHoverDetails from './admin-shifts-hover-details';
+import AdminShiftsHoverDetailsAndLabels from './admin-shifts-hover-details-and-labels';
 import {convertMilitaryTime} from '../lib/time-functions';
 import './admin-shifts-display.css';
 
 class AdminShiftsCombinedRounds extends React.Component {
   constructor(props) {
     super(props);
+    this.shiftStartMeridian = convertMilitaryTime(this.props.shiftData.start);
+    this.shiftEndMeridian = convertMilitaryTime(this.props.shiftData.end);
+    this.shiftTimeMeridian = this.shiftStartMeridian + " - " + this.shiftEndMeridian;
     this.handleClick = this.handleClick.bind(this);
     this.state = {
       selected: this.props.selecting
@@ -23,16 +26,21 @@ class AdminShiftsCombinedRounds extends React.Component {
     this.setState( {selected: !this.state.selected} );
     console.log(this.props.shiftData, parseInt(this.props.roundId), this.props.userId);
     this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
+    this.props.onClickShifts({
+      'user_name': this.props.userName,
+      'user_id': this.props.userId,
+      'shift_time': this.shiftTimeMeridian,
+      'rounds': this.props.rounds,
+      'shift_type': this.props.type
+    });
   }
   generateShiftHoverElement() {
-    const shiftStartMeridian = convertMilitaryTime(this.props.shiftData.start);
-    const shiftEndMeridian = convertMilitaryTime(this.props.shiftData.end);
-    const shiftTimeMeridian = shiftStartMeridian + " - " + shiftEndMeridian;
     if (this.props.type === 'active') {
       return (
-        <AdminShiftsHoverDetails
+        <AdminShiftsHoverDetailsAndLabels
           userName={this.props.userName}
-          shiftTime={shiftTimeMeridian}
+          userId={this.props.userId}
+          shiftTime={this.shiftTimeMeridian}
           rounds={this.props.rounds}
         />
       );

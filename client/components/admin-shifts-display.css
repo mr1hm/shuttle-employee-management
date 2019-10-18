@@ -174,10 +174,27 @@
     height: 80px;
     margin: 5px 0;
 }
+.additional-info-container {
+  display: flex;
+}
+.adminShiftDetails {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid grey;
+}
 .hoverDetailContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
   width: 100%;
   height: 100%;
+}
+.shiftOwnerLabel {
+  display: flex;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: white;
 }
 .hoverMessage {
   flex-direction: column;
@@ -192,9 +209,10 @@
 .hoverMessage i::after {
   content:'';
   position:absolute;
-  width:15px;
-  height:15px;
+  width:12px;
+  height:12px;
   left:10%;
+  top: -1px;
   transform:translate(-50%,-50%) rotate(45deg);
   background-color: lightblue;
 }

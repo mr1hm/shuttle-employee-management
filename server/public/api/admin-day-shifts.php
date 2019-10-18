@@ -16,6 +16,7 @@ $query = "SELECT
           us.id AS user_id,
           us.last_name,
           us.first_name,
+          us.special_route_ok,
           rd.date,
           rd.status
           FROM route AS rt
