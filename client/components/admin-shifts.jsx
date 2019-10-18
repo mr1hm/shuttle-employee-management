@@ -18,6 +18,7 @@ class AdminShiftsDay extends React.Component {
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
     this.handleClickSelectShifts = this.handleClickSelectShifts.bind(this);
     this.handleClickCancel = this.handleClickCancel.bind(this);
+    this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
     const defaultDate = 1566619200;
     this.state = {
       rounds: null,
@@ -144,7 +145,8 @@ class AdminShiftsDay extends React.Component {
         this.setState({
           availableOperators: [],
           roundsSelected: [],
-          selecting: false
+          selecting: false,
+          shiftDetailsFromClick: null
         });
       })
       .catch(error => { throw (error) });
@@ -299,7 +301,8 @@ class AdminShiftsDay extends React.Component {
       selecting: false,
       availableOperators: [],
       roundsSelected: [],
-      roundTimes: []
+      roundTimes: [],
+      shiftDetailsFromClick: null
     });
   }
   showCancelButton() {
@@ -362,6 +365,29 @@ class AdminShiftsDay extends React.Component {
     if (response.shift_type === "nonOperational") return
     else this.setState({shiftDetailsFromClick: response});
   }
+  handleClickUnassignOperator(roundId){
+    console.log(event.target.id, this.state.roundsSelected);
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'user_id': 1,
+        'rounds': [roundId]
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    }
+    fetch(`/api/admin-update-shifts.php`, data)
+      .then(response => { })
+      .then(data => {
+        this.fetchCallMethod();
+        this.setState({
+          availableOperators: [],
+          roundsSelected: [],
+          selecting: false,
+          shiftDetailsFromClick: null
+        });
+      })
+      .catch(error => { throw (error) });
+  }
   generateShiftDetailsComponent() {
     if (this.state.shiftDetailsFromClick) {
       return (
@@ -370,7 +396,9 @@ class AdminShiftsDay extends React.Component {
         userId={this.state.shiftDetailsFromClick.user_id}
         shiftTime={this.state.shiftDetailsFromClick.shift_time}
         rounds={this.state.shiftDetailsFromClick.rounds}
+        roundId={this.state.shiftDetailsFromClick.round_id}
         shiftType={this.state.shiftDetailsFromClick.shift_type}
+        onClickUnassignOperator={this.handleClickUnassignOperator}
       />
       );
     }
@@ -395,7 +423,6 @@ class AdminShiftsDay extends React.Component {
             </div>
             <div className="additional-info-container container d-flex flex-column col-2 adminShiftRow">
               {this.generateShiftDetailsComponent()}
-              <div className="available-operators">available operators</div>
               {this.createAvailableOperatorElements()}
             </div>
           </div>

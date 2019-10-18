@@ -31,6 +31,7 @@ class AdminShiftsCombinedRounds extends React.Component {
       'user_id': this.props.userId,
       'shift_time': this.shiftTimeMeridian,
       'rounds': this.props.rounds,
+      'round_id': this.props.roundId,
       'shift_type': this.props.type
     });
   }
