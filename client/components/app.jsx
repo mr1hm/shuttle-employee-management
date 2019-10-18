@@ -11,6 +11,7 @@ import Welcome from './welcome/welcome';
 import Modal from './post-modal';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
+import Transaction from './transaction/transactionpage';
 import './post-modal.css';
 import TradeSwap from './trade-swap';
 

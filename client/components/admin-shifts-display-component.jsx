@@ -5,19 +5,22 @@ import './admin-shifts-display.css';
 class AdminShiftsDisplayComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      selecting: this.props.selecting
+    }
   }
-  calculateMinutesHours(startTime, endTime){
-    $startHourDigits = floor(startTime/100);
-    $startMinuteDigits = startTime/100 - startHourDigits;
-  
-    var endHourDigits = floor(endTime/100);
-    var endMinuteDigits = endTime/100 - endHourDigits;
-  
-    var startTimeInMinutes = startHourDigits*60 + startMinuteDigits*100;
-    var endTimeInMinutes = endHourDigits*60 + endMinuteDigits*100;
-  
+  calculateMinutesHours(startTime, endTime) {
+    $startHourDigits = floor(startTime / 100);
+    $startMinuteDigits = startTime / 100 - startHourDigits;
+
+    var endHourDigits = floor(endTime / 100);
+    var endMinuteDigits = endTime / 100 - endHourDigits;
+
+    var startTimeInMinutes = startHourDigits * 60 + startMinuteDigits * 100;
+    var endTimeInMinutes = endHourDigits * 60 + endMinuteDigits * 100;
+
     var shiftLengthInMinutes = endTimeInMinutes - startTimeInMinutes;
-    return round(shiftLengthInMinutes); 
+    return round(shiftLengthInMinutes);
   }
 
   render() {
@@ -28,8 +31,6 @@ class AdminShiftsDisplayComponent extends React.Component {
     const endPercent = ((shiftData.end - range.min) / rangeDistance) * 100;
     const widthPercent = endPercent - startPercent;
     const shiftsDetailsArray = this.props.children;
-    console.log('shiftDetails: ', this.props.children);
-    console.log('shift data: ', this.props.shiftData)
     return (
       <div
         className={`shift shiftBase ${this.props.type}`}
@@ -40,17 +41,32 @@ class AdminShiftsDisplayComponent extends React.Component {
           borderRight: "1px solid black"
         }}
       >
-      {shiftsDetailsArray.map((element, index) => (
-        <AdminShiftsCombinedRounds
-          // test={data.test}
-          key={index}
-          type={(element.user_id === "1" || element.user_id === 1) ? 'alertShift' : 'active'}
-          range={{ min: 600, max: 2400 }}
-          shiftData={{start: element.start_time, end: element.end_time} } 
-          widthPercent = {widthPercent}
-          startPercent = {startPercent}
-        />
-      ))}
+        {shiftsDetailsArray.map((element, index) => {
+          var roundType = "";
+          if (element.user_id === "n/a") {
+            roundType = "nonOperational";
+          } else if (element.user_id === "1" || element.user_id === 1) {
+            roundType = "alertShift";
+          } else {
+            roundType = "active";
+          }
+          return (
+            < AdminShiftsCombinedRounds
+              key={index}
+              onClickAvailableDrivers={this.props.onClickAvailableDrivers}
+              onClickShifts={this.props.onClickShifts}
+              type={roundType}
+              userId={element.user_id}
+              userName={element.user_name}
+              rounds={element.rounds}
+              roundId={element.round_id}
+              range={{ min: 600, max: 2400 }}
+              shiftData={{ start: element.start_time, end: element.end_time }}
+              widthPercent={widthPercent}
+              startPercent={startPercent}
+              selecting={this.state.selecting} />
+          );
+        })}
       </div>
     );
   }
