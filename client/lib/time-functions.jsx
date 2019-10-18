@@ -38,7 +38,7 @@ function convertUnixTime(time) { // converts unix time to date/time for example:
   const convertedDate = new Date(time);
   return convertedDate.toString();// output: "Mon Sep 16 2019 14:52:28 GMT-0700 (Pacific Daylight Time)"
 }
-function convertUnixMonthDay(time) { // This could be added to time-function.jsx  input:convertUnixMonthDay(156859200) 09/17/2019
+function convertUnixMonthDay(time) { // input:convertUnixMonthDay(156859200) 09/17/2019
   const getTheDate = new Date(time);
   const dateString = getTheDate.getFullYear() + '-' + ('0' + getTheDate.getDate()).slice(-2) +
     '-' + ('0' + (getTheDate.getMonth() + 1)).slice(-2);
@@ -214,21 +214,28 @@ function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
   return (totalHours + 'h ' + totalMinutes + 'm');
 }
 
-function createFormattedDate(unixDate) {
-  debugger;
-  console.log(createDateObjFromDateString(unixDate));
-  let date = new Date(createDateObjFromDateString(unixDate).getTime());// converts unix time to date/at midnight
-  const daysArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const monthsArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function createDateObject(unix) {
+  const dates = {
+    months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  };
+
+  const timestamp = unix * 1000;
+  const date = new Date(timestamp);
+  const weekday = dates.weekdays[date.getDay()];
+  const month = dates.months[date.getMonth()];
   const year = date.getFullYear();
-  const month = monthsArray[date.getMonth()];
-  const calendarDate = date.getDate();
-  const day = daysArray[date.getDay()];
-  const fullDate = day + ', ' + month + ' ' + calendarDate + ', ' + year;
-  return fullDate;
+  const day = date.getDate();
+
+  return {
+    day,
+    month,
+    year,
+    weekday
+  };
 }
 
-export { createFormattedDate, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
   createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };

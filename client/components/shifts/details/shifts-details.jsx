@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { convertMilitaryTime, createFormattedDate } from '../../../lib/time-functions';
+import { convertMilitaryTime, createDateObject } from '../../../lib/time-functions';
 import RouteBusDisplay from '../../route-bus-display';
 
 class ShiftsDetails extends React.Component {
@@ -73,21 +73,20 @@ class ShiftsDetails extends React.Component {
               <input id={shift.roundID} className="form-check-input" type="checkbox" onChange={this.handleChange}/>
             </div>
           </td>
-          <td>{shift.start_time}</td>
-          <td>{shift.end_time}</td>
+          <td>{convertMilitaryTime(shift.start_time)}</td>
+          <td>{convertMilitaryTime(shift.end_time)}</td>
         </tr>
       );
     });
     const { start_time, end_time, date } = this.state.shiftOverview;
-    console.log(createFormattedDate(date));
-    const dateStr = `${regularDate.getDay()}, ${regularDate.getMonth()} ${regularDate.getDay()}, ${regularDate.getFullYear()}`;
+    const dateObj = createDateObject(date);
     const timeDisplay = (
       <>
       <div>
         {`${convertMilitaryTime(start_time)} - ${convertMilitaryTime(end_time)}`}
       </div>
       <div>
-        {`${dateStr}`}
+        {`${dateObj.weekday}, ${dateObj.month} ${dateObj.day}, ${dateObj.year}`}
       </div>
       </>
     );
@@ -98,7 +97,7 @@ class ShiftsDetails extends React.Component {
             <h1>Shift Details</h1>
           </div>
         </div>
-        <div className="row mb-2">
+        <div className="row align-items-center mb-2">
           <div className="col-1">
             <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.bus_info_id}/>
           </div>
