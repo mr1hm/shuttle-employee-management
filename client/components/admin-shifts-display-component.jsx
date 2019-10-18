@@ -52,7 +52,7 @@ class AdminShiftsDisplayComponent extends React.Component {
           }
           return (
             < AdminShiftsCombinedRounds
-              key={element.round_id}
+              key={index}
               onClickAvailableDrivers={this.props.onClickAvailableDrivers}
               type={roundType}
               userId={element.user_id}

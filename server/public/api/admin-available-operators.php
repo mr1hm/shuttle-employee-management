@@ -19,6 +19,10 @@ for ($round_index = 0; $round_index < count($round_times); $round_index++){
   $round_times[$round_index]['start_time'] = (int)$round_times[$round_index]['start_time'];
   $round_times[$round_index]['stop_time'] = (int)$round_times[$round_index]['stop_time'];
 }
+if(!checkIfTimesOverlap($round_times)){
+  print(json_encode([]));
+  exit;
+}
 $query = "SELECT
           rd.id AS round_id,
           rt.line_name,
@@ -78,7 +82,26 @@ foreach($data as &$date){
     $id['total_hours'] = $total_hours;
   }
 }
-
+// check if times overlap, return true if they don't, return true if they do
+function checkIfTimesOverlap($times){
+  $noOverlap = true;
+  for($time_index1 = 0; $time_index1 < count($times); $time_index1++){
+    for($time_index2 = 0; $time_index2 < count($times); $time_index2++){
+      if ($time_index1 !== $time_index2){
+        if (($times[$time_index1]['start_time'] < $times[$time_index2]['start_time']  && !($times[$time_index1]['stop_time'] <= $times[$time_index2]['start_time'])) ||
+            ($times[$time_index1]['start_time'] > $times[$time_index2]['start_time']  && !($times[$time_index1]['start_time'] >= $times[$time_index2]['stop_time'])) ||
+            ($times[$time_index1]['start_time'] == $times[$time_index2]['start_time']) || ($times[$time_index1]['stop_time'] ==  $times[$time_index2]['stop_time'])){
+          $noOverlap = false;
+          break;
+        }
+      }
+    }
+    if(!$noOverlap){
+      break;
+    }
+  }
+  return $noOverlap;
+}
 // return an array of operators according to the hours scheduled for that day
 // lowest hours first, highest hours last
 function operatorsOrderedByDailyHours($operators){
