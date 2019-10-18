@@ -380,7 +380,7 @@ class AdminShiftsDay extends React.Component {
       return (
         <div>
           <TopMenuShift title="Admin" page='day' date={this.state.dateToPass} />
-          <div className="main-container d-flex h-100">
+          <div className="main-container d-flex px-5 h-100">
             <div className="auto-populate-bus-line-container container d-flex flex-column justify-content-center col-1 p-0 mx-2">
               <div className="lineHeaderContainer d-flex justify-content-center align-items-end adminShiftRow">
                 <h4 className="lineHeader m-0">Lines</h4>
@@ -393,7 +393,7 @@ class AdminShiftsDay extends React.Component {
               </div>
               {this.renderShiftComponents()}
             </div>
-            <div className="additional-info-container container d-flex flex-column col-3 adminShiftRow">
+            <div className="additional-info-container container d-flex flex-column col-2 adminShiftRow">
               {this.generateShiftDetailsComponent()}
               <div className="available-operators">available operators</div>
               {this.createAvailableOperatorElements()}
