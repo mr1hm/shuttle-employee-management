@@ -10,6 +10,9 @@ class AdminShiftsCombinedRounds extends React.Component {
     this.shiftEndMeridian = convertMilitaryTime(this.props.shiftData.end);
     this.shiftTimeMeridian = this.shiftStartMeridian + " - " + this.shiftEndMeridian;
     this.handleClick = this.handleClick.bind(this);
+    this.state = {
+      selected: this.props.selecting
+    }
   }
   timeInMinutesFromMidnight(time){
     let hoursToMinutes = Math.floor(time / 100) * 60;
@@ -17,7 +20,12 @@ class AdminShiftsCombinedRounds extends React.Component {
     return hoursToMinutes + minutesFromTime;
   }
   handleClick(){
-    this.props.onClickAvailableDrivers(this.props.shiftData.start, this.props.shiftData.end);
+    if(!this.props.selecting){
+      return;
+    }
+    this.setState( {selected: !this.state.selected} );
+    console.log(this.props.shiftData, parseInt(this.props.roundId), this.props.userId);
+    this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
     this.props.onClickShifts({
       'user_name': this.props.userName,
       'user_id': this.props.userId,
@@ -38,6 +46,11 @@ class AdminShiftsCombinedRounds extends React.Component {
       );
     } else return <div></div>
   }
+  componentDidUpdate(prevProps){
+    if(this.props.selecting !== prevProps.selecting){
+      this.setState({ selected: this.props.selected });
+    }
+  }
   render() {
     const rangeMax = this.timeInMinutesFromMidnight(this.props.range.max);
     const rangeMin = this.timeInMinutesFromMidnight(this.props.range.min);
@@ -50,7 +63,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     return (
       <div
         onClick={this.handleClick}
-        className={`shift shiftBase ${this.props.type}`}
+        className={`shift shiftBase h-100 ${this.props.type} ${this.state.selected ? "shiftSelected": ""}`}
         style={{
           width: widthPercent + "%",
           left: startPercent + "%",
@@ -59,7 +72,7 @@ class AdminShiftsCombinedRounds extends React.Component {
         }}>
           {this.generateShiftHoverElement()}
         </div>
-    );      
+    );
   }
 }
 

@@ -19,6 +19,10 @@ for ($round_index = 0; $round_index < count($round_times); $round_index++){
   $round_times[$round_index]['start_time'] = (int)$round_times[$round_index]['start_time'];
   $round_times[$round_index]['stop_time'] = (int)$round_times[$round_index]['stop_time'];
 }
+if(!checkIfTimesOverlap($round_times)){
+  print(json_encode([]));
+  exit;
+}
 $query = "SELECT
           rd.id AS round_id,
           rt.line_name,
@@ -78,7 +82,26 @@ foreach($data as &$date){
     $id['total_hours'] = $total_hours;
   }
 }
-
+// check if times overlap, return true if they don't, return true if they do
+function checkIfTimesOverlap($times){
+  $noOverlap = true;
+  for($time_index1 = 0; $time_index1 < count($times); $time_index1++){
+    for($time_index2 = 0; $time_index2 < count($times); $time_index2++){
+      if ($time_index1 !== $time_index2){
+        if (($times[$time_index1]['start_time'] < $times[$time_index2]['start_time']  && !($times[$time_index1]['stop_time'] <= $times[$time_index2]['start_time'])) ||
+            ($times[$time_index1]['start_time'] > $times[$time_index2]['start_time']  && !($times[$time_index1]['start_time'] >= $times[$time_index2]['stop_time'])) ||
+            ($times[$time_index1]['start_time'] == $times[$time_index2]['start_time']) || ($times[$time_index1]['stop_time'] ==  $times[$time_index2]['stop_time'])){
+          $noOverlap = false;
+          break;
+        }
+      }
+    }
+    if(!$noOverlap){
+      break;
+    }
+  }
+  return $noOverlap;
+}
 // return an array of operators according to the hours scheduled for that day
 // lowest hours first, highest hours last
 function operatorsOrderedByDailyHours($operators){
@@ -151,12 +174,13 @@ function operatorsUnderMaxConsecutiveHours($operators, $times){
     $consecutive_hours = calculateTotalHours([$previous_shift]);
     for ($shift_index = 1; $shift_index < count($operator_shifts); $shift_index++){
       $current_shift = $operator_shifts[$shift_index];
-      if($consecutive_hours === 5){
+      //print($consecutive_hours. ' ');
+      if($consecutive_hours > 4.99 && $consecutive_hours <= 5 && $previous_shift['stop_time'] !== $current_shift['start_time']){
         $time = [
           'start_time' => $previous_shift['stop_time'],
           'stop_time' => $current_shift['start_time']
         ];
-        $hours_between_shift = calculateTotalHours([time]);
+        $hours_between_shift = calculateTotalHours([$time]);
         if($hours_between_shift < .5){
           $operator_available = false;
           break;
@@ -238,6 +262,10 @@ function operatorsAvailableForShift($operators, $times){
             $operator_available = false;
             break;
           }
+          if (($times[$times_index]['stop_time']) > 2100 && (int)$line[$line_index]['start_time'] < 800){
+            $operator_available = false;
+            break;
+          }
         }
         if(!$operator_available){
           break;
@@ -260,13 +288,13 @@ function calculateTotalHours($times){
     $round_hours = $round_minutes / 60;
     $total_hours += $round_hours;
   }
-  return round($total_hours, 1);
+  return round($total_hours, 5);
 }
 // returns minutes since midnight from military time
 function convert24hrTimeToMinutes($time){
   $hours = floor($time / 100);
-  $minutes = $time - $hours * 100;
-  return $minutes + $hours * 60;
+  $minutes = $time - ($hours * 100);
+  return $minutes + ($hours * 60);
 }
 
 $round_time_total_hours = calculateTotalHours($round_times);

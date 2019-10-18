@@ -5,6 +5,9 @@ import './admin-shifts-display.css';
 class AdminShiftsDisplayComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      selecting: this.props.selecting
+    }
   }
   calculateMinutesHours(startTime, endTime) {
     $startHourDigits = floor(startTime / 100);
@@ -56,10 +59,12 @@ class AdminShiftsDisplayComponent extends React.Component {
               userId={element.user_id}
               userName={element.user_name}
               rounds={element.rounds}
+              roundId={element.round_id}
               range={{ min: 600, max: 2400 }}
               shiftData={{ start: element.start_time, end: element.end_time }}
               widthPercent={widthPercent}
-              startPercent={startPercent} />
+              startPercent={startPercent}
+              selecting={this.state.selecting} />
           );
         })}
       </div>

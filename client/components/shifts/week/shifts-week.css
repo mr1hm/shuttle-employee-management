@@ -119,14 +119,14 @@
 .shiftWeekIndividualDayLink {
   color: black;
 }
-.shiftRowContainer {
+/* .shiftRowContainer {
     /* left: 17%; */
     /* text-align: center; */
     /* display: inline-block; */
-    position: relative;
+    /* position: relative;
     border: 1px solid black;
-    margin-top: 10px;
-}
+    margin-top: 10px; */
+/* } */
 .dayRowFill {
     background-color: rgb(255, 255, 255);
     height: 100%;
@@ -174,11 +174,7 @@
     width: 100%;
     font-size: 14px;
 }
-.shift{
-    width: 10%;
-    height: 100%;
-    position: absolute;
-}
+
 .scheduled {
     background-color: rgb(2, 2, 66);
 }
