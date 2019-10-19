@@ -43,7 +43,7 @@ $query = "SELECT
   $busNumber = $_POST['bus_number'];
   $startTime = $_POST['start_time'];
   $endTime = $_POST['end_time'];
-  $idRoute = 2;
+  $idRoute = 5;
   $vehicleID = 1;
   $openingDuration = $_POST['opening_duration'];
   $closingDuration = $_POST['closing_duration'];
@@ -57,21 +57,26 @@ if (!$result) {
   throw new Exception('mysql error ' . mysqli_error($conn));
 }
 
-
 $data = [];
 while($row = mysqli_fetch_assoc($result)){
+    $busInfo = NULL;
     $routeId = $row['real_route_id'];
     //var_dump($row['bus_number']);
-    if($row['bus_number']!==NULL){
+
+    if($row['bus_number'] !== NULL){
         $busInfo = [];
         $busInfo['busNumber'] = $row['bus_number'];
         $busInfo['startTime'] = $row['start_time'];
-        $busInfo['endTime'] = $row['end_time']; //I added the data
+        $busInfo['endTime'] = $row['end_time'];
+        $busInfo['openingDuration'] = $row['opening_duration'];
+        $busInfo['closingDuration'] = $row['closing_duration']; //I added the data
     }
 
     unset($row['bus_number']); //so I don't need it here anymore
     unset($row['start_time']);
     unset($row['end_time']);
+    unset($row['opening_duration']);
+    unset($row['closing_duration']);
     if(!isset($data[$routeId])){
       if(isset($busInfo)){
         $row['activeBuses'] = [ $busInfo ];

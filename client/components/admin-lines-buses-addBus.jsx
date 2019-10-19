@@ -36,7 +36,7 @@ export default class AddBus extends React.Component {
 
         </div>
 
-        <div id={`collapseAddBus${this.props.accordionID}`} className="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+        <div id={`collapseAddBus${this.props.accordionID}`} className="collapse">
           <div className="card-body">
             <form method="POST" action="/api/admin-lines-buses.php">
               <div className="row">
