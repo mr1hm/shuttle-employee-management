@@ -56,7 +56,7 @@ export default class Lines extends React.Component{
                   <RouteBusDisplay route={line.line_name} />
                 </div>
                 <div className="col">
-                  <FontAwesomeIcon className="onlineIcon" icon={faCircle} />
+                  {line.status === 'active' ? <FontAwesomeIcon className="activeIcon" icon={faCircle} /> : <FontAwesomeIcon className="inactiveIcon" icon={faCircle} />}
                   {line.status}
                 </div>
                 <div className="col">45min</div>

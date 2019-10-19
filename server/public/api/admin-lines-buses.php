@@ -9,37 +9,46 @@ if ($method === 'GET'){
 
 $query = "SELECT
               bi.`bus_number`,
-              rt.`id` AS 'route_id',
+              rt.`id` AS 'real_route_id',
               bi.`start_time`,
               bi.`end_time`,
               rt.`line_name`,
               rt.`status`,
-              rt.`opening_duration`,
-              rt.`closing_duration`,
+              bi.`opening_duration`,
+              bi.`closing_duration`,
               rt.`public`,
-              rt.`regularService`,
-              IF (rt.`public` = 1, 'True', 'False') as public,
-              IF (rt.`regularService` = 1, 'True', 'False') as regularService
+              rt.`regularService`
+              -- IF (rt.`public` = 1, 'True', 'False') as public,
+              -- IF (rt.`regularService` = 1, 'True', 'False') as regularService
               FROM
               `route` AS rt
               LEFT JOIN
               `bus_info` AS bi
               ON
               bi.`route_id` = rt.`id`
-            WHERE  rt. `status` = 'active'
+            -- WHERE  rt. `status` = 'inactive'
             ORDER BY line_name";
 
 
-} else if ($method === 'POST') { // change condition to better fit add bus method.
+} else if ($method === 'POST' && (isset($_POST['line_name']))) { // change condition to better fit add bus method.
 
     $line_name = $_POST['line_name'];
     $status = $_POST['active'];
     $public = $_POST['public'];
     $regularService = $_POST['regular_service'];
-    $opening_duration = 30;
-    $closing_duration = 20;
     $query = "INSERT INTO `route` (`status`, `line_name`, `opening_duration`, `closing_duration`, `public`, `regularService`)
-  values ('$status', '$line_name', '$opening_duration', '$closing_duration', '$public', '$regularService') ";
+              VALUES ('$status', '$line_name', '$public', '$regularService')";
+
+} else if ($method === 'POST' && (isset($_POST['bus_number']))) {
+  $busNumber = $_POST['bus_number'];
+  $startTime = $_POST['start_time'];
+  $endTime = $_POST['end_time'];
+  $idRoute = 2;
+  $vehicleID = 1;
+  $openingDuration = $_POST['opening_duration'];
+  $closingDuration = $_POST['closing_duration'];
+  $query = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `end_time`, `route_id`, `vehicle_id`, `opening_duration`, `closing_duration`)
+            VALUES ('$busNumber', '$startTime', '$endTime', '$idRoute', '$vehicleID', '$openingDuration', '$closingDuration')";
 
 }
 
@@ -51,7 +60,7 @@ if (!$result) {
 
 $data = [];
 while($row = mysqli_fetch_assoc($result)){
-    $routeId = $row['route_id'];
+    $routeId = $row['real_route_id'];
     //var_dump($row['bus_number']);
     if($row['bus_number']!==NULL){
         $busInfo = [];
