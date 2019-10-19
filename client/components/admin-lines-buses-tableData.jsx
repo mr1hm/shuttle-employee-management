@@ -52,7 +52,10 @@ export default class BusesTable extends React.Component {
     return (
       <tbody>
         <tr>
-          <td className="busNumber" rowSpan="3"><RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay></td>
+          <td className="busNumber" rowSpan="3">
+            <RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay>
+            <p>Bus ID: 1</p>
+          </td>
           <td>{busInfo.startTime}</td>
           <td>{busInfo.endTime}</td>
           {/* <td>24 Rds</td> */}

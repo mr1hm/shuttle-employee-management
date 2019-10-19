@@ -44,12 +44,12 @@ export default class AddBus extends React.Component {
                 <div className="col-2">
                   <label>Bus Number</label>
                   <br />
-                  <input onChange={this.handleChange} className="col border border-primary" type="text" name="busNumber"></input>
+                  <input onChange={this.handleChange} className="col border border-primary" type="text" name="bus_number"></input>
                 </div>
                 <div className="col">
                   <label>Start Time</label>
                   {/* <input className="col border border-primary" type="text" name="active"></input> */}
-                  <select onChange={this.handleChange} className="col border border-primary" type="text" name="startTime">
+                  <select onChange={this.handleChange} className="col border border-primary" type="text" name="start_time">
                     <option>0600</option>
                     <option>0600</option>
                     <option>0600</option>
@@ -60,7 +60,7 @@ export default class AddBus extends React.Component {
                 <div className="col">
                   <label>End Time</label>
                   {/* <input className="col border border-primary" type="text" name="public"></input> */}
-                  <select onChange={this.handleChange} className="col border border-primary" type="text" name="endTime">
+                  <select onChange={this.handleChange} className="col border border-primary" type="text" name="end_time">
                     <option>2400</option>
                     <option>2400</option>
                     <option>2400</option>
@@ -122,12 +122,12 @@ export default class AddBus extends React.Component {
                 <div className="col">
                   <label>Open Length</label>
                   <br />
-                  <input onChange={this.handleChange} name="openDur" className="col border border-primary" type="text" placeholder="Duration"></input>
+                  <input onChange={this.handleChange} name="opening_duration" className="col border border-primary" type="text" placeholder="Duration"></input>
                 </div>
                 <div className="col">
                   <label>Close Length</label>
                   <br />
-                  <input onChange={this.handleChange} name="closeDur" type="text" className="col border border-primary" placeholder="Duration"></input>
+                  <input onChange={this.handleChange} name="closing_duration" type="text" className="col border border-primary" placeholder="Duration"></input>
                 </div>
                 <div className="col">
                   <label>Duration</label>

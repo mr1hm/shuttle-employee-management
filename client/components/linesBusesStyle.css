@@ -21,10 +21,12 @@
   color: green;
 }
 
-.busActiveIcon {
+.busActiveIcon,
+.activeIcon {
   color: green;
 }
 
-.busInactiveIcon {
+.busInactiveIcon,
+.inactiveIcon {
   color: red;
 }
