@@ -398,6 +398,7 @@ function populateSchedule($operators, $rounds, $conn)  {
 
   $leftovers = [];
   $previousOperator = '';
+  $followingOperator = '';
 
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray; $roundsIndex++) {
 
@@ -528,9 +529,6 @@ function populateSchedule($operators, $rounds, $conn)  {
               if (intval($rounds[$roundsIndex]['round_start']) < 800) {
                 $operators[$operatorsIndex]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = $rounds[$roundsIndex]['round_start'];
               }
-
-              $previousOperator = $operators[$operatorsIndex];
-
             } else {
               //set the flag for the required 30 minute break after working 5 continuous hours
               $latestShiftIndex = count($operators[$operatorsIndex]['times_assigned']) - 1;
@@ -541,6 +539,7 @@ function populateSchedule($operators, $rounds, $conn)  {
             }
           }
           if ($madeAssignment) {
+            $previousOperator = $operators[$operatorsIndex];
             break;
           }
         }
@@ -570,7 +569,7 @@ function populateSchedule($operators, $rounds, $conn)  {
 //populate the first week
 function populateTemplateWeek ($conn, $rounds, $operators) {
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 7; $dayOfWeekIndex++) {
+  for ($dayOfWeekIndex = 0; $dayOfWeekIndex < 1; $dayOfWeekIndex++) {
     $specificDayOfWeek = $dayOfWeek[$dayOfWeekIndex];
     $roundsForDay = buildRoundsByDay($rounds, $specificDayOfWeek);
     $operatorsForDay = buildOperatorsByDay($operators, $specificDayOfWeek);
