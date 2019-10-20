@@ -103,11 +103,7 @@
 .shiftWeekIndividualDayLink {
   color: black;
 }
-/* .shiftRowContainer {
-    position: relative;
-    border: 1px solid black;
-    margin-top: 10px;
-} */
+
 .dayRowFill {
     background-color: rgb(255, 255, 255);
     height: 100%;
@@ -174,6 +170,16 @@
     height: 80px;
     margin: 5px 0;
 }
+.adminShiftRows, .adminHoursRow {
+    height: 80px;
+    width: 1802px;
+    background: repeating-linear-gradient(
+        90deg,
+        lightgray,
+        lightgray 1px,
+        transparent 1px,
+        transparent 100px);
+}
 .additional-info-container {
   display: flex;
 }
@@ -222,4 +228,20 @@
 }
 .shiftSelected{
     filter: contrast(.5);
+}
+.tableCell{
+    height: 80px;
+    width: 100px;
+}
+.hours-populated-shifts-container{
+    overflow-x: scroll;
+}
+.adminLineRow{
+    height: 80px;
+}
+.adminLineHeader{
+    height: 30px;
+}
+.adminHoursRow{
+    height: 30px;
 }
