@@ -8,7 +8,6 @@ class HamburgerMenu extends React.Component {
     this.state = {
       open: false
     };
-    this.linksRef = React.createRef();
     this.toggleOpen = this.toggleOpen.bind(this);
   }
   toggleOpen() {
@@ -23,7 +22,7 @@ class HamburgerMenu extends React.Component {
         <div className="dropdown-icon" onClick={this.toggleOpen}>
           <FontAwesomeIcon icon={faBars} />
         </div>
-        <div ref={this.linksRef} className={`dropdown-options ${visibleClass}`}>
+        <div className={`dropdown-options ${visibleClass}`}>
           <div className="close-icon" onClick={this.toggleOpen}>
             <FontAwesomeIcon icon={faTimes}/>
           </div>
