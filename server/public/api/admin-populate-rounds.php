@@ -397,8 +397,6 @@ function populateSchedule($operators, $rounds, $conn)  {
   $lengthRoundsArray = count($rounds);
 
   $leftovers = [];
-  $previousOperator = '';
-  $followingOperator = '';
 
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray; $roundsIndex++) {
 
@@ -407,6 +405,13 @@ function populateSchedule($operators, $rounds, $conn)  {
 
     $numberRounds = determineNumberRoundsInShift($lineName);
     if($roundsIndex >= $lengthRoundsArray - 1 - $numberRounds) {
+      for ($leftoverRounds = $roundsIndex; $leftoverRounds < $lengthRoundsArray; ++$leftoverRounds) {
+        array_push($leftovers, [
+          'previousOperator' => '',
+          'followingOperator' => '',
+          'unassignedRound' => $rounds[$leftoverRounds]
+        ]);
+      }
       break;
     }
 
@@ -529,6 +534,7 @@ function populateSchedule($operators, $rounds, $conn)  {
               if (intval($rounds[$roundsIndex]['round_start']) < 800) {
                 $operators[$operatorsIndex]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = $rounds[$roundsIndex]['round_start'];
               }
+
             } else {
               //set the flag for the required 30 minute break after working 5 continuous hours
               $latestShiftIndex = count($operators[$operatorsIndex]['times_assigned']) - 1;
@@ -539,7 +545,6 @@ function populateSchedule($operators, $rounds, $conn)  {
             }
           }
           if ($madeAssignment) {
-            $previousOperator = $operators[$operatorsIndex];
             break;
           }
         }
@@ -548,14 +553,14 @@ function populateSchedule($operators, $rounds, $conn)  {
 
     if (intval($rounds[$roundsIndex]['user_id']) === 1) {
       array_push($leftovers, [
-        'previousOperator' => $previousOperator,
+        'previousOperator' => '',
         'followingOperator' => '',
         'unassignedRound' => $rounds[$roundsIndex]
       ]);
-      $previousOperator = '';
     }
 
   }
+
 
   print('<pre>');
   print_r($leftovers);
