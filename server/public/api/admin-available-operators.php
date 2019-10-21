@@ -242,6 +242,7 @@ function operatorsUnderMaxWeeklyHours($operators, $data, $round_time_total_hours
       }
     }
     if ($weekly_total_hours <= $max_weekly_hours) {
+      $operators[$id]['weeklyHours'] = $weekly_total_hours;
       $operators_under_weekly_max[$id] = $operators[$id];
     }
   }

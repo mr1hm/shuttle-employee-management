@@ -25,13 +25,12 @@ class AdminClickedShiftDetailsAside extends React.Component {
       shiftStatus = 'Scheduled';
     } else shiftStatus = 'Unscheduled';
     return (
-      <div className="adminShiftDetails">
-        <h5>Shift Details</h5>
-        <div>Scheduled Driver: {displayName}</div>
+      <div className="adminShiftDetails d-flex flex-column border-bottom p-1">
+        <div>Operator: {displayName}</div>
         <div>ID#: {this.props.userId}</div>
-        <div>Shift Time: {this.props.shiftTime}</div>
+        <div>Time: {this.props.shiftTime}</div>
         <div>Rounds: {this.props.rounds}</div>
-        <div>Shift Status: {shiftStatus}</div>
+        <div>Status: {shiftStatus}</div>
         {this.generateConditionalElement()}
       </div>
     );

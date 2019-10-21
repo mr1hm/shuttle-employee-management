@@ -13,12 +13,13 @@ class AdminAvailableOperatorsDisplay extends React.Component {
       <div
         key={this.props.id}
         id={this.props.id}
-        className="availableOperator rounded border d-flex justify-content-center align-items-center"
+        className="availableOperator rounded border d-flex flex-column align-items-center p-1"
         onClick={this.props.onClickAssignShift} >
-        {this.props.name}
+        <div>{this.props.name}</div>
+        <div>{`Total daily hours: ${this.props.dailyHours}`}</div>
+        <div>{`Total weekly hours: ${this.props.weeklyHours}`}</div>
       </div>
     );
-
   }
 }
 

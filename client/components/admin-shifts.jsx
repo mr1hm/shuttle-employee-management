@@ -15,7 +15,7 @@ class AdminShiftsDay extends React.Component {
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
-    this.handleClickSelectShifts = this.handleClickSelectShifts.bind(this);
+    this.handleClickAssignShifts = this.handleClickAssignShifts.bind(this);
     this.handleClickCancel = this.handleClickCancel.bind(this);
     this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
     const defaultDate = 1566619200;
@@ -267,8 +267,11 @@ class AdminShiftsDay extends React.Component {
     console.log('groupedShifts: ', groupedShifts);
     this.setState({ groupedShifts: groupedShifts });
   }
-  handleClickSelectShifts() {
+  handleClickAssignShifts() {
     this.setState({ selecting: true });
+  }
+  handleClickUnassignShifts() {
+
   }
   handleClickCancel() {
     this.setState({
@@ -285,7 +288,7 @@ class AdminShiftsDay extends React.Component {
     }
   }
   handleShiftClick(response) {
-    if (response.shift_type === 'nonOperational') return;
+    if (response.shift_type === 'nonOperational') ;
     else this.setState({ shiftDetailsFromClick: response });
   }
   handleClickUnassignOperator(roundId) {
@@ -316,7 +319,7 @@ class AdminShiftsDay extends React.Component {
     const elements = [];
     shiftsGroupedByLine.forEach((element, index) => {
       elements.push(
-        <div key={index} className="bus-line adminLineRow d-flex justify-content-center">
+        <div key={index} className="bus-line adminLineRow d-flex justify-content-center border w-100">
           < RouteBusDisplay
             bus={element[1]} // bus number
             route={element[0]} // line letter
@@ -361,7 +364,7 @@ class AdminShiftsDay extends React.Component {
     }
     return elements;
   }
-  generateShiftDetailsComponent() {
+  renderShiftDetailsComponent() {
     if (this.state.shiftDetailsFromClick) {
       return (
         <AdminClickedShiftDetailsAside
@@ -382,16 +385,20 @@ class AdminShiftsDay extends React.Component {
         <AdminAvailableOperatorsDisplay
           key={operator.id}
           id={operator.id}
-          onClickAssignShift={this.handleClickAssignShift}
           name={`${operator.lastName}, ${operator.firstName}`}
+          dailyHours={operator.totalHours}
+          weeklyHours={operator.weeklyHours}
+          onClickAssignShift={this.handleClickAssignShift}
         />
       );
     });
     if (availableOperatorsElements.length) {
       return (
         <React.Fragment>
-          <div className="available-operators">Available Operators</div>
-          {availableOperatorsElements}
+          <div className="availableOperatorsHeader">Available Operators</div>
+          <div className="availableOperatorsContainer d-flex">
+            {availableOperatorsElements}
+          </div>
         </React.Fragment>
       );
     }
@@ -511,29 +518,35 @@ class AdminShiftsDay extends React.Component {
     return (
       <div>
         <TopMenuShift title="Admin" page='day' date={this.state.dateToPass} />
+        <div className="selectShiftsButtonContainer d-flex px-5">
+          <button className="btn btn-primary m-2" onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
+          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickAssignShifts}>Select Shifts to Assign</button>
+          {this.showCancelButton()}
+          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickUnassignShifts}>Select Shifts to Un-assign</button>
+        </div>
         <div className="main-container d-flex px-5 h-100">
-          <div className="auto-populate-bus-line-container container d-flex flex-column justify-content-center p-0 mx-2">
-            <div className="adminLineHeader lineHeaderContainer d-flex justify-content-center align-items-end">
-              <h4 className="lineHeader m-0">Lines</h4>
+          <div className="bus-line-container container d-flex flex-column align-items-center p-0">
+            <div className="adminLineHeader lineHeaderContainer d-flex justify-content-center align-items-end border w-100">
+              <h5 className="m-0">Lines</h5>
             </div>
             {this.renderLineComponents()}
           </div>
-          <div className="hours-populated-shifts-container container d-flex flex-column col-9 mx-2 p-0">
-            <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border rounded">
+          <div className="hours-populated-shifts-container container d-flex flex-column col-9 p-0">
+            <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border">
               <HoursOfOperation />
             </div>
             {this.renderShiftComponents()}
           </div>
-          <div className="additional-info-container container d-flex flex-column col-2 adminShiftRow">
-            {this.generateShiftDetailsComponent()}
-            {this.renderAvailableOperatorElements()}
+          <div className="additional-info-container d-flex flex-column col-2 align-self-stretch p-0 m-0">
+            <div className="shiftDetailsHeader d-flex border justify-content-center align-items-end w-100">
+              <h5 className="m-0">Shift details</h5>
+            </div>
+            <div className="shiftDetailsContainer d-flex flex-column flex-fill border w-100">
+              {this.renderShiftDetailsComponent()}
+            </div>
           </div>
         </div>
-        <div className="selectShiftsButtonContainer">
-          <button className="btn btn-primary m-2" onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
-          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickSelectShifts}>Select Shifts to Assign</button>
-          {this.showCancelButton()}
-        </div>
+        {this.renderAvailableOperatorElements()}
       </div>
     );
   }
