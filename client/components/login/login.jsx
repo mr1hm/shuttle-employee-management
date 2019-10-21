@@ -48,7 +48,7 @@ class Login extends React.Component {
       <>
         <TopMenuGeneral title="LOGIN" />
         <div className="container mt-5 d-flex justify-content-center">
-          <form className="w-50" encType="multipart/form-data" onSubmit={(event => this.checkLoginInfo(event))}>
+          <form className="w-50" encType="multipart/form-data" onSubmit={this.checkLoginInfo}>
             <div className="form-group">
               <div className="row">
                 <div className="col">
