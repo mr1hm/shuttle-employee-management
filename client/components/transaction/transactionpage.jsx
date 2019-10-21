@@ -6,7 +6,6 @@ import { convertUnixMonthDay } from '../../lib/time-functions';
 class Transaction extends React.Component {
   constructor(props) {
     super(props);
-    console.log("tran", this.props);
     this.state = {
       userName:[],
       editButton: false,
