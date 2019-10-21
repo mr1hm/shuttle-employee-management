@@ -14,6 +14,7 @@ import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
 import './post-modal.css';
 import TradeSwap from './trade-swap';
+import TradeNotification from './trade-notification';
 
 class App extends React.Component {
   constructor(props) {
@@ -62,6 +63,7 @@ class App extends React.Component {
             <Route path="/shifts/details/" render={props => <ShiftsDetails userId={this.state.userId} date={this.state.date} shiftId={this.state.shiftId} queryString={this.state.queryString} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
             <Route path="/admin-day/" render={props => <AdminShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/trade-swap/" render={props => <TradeSwap {...props} shiftDetails={this.state.shiftDetails} />} />
+            <Route path="/trade-notification/" render={props => <TradeNotification {...props} shiftDetails={this.state.shiftDetails} />} />
           </Switch>
         </React.Fragment>
       );

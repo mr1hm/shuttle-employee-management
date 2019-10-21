@@ -1,21 +1,27 @@
-// import React from 'react';
+import React from 'react';
 
-// class TradeNotification extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
+class TradeNotification extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      newShifts: '',
+      selectedDriver: ''
+    };
+  }
+  componentDidMount() {
+    debugger;
+    const newShiftsAndSelectedDriver = this.props.location.state;
 
-//     };
-//   }
-//   render() {
-//     return (
-//       <div className="container">
-//         <div className="row">
+  }
+  render() {
+    return (
+      <div className="container">
+        <div className="row">
 
-//         </div>
-//       </div>
-//     );
-//   }
-// }
+        </div>
+      </div>
+    );
+  }
+}
 
-// export default TradeNotification;
+export default TradeNotification;

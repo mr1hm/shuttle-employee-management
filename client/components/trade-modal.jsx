@@ -13,26 +13,27 @@ class TradeModal extends React.Component {
     this.giveShifttoSelectedDriver = this.giveShifttoSelectedDriver.bind(this);
   }
   giveShifttoSelectedDriver() {
-    let arrayOfRoundIds = [];
-    for (let integerI = 0; integerI < this.props.allShifts.length; integerI++) {
-      arrayOfRoundIds.push(this.props.allShifts[integerI].roundID);
-    }
-    const selectedDriverToTradeWith = {
-      user_id: this.props.allShifts[0].user_id,
-      target_id: this.props.selectedDriver.user_id,
-      user_round: arrayOfRoundIds
-    };
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    fetch('/api/make-shift-trade.php', {
-      method: 'POST',
-      body: JSON.stringify(selectedDriverToTradeWith),
-      headers: headers
-    })
-      .then(response => response.json())
-      .then(data => {
-      })
-      .catch(error => console.error('Fetch failed', error));
+    console.log('Hi');
+    // let arrayOfRoundIds = [];
+    // for (let integerI = 0; integerI < this.props.allShifts.length; integerI++) {
+    //   arrayOfRoundIds.push(this.props.allShifts[integerI].roundID);
+    // }
+    // const selectedDriverToTradeWith = {
+    //   user_id: this.props.allShifts[0].user_id,
+    //   target_id: this.props.selectedDriver.user_id,
+    //   user_round: arrayOfRoundIds
+    // };
+    // const headers = new Headers();
+    // headers.append('Content-Type', 'application/json');
+    // fetch('/api/make-shift-trade.php', {
+    //   method: 'POST',
+    //   body: JSON.stringify(selectedDriverToTradeWith),
+    //   headers: headers
+    // })
+    //   .then(response => response.json())
+    //   .then(data => {
+    //   })
+    //   .catch(error => console.error('Fetch failed', error));
 
   }
   render() {
@@ -60,7 +61,14 @@ class TradeModal extends React.Component {
               })}
             </div>
             <div className="modal-footer justify-content-center">
-              <Link to="/shifts/details/" onClick={this.giveShifttoSelectedDriver} className="btn btn-primary">Yes</Link>
+              <Link to={{
+                pathname: '/welcome/',
+                state: {
+                  newShifts: this.props.allShifts,
+                  selectedDriver: this.props.selectedDriver
+                }
+              }}
+              onClick={this.giveShifttoSelectedDriver} className="btn btn-primary">Yes</Link>
               <button type="button" className="btn btn-secondary" data-dismiss="modal">No</button>
 
             </div>
