@@ -8,29 +8,23 @@ class Transaction extends React.Component {
     super(props);
     console.log("tran", this.props);
     this.state = {
+      userName:[],
       editButton: false,
       transactionInfo: [],
       userId: null,
       cellProvider: []
     }
     this.getTransactionLog = this.getTransactionLog.bind(this);
-    this.getTransactionLog = this.getDateAndTime.bind(this);
+    this.getAllUserNames = this.getAllUserNames.bind(this);
+    this.searchByName = this.searchByName.bind(this);
+    this.searchByType = this.searchByType.bind(this);
   }
 
   componentDidMount(){
-    this.getTransactionLog();
-    fetch(`/api/transaction-page.php`, {
-      method: 'GET'
-    })
-      .then(response => {
-        return response.json()
-      })
-      .then(response => {
-        this.setState({
-          transactionInfo: response
-        })
-      })
-      .catch(error => { throw (error) });
+    this.getAllUserNames();
+    if(this.state.userName.length === 0){
+      this.getTransactionLog();
+    }
   }
   getTransactionLog(){
     fetch(`/api/transaction-page.php`,{
@@ -43,6 +37,58 @@ class Transaction extends React.Component {
         this.setState({
           transactionInfo: response
         })
+      });
+
+  }
+  searchByName(event) {
+    let nameIndex = event.target.selectedIndex;
+    let userId = event.target[nameIndex].value;
+    fetch(`/api/transaction-name-search.php/?id=${userId}`, {
+      method: 'GET',
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(response => {
+        this.setState({
+          transactionInfo: response
+        })
+      })
+      .catch(error => { throw (error) });
+  }
+  searchByType(event) {
+    let typeIndex = event.target.selectedIndex;
+    let userType = event.target[typeIndex].value;
+    console.log("event0", event.target[typeIndex].value);
+    console.log("event1", event.target.selectedIndex);
+    fetch(`/api/transaction-type-search.php?type=${userType}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(response => {
+        this.setState({
+          transactionInfo: response
+        })
+      })
+      .catch(error => { throw (error) });
+  }
+  getAllUserNames() {
+    fetch(`/api/transaction-get-name.php`, {
+      method: 'GET'
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(response => {
+        this.setState({
+          userName: response
+        })
       })
       .catch(error => { throw (error) });
   }
@@ -53,8 +99,6 @@ class Transaction extends React.Component {
   }
 
   render() {
-    // { this.state.cellProvider.map((cell, index) => <option key={index} value={cell.cell_provider}>{cell.cell_provider}</option>) }
-    console.log("transaction", this.state.transactionInfo);
     let log = this.state.transactionInfo.map((log, index) => {
        return(
 
@@ -81,13 +125,17 @@ class Transaction extends React.Component {
           {log}
           </div>
           <div className="row fill1">
-            <div className="col-6">Serch By Name</div>
-            <select className="col-6 mb-2 editInput" placeholder="Shirt Size" type="text" name="shirtSize">
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-              <option value="XXL">XXL</option>
+            <div className="col-6">Search By Name</div>
+            <select onChange={() => this.searchByName(event)} className="col-6 mb-2 editInput" type="text" >
+              {this.state.userName.map((data, index) => <option  key={index} value={data.id}>{data.first_name + " " + data.last_name}</option>)}
+            </select>
+          </div>
+          <div className="row fill2">
+            <div className="col-6">Search By Type</div>
+            <select onChange={() => this.searchByType(event)} className="col-6 mb-2 editInput" type="text" >
+              <option value="'post'">POST</option>
+              <option value="'trade'">TRADE</option>
+              <option value="'cancel'">CANCEL</option>
             </select>
           </div>
         </React.Fragment>
