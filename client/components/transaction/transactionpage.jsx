@@ -91,12 +91,7 @@ class Transaction extends React.Component {
       })
       .catch(error => { throw (error) });
   }
-
-  getDateAndTime(timestamp){
-    let time = convertUnixMonthDay(timestamp);
-    return time;
-  }
-
+  
   render() {
     let log = this.state.transactionInfo.map((log, index) => {
        return(
