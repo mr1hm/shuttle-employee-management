@@ -66,8 +66,8 @@ export default class BusesTable extends React.Component {
           </td>
         </tr>
         <tr>
-          <td className="startTimeDuration">{line.opening_duration + "min."}</td>
-          <td className="endTimeDuration">{line.closing_duration + "min."}</td>
+          <td className="startTimeDuration">{busInfo.openingDuration + "min."}</td>
+          <td className="endTimeDuration">{busInfo.closingDuration + "min."}</td>
           {/* <td className="roundsDuration">30min</td> */}
         </tr>
       </tbody>

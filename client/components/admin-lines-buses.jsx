@@ -278,7 +278,7 @@ class AdminRoutes extends React.Component {
 
             <div className="accordion" id="accordionExample">
               {this.state.linesBusesInfo.map((line, index) =>
-                <Lines key={line.line_name + index} accordionID={line.route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                <Lines key={line.line_name + index} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
               )}
               {/* {this.readRouteBusComponent(this.state.routeInfo)} */}
 
@@ -317,7 +317,7 @@ class AdminRoutes extends React.Component {
 
           {/* {this.readRouteBusComponent(this.state.routeInfo)} */}
           {this.state.linesBusesInfo.map((line, index) =>
-            <Lines key={line.line_name + index} accordionID={line.route_id + index} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+            <Lines key={line.line_name + index} accordionID={line.real_route_id + index} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
           )}
 
         </div>
