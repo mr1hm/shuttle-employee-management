@@ -10,7 +10,7 @@ export default class BusesTable extends React.Component {
       showModal: false,
       busExistsOnRoute: false
     }
-    this.handleClick = this.handleClick.bind(this);
+    this.handleEditBusClick = this.handleEditBusClick.bind(this);
   }
 
   checkForActiveBuses() {
@@ -20,7 +20,7 @@ export default class BusesTable extends React.Component {
     })
   }
 
-  handleClick() {
+  handleEditBusClick() {
     this.setState({
       showModal: !this.state.showModal
     })
@@ -32,8 +32,8 @@ export default class BusesTable extends React.Component {
     console.log(busInfo);
     if (this.state.showModal) {
       return (
-        <div className="container editModal">
-          <EditBusModal onClose={this.handleClick} showModal={this.state.showModal} />
+        <div className="container editBusModal">
+          <EditBusModal busInfo={busInfo} lineID={line.real_route_id} line={line} onClose={this.handleEditBusClick} showModal={this.state.showModal} />
 
         </div>
       );
@@ -54,15 +54,14 @@ export default class BusesTable extends React.Component {
         <tr>
           <td className="busNumber" rowSpan="3">
             <RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay>
-            <p>Bus ID: 1</p>
           </td>
           <td>{busInfo.startTime}</td>
           <td>{busInfo.endTime}</td>
           {/* <td>24 Rds</td> */}
-          <td>Day Selection</td>
-          <td>GAP TIME</td>
+          <td>{busInfo.daysActive}</td>
+          <td>{busInfo.gap}</td>
           <td>
-            <button onClick={this.handleClick} className="btn btn-danger">EDIT</button>
+            <button onClick={this.handleEditBusClick} className="btn btn-danger">EDIT</button>
           </td>
         </tr>
         <tr>

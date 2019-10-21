@@ -8,10 +8,13 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET'){
 
 $query = "SELECT
+              bi.`id` AS 'busID',
               bi.`bus_number`,
               rt.`id` AS 'real_route_id',
               bi.`start_time`,
               bi.`end_time`,
+              bi.`daysActive`,
+              bi.`gap`,
               rt.`line_name`,
               rt.`status`,
               bi.`opening_duration`,
@@ -43,13 +46,29 @@ $query = "SELECT
   $busNumber = $_POST['bus_number'];
   $startTime = $_POST['start_time'];
   $endTime = $_POST['end_time'];
-  $idRoute = 5;
+  $idRoute = $_POST['route_id'];
   $vehicleID = 1;
   $openingDuration = $_POST['opening_duration'];
   $closingDuration = $_POST['closing_duration'];
   $query = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `end_time`, `route_id`, `vehicle_id`, `opening_duration`, `closing_duration`)
             VALUES ('$busNumber', '$startTime', '$endTime', '$idRoute', '$vehicleID', '$openingDuration', '$closingDuration')";
 
+} else if ($method === 'PATCH') {
+  $bodyData = getBodyData();
+  echo 'this is a patch request';
+  echo $bodyData['id'];
+  $busID = $bodyData['real_route_id'];
+  $busNumber = $bodyData['bus_number'];
+  $startTime = $bodyData['start_time'];
+  $endTime = $bodyData['end_time'];
+  $daysActive = $bodyData['daysActive'];
+  $gap = $bodyData['gap'];
+  $openingDuration = $bodyData['opening_duration'];
+  $closingDuration = $bodyData['closing_duration'];
+  $query = "UPDATE `bus_info`
+              SET `bus_number` = $busNumber, `start_time` = $startTime, `end_time` = $endTime, `daysActive` = $daysActive, `gap` = $gap,
+                  `opening_duration` = $openingDuration, `closing_duration` = $closingDuration
+              WHERE `bus_info`.`id` = $busID";
 }
 
 $result = mysqli_query($conn, $query);
@@ -65,13 +84,17 @@ while($row = mysqli_fetch_assoc($result)){
 
     if($row['bus_number'] !== NULL){
         $busInfo = [];
+        $busInfo['busID'] = $row['busID'];
         $busInfo['busNumber'] = $row['bus_number'];
         $busInfo['startTime'] = $row['start_time'];
         $busInfo['endTime'] = $row['end_time'];
+        $busInfo['daysActive'] = $row['daysActive'];
+        $busInfo['gap'] = $row['gap'];
         $busInfo['openingDuration'] = $row['opening_duration'];
         $busInfo['closingDuration'] = $row['closing_duration']; //I added the data
     }
 
+    unset($row['busID']);
     unset($row['bus_number']); //so I don't need it here anymore
     unset($row['start_time']);
     unset($row['end_time']);

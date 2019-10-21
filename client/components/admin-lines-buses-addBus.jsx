@@ -6,9 +6,15 @@ export default class AddBus extends React.Component {
     this.state = {
       busNumber: null,
       start_time: null,
-      end_time: null
+      end_time: null,
+      route_id: null
     }
     this.handleChange = this.handleChange.bind(this);
+    this.setRouteID = this.setRouteID.bind(this);
+  }
+
+  componentDidMount() {
+    this.setRouteID();
   }
 
   handleChange(event) {
@@ -17,6 +23,10 @@ export default class AddBus extends React.Component {
     this.setState({
       [name]: value
     })
+  }
+
+  setRouteID() {
+    this.setState({routeID: this.props.line.real_route_id});
   }
 
   render() {
@@ -69,8 +79,8 @@ export default class AddBus extends React.Component {
                   </select>
                 </div>
                 <div className="col">
-                  <label>Rounds</label>
-                  <input onChange={this.handleChange} className="col border border-primary" type="text" name="rounds"></input>
+                  <label>Line/Route ID</label>
+                  <input onChange={this.handleChange} className="col border border-primary" type="text" name="route_id" value={this.props.line.real_route_id}></input>
                 </div>
                 <div className="col">
                   <label>Gap</label>
