@@ -397,6 +397,8 @@ function populateSchedule($operators, $rounds, $conn)  {
   $lengthRoundsArray = count($rounds);
 
   $leftovers = [];
+  $previousOperator = '';
+  $getFollowingOperator = false;
 
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray; $roundsIndex++) {
 
@@ -535,6 +537,13 @@ function populateSchedule($operators, $rounds, $conn)  {
                 $operators[$operatorsIndex]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = $rounds[$roundsIndex]['round_start'];
               }
 
+              if ($getFollowingOperator) {
+                $leftovers[count($leftovers)-1]['followingOperator'] = isValidFollowingOperator($operators[$operatorsIndex], $leftovers[count($leftovers) - 1]['unassignedRound'])
+                                                                       ? $operators[$operatorsIndex]
+                                                                       : '';
+                $getFollowingOperator = false;
+              }
+
             } else {
               //set the flag for the required 30 minute break after working 5 continuous hours
               $latestShiftIndex = count($operators[$operatorsIndex]['times_assigned']) - 1;
@@ -545,6 +554,7 @@ function populateSchedule($operators, $rounds, $conn)  {
             }
           }
           if ($madeAssignment) {
+            $previousOperator = $operators[$operatorsIndex];
             break;
           }
         }
@@ -553,10 +563,12 @@ function populateSchedule($operators, $rounds, $conn)  {
 
     if (intval($rounds[$roundsIndex]['user_id']) === 1) {
       array_push($leftovers, [
-        'previousOperator' => '',
+        'previousOperator' => isValidPreviousOperator($previousOperator, $rounds[$roundsIndex]) ? $previousOperator : '',
         'followingOperator' => '',
         'unassignedRound' => $rounds[$roundsIndex]
       ]);
+      $previousOperator = '';
+      $getFollowingOperator = true;
     }
 
   }
@@ -569,6 +581,16 @@ function populateSchedule($operators, $rounds, $conn)  {
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
   return $operators;
+}
+
+function isValidPreviousOperator($operator, $round) {
+  if (!$operator) return false;
+  return intval($operator['times_assigned'][count($operator['times_assigned'])-1][1]) <= intval($round['round_start']);
+}
+
+function isValidFollowingOperator($operator, $round) {
+  if (!$operator) return false;
+  return intval($operator['times_assigned'][count($operator['times_assigned']) - 1][0]) >= intval($round['round_end']);
 }
 
 //populate the first week
