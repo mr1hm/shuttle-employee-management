@@ -31,17 +31,6 @@ class HamburgerMenu extends React.Component {
         <div className={`shadow ${visibleClass}`}></div>
       </>
     );
-
-    // return (
-    //   <div className = "text-dark dropdown p-0 m-0" onClick={this.toggleOpen}>
-    //     <button className = "btn btn-light" type="button" id="dropdownMenuButton" data-toggle = "dropdown" aria-haspopup = "true">
-    //       <FontAwesomeIcon icon = {this.state.open ? faTimes : faBars}/>
-    //     </button>
-    //     <div className = {`dropdown-menu dropdown-menu-right ${this.state.open ? 'show' : ''}`} aria-labelledby = "dropdownMenuButton">
-    //       {this.props.children}
-    //     </div>
-    //   </div>
-    // );
   }
 }
 
