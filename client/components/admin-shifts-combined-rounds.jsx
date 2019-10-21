@@ -42,7 +42,7 @@ class AdminShiftsCombinedRounds extends React.Component {
           userName={this.props.userName}
           userId={this.props.userId}
           shiftTime={this.shiftTimeMeridian}
-          rounds={this.props.rounds}
+          rounds={this.props.rounds.length}
         />
       );
     } else return <div></div>;

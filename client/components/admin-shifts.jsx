@@ -16,17 +16,19 @@ class AdminShiftsDay extends React.Component {
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
     this.handleClickAssignShifts = this.handleClickAssignShifts.bind(this);
+    this.handleClickUnassignShifts = this.handleClickUnassignShifts.bind(this);
     this.handleClickCancel = this.handleClickCancel.bind(this);
     this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
     const defaultDate = 1566619200;
     this.state = {
       rounds: null,
       availableOperators: [],
-      shiftDetailsFromClick: null,
+      shiftsSelected: [],
       dateToPass: defaultDate,
       roundsSelected: [],
       roundTimes: [],
-      selecting: false,
+      selectingAssign: false,
+      selectingUnassign: false,
       groupedShifts: []
     };
   }
@@ -51,7 +53,7 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error); });
   }
   getAvailableDrivers(startTime, endTime, roundId, userId) {
-    if (!this.state.selecting || userId !== 1) {
+    if (!this.state.selectingAssign || userId !== 1) {
       return;
     }
     var roundsSelected = this.state.roundsSelected;
@@ -119,8 +121,8 @@ class AdminShiftsDay extends React.Component {
         this.setState({
           availableOperators: [],
           roundsSelected: [],
-          selecting: false,
-          shiftDetailsFromClick: null
+          selectingAssign: false,
+          shiftsSelected: []
         });
       })
       .catch(error => { throw (error); });
@@ -174,14 +176,11 @@ class AdminShiftsDay extends React.Component {
     var shiftsForLine = [];
     var sortedLineAndBusArray = this.buildRoundsByLine(data, lineName, busNumber);
     var previousUserId = null;
-    let roundCounter = 0;
     for (var indexSortedArray = 0; indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
       let currentUserId = sortedLineAndBusArray[indexSortedArray].user_id;
       const firstName = sortedLineAndBusArray[indexSortedArray].first_name;
       const lastName = sortedLineAndBusArray[indexSortedArray].last_name;
-      let displayName = (firstName && lastName) ? lastName + ', ' + firstName : 'n/a';
       if (currentUserId == 1 || currentUserId === 'n/a' || currentUserId !== previousUserId) { //
-        roundCounter = 0;
         shiftsForLine.push({
           'round_id': sortedLineAndBusArray[indexSortedArray].round_id,
           'line_name': lineName + busNumber,
@@ -192,13 +191,19 @@ class AdminShiftsDay extends React.Component {
             'first': firstName || 'n/a',
             'last': lastName || 'n/a'
           },
-          'rounds': roundCounter + 1
+          'rounds': [{
+            'id': sortedLineAndBusArray[indexSortedArray].round_id,
+            'start': sortedLineAndBusArray[indexSortedArray].round_start,
+            'end': sortedLineAndBusArray[indexSortedArray].round_end
+          }]
         });
-        roundCounter = 0;
       } else {
-        ++roundCounter;
         shiftsForLine[shiftsForLine.length - 1].end_time = sortedLineAndBusArray[indexSortedArray].round_end;
-        shiftsForLine[shiftsForLine.length - 1].rounds = roundCounter + 1;
+        shiftsForLine[shiftsForLine.length - 1].rounds.push({
+          'id': sortedLineAndBusArray[indexSortedArray].round_id,
+          'start': sortedLineAndBusArray[indexSortedArray].round_start,
+          'end': sortedLineAndBusArray[indexSortedArray].round_end
+        });
       }
       previousUserId = currentUserId;
     }
@@ -268,31 +273,58 @@ class AdminShiftsDay extends React.Component {
     this.setState({ groupedShifts: groupedShifts });
   }
   handleClickAssignShifts() {
-    this.setState({ selecting: true });
+    if (this.state.selectingUnassign) {
+      return;
+    }
+    this.setState({ selectingAssign: true });
   }
   handleClickUnassignShifts() {
-
+    if (this.state.selectingAssign) {
+      return;
+    }
+    this.setState({ selectingUnassign: true });
   }
   handleClickCancel() {
     this.setState({
-      selecting: false,
+      selectingAssign: false,
+      selectingUnassign: false,
       availableOperators: [],
       roundsSelected: [],
       roundTimes: [],
-      shiftDetailsFromClick: null
+      shiftsSelected: []
     });
   }
-  showCancelButton() {
-    if (this.state.selecting) {
+  showAssignCancelButton() {
+    if (this.state.selectingAssign) {
       return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
     }
   }
-  handleShiftClick(response) {
-    if (response.shift_type === 'nonOperational') ;
-    else this.setState({ shiftDetailsFromClick: response });
+  showUnAssignCancelButton() {
+    if (this.state.selectingUnassign) {
+      return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
+    }
   }
-  handleClickUnassignOperator(roundId) {
-    console.log(event.target.id, this.state.roundsSelected);
+  handleShiftClick(shift) {
+    var shiftsSelected = this.state.shiftsSelected;
+    if (this.state.selectingAssign) {
+      var shiftIndex = shiftsSelected.map(shiftItem => shiftItem.round_id).indexOf(shift.round_id);
+      if (shiftIndex > -1) {
+        shiftsSelected.splice(shiftIndex, 1);
+        this.setState({ shiftsSelected: shiftsSelected });
+        return;
+      }
+    } else {
+      shiftsSelected = [];
+    }
+    if (shift.shift_type === 'nonOperational');
+    else {
+      shiftsSelected.push(shift);
+      this.setState({ shiftsSelected: shiftsSelected });
+    }
+  }
+  handleClickUnassignOperator(event) {
+    console.log('event target: ', event.target.id);
+    let roundId = event.target.id;
     const data = {
       method: 'POST',
       body: JSON.stringify({
@@ -308,8 +340,8 @@ class AdminShiftsDay extends React.Component {
         this.setState({
           availableOperators: [],
           roundsSelected: [],
-          selecting: false,
-          shiftDetailsFromClick: null
+          selectingUnassign: false,
+          shiftsSelected: []
         });
       })
       .catch(error => { throw (error); });
@@ -336,12 +368,15 @@ class AdminShiftsDay extends React.Component {
         <div key={groupIndex} className="adminShiftRows d-flex align-items-center border">
           {shiftsGroupedByLine[groupIndex][2].map((element, index) => {
             var roundType = '';
+            var selectingType = null;
             if (element.user_id === 'n/a') {
               roundType = 'nonOperational';
             } else if (element.user_id == 1) {
               roundType = 'alertShift';
+              selectingType = this.state.selectingAssign;
             } else {
               roundType = 'active';
+              selectingType = this.state.selectingUnassign;
             }
             return (
               < AdminShiftsCombinedRounds
@@ -354,7 +389,7 @@ class AdminShiftsDay extends React.Component {
                 roundId={element.round_id}
                 range={{ min: 600, max: 2400 }}
                 shiftData={{ start: element.start_time, end: element.end_time }}
-                selecting={this.state.selecting}
+                selecting={selectingType}
                 onClickShifts={this.handleShiftClick}
               />
             );
@@ -365,17 +400,28 @@ class AdminShiftsDay extends React.Component {
     return elements;
   }
   renderShiftDetailsComponent() {
-    if (this.state.shiftDetailsFromClick) {
-      return (
+    if (this.state.shiftsSelected.length) {
+      var shiftElements = this.state.shiftsSelected.map(shift =>
         <AdminClickedShiftDetailsAside
-          userName={this.state.shiftDetailsFromClick.user_name}
-          userId={this.state.shiftDetailsFromClick.user_id}
-          shiftTime={this.state.shiftDetailsFromClick.shift_time}
-          rounds={this.state.shiftDetailsFromClick.rounds}
-          roundId={this.state.shiftDetailsFromClick.round_id}
-          shiftType={this.state.shiftDetailsFromClick.shift_type}
+          key={shift.round_id}
+          userName={shift.user_name}
+          userId={shift.user_id}
+          shiftTime={shift.shift_time}
+          rounds={shift.rounds}
+          roundId={shift.round_id}
+          shiftType={shift.shift_type}
           onClickUnassignOperator={this.handleClickUnassignOperator}
         />
+      );
+      return (
+        <React.Fragment>
+          <div className="shiftDetailsHeader d-flex border justify-content-center align-items-end w-100">
+            <h5 className="m-0">Shift details</h5>
+          </div>
+          <div className="shiftDetailsContainer d-flex flex-column border w-100">
+            {shiftElements}
+          </div>
+        </React.Fragment>
       );
     }
   }
@@ -394,125 +440,14 @@ class AdminShiftsDay extends React.Component {
     });
     if (availableOperatorsElements.length) {
       return (
-        <React.Fragment>
-          <div className="availableOperatorsHeader">Available Operators</div>
+        <div className="availableOperatorsContainer d-flex flex-column px-5">
+          <h5 className="availableOperatorsHeader mt-1 mb-0">Available Operators</h5>
           <div className="availableOperatorsContainer d-flex">
             {availableOperatorsElements}
           </div>
-        </React.Fragment>
+        </div>
       );
     }
-  }
-  renderTable() {
-    return (
-      <div className="tableContainer d-flex flex-column position-absolute">
-        <div className="border d-flex">
-          <div className="tableCell border">600am</div>
-          <div className="tableCell border">700am</div>
-          <div className="tableCell border">800am</div>
-          <div className="tableCell border">900am</div>
-          <div className="tableCell border">1000am</div>
-          <div className="tableCell border">1100am</div>
-          <div className="tableCell border">1200pm</div>
-          <div className="tableCell border">100pm</div>
-          <div className="tableCell border">200pm</div>
-          <div className="tableCell border">300pm</div>
-          <div className="tableCell border">400pm</div>
-          <div className="tableCell border">500pm</div>
-          <div className="tableCell border">600pm</div>
-          <div className="tableCell border">700pm</div>
-          <div className="tableCell border">800pm</div>
-          <div className="tableCell border">900pm</div>
-          <div className="tableCell border">1000pm</div>
-          <div className="tableCell border">1100pm</div>
-          <div className="tableCell border">1200pm</div>
-        </div>
-        <div className="border d-flex">
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-        </div>
-        <div className="border d-flex">
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-        </div>
-        <div className="border d-flex">
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-        </div>
-        <div className="border d-flex">
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-          <div className="tableCell border"></div>
-        </div>
-      </div>
-    );
   }
   render() {
     return (
@@ -521,8 +456,9 @@ class AdminShiftsDay extends React.Component {
         <div className="selectShiftsButtonContainer d-flex px-5">
           <button className="btn btn-primary m-2" onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
           <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickAssignShifts}>Select Shifts to Assign</button>
-          {this.showCancelButton()}
-          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickUnassignShifts}>Select Shifts to Un-assign</button>
+          {this.showAssignCancelButton()}
+          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickUnassignShifts}>Select Shift to Unassign</button>
+          {this.showUnAssignCancelButton()}
         </div>
         <div className="main-container d-flex px-5 h-100">
           <div className="bus-line-container container d-flex flex-column align-items-center p-0">
@@ -538,12 +474,7 @@ class AdminShiftsDay extends React.Component {
             {this.renderShiftComponents()}
           </div>
           <div className="additional-info-container d-flex flex-column col-2 align-self-stretch p-0 m-0">
-            <div className="shiftDetailsHeader d-flex border justify-content-center align-items-end w-100">
-              <h5 className="m-0">Shift details</h5>
-            </div>
-            <div className="shiftDetailsContainer d-flex flex-column flex-fill border w-100">
-              {this.renderShiftDetailsComponent()}
-            </div>
+            {this.renderShiftDetailsComponent()}
           </div>
         </div>
         {this.renderAvailableOperatorElements()}

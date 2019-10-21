@@ -114,7 +114,8 @@ function operatorsOrderedByDailyHours($operators){
         'firstName' => $operator_data['first_name'],
         'lastName' => $operator_data['last_name'],
         'specialRouteOk' => $operator_data['special_route_ok'],
-        'totalHours' => $operator_data['total_hours']
+        'totalHours' => $operator_data['total_hours'],
+        'weeklyHours' => $operator_data['weekly_hours']
       ];
     } else {
       $number_operators_ordered = count($operators_ordered);
@@ -127,7 +128,8 @@ function operatorsOrderedByDailyHours($operators){
             'firstName' => $operator_data['first_name'],
             'lastName' => $operator_data['last_name'],
             'specialRouteOk' => $operator_data['special_route_ok'],
-            'totalHours' => $operator_data['total_hours']
+            'totalHours' => $operator_data['total_hours'],
+            'weeklyHours' => $operator_data['weekly_hours']
           ]]);
           break;
         } else if ($operator_index === $number_operators_ordered - 1) {
@@ -137,7 +139,8 @@ function operatorsOrderedByDailyHours($operators){
             'firstName' => $operator_data['first_name'],
             'lastName' => $operator_data['last_name'],
             'specialRouteOk' => $operator_data['special_route_ok'],
-            'totalHours' => $operator_data['total_hours']
+            'totalHours' => $operator_data['total_hours'],
+            'weeklyHours' => $operator_data['weekly_hours']
           ];
           break;
         }
@@ -242,7 +245,7 @@ function operatorsUnderMaxWeeklyHours($operators, $data, $round_time_total_hours
       }
     }
     if ($weekly_total_hours <= $max_weekly_hours) {
-      $operators[$id]['weeklyHours'] = $weekly_total_hours;
+      $operators[$id]['weekly_hours'] = $weekly_total_hours - $round_time_total_hours;
       $operators_under_weekly_max[$id] = $operators[$id];
     }
   }

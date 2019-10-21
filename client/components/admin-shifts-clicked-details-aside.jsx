@@ -7,14 +7,23 @@ class AdminClickedShiftDetailsAside extends React.Component {
     this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
   }
   handleClickUnassignOperator() {
-    this.props.onClickUnassignOperator(this.props.roundId);
+
   }
   generateConditionalElement() {
     if (this.props.shiftType === 'active') {
-      return <button onClick={this.handleClickUnassignOperator}>Unassign Driver</button>;
-    } else if (this.props.shiftType === 'alertShift') {
-      return <div>**Please select from the Available Drivers below.**</div>;
+      return this.renderRoundDetails();
     }
+  }
+  renderRoundDetails() {
+    return (
+      this.props.rounds.map(round =>
+        <div key={round.id} className="roundDetailContainer">
+          <div className="roundStart">{`Start: ${round.start}`}</div>
+          <div className="roundEnd">{`End: ${round.end}`}</div>
+          <button id={round.id} className="btn btn-danger" onClick={this.props.onClickUnassignOperator}>Unassign Operator</button>
+        </div>
+      )
+    );
   }
   render() {
     const lastName = this.props.userName.last;
@@ -29,7 +38,7 @@ class AdminClickedShiftDetailsAside extends React.Component {
         <div>Operator: {displayName}</div>
         <div>ID#: {this.props.userId}</div>
         <div>Time: {this.props.shiftTime}</div>
-        <div>Rounds: {this.props.rounds}</div>
+        <div>Rounds: {this.props.rounds.length}</div>
         <div>Status: {shiftStatus}</div>
         {this.generateConditionalElement()}
       </div>
