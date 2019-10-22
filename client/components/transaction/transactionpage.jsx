@@ -17,6 +17,7 @@ class Transaction extends React.Component {
     this.getAllUserNames = this.getAllUserNames.bind(this);
     this.searchByName = this.searchByName.bind(this);
     this.searchByType = this.searchByType.bind(this);
+    this.handlePaginationClick = this.handlePaginationClick.bind(this);
   }
 
   componentDidMount(){
@@ -42,7 +43,7 @@ class Transaction extends React.Component {
   searchByName(event) {
     let nameIndex = event.target.selectedIndex;
     let userId = event.target[nameIndex].value;
-    fetch(`/api/transaction-name-search.php/?id=${userId}`, {
+    fetch(`/api/transaction-get.php/?id=${userId}`, {
       method: 'GET',
     })
       .then(response => {
@@ -60,12 +61,8 @@ class Transaction extends React.Component {
     let userType = event.target[typeIndex].value;
     console.log("event0", event.target[typeIndex].value);
     console.log("event1", event.target.selectedIndex);
-    fetch(`/api/transaction-type-search.php?type=${userType}`, {
+    fetch(`/api/transaction-get.php?type=${userType}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
     })
       .then(response => {
         return response.json()
@@ -91,11 +88,25 @@ class Transaction extends React.Component {
       })
       .catch(error => { throw (error) });
   }
-  
-  render() {
-    let log = this.state.transactionInfo.map((log, index) => {
-       return(
+  handlePaginationClick(event) {
+    let pageNum = parseInt(event.target.textContent) -1;
+    console.log("pageinationclick", pageNum);
+    console.log("currentpagevalue", this.state.transactionInfo.currentPage);
+    const currentPage = this.state.transactionInfo.currentPage;
+    this.setState({
+      currentPage: currentPage + pageNum
+    })
+    console.log("aftercurrentpagevalue", this.state.transactionInfo.currentPage);
+  }
 
+  render() {
+    console.log("transaction",this.state.transactionInfo);
+    var log = null;
+    var pagination = this.state.transactionInfo.totalPages;
+    console.log("page", pagination);
+    if (this.state.transactionInfo.data === undefined) {
+    log = this.state.transactionInfo.map((log, index) => {
+       return(
         <div key={index} className="row-fluid ">
         <div  value={log.date} className="span2 offset1">{convertUnixMonthDay(parseInt(log.date))}</div>
            <div className="col-md-4 ml-1">{log.type}</div>
@@ -103,8 +114,39 @@ class Transaction extends React.Component {
            <div className="col-md-4 ml-1">{log.first_name + " " + log.last_name}</div>
            <div className="col-md-4 commentFlow">{log.comment}</div>
         </div>
+        )
+      });
+    }
 
-     ) });
+    if (this.state.transactionInfo.data != undefined) {
+       log = this.state.transactionInfo.data.map((log, index) => {
+        return (
+          <div key={index} className="row-fluid ">
+            <div value={log.date} className="span2 offset1">{convertUnixMonthDay(parseInt(log.date))}</div>
+            <div className="col-md-4 ml-1">{log.type}</div>
+            <div className="col-md-4 ml-1">{log.round_id}</div>
+            <div className="col-md-4 ml-1">{log.first_name + " " + log.last_name}</div>
+            <div className="col-md-4 commentFlow">{log.comment}</div>
+          </div>
+
+        )
+      });
+    }
+
+    if(pagination){
+      const count = pagination;
+      pagination = [];
+     for(let pageIndex=0;pageIndex<count;pageIndex++){
+       pagination.push(<li key={pageIndex} className="page-item"><a onClick={this.handlePaginationClick} key={pageIndex} value={pageIndex} className="page-link" href="#">{pageIndex+1}</a></li>)
+
+     }
+    }else{
+      pagination = <li className="page-item"><a onClick={this.handlePaginationClick} className="page-link" href="#">1</a></li>;
+    }
+
+
+
+       console.log("log",log);
       return (
         <React.Fragment>
           <TopMenuGeneral title="Transaction Log" />
@@ -127,11 +169,22 @@ class Transaction extends React.Component {
           <div className="row fill2">
             <div className="col-6">Search By Type</div>
             <select onChange={() => this.searchByType(event)} className="col-6 mb-2 editInput" type="text" >
-              <option value="'post'">POST</option>
-              <option value="'trade'">TRADE</option>
-              <option value="'cancel'">CANCEL</option>
+              <option value="post">POST</option>
+              <option value="trade">TRADE</option>
+              <option value="cancel">CANCEL</option>
             </select>
           </div>
+          <nav aria-label="...">
+            <ul className="pagination">
+              <li className="page-item disabled">
+                <span className="page-link">Previous</span>
+              </li>
+              {pagination}
+              <li className="page-item">
+                <a className="page-link" href="#">Next</a>
+              </li>
+            </ul>
+          </nav>
         </React.Fragment>
       );
     }
