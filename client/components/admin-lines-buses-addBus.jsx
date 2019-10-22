@@ -6,9 +6,15 @@ export default class AddBus extends React.Component {
     this.state = {
       busNumber: null,
       start_time: null,
-      end_time: null
+      end_time: null,
+      route_id: null
     }
     this.handleChange = this.handleChange.bind(this);
+    this.setRouteID = this.setRouteID.bind(this);
+  }
+
+  componentDidMount() {
+    this.setRouteID();
   }
 
   handleChange(event) {
@@ -17,6 +23,10 @@ export default class AddBus extends React.Component {
     this.setState({
       [name]: value
     })
+  }
+
+  setRouteID() {
+    this.setState({routeID: this.props.line.real_route_id});
   }
 
   render() {
@@ -69,24 +79,16 @@ export default class AddBus extends React.Component {
                   </select>
                 </div>
                 <div className="col">
-                  <label>Rounds</label>
-                  <input onChange={this.handleChange} className="col border border-primary" type="text" name="rounds"></input>
+                  <label>Line/Route ID</label>
+                  <input onChange={this.handleChange} className="col border border-primary" type="text" name="route_id" value={this.props.line.real_route_id}></input>
                 </div>
                 <div className="col">
-                  <label>Gap</label>
-                  <input placeholder="Start Time"className="col border border-primary" type="text" name="gap"></input>
+                  <label>Gap Start Time</label>
+                  <input placeholder="Start Time"className="col border border-primary" type="text" name="gapStartTime"></input>
                 </div>
                 <div className="col">
-                  <label>Select Days</label>
-                    <select className="custom-select" id="basic" multiple="multiple">
-                      <option value="Saturday">Sunday</option>
-                      <option value="Monday">Monday</option>
-                      <option value="Tuesday">Tuesday</option>
-                      <option value="Wednesday">Wednesday</option>
-                      <option value="Thursday">Thursday</option>
-                      <option value="Friday">Friday</option>
-                      <option value="Saturday">Saturday</option>
-                    </select>
+                  <label>Specify Days</label>
+                    <input name="daysActive" type="text" onChange={this.handleChange} placeholder="Ex. Monday, Friday" />
                 </div>
               </div>
 
@@ -130,9 +132,9 @@ export default class AddBus extends React.Component {
                   <input onChange={this.handleChange} name="closing_duration" type="text" className="col border border-primary" placeholder="Duration"></input>
                 </div>
                 <div className="col">
-                  <label>Duration</label>
+                  {/* <label>Gap Duration</label>
                   <br />
-                  <input onChange={this.handleChange} name="roundsDur" type="text" className="col border border-primary"></input>
+                  <input onChange={this.handleChange} name="gapDuration" type="text" className="col border border-primary"></input> */}
                 </div>
                 <div className="col">
                   <label>Gap Duration</label>

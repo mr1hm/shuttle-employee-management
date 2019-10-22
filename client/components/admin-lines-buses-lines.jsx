@@ -4,7 +4,7 @@ import TopMenuGeneral from './topmenu/topmenu-general';
 import TopMenuHamburger from './topmenu/topmenu-hamburger';
 import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
-import BusesTable from './admin-lines-buses-tableData';
+import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,11 +17,15 @@ export default class Lines extends React.Component {
     this.state = {
       busDetailsClicked: false,
       addBusClicked: false,
-      busAdded: false
+      busAdded: false,
+      // editBusClicked: false
     };
     this.displayBusDetails = this.displayBusDetails.bind(this);
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
+    // this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
   }
+
+
 
   handleAddBusButtonClick() {
     this.setState({
@@ -37,6 +41,29 @@ export default class Lines extends React.Component {
     const { line } = this.props;
     const { activeBuses } = this.props.line;
     console.log(line);
+    if (!this.props.line.real_route_id) {
+      return null;
+    }
+    // if (this.state.editBusClicked) {
+    //   return (
+    //     <table className="card-table table">
+    //       <thead>
+    //         <tr>
+    //           <th scope="col">Bus Number</th>
+    //           <th scope="col">Start Time</th>
+    //           <th scope="col">End Time</th>
+    //           {/* <th scope="col">Rounds</th> */}
+    //           <th scope="col">Days</th>
+    //           <th scope="col">Gap</th>
+    //           <th scope="col">Edit</th>
+    //         </tr>
+    //       </thead>
+    //       {activeBuses.map(bus =>
+    //         <EditBusModal handleEditBusClicked={this.handleEditBusClicked} editBusClicked={this.state.editBusClicked} line={line} busInfo={bus} />
+    //       )}
+    //     </table>
+    //   );
+    // }
     return (
       <div id="accordion">
         <div className="card" key={line.line_name + activeBuses.busNumber}>
@@ -56,7 +83,7 @@ export default class Lines extends React.Component {
                 <RouteBusDisplay route={line.line_name} />
               </div>
               <div className="col">
-                {line.status === 'active' ? <FontAwesomeIcon className="activeIcon" icon={faCircle} /> : <FontAwesomeIcon className="inactiveIcon" icon={faCircle} />}
+                {line.status === 'active' ? <FontAwesomeIcon className="lineActiveIcon" icon={faCircle} /> : <FontAwesomeIcon className="lineInactiveIcon" icon={faCircle} />}
                 {line.status}
               </div>
               <div className="col">45min</div>
@@ -77,14 +104,14 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="col">
                 <div id="accordion">
-                  <AddBus accordionID={this.props.accordionID} handleAddBusButton={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
+                  <AddBus accordionID={this.props.accordionID} line={line} handleAddBusButton={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="card col-12">
                 <div className="card-header">
-                    Active Buses
+                  Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
                   {/* making table main header clickable to collapse accordion */}
                 </div>
                 <table className="card-table table">
@@ -96,11 +123,13 @@ export default class Lines extends React.Component {
                       {/* <th scope="col">Rounds</th> */}
                       <th scope="col">Days</th>
                       <th scope="col">Gap</th>
-                      <th scope="col">Edit</th>
+                      <th scope="col">Operations</th>
                     </tr>
                   </thead>
-                  {activeBuses.map((bus, index) =>
-                    <BusesTable key={bus.busNumber + index} line={line} busInfo={bus} />
+                  {activeBuses.map((bus, index) => {
+                    return <BusesTable key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                  }
+
                   )}
                 </table>
               </div>
