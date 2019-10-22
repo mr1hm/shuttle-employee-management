@@ -35,5 +35,33 @@ while ($row = mysqli_fetch_assoc($result)) {
     $data[] = $row;
 }
 
+// rounds grouped by line and bus;
+$grouped_data = [];
+for ($data_index = 0; $data_index < count($data); $data_index++){
+    $current_data = $data[$data_index];
+    for ($grouped_index = 0; $grouped_index < count($grouped_data); $grouped_index++){
+        $group = $grouped_data[$grouped_index];
+        if (empty($current_group['line_name'])){
+            $group['line_name'] = $data[$data_index]['line_name'];;
+            $group['bus_number'] = $current_data['bus_number'];
+            $group['shifts'] = [];
+            $group['shifts'][] = [
+                'user_id' => $data[$data_index]['user_id'],
+                'user_name' => [
+                    'first' => $data[$data_index]['first_name'],
+                    'last' => $data[$data_index]['last_name']
+                ],
+                'line_bus_name' => $data[$data_index]['line_name'] . $data[$data_index]['bus_number'],
+                'round_id' => $data[$data_index]['round_id'],
+                'rounds' => [$data[$data_index]['round_id']],
+                'start_time' => $data[$data_index]['round_start'],
+                'end_time' => $data[$data_index]['round_end']
+            ];
+        break;
+        }
+    }
+}
+
+
 print(json_encode($data));
 ?>
