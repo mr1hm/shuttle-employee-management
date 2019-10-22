@@ -1,5 +1,7 @@
 import React from 'react';
 import './admin-shifts-display.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 class AdminClickedShiftDetailsAside extends React.Component {
   constructor(props) {
@@ -17,6 +19,18 @@ class AdminClickedShiftDetailsAside extends React.Component {
     this.setState({
       expanded: !this.state.expanded
     });
+  }
+  checkIfUnassignedShift() {
+    if (this.props.shiftType === 'active') {
+      return null;
+    }
+    return <FontAwesomeIcon icon={faAngleRight} className={`angleIcon ${this.checkIfExpanded()}`} />;
+  }
+  checkIfExpanded() {
+    if (this.state.expanded) {
+      return 'angleIconRotate';
+    }
+    return '';
   }
   checkIfAssignedShift() {
     if (this.props.shiftType === 'active') {
@@ -51,9 +65,9 @@ class AdminClickedShiftDetailsAside extends React.Component {
     }
     return (
       <div className={`adminShiftDetails d-flex flex-column border-bottom p-1 ${assignedShiftClass} ${adminShiftExpandedClass}`}>
-        <div onClick={this.handleClickExpand}>Operator: {displayName}</div>
+        <div className='adminShiftAngleTimeContainer' onClick={this.handleClickExpand}>{this.checkIfUnassignedShift()} {this.props.shiftTime}</div>
+        <div>Operator: {displayName}</div>
         <div>ID#: {this.props.userId}</div>
-        <div>Time: {this.props.shiftTime}</div>
         <div>Status: {shiftStatus}</div>
         <div>Rounds: {this.props.rounds.length}</div>
         {this.checkIfAssignedShift()}

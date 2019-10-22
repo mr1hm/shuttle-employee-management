@@ -258,3 +258,12 @@
     height: auto;
     max-height: fit-content;
 }
+.adminShiftAngleTimeContainer, .availableOperatorIconNameContainer{
+    cursor: pointer;
+}
+.angleIcon{
+    transition: transform .4s linear;
+}
+.angleIconRotate{
+    transform: rotate(90deg);
+}
