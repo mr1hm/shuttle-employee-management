@@ -554,9 +554,15 @@ function populateSchedule($operators, $rounds, $conn)  {
             }
           }
           if ($madeAssignment) {
+            // print('<pre>');
+            // print_r($operators[$operatorsIndex]);
+            // print('<pre>');
             $previousOperator = $operators[$operatorsIndex];
             break;
           }
+        }
+        if ($madeAssignment) {
+          break;
         }
       }
     }
@@ -585,12 +591,11 @@ function populateSchedule($operators, $rounds, $conn)  {
 
 function isValidPreviousOperator($operator, $round) {
   if (!$operator) return false;
-  return intval($operator['times_assigned'][count($operator['times_assigned'])-1][1]) <= intval($round['round_start']);
+  return intval($operator['times_assigned'][count($operator['times_assigned']) - 1][1]) === intval($round['round_start']);
 }
-
 function isValidFollowingOperator($operator, $round) {
   if (!$operator) return false;
-  return intval($operator['times_assigned'][count($operator['times_assigned']) - 1][0]) >= intval($round['round_end']);
+  return intval($operator['times_assigned'][count($operator['times_assigned']) - 1][0]) === intval($round['round_end']);
 }
 
 //populate the first week
