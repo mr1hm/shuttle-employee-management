@@ -1,5 +1,6 @@
 import React from 'react';
 import TopMenuGeneral from './topmenu/topmenu-general';
+import './operator-availability.css';
 import OperatorAvailabilityModal from './operator-availability-modal';
 
 // dummy data only right now (not connected to endpoint)
@@ -16,8 +17,10 @@ class OperatorAvailability extends React.Component {
         'Friday': [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
-      showModal: false
+      show: false
     };
+    this.showModal = this.showModal.bind(this);
+    this.hideModal = this.hideModal.bind(this);
   }
 
   buildDayCell(day) {
@@ -43,7 +46,15 @@ class OperatorAvailability extends React.Component {
   }
 
   showModal() {
+    this.setState({
+      show: true
+    });
+  }
 
+  hideModal() {
+    this.setState({
+      show: false
+    });
   }
 
   render() {
@@ -62,11 +73,12 @@ class OperatorAvailability extends React.Component {
             </thead>
             <tbody className="container">
               {
-                weekdays.map((day, index) => {
+                weekdays.map(day => {
                   return (
-                    <tr key='index' className="row d-flex justify-content-end">
+                    <tr key={day} className="row d-flex justify-content-end">
                       <td className="align-middle" style={{ backgroundColor: 'white', width: '2.8%', heigth: '10vh', border: '1px solid black' }}>
                         {day.slice(0, 3)}
+                        <button onClick={this.showModal} className="p-0 m-0" style={{backgroundColor: 'yellow', border: '1px solid black'}}>Add</button>
                       </td>
                       {this.buildDayCell(day)}
                     </tr>
@@ -77,7 +89,10 @@ class OperatorAvailability extends React.Component {
           </table>
           <div style={{ width: '5%' }}></div>
         </div>
-        <OperatorAvailabilityModal open={this.state.showModal}/>
+        <OperatorAvailabilityModal show={this.state.show} close={this.hideModal}>
+          <p>This is a test</p>
+          <p>This is the second line of the test</p>
+        </OperatorAvailabilityModal>
       </React.Fragment>
     );
   }

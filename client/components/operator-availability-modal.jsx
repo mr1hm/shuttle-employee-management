@@ -1,11 +1,16 @@
 import React from 'react';
+import './operator-availability.css';
 
 class OperatorAvailabilityModal extends React.Component {
   render() {
-    if (!this.props.open) {
-      return null;
-    }
-    return <div style={{ backgroundColor: 'pink', width: '5.4%', height: '5vh', border: '1px solid black' }}>Testing Functionality</div>;
+    return (
+      <div className={this.props.show ? 'modal display-block' : 'modal display-none'}>
+        <section className='modal-main'>
+          {this.props.children}
+          <button onClick={this.props.close}>Add Time</button>
+        </section>
+      </div>
+    );
   }
 }
 
