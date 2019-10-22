@@ -1,6 +1,6 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
-import EditBusModal from './admin-lines-buses-editBusModal';
+import EditBusModal from './admin-lines-buses-editBus';
 import AdminRoutes from './admin-lines-buses';
 
 export default class BusesTable extends React.Component {
@@ -8,9 +8,12 @@ export default class BusesTable extends React.Component {
     super(props);
     this.state = {
       showModal: false,
-      busExistsOnRoute: false
+      busExistsOnRoute: false,
+      editBusClicked: false
     }
-    this.handleEditBusClick = this.handleEditBusClick.bind(this);
+    this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
+    this.closeEditBus = this.closeEditBus.bind(this);
+    // this.handleEditClick = this.handleEditClick.bind(this);
   }
 
   checkForActiveBuses() {
@@ -20,9 +23,21 @@ export default class BusesTable extends React.Component {
     })
   }
 
-  handleEditBusClick() {
+  closeEditBus() {
     this.setState({
-      showModal: !this.state.showModal
+      editBusClicked: false
+    })
+  }
+
+  // handleEditBusClick() {
+  //   this.setState({
+  //     showModal: !this.state.showModal
+  //   })
+  // }
+
+  handleEditBusClicked() {
+    this.setState({
+      editBusClicked: !this.state.editBusClicked
     })
   }
 
@@ -33,8 +48,7 @@ export default class BusesTable extends React.Component {
     if (this.state.showModal) {
       return (
         <div className="container editBusModal">
-          <EditBusModal busInfo={busInfo} lineID={line.real_route_id} line={line} onClose={this.handleEditBusClick} showModal={this.state.showModal} />
-
+          <EditBusModal busInfo={busInfo} editBusClicked={this.props.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} lineID={line.real_route_id} line={line} onClose={this.handleEditBusClick} showModal={this.state.showModal} />
         </div>
       );
     } else if (!line.line_name) {
@@ -49,6 +63,11 @@ export default class BusesTable extends React.Component {
         </tbody>
       );
     }
+    if (this.state.editBusClicked) {
+      return (
+        <EditBusModal getLinesBusesInfo={this.props.getLinesBusesInfo} busInfo={busInfo} editBusClicked={this.state.editBusClicked} closeEditBus={this.closeEditBus} handleEditBusClicked={this.handleEditBusClicked} lineID={line.real_route_id} line={line} onClose={this.handleEditBusClick} showModal={this.state.showModal} />
+      );
+    }
     return (
       <tbody>
         <tr>
@@ -61,13 +80,19 @@ export default class BusesTable extends React.Component {
           <td>{busInfo.daysActive}</td>
           <td>{busInfo.gap}</td>
           <td>
-            <button onClick={this.handleEditBusClick} className="btn btn-danger">EDIT</button>
+            <button onClick={this.handleEditBusClicked} className="btn btn-primary">EDIT</button>
           </td>
         </tr>
         <tr>
           <td className="startTimeDuration">{busInfo.openingDuration + "min."}</td>
           <td className="endTimeDuration">{busInfo.closingDuration + "min."}</td>
+          {/* <td>{busInfo.gapDuration}</td> */}
           {/* <td className="roundsDuration">30min</td> */}
+          <td></td>
+          <td></td>
+          <td>
+            <button className="btn btn-danger">DELETE</button>
+          </td>
         </tr>
       </tbody>
     );

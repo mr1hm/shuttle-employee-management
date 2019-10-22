@@ -18,10 +18,14 @@ export default class Lines extends React.Component {
       busDetailsClicked: false,
       addBusClicked: false,
       busAdded: false,
+      // editBusClicked: false
     };
     this.displayBusDetails = this.displayBusDetails.bind(this);
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
+    // this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
   }
+
+
 
   handleAddBusButtonClick() {
     this.setState({
@@ -40,6 +44,26 @@ export default class Lines extends React.Component {
     if (!this.props.line.real_route_id) {
       return null;
     }
+    // if (this.state.editBusClicked) {
+    //   return (
+    //     <table className="card-table table">
+    //       <thead>
+    //         <tr>
+    //           <th scope="col">Bus Number</th>
+    //           <th scope="col">Start Time</th>
+    //           <th scope="col">End Time</th>
+    //           {/* <th scope="col">Rounds</th> */}
+    //           <th scope="col">Days</th>
+    //           <th scope="col">Gap</th>
+    //           <th scope="col">Edit</th>
+    //         </tr>
+    //       </thead>
+    //       {activeBuses.map(bus =>
+    //         <EditBusModal handleEditBusClicked={this.handleEditBusClicked} editBusClicked={this.state.editBusClicked} line={line} busInfo={bus} />
+    //       )}
+    //     </table>
+    //   );
+    // }
     return (
       <div id="accordion">
         <div className="card" key={line.line_name + activeBuses.busNumber}>
@@ -99,11 +123,13 @@ export default class Lines extends React.Component {
                       {/* <th scope="col">Rounds</th> */}
                       <th scope="col">Days</th>
                       <th scope="col">Gap</th>
-                      <th scope="col">Edit</th>
+                      <th scope="col">Operations</th>
                     </tr>
                   </thead>
-                  {activeBuses.map((bus, index) =>
-                    <BusesTable key={bus.busNumber + index} line={line} busInfo={bus} />
+                  {activeBuses.map((bus, index) => {
+                    return <BusesTable key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                  }
+
                   )}
                 </table>
               </div>
