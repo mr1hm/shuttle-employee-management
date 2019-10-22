@@ -347,9 +347,7 @@ function adjustAvailableTimes($operators, $rounds, $operatorsIndex, $roundsIndex
 
 //check to see if the block that is about to be assigned will take the operator over the continuous hour limit
 function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds) {
-  $blockTooBig = false;
   $operators = addAssignedTime($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
-
   $lengthAssignedTimesArray = count($operators[$operatorsIndex]['times_assigned']);
 
   for ($assignedTimeIndex = 0; $assignedTimeIndex < $lengthAssignedTimesArray; $assignedTimeIndex++) {
@@ -357,11 +355,10 @@ function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsI
     $startTime = intval($operators[$operatorsIndex]['times_assigned'][$assignedTimeIndex][0]);
     $blockTime = calculateShiftMinutes($startTime, $endTime);
     if ($blockTime > 300) {
-      $blockTooBig = true;
-      break;
+      return true;
     }
   }
-  return $blockTooBig;
+  return false;
 }
 
 //if the line is a special status line and the operator DOES NOT have required status return true.
@@ -405,31 +402,12 @@ function populateSchedule($operators, $rounds, $conn)  {
     $operators = array_values($operators);
 
     //set the unassigned rounds, rounds on an available line, and rounds on specific bus to 0.
-    $unassignedRoundsAvailable = 0;
-    $roundsOnLineAvailable = 0;
-    $roundsOnBusAvailable = 0;
-
-    //count the number of unassigned rounds
-    for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++){
-      if ($rounds[$roundsIndex + $roundOfShift]['user_id'] === '1') {
-        $unassignedRoundsAvailable++;
-      }
-    }
-    //count the number the number of rounds on the same line
-    for ($roundOfShift1 = 0; $roundOfShift1 < $numberRounds - 1; $roundOfShift1++){
-      if($rounds[$roundsIndex + $roundOfShift1]['line_name'] === $rounds[$roundsIndex +$roundOfShift1 +1] ['line_name']) {
-        $roundsOnLineAvailable++;
-      }
-    }
-    //count the number the number of rounds on the same bus number
-    for ($roundOfShift2 = 0; $roundOfShift2 < $numberRounds - 1; $roundOfShift2++){
-      if($rounds[$roundsIndex + $roundOfShift2]['bus_number'] === $rounds[$roundsIndex +$roundOfShift2 +1] ['bus_number']) {
-        $roundsOnBusAvailable++;
-      }
-    }
+    $availableRounds = countAvailableRounds($rounds, $roundsIndex, $numberRounds);
 
     //Are there adequate unassigned rounds, rounds on the same line, rounds on the same bus?
-    if ($unassignedRoundsAvailable === $numberRounds and $roundsOnLineAvailable === $numberRounds - 1 and $roundsOnBusAvailable === $numberRounds - 1) {
+      if (intval($availableRounds['unassignedRoundsAvailable']) === $numberRounds &&
+          intval($availableRounds['roundsOnLineAvailable']) === $numberRounds - 1 &&
+          intval($availableRounds['roundsOnBusAvailable']) === $numberRounds - 1) {
 
       //length of the operator array
       $lengthOperatorsArray = count($operators);
@@ -441,14 +419,12 @@ function populateSchedule($operators, $rounds, $conn)  {
         if (!hasSpecialStatus($rounds[$roundsIndex], $operators[$operatorsIndex])) {
           continue;
         }
-
-        // # of available times for the current operator
-        $availableTimes = count($operators[$operatorsIndex]['available_times']);
-
         if (shiftTimeRestriction($rounds[$roundsIndex], $operators[$operatorsIndex])) {
           continue;
         }
 
+        // # of available times for the current operator
+        $availableTimes = count($operators[$operatorsIndex]['available_times']);
         for ($timesIndex = 0; $timesIndex < $availableTimes; $timesIndex++) {
           //define available start and end times
           $availableStartTime = intval($operators[$operatorsIndex]['available_times'][$timesIndex][0]);
@@ -515,7 +491,6 @@ function populateSchedule($operators, $rounds, $conn)  {
       $previousOperator = '';
       $getFollowingOperator = true;
     }
-
   }
 
   print('<pre>');
@@ -554,6 +529,34 @@ function updateOperatorMinutes($roundStart, $roundEnd, &$operator) {
   $operator['total_daily_minutes'] = intval($operator['total_daily_minutes']) + $totalShiftTime;
 }
 
+function countAvailableRounds($rounds, $roundsIndex, $numberRounds) {
+  $availableRounds = [
+    'unassignedRoundsAvailable' => 0,
+    'roundsOnLineAvailable' => 0,
+    'roundsOnBusAvailable' => 0
+  ];
+
+  //count the number of unassigned rounds
+  for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++){
+    if ($rounds[$roundsIndex + $roundOfShift]['user_id'] === '1') {
+      ++$availableRounds['unassignedRoundsAvailable'];
+    }
+  }
+  //count the number the number of rounds on the same line
+  for ($roundOfShift1 = 0; $roundOfShift1 < $numberRounds - 1; $roundOfShift1++){
+    if($rounds[$roundsIndex + $roundOfShift1]['line_name'] === $rounds[$roundsIndex +$roundOfShift1 +1] ['line_name']) {
+      ++$availableRounds['roundsOnLineAvailable'];
+    }
+  }
+  //count the number the number of rounds on the same bus number
+  for ($roundOfShift2 = 0; $roundOfShift2 < $numberRounds - 1; $roundOfShift2++){
+    if($rounds[$roundsIndex + $roundOfShift2]['bus_number'] === $rounds[$roundsIndex +$roundOfShift2 +1] ['bus_number']) {
+      ++$availableRounds['roundsOnBusAvailable'];
+    }
+  }
+  return $availableRounds;
+}
+
 //populate the first week
 function populateTemplateWeek ($conn, $rounds, $operators) {
   $dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -574,8 +577,6 @@ function populateTemplateWeek ($conn, $rounds, $operators) {
     }
   }
 }
-
-
 
 //**PROCESSING**/
 $quarterStartTimestamp = 1566100800;
