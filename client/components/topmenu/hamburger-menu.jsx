@@ -17,6 +17,7 @@ class HamburgerMenu extends React.Component {
       open: !this.state.open
     });
   }
+
   render() {
     return (
       <div className = "text-dark dropdown p-0 m-0" onClick = {this.toggleOpen}>
