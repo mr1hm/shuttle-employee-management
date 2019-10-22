@@ -390,7 +390,8 @@ function populateSchedule($operators, $rounds, $conn)  {
         array_push($leftovers, [
           'previousOperator' => '',
           'followingOperator' => '',
-          'unassignedRound' => $rounds[$leftoverRounds]
+          'unassignedRound' => $rounds[$leftoverRounds],
+          'roundIndex' => $roundsIndex
         ]);
       }
       break;
@@ -470,17 +471,8 @@ function populateSchedule($operators, $rounds, $conn)  {
               }
             } else {
               set30MinuteBreakFlag($operators[$operatorsIndex]);
-
-              // get index of operator in $operators array
-              $op = array_search($operators[$operatorsIndex], $operators);
-              if ( $op !== NULL ) {
-                // get index of operator in $leftovers array
-                $op = array_search($operators[$op], array_column($leftovers, 'previousOperator'));
-                if ( $op !== NULL ) {
-                  // update operator with the 30 minute flag set
-                  $leftovers[$op]['previousOperator'] = $operators[$operatorsIndex];
-                }
-              }
+              // Updates an operator, if their is one, that is a previous operator of an unassigned round in $leftovers array
+              updatePreviousOperatorBreakFlag($leftovers, $operators, $operatorsIndex);
             }
           }
           if ($madeAssignment) {
@@ -498,17 +490,17 @@ function populateSchedule($operators, $rounds, $conn)  {
       array_push($leftovers, [
         'previousOperator' => isValidPreviousOperator($previousOperator, $rounds[$roundsIndex]) ? $previousOperator : '',
         'followingOperator' => '',
-        'unassignedRound' => $rounds[$roundsIndex]
+        'unassignedRound' => $rounds[$roundsIndex],
+        'roundIndex' => $roundsIndex
       ]);
       $previousOperator = '';
       $getFollowingOperator = true;
     }
   }
-
-  print('<pre>');
-  print_r($leftovers);
-  print('<pre>');
-
+  // print('<pre>');
+  // print_r($leftovers);
+  // print('<pre>');
+  assignLeftovers($leftovers, $rounds);
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
   return $operators;
@@ -527,7 +519,6 @@ function updateRounds(&$rounds, $roundsIndex, $numberRounds, $operator) {
   //if all critera met, update the rounds in the schedule
   for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++) {
     $rounds[$roundsIndex + $roundOfShift]['user_id'] = $operator['user_id'];
-    //TODO:EVENTUALLY REMOVE LINES 348 and 349 - only for physcial print out/debugging not for db
     $rounds[$roundsIndex + $roundOfShift]['last_name'] = $operator['last_name'];
     $rounds[$roundsIndex + $roundOfShift]['first_name'] = $operator['first_name'];
     $rounds[$roundsIndex + $roundOfShift]['status'] = 'scheduled';
@@ -539,6 +530,19 @@ function updateOperatorMinutes($roundStart, $roundEnd, &$operator) {
   $totalShiftTime = calculateShiftMinutes(intval($roundStart), intval($roundEnd));
   $operator['total_weekly_minutes'] = intval($operator['total_weekly_minutes']) + $totalShiftTime;
   $operator['total_daily_minutes'] = intval($operator['total_daily_minutes']) + $totalShiftTime;
+}
+
+function updatePreviousOperatorBreakFlag(&$leftovers, $operators, $operatorsIndex) {
+  // get index of operator in $operators array
+  $op = array_search($operators[$operatorsIndex], $operators);
+  if ( $op !== NULL ) {
+    // get index of operator in $leftovers array
+    $op = array_search($operators[$op], array_column($leftovers, 'previousOperator'));
+    if ( $op !== NULL ) {
+      // update operator with the 30 minute flag set
+      $leftovers[$op]['previousOperator'] = $operators[$operatorsIndex];
+    }
+  }
 }
 
 function countAvailableRounds($rounds, $roundsIndex, $numberRounds) {
@@ -567,6 +571,36 @@ function countAvailableRounds($rounds, $roundsIndex, $numberRounds) {
     }
   }
   return $availableRounds;
+}
+
+function assignLeftovers($leftovers, &$rounds) {
+  foreach ($leftovers as $leftover) {
+    if ( !$leftover || (!$leftover['previousOperator'] && !$leftover['followingOperator']) ) continue;
+
+    if ( $leftover['previousOperator']) {
+
+      print('<pre>');
+      print_r($leftover['previousOperator'] ? '' : 'prev');
+      print('<pre>');
+
+      // if the shift does not conflict with the previous operator, assign the operator to the shift
+      if ( !(!hasSpecialStatus($leftover['unassignedRound'], $leftover['previousOperator']) ||
+             shiftTimeRestriction($leftover['unassignedRound'], $leftover['previousOperator']) ||
+             totalShiftTimeRestriction($leftover['unassignedRound']['round_start'], $leftover['unassignedRound']['round_end'], $leftover['previousOperator']) ||
+             enforce30MinuteBreak($leftover['unassignedRound']['round_start'], $leftover['previousOperator'])) ) {
+        updateRounds($rounds, $leftover['roundIndex'], 1, $leftover['previousOperator']);
+      }
+    }
+    if ( $leftover['followingOperator'] ) {
+      // if the shift does not conflict with the following operator, assign the operator to the shift
+      if ( !(!hasSpecialStatus($leftover['unassignedRound'], $leftover['followingOperator']) ||
+             shiftTimeRestriction($leftover['unassignedRound'], $leftover['followingOperator']) ||
+             totalShiftTimeRestriction($leftover['unassignedRound']['round_start'], $leftover['unassignedRound']['round_end'], $leftover['followingOperator'])) ) {
+
+      }
+    }
+  }
+  unset($leftover);
 }
 
 //populate the first week
