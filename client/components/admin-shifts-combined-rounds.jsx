@@ -14,6 +14,14 @@ class AdminShiftsCombinedRounds extends React.Component {
       selected: this.props.selecting
     };
   }
+  convertRoundTimesToTimeMeridian(rounds) {
+    for (let roundIndex = 0; roundIndex < rounds.length; roundIndex++) {
+      let roundStartMeridian = convertMilitaryTime(rounds[roundIndex].start);
+      let roundEndMeridian = convertMilitaryTime(rounds[roundIndex].end);
+      rounds[roundIndex]['roundTime'] = roundStartMeridian + ' - ' + roundEndMeridian;
+    }
+    return rounds;
+  }
   timeInMinutesFromMidnight(time) {
     let hoursToMinutes = Math.floor(time / 100) * 60;
     let minutesFromTime = time - Math.floor(time / 100) * 100;
@@ -30,7 +38,7 @@ class AdminShiftsCombinedRounds extends React.Component {
       'user_name': this.props.userName,
       'user_id': this.props.userId,
       'shift_time': this.shiftTimeMeridian,
-      'rounds': this.props.rounds,
+      'rounds': this.convertRoundTimesToTimeMeridian(this.props.rounds),
       'round_id': this.props.roundId,
       'shift_type': this.props.type
     });
