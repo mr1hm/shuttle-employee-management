@@ -158,10 +158,16 @@
     background-color: rgb(238, 204, 13);
 }
 .active {
-    background-color: green;
+    background-color: rgb(0, 140, 0);
 }
 .alertShift {
-    background-color: red;
+    /* background-color: lightpink; */
+    background: repeating-linear-gradient(
+        45deg,
+        lightpink,
+        lightpink 2px,
+        lightgray 2px,
+        lightgray 4px);
 }
 .nonOperational {
     background-color: lightgray;
@@ -234,6 +240,30 @@
         transparent 1px,
         transparent 100px);
 }
-.adminHoursRow, .shiftDetailsHeader{
+.adminHoursRow, .shiftDetailsHeader, .availableOperatorsHeader{
     height: 30px;
+}
+.availableOperator, .adminShiftDetails{
+    max-height: 30px;
+    overflow: hidden;
+    transition: max-height .5s linear;
+}
+.availableOperatorExpanded{
+    max-height: 150px;
+}
+.adminShiftDetailsExpanded{
+    max-height: 200px;
+}
+.adminShiftDetails.assignedShift{
+    height: auto;
+    max-height: fit-content;
+}
+.adminShiftAngleTimeContainer, .availableOperatorIconNameContainer{
+    cursor: pointer;
+}
+.angleIcon{
+    transition: transform .4s linear;
+}
+.angleIconRotate{
+    transform: rotate(90deg);
 }

@@ -13,8 +13,8 @@ import OperatorAvailability from './operator-availability';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
-import './post-modal.css';
 import TradeSwap from './trade-swap';
+import Post from './post';
 
 class App extends React.Component {
   constructor(props) {

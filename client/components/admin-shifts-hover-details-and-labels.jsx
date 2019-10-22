@@ -14,7 +14,7 @@ class AdminShiftsHoverDetailsAndLabels extends React.Component {
   }
   startTimer() {
     this.setState({
-      timer: setTimeout(this.displayMessage, 500)
+      timer: setTimeout(this.displayMessage, 200)
     });
   }
   displayMessage() {
@@ -40,10 +40,8 @@ class AdminShiftsHoverDetailsAndLabels extends React.Component {
   }
   render() {
     return (
-      <div className="hoverDetailContainer">
-        <div onMouseEnter={this.startTimer}
-          onMouseOut={this.handleMouseOut}
-          className="shiftOwnerLabel">
+      <div onMouseEnter={this.startTimer} onMouseLeave={this.handleMouseOut} className="hoverDetailContainer">
+        <div className="shiftOwnerLabel">
           {this.props.userName.last}
         </div>
         <div className="shiftOwnerLabel">

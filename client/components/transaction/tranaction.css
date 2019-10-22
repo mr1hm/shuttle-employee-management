@@ -20,8 +20,14 @@
 .fill1{
     float: right;
     display: inline-flex;
-    margin-right: 15%;
+    margin-right: 13%;
     margin-top: -35%;
+}
+.fill2{
+    float: right;
+    display: inline-flex;
+    margin-right: 15%;
+    margin-top: -28%;
 }
 .headtable{
     color: aliceblue;
