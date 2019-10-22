@@ -8,12 +8,11 @@ import ShiftsAvailable from './shifts/available/shifts-available';
 import ShiftsDetails from './shifts/details/shifts-details';
 import Login from './login/login';
 import Welcome from './welcome/welcome';
-import Modal from './post-modal';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
-import './post-modal.css';
 import TradeSwap from './trade-swap';
+import Post from './post';
 
 class App extends React.Component {
   constructor(props) {

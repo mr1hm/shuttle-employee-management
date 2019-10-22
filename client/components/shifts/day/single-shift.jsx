@@ -24,7 +24,7 @@ class SingleShift extends React.Component {
     if (!shifts['MIN(`start_time`)']) {
       shiftHours = calcShiftLenghtInHourMinFormat(shifts.start_time, shifts.end_time);
     }
-
+    // Change link to pass state
     return (
       <tr>
         <td> <RouteBusDisplay bus={shifts.bus_info_id} route={shifts.line_name} /> </td>
