@@ -358,7 +358,6 @@ function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsI
     $blockTime = calculateShiftMinutes($startTime, $endTime);
     if ($blockTime > 300) {
       $blockTooBig = true;
-      set30MinuteBreakFlag($operators[$operatorsIndex]);
       break;
     }
   }
@@ -367,13 +366,10 @@ function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsI
 
 //if the line is a special status line and the operator DOES NOT have required status return true.
 function hasSpecialStatus($round, $operator) {
-  $specialStatusRequired = false;
   if ($round['line_name'] === 'C') {
-    $specialStatusRequired = true;
-  }
-  if ($specialStatusRequired) {
     return intval($operator['special_route']) === 1;
   }
+  return true;
 }
 
 function populateSchedule($operators, $rounds, $conn)  {
@@ -403,7 +399,6 @@ function populateSchedule($operators, $rounds, $conn)  {
     }
 
     $madeAssignment = false;
-    $specialStatusRequired = false;
 
     //sort the operator array, put operator with fewest weekly hours at the top
     uasort($operators, 'operatorsSort');
@@ -496,6 +491,8 @@ function populateSchedule($operators, $rounds, $conn)  {
                                                                        : '';
                 $getFollowingOperator = false;
               }
+            } else {
+              set30MinuteBreakFlag($operators[$operatorsIndex]);
             }
           }
           if ($madeAssignment) {
