@@ -10,7 +10,6 @@ class Welcome extends React.Component {
     };
   }
   componentDidMount() {
-    debugger;
     const newShiftsandSelectedDriver = this.props.location.state;
     this.setState({
       newShiftsandSelectedDriver: newShiftsandSelectedDriver
