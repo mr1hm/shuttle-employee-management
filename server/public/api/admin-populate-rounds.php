@@ -3,6 +3,7 @@
 require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
+require_once('shift-restrictions.php');
 
 $outputStorage = [];
 
@@ -225,21 +226,6 @@ function buildRoundsByDay($rounds, $day) {
   return $dayRounds;
 }
 
-//takes start and end time and calculates total
-function calculateShiftMinutes($startTime, $endTime){
-  $startHourDigits = floor($startTime/100);
-  $startMinuteDigits = $startTime/100 - $startHourDigits;
-
-  $endHourDigits = floor($endTime/100);
-  $endMinuteDigits = $endTime/100 - $endHourDigits;
-
-  $startTimeInMinutes = $startHourDigits*60 + $startMinuteDigits*100;
-  $endTimeInMinutes = $endHourDigits*60 + $endMinuteDigits*100;
-
-  $shiftLengthInMinutes = $endTimeInMinutes - $startTimeInMinutes;
-  return round($shiftLengthInMinutes);
-}
-
 //determine the number of rounds in a shift based on the line
 function determineNumberRoundsInShift($lineName){
   $shiftLength = [
@@ -372,6 +358,7 @@ function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsI
     $blockTime = calculateShiftMinutes($startTime, $endTime);
     if ($blockTime > 300) {
       $blockTooBig = true;
+      set30MinuteBreakFlag($operators[$operatorsIndex]);
       break;
     }
   }
@@ -379,15 +366,13 @@ function checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsI
 }
 
 //if the line is a special status line and the operator DOES NOT have required status return true.
-function checkSpecialStatus($rounds, $roundsIndex, $operators, $operatorsIndex) {
+function hasSpecialStatus($round, $operator) {
   $specialStatusRequired = false;
-  if ($rounds[$roundsIndex]['line_name'] === 'C') {
+  if ($round['line_name'] === 'C') {
     $specialStatusRequired = true;
   }
-  if ($specialStatusRequired){
-    if($operators[$operatorsIndex]['special_route']=== '0' || $operators[$operatorsIndex]['special_route'] === 0) {
-      return true;
-    }
+  if ($specialStatusRequired) {
+    return intval($operator['special_route']) === 1;
   }
 }
 
@@ -458,21 +443,14 @@ function populateSchedule($operators, $rounds, $conn)  {
       for ($operatorsIndex = 0; $operatorsIndex < $lengthOperatorsArray; $operatorsIndex++) {
 
         //If the line requires special status and operator DOES NOT have special status, skip the operator.
-        $specialStatus = checkSpecialStatus($rounds, $roundsIndex, $operators, $operatorsIndex);
-        if ($specialStatus) {
+        if (!hasSpecialStatus($rounds[$roundsIndex], $operators[$operatorsIndex])) {
           continue;
         }
 
         // # of available times for the current operator
         $availableTimes = count($operators[$operatorsIndex]['available_times']);
 
-        //if the the driver worked past 10 pm the night before and the shift is before 8 am skip the operator
-        if ($rounds[$roundsIndex]['round_start'] < 800 and $operators[$operatorsIndex]['shift_restrictions']['worked_passed_10']['prior_day'] === 1) {
-          continue;
-        }
-
-        //if the operator has a shift before 8am, they cannot take a shift that ends later than 9pm
-        if (intval($rounds[$roundsIndex]['round_end']) > 2100 && $operators[$operatorsIndex]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] < 800) {
+        if (shiftTimeRestriction($rounds[$roundsIndex], $operators[$operatorsIndex])) {
           continue;
         }
 
@@ -483,47 +461,23 @@ function populateSchedule($operators, $rounds, $conn)  {
 
           //Is shift within the available time range of operator?
           if ($availableStartTime <= intval($rounds[$roundsIndex]['round_start']) and $availableEndTime >= intval($rounds[$roundsIndex + $numberRounds - 1]['round_end'])) {
-            //if operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
-            $totalShiftTime = calculateShiftMinutes(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
-            $totalMinutesInDay = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
-            if ($totalMinutesInDay > 480) {
-              break;
-            }
-            //if the total weekly minutes exceeds 29 hours (1740 minutes) once the shift is added, skip the operator
-            $totalWeeklyMinutes = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
-            if ($totalWeeklyMinutes > 1740) {
+            if (totalShiftTimeRestriction($rounds[$roundsIndex]['round_start'], $rounds[$roundsIndex + $numberRounds - 1]['round_end'], $operators[$operatorsIndex])) {
               break;
             }
 
             // Check to see if the operator will have too many hours if the shift is added. If so, skip that operator
             $blockTooBig = checkContinuousHourBlock($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
-            //if there is not a problem with continous block
             if (!$blockTooBig) {
-
-              //Don't assign this round to an operator if the round starts within 30 minutes after the operator worked 5 continuous hours
-              if (intval($rounds[$roundsIndex]['round_start']) - intval($operators[$operatorsIndex]['shift_restrictions']['30minute_break']) < 30) {
+              if (enforce30MinuteBreak($rounds[$roundsIndex]['round_start'], $operators[$operatorsIndex])) {
                 break;
               }
-
-              //if all critera met, update the rounds in the schedule
-              for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++) {
-                $rounds[$roundsIndex + $roundOfShift]['user_id'] = $operators[$operatorsIndex]['user_id'];
-                //TODO:EVENTUALLY REMOVE LINES 348 and 349 - only for physcial print out/debugging not for db
-                $rounds[$roundsIndex + $roundOfShift]['last_name'] = $operators[$operatorsIndex]['last_name'];
-                $rounds[$roundsIndex + $roundOfShift]['first_name'] = $operators[$operatorsIndex]['first_name'];
-                $rounds[$roundsIndex + $roundOfShift]['status'] = 'scheduled';
-              }
-              //adjust total daily and weekly hours
-              $totalShiftTime = calculateShiftMinutes(intval($rounds[$roundsIndex]['round_start']), intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']));
-              $operators[$operatorsIndex]['total_weekly_minutes'] = intval($operators[$operatorsIndex]['total_weekly_minutes']) + $totalShiftTime;
-              $operators[$operatorsIndex]['total_daily_minutes'] = intval($operators[$operatorsIndex]['total_daily_minutes']) + $totalShiftTime;
-
               //shift assignment was made
               $madeAssignment = true;
+              updateRounds($rounds, $roundsIndex, $numberRounds, $operators[$operatorsIndex]);
+              updateOperatorMinutes($rounds[$roundsIndex]['round_start'], $rounds[$roundsIndex + $numberRounds - 1]['round_end'], $operators[$operatorsIndex]);
 
               //add the time added to assigned times for the operator
               $operators = addAssignedTime ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds);
-
               //adjust the times the operator is available
               $operators = adjustAvailableTimes ($operators, $rounds, $operatorsIndex, $roundsIndex, $numberRounds, $availableStartTime, $availableEndTime, $timesIndex);
 
@@ -531,7 +485,6 @@ function populateSchedule($operators, $rounds, $conn)  {
               if (intval($rounds[$roundsIndex + $numberRounds - 1]['round_end']) > 2200) {
                 $operators[$operatorsIndex]['shift_restrictions']['worked_passed_10']['current_day'] = 1;
               }
-
               //set the flag for the shift start time of the 15hr restriction
               if (intval($rounds[$roundsIndex]['round_start']) < 800) {
                 $operators[$operatorsIndex]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = $rounds[$roundsIndex]['round_start'];
@@ -543,20 +496,9 @@ function populateSchedule($operators, $rounds, $conn)  {
                                                                        : '';
                 $getFollowingOperator = false;
               }
-
-            } else {
-              //set the flag for the required 30 minute break after working 5 continuous hours
-              $latestShiftIndex = count($operators[$operatorsIndex]['times_assigned']) - 1;
-              $latestShift = $operators[$operatorsIndex]['times_assigned'][$latestShiftIndex];
-              if ($latestShift[1] - $latestShift[0] === 500) {
-                $operators[$operatorsIndex]['shift_restrictions']['30minute_break'] = intval($latestShift[1]);
-              }
             }
           }
           if ($madeAssignment) {
-            // print('<pre>');
-            // print_r($operators[$operatorsIndex]);
-            // print('<pre>');
             $previousOperator = $operators[$operatorsIndex];
             break;
           }
@@ -579,7 +521,6 @@ function populateSchedule($operators, $rounds, $conn)  {
 
   }
 
-
   print('<pre>');
   print_r($leftovers);
   print('<pre>');
@@ -596,6 +537,24 @@ function isValidPreviousOperator($operator, $round) {
 function isValidFollowingOperator($operator, $round) {
   if (!$operator) return false;
   return intval($operator['times_assigned'][count($operator['times_assigned']) - 1][0]) === intval($round['round_end']);
+}
+
+function updateRounds(&$rounds, $roundsIndex, $numberRounds, $operator) {
+  //if all critera met, update the rounds in the schedule
+  for ($roundOfShift = 0; $roundOfShift < $numberRounds; $roundOfShift++) {
+    $rounds[$roundsIndex + $roundOfShift]['user_id'] = $operator['user_id'];
+    //TODO:EVENTUALLY REMOVE LINES 348 and 349 - only for physcial print out/debugging not for db
+    $rounds[$roundsIndex + $roundOfShift]['last_name'] = $operator['last_name'];
+    $rounds[$roundsIndex + $roundOfShift]['first_name'] = $operator['first_name'];
+    $rounds[$roundsIndex + $roundOfShift]['status'] = 'scheduled';
+  }
+}
+
+function updateOperatorMinutes($roundStart, $roundEnd, &$operator) {
+  //adjust total daily and weekly hours
+  $totalShiftTime = calculateShiftMinutes(intval($roundStart), intval($roundEnd));
+  $operator['total_weekly_minutes'] = intval($operator['total_weekly_minutes']) + $totalShiftTime;
+  $operator['total_daily_minutes'] = intval($operator['total_daily_minutes']) + $totalShiftTime;
 }
 
 //populate the first week
