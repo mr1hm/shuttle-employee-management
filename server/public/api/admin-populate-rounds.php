@@ -376,6 +376,7 @@ function populateSchedule($operators, $rounds, $conn)  {
 
   $leftovers = [];
   $previousOperator = '';
+  $operatorUpdate = [];
   $getFollowingOperator = false;
 
   for ($roundsIndex = 0; $roundsIndex < $lengthRoundsArray; $roundsIndex++) {
@@ -469,6 +470,17 @@ function populateSchedule($operators, $rounds, $conn)  {
               }
             } else {
               set30MinuteBreakFlag($operators[$operatorsIndex]);
+
+              // get index of operator in $operators array
+              $op = array_search($operators[$operatorsIndex], $operators);
+              if ( $op !== NULL ) {
+                // get index of operator in $leftovers array
+                $op = array_search($operators[$op], array_column($leftovers, 'previousOperator'));
+                if ( $op !== NULL ) {
+                  // update operator with the 30 minute flag set
+                  $leftovers[$op]['previousOperator'] = $operators[$operatorsIndex];
+                }
+              }
             }
           }
           if ($madeAssignment) {
