@@ -6,8 +6,11 @@ import { createDateStringFromDateObject } from '../../lib/time-functions';
 
 const TopMenuHamburger = props => {
   const currentDateString = props.date ? createDateStringFromDateObject(props.date) : '';// converts unix time to date/at midnight
+  const numberOfShifts = props.tradeNotification ? props.tradeNotification.newShifts.length : 0;
+  // const numberOfShifts = (props.tradeNotification.newShifts.length > 0) ? props.tradeNotification.newShifts.length : 0;
+
   return (
-    <HamburgerMenu>
+    <HamburgerMenu numberOfShifts={numberOfShifts}>
       <Link className="d-block text-center" to="/myinfo/"><div className="dropdown-item">MyInfo</div></Link>
       <Link className="d-block text-center" to={`/shifts/day/shifts-day/${currentDateString}`}><div className="dropdown-item">Day</div></Link>
       <Link className="d-block text-center" to={`/shifts/week/shifts-week/${currentDateString}`}><div className="dropdown-item">Week</div></Link>

@@ -1,5 +1,6 @@
 import React from 'react';
 import TopMenuGeneral from '../topmenu/topmenu-general';
+
 import './welcome.css';
 
 class Welcome extends React.Component {
