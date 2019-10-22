@@ -99,34 +99,9 @@
     left: 2%;
     overflow-y: scroll;
 }
-/* .hoursRowContainer {
-    width: 100%;
-    height: 20px;
-    margin-top: 10px;
-} */
-/* .hoursRow {
-    width: 81%;
-    text-align: center;
-    position: relative;
-    left: 19%;
-}
-.calendarHour {
-    width: 5.25%;
-    height: 100%;
-    display: inline-block;
-    text-align: left;
-} */
 .shiftWeekIndividualDayLink {
   color: black;
 }
-/* .shiftRowContainer {
-    /* left: 17%; */
-    /* text-align: center; */
-    /* display: inline-block; */
-    /* position: relative;
-    border: 1px solid black;
-    margin-top: 10px; */
-/* } */
 .dayRowFill {
     background-color: rgb(255, 255, 255);
     height: 100%;

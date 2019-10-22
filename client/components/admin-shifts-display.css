@@ -103,11 +103,7 @@
 .shiftWeekIndividualDayLink {
   color: black;
 }
-/* .shiftRowContainer {
-    position: relative;
-    border: 1px solid black;
-    margin-top: 10px;
-} */
+
 .dayRowFill {
     background-color: rgb(255, 255, 255);
     height: 100%;
@@ -174,14 +170,6 @@
     height: 80px;
     margin: 5px 0;
 }
-.additional-info-container {
-  display: flex;
-}
-.adminShiftDetails {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid grey;
-}
 .hoverDetailContainer {
   display: flex;
   flex-direction: column;
@@ -216,10 +204,36 @@
   transform:translate(-50%,-50%) rotate(45deg);
   background-color: lightblue;
 }
-.availableOperator:hover {
-    cursor: pointer;
-    background-color: lightgray;
-}
 .shiftSelected{
     filter: contrast(.5);
+}
+.tableCell{
+    height: 80px;
+    width: 100px;
+}
+.hours-populated-shifts-container{
+    overflow-x: scroll;
+}
+.adminLineRow{
+    height: 80px;
+}
+.adminLineHeader{
+    height: 30px;
+}
+.adminShiftHour{
+    width: 100px;
+    margin-right: 1px;
+}
+.adminShiftRows, .adminHoursRow {
+    height: 80px;
+    width: 1802px;
+    background: repeating-linear-gradient(
+        90deg,
+        lightgray,
+        lightgray 1px,
+        transparent 1px,
+        transparent 100px);
+}
+.adminHoursRow, .shiftDetailsHeader{
+    height: 30px;
 }

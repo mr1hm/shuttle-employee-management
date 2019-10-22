@@ -2,39 +2,37 @@ import React from 'react';
 import TopMenuShift from './topmenu/topmenu-shift';
 import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
-import AdminShiftsDisplayComponent from './admin-shifts-display-component';
 import AdminClickedShiftDetailsAside from './admin-shifts-clicked-details-aside';
-import './admin-shifts-display.css';
 import AdminShiftsCombinedRounds from './admin-shifts-combined-rounds';
+import './admin-shifts-display.css';
+import AdminAvailableOperatorsDisplay from './admin-available-operators-display';
 class AdminShiftsDay extends React.Component {
   constructor(props) {
     super(props);
-    this.query = ``;
     this.handleShiftClick = this.handleShiftClick.bind(this);
     this.fetchCallMethod = this.fetchCallMethod.bind(this);
     this.fetchAutoPopulatedData = this.fetchAutoPopulatedData.bind(this);
     this.getAvailableDrivers = this.getAvailableDrivers.bind(this);
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
-    this.handleClickSelectShifts = this.handleClickSelectShifts.bind(this);
+    this.handleClickAssignShifts = this.handleClickAssignShifts.bind(this);
+    this.handleClickUnassignShifts = this.handleClickUnassignShifts.bind(this);
     this.handleClickCancel = this.handleClickCancel.bind(this);
     this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
     const defaultDate = 1566619200;
     this.state = {
       rounds: null,
-      operators: {},
-      operatorStats: {},
       availableOperators: [],
-      shiftDetailsFromClick: null,
-      queryString: `?date=${defaultDate}`,
+      shiftsSelected: [],
       dateToPass: defaultDate,
       roundsSelected: [],
       roundTimes: [],
-      selecting: false,
+      selectingAssign: false,
+      selectingUnassign: false,
       groupedShifts: []
-    }
+    };
   }
-  //updating the db with the autopopulated rounds
+  // updating the db with the autopopulated rounds
   fetchAutoPopulatedData() {
     fetch(`/api/admin-populate-rounds.php`, {
       method: 'POST'
@@ -42,9 +40,8 @@ class AdminShiftsDay extends React.Component {
       .then(() => {
         this.fetchCallMethod();
       })
-      .catch(error => { throw (error) });
+      .catch(error => { throw (error); });
   }
-
   // get assigned rounds from admin-day-shifts.php
   fetchCallMethod() {
     fetch(`/api/admin-day-shifts.php`)
@@ -53,27 +50,27 @@ class AdminShiftsDay extends React.Component {
         console.log(data);
         this.shiftsGroupedByLineAndBus(data);
       })
-      .catch(error => { throw (error) });
+      .catch(error => { throw (error); });
   }
   getAvailableDrivers(startTime, endTime, roundId, userId) {
-    if (!this.state.selecting || userId != 1) {
+    if (!this.state.selectingAssign || userId !== 1) {
       return;
     }
     var roundsSelected = this.state.roundsSelected;
     var roundTimes = this.state.roundTimes;
     var roundIndex = roundsSelected.indexOf(roundId);
-    if(roundIndex >= 0){
+    if (roundIndex >= 0) {
       roundTimes.splice(roundIndex, 1);
       roundsSelected.splice(roundIndex, 1);
     } else {
       roundsSelected.push(roundId);
       roundTimes.push({
-        "start_time": startTime,
-        "stop_time": endTime
-      })
+        'start_time': startTime,
+        'stop_time': endTime
+      });
     }
     console.log(roundTimes, roundsSelected, roundIndex);
-    if(roundTimes.length === 0){
+    if (roundTimes.length === 0) {
       this.setState({
         roundsSelected: [],
         roundTimes: [],
@@ -94,7 +91,7 @@ class AdminShiftsDay extends React.Component {
           roundTimes: roundTimes
         });
       })
-      .catch(error => { throw (error) });
+      .catch(error => { throw (error); });
   }
   groupOperatorsByUserId(operatorsList) {
     var groupedOperators = {};
@@ -107,27 +104,6 @@ class AdminShiftsDay extends React.Component {
     }
     return groupedOperators;
   }
-  createAvailableOperatorElements() {
-    const availableOperatorsElements = this.state.availableOperators.map(operator => {
-      return (
-        <div
-          key={operator.id}
-          id={operator.id}
-          className="availableOperator rounded border d-flex justify-content-center align-items-center"
-          onClick={this.handleClickAssignShift}>
-          {`${operator.lastName}, ${operator.firstName}`}
-        </div>
-      );
-    });
-    if (availableOperatorsElements.length) {
-      return (
-        <React.Fragment>
-          <div className="available-operators">Available Operators</div>
-          {availableOperatorsElements}
-        </React.Fragment>
-      );
-    }
-  }
   handleClickAssignShift(event) {
     console.log(event.target.id, this.state.roundsSelected);
     const data = {
@@ -137,7 +113,7 @@ class AdminShiftsDay extends React.Component {
         'rounds': this.state.roundsSelected
       }),
       headers: { 'Content-Type': 'application/json' }
-    }
+    };
     fetch(`/api/admin-update-shifts.php`, data)
       .then(response => { })
       .then(data => {
@@ -145,11 +121,11 @@ class AdminShiftsDay extends React.Component {
         this.setState({
           availableOperators: [],
           roundsSelected: [],
-          selecting: false,
-          shiftDetailsFromClick: null
+          selectingAssign: false,
+          shiftsSelected: []
         });
       })
-      .catch(error => { throw (error) });
+      .catch(error => { throw (error); });
   }
   componentDidMount() {
     this.fetchCallMethod();
@@ -157,7 +133,7 @@ class AdminShiftsDay extends React.Component {
   dataDidUpdate() {
     this.fetchCallMethod();
   }
-  //build array for a specific line and busNumber and sort by start time
+  // build array for a specific line and busNumber and sort by start time
   buildRoundsByLine(data, lineName, busNumber) {
     var roundsForLine = [];
     for (var roundsIndex = 0; roundsIndex < data.length; roundsIndex++) {
@@ -169,45 +145,42 @@ class AdminShiftsDay extends React.Component {
       return a.round_start - b.round_start;
     });
     // fill in rounds that are missing and cannot be assigned
-    if (roundsForLine[0].round_start !== "600") {
+    if (roundsForLine[0].round_start !== '600') {
       let nonOperationalRound = { ...roundsForLine[0] };
-      nonOperationalRound.first_name = "n/a";
-      nonOperationalRound.last_name = "n/a";
-      nonOperationalRound.round_id = "n/a";
-      nonOperationalRound.status = "non-operational";
-      nonOperationalRound.user_id = "n/a";
-      nonOperationalRound.round_start = "600";
+      nonOperationalRound.first_name = 'n/a';
+      nonOperationalRound.last_name = 'n/a';
+      nonOperationalRound.round_id = 'n/a';
+      nonOperationalRound.status = 'non-operational';
+      nonOperationalRound.user_id = 'n/a';
+      nonOperationalRound.round_start = '600';
       nonOperationalRound.round_end = roundsForLine[0].round_start;
       roundsForLine.unshift(nonOperationalRound);
     }
     var lastRoundIndex = roundsForLine.length - 1;
-    if (roundsForLine[lastRoundIndex].round_end !== "2400") {
+    if (roundsForLine[lastRoundIndex].round_end !== '2400') {
       let nonOperationalRound = { ...roundsForLine[lastRoundIndex] };
-      nonOperationalRound.first_name = "n/a";
-      nonOperationalRound.last_name = "n/a";
-      nonOperationalRound.round_id = "n/a";
-      nonOperationalRound.status = "non-operational";
-      nonOperationalRound.user_id = "n/a";
+      nonOperationalRound.first_name = 'n/a';
+      nonOperationalRound.last_name = 'n/a';
+      nonOperationalRound.round_id = 'n/a';
+      nonOperationalRound.status = 'non-operational';
+      nonOperationalRound.user_id = 'n/a';
       nonOperationalRound.round_start = roundsForLine[lastRoundIndex].round_end;
-      nonOperationalRound.round_end = "2400";
+      nonOperationalRound.round_end = '2400';
       roundsForLine.push(nonOperationalRound);
     }
     return roundsForLine;
   }
 
-  //build an array of shifts for specific line and bus number
+  // build an array of shifts for specific line and bus number
   buildShiftsByLine(data, lineName, busNumber) {
     var shiftsForLine = [];
     var sortedLineAndBusArray = this.buildRoundsByLine(data, lineName, busNumber);
     var previousUserId = null;
-    let roundCounter = 0;
     for (var indexSortedArray = 0; indexSortedArray < sortedLineAndBusArray.length; indexSortedArray++) {
       let currentUserId = sortedLineAndBusArray[indexSortedArray].user_id;
       const firstName = sortedLineAndBusArray[indexSortedArray].first_name;
       const lastName = sortedLineAndBusArray[indexSortedArray].last_name;
-      let displayName = (firstName && lastName) ? lastName + ", " + firstName : "n/a";
-      if (currentUserId == 1 || currentUserId === "n/a" || currentUserId !== previousUserId ){ //
-        roundCounter = 0;
+      if (currentUserId == 1 || currentUserId === 'n/a' || currentUserId !== previousUserId) { //
         shiftsForLine.push({
           'round_id': sortedLineAndBusArray[indexSortedArray].round_id,
           'line_name': lineName + busNumber,
@@ -215,54 +188,60 @@ class AdminShiftsDay extends React.Component {
           'end_time': sortedLineAndBusArray[indexSortedArray].round_end,
           'user_id': sortedLineAndBusArray[indexSortedArray].user_id,
           'user_name': {
-            'first': firstName ? firstName : "n/a",
-            'last': lastName ? lastName : "n/a"
+            'first': firstName || 'n/a',
+            'last': lastName || 'n/a'
           },
-          'rounds': roundCounter+1
+          'rounds': [{
+            'id': sortedLineAndBusArray[indexSortedArray].round_id,
+            'start': sortedLineAndBusArray[indexSortedArray].round_start,
+            'end': sortedLineAndBusArray[indexSortedArray].round_end
+          }]
         });
-        roundCounter = 0;
       } else {
-        ++roundCounter;
         shiftsForLine[shiftsForLine.length - 1].end_time = sortedLineAndBusArray[indexSortedArray].round_end;
-        shiftsForLine[shiftsForLine.length - 1].rounds = roundCounter + 1;
+        shiftsForLine[shiftsForLine.length - 1].rounds.push({
+          'id': sortedLineAndBusArray[indexSortedArray].round_id,
+          'start': sortedLineAndBusArray[indexSortedArray].round_start,
+          'end': sortedLineAndBusArray[indexSortedArray].round_end
+        });
       }
       previousUserId = currentUserId;
     }
     return shiftsForLine;
   }
   // group operatorStats by id
-  groupOperatorsAndOperatorData(data){
+  groupOperatorsAndOperatorData(data) {
     const groupedOperatorData = {};
-    for (let dataIndex = 0; dataIndex < data.length; dataIndex++){
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
       let currentUserId = data[dataIndex].user_id;
       let operatorData = data[dataIndex];
-      if (!groupedOperatorData[currentUserId]){
+      if (!groupedOperatorData[currentUserId]) {
         groupedOperatorData[currentUserId] = {};
         groupedOperatorData[currentUserId].rounds = {};
         groupedOperatorData[currentUserId].firstName = operatorData.first_name;
         groupedOperatorData[currentUserId].lastName = operatorData.last_name;
-        groupedOperatorData[currentUserId].specialRoute = (operatorData.special_route_ok == 1) ? true : false;
+        groupedOperatorData[currentUserId].specialRoute = (operatorData.special_route_ok == 1);
         groupedOperatorData[currentUserId].totalHours = null;
       }
       let currentLine = operatorData.line_name + operatorData.bus_number;
-      if (!groupedOperatorData[currentUserId].rounds[currentLine]){
+      if (!groupedOperatorData[currentUserId].rounds[currentLine]) {
         groupedOperatorData[currentUserId].rounds[currentLine] = [];
       }
       groupedOperatorData[currentUserId].rounds[currentLine].push(operatorData);
     }
-    for( var id in groupedOperatorData ){
+    for (var id in groupedOperatorData) {
       var totalHours = 0;
       var rounds = groupedOperatorData[id].rounds;
-      for ( var line in rounds){
+      for (var line in rounds) {
         totalHours += parseFloat(this.calculateTotalHours(rounds[line]));
       }
       groupedOperatorData[id].totalHours = totalHours;
     }
     this.setState({ operators: groupedOperatorData });
   }
-  calculateTotalHours(rounds){
+  calculateTotalHours(rounds) {
     var totalHours = 0;
-    for(var roundsIndex = 0; roundsIndex < rounds.length; roundsIndex++){
+    for (var roundsIndex = 0; roundsIndex < rounds.length; roundsIndex++) {
       var startTime = this.convert24hrTimeToMinutes(parseInt(rounds[roundsIndex].round_start));
       var endTime = this.convert24hrTimeToMinutes(parseInt(rounds[roundsIndex].round_end));
       var totalMinutesDuringRound = endTime - startTime;
@@ -271,7 +250,7 @@ class AdminShiftsDay extends React.Component {
     }
     return totalHours.toFixed(1);
   }
-  convert24hrTimeToMinutes(time){
+  convert24hrTimeToMinutes(time) {
     var hours = Math.floor(time / 100);
     var minutes = time - hours * 100;
     return minutes + hours * 60;
@@ -280,45 +259,102 @@ class AdminShiftsDay extends React.Component {
     var operatorStats = {};
     var busAndLineObject = {};
     var groupedShifts = [];
-      for (var index = 0; index < data.length; index++) {
-        var joinedLineAndBusNumber = data[index].line_name + data[index].bus_number;
-        busAndLineObject[joinedLineAndBusNumber] = [data[index].line_name, data[index].bus_number];
-      }
-      //remove the duplicates that still remain in the busAndLineArray
-      for (var key in busAndLineObject) {
-        var lineName = busAndLineObject[key][0];
-        var busNumber = busAndLineObject[key][1];
-        groupedShifts.push([lineName, busNumber, this.buildShiftsByLine(data, lineName, busNumber)]);
-      }
-      console.log('groupedShifts: ', groupedShifts);
-      this.setState({groupedShifts: groupedShifts});
+    for (var index = 0; index < data.length; index++) {
+      var joinedLineAndBusNumber = data[index].line_name + data[index].bus_number;
+      busAndLineObject[joinedLineAndBusNumber] = [data[index].line_name, data[index].bus_number];
+    }
+    // remove the duplicates that still remain in the busAndLineArray
+    for (var key in busAndLineObject) {
+      var lineName = busAndLineObject[key][0];
+      var busNumber = busAndLineObject[key][1];
+      groupedShifts.push([lineName, busNumber, this.buildShiftsByLine(data, lineName, busNumber)]);
+    }
+    console.log('groupedShifts: ', groupedShifts);
+    this.setState({ groupedShifts: groupedShifts });
   }
-  handleClickSelectShifts() {
-    this.setState({ selecting: true });
+  handleClickAssignShifts() {
+    if (this.state.selectingUnassign) {
+      return;
+    }
+    this.setState({ selectingAssign: true });
+  }
+  handleClickUnassignShifts() {
+    if (this.state.selectingAssign) {
+      return;
+    }
+    this.setState({ selectingUnassign: true });
   }
   handleClickCancel() {
     this.setState({
-      selecting: false,
+      selectingAssign: false,
+      selectingUnassign: false,
       availableOperators: [],
       roundsSelected: [],
       roundTimes: [],
-      shiftDetailsFromClick: null
+      shiftsSelected: []
     });
   }
-  showCancelButton() {
-    if (this.state.selecting) {
-      return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>
+  showAssignCancelButton() {
+    if (this.state.selectingAssign) {
+      return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
     }
   }
-  renderLineComponents(){
+  showUnAssignCancelButton() {
+    if (this.state.selectingUnassign) {
+      return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
+    }
+  }
+  handleShiftClick(shift) {
+    var shiftsSelected = this.state.shiftsSelected;
+    if (this.state.selectingAssign) {
+      var shiftIndex = shiftsSelected.map(shiftItem => shiftItem.round_id).indexOf(shift.round_id);
+      if (shiftIndex > -1) {
+        shiftsSelected.splice(shiftIndex, 1);
+        this.setState({ shiftsSelected: shiftsSelected });
+        return;
+      }
+    } else {
+      shiftsSelected = [];
+    }
+    if (shift.shift_type === 'nonOperational');
+    else {
+      shiftsSelected.push(shift);
+      this.setState({ shiftsSelected: shiftsSelected });
+    }
+  }
+  handleClickUnassignOperator(event) {
+    console.log('event target: ', event.target.id);
+    let roundId = event.target.id;
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'user_id': 1,
+        'rounds': [roundId]
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/admin-update-shifts.php`, data)
+      .then(response => { })
+      .then(data => {
+        this.fetchCallMethod();
+        this.setState({
+          availableOperators: [],
+          roundsSelected: [],
+          selectingUnassign: false,
+          shiftsSelected: []
+        });
+      })
+      .catch(error => { throw (error); });
+  }
+  renderLineComponents() {
     const shiftsGroupedByLine = this.state.groupedShifts;
     const elements = [];
     shiftsGroupedByLine.forEach((element, index) => {
       elements.push(
-        <div key={index} className="bus-line adminShiftRow d-flex justify-content-center">
+        <div key={index} className="bus-line adminLineRow d-flex justify-content-center border w-100">
           < RouteBusDisplay
-            bus={element[1]}  //bus number
-            route={element[0]} //line letter
+            bus={element[1]} // bus number
+            route={element[0]} // line letter
           />
         </div>);
     });
@@ -329,15 +365,18 @@ class AdminShiftsDay extends React.Component {
     var elements = [];
     for (var groupIndex = 0; groupIndex < shiftsGroupedByLine.length; groupIndex++) {
       elements.push(
-        <div key={groupIndex} className="shiftRowContainer adminShiftRow d-flex border border-dark w-100">
+        <div key={groupIndex} className="adminShiftRows d-flex align-items-center border">
           {shiftsGroupedByLine[groupIndex][2].map((element, index) => {
-            var roundType = "";
-            if (element.user_id === "n/a") {
-              roundType = "nonOperational";
+            var roundType = '';
+            var selectingType = null;
+            if (element.user_id === 'n/a') {
+              roundType = 'nonOperational';
             } else if (element.user_id == 1) {
-              roundType = "alertShift";
+              roundType = 'alertShift';
+              selectingType = this.state.selectingAssign;
             } else {
-              roundType = "active";
+              roundType = 'active';
+              selectingType = this.state.selectingUnassign;
             }
             return (
               < AdminShiftsCombinedRounds
@@ -350,9 +389,9 @@ class AdminShiftsDay extends React.Component {
                 roundId={element.round_id}
                 range={{ min: 600, max: 2400 }}
                 shiftData={{ start: element.start_time, end: element.end_time }}
-                selecting={this.state.selecting}
+                selecting={selectingType}
                 onClickShifts={this.handleShiftClick}
-                />
+              />
             );
           })}
         </div>
@@ -360,79 +399,87 @@ class AdminShiftsDay extends React.Component {
     }
     return elements;
   }
-
-  handleShiftClick(response) {
-    if (response.shift_type === "nonOperational") return
-    else this.setState({shiftDetailsFromClick: response});
-  }
-  handleClickUnassignOperator(roundId){
-    console.log(event.target.id, this.state.roundsSelected);
-    const data = {
-      method: 'POST',
-      body: JSON.stringify({
-        'user_id': 1,
-        'rounds': [roundId]
-      }),
-      headers: { 'Content-Type': 'application/json' }
-    }
-    fetch(`/api/admin-update-shifts.php`, data)
-      .then(response => { })
-      .then(data => {
-        this.fetchCallMethod();
-        this.setState({
-          availableOperators: [],
-          roundsSelected: [],
-          selecting: false,
-          shiftDetailsFromClick: null
-        });
-      })
-      .catch(error => { throw (error) });
-  }
-  generateShiftDetailsComponent() {
-    if (this.state.shiftDetailsFromClick) {
-      return (
+  renderShiftDetailsComponent() {
+    if (this.state.shiftsSelected.length) {
+      var shiftElements = this.state.shiftsSelected.map(shift =>
         <AdminClickedShiftDetailsAside
-        userName={this.state.shiftDetailsFromClick.user_name}
-        userId={this.state.shiftDetailsFromClick.user_id}
-        shiftTime={this.state.shiftDetailsFromClick.shift_time}
-        rounds={this.state.shiftDetailsFromClick.rounds}
-        roundId={this.state.shiftDetailsFromClick.round_id}
-        shiftType={this.state.shiftDetailsFromClick.shift_type}
-        onClickUnassignOperator={this.handleClickUnassignOperator}
-      />
+          key={shift.round_id}
+          userName={shift.user_name}
+          userId={shift.user_id}
+          shiftTime={shift.shift_time}
+          rounds={shift.rounds}
+          roundId={shift.round_id}
+          shiftType={shift.shift_type}
+          onClickUnassignOperator={this.handleClickUnassignOperator}
+        />
+      );
+      return (
+        <React.Fragment>
+          <div className="shiftDetailsHeader d-flex border justify-content-center align-items-end w-100">
+            <h5 className="m-0">Shift details</h5>
+          </div>
+          <div className="shiftDetailsContainer d-flex flex-column border w-100">
+            {shiftElements}
+          </div>
+        </React.Fragment>
       );
     }
   }
-
-  render() {
+  renderAvailableOperatorElements() {
+    const availableOperatorsElements = this.state.availableOperators.map(operator => {
       return (
-        <div>
-          <TopMenuShift title="Admin" page='day' date={this.state.dateToPass} />
-          <div className="main-container d-flex px-5 h-100">
-            <div className="auto-populate-bus-line-container container d-flex flex-column justify-content-center col-1 p-0 mx-2">
-              <div className="lineHeaderContainer d-flex justify-content-center align-items-end adminShiftRow">
-                <h4 className="lineHeader m-0">Lines</h4>
-              </div>
-              {this.renderLineComponents()}
-            </div>
-            <div className="hours-populated-shifts-container container d-flex flex-column col-9 mx-2">
-              <div className="view-hours-container d-flex align-items-end adminShiftRow">
-                <HoursOfOperation />
-              </div>
-              {this.renderShiftComponents()}
-            </div>
-            <div className="additional-info-container container d-flex flex-column col-2 adminShiftRow">
-              {this.generateShiftDetailsComponent()}
-              {this.createAvailableOperatorElements()}
-            </div>
-          </div>
-          <div className="selectShiftsButtonContainer">
-            <button className="btn btn-primary m-2" onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
-            <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickSelectShifts}>Select Shifts to Assign</button>
-            {this.showCancelButton()}
+        <AdminAvailableOperatorsDisplay
+          key={operator.id}
+          id={operator.id}
+          name={`${operator.lastName}, ${operator.firstName}`}
+          dailyHours={operator.totalHours}
+          weeklyHours={operator.weeklyHours}
+          onClickAssignShift={this.handleClickAssignShift}
+        />
+      );
+    });
+    if (availableOperatorsElements.length) {
+      return (
+        <div className="availableOperatorsContainer d-flex flex-column px-5">
+          <h5 className="availableOperatorsHeader mt-1 mb-0">Available Operators</h5>
+          <div className="availableOperatorsContainer d-flex">
+            {availableOperatorsElements}
           </div>
         </div>
       );
+    }
+  }
+  render() {
+    return (
+      <div>
+        <TopMenuShift title="Admin" page='day' date={this.state.dateToPass} />
+        <div className="selectShiftsButtonContainer d-flex px-5">
+          <button className="btn btn-primary m-2" onClick={this.fetchAutoPopulatedData}> AUTO POPULATE </button>
+          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickAssignShifts}>Select Shifts to Assign</button>
+          {this.showAssignCancelButton()}
+          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickUnassignShifts}>Select Shift to Unassign</button>
+          {this.showUnAssignCancelButton()}
+        </div>
+        <div className="main-container d-flex px-5 h-100">
+          <div className="bus-line-container container d-flex flex-column align-items-center p-0">
+            <div className="adminLineHeader lineHeaderContainer d-flex justify-content-center align-items-end border w-100">
+              <h5 className="m-0">Lines</h5>
+            </div>
+            {this.renderLineComponents()}
+          </div>
+          <div className="hours-populated-shifts-container container d-flex flex-column col-9 p-0">
+            <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border">
+              <HoursOfOperation />
+            </div>
+            {this.renderShiftComponents()}
+          </div>
+          <div className="additional-info-container d-flex flex-column col-2 align-self-stretch p-0 m-0">
+            {this.renderShiftDetailsComponent()}
+          </div>
+        </div>
+        {this.renderAvailableOperatorElements()}
+      </div>
+    );
   }
 }
 export default AdminShiftsDay;

@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 class HoursOfOperation extends React.Component {
   hoursLabelRow() {
-    const hoursArray = [6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    const hoursArray = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'];
     return hoursArray.map((time, index) =>
-      <div className="calendarHour" key= {index} >
+      <div className="adminShiftHour pl-1" key= {index} >
         {time}
       </div>
     );
