@@ -18,6 +18,7 @@ class OperatorAvailability extends React.Component {
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
       show: false,
+      day: null,
       selectedStartTime: 0,
       selectedEndTime: 0
     };
@@ -49,15 +50,19 @@ class OperatorAvailability extends React.Component {
     );
   }
 
-  showModal() {
+  showModal(event) {
     this.setState({
-      show: true
+      show: true,
+      day: event.currentTarget.id
     });
+
   }
 
   hideModal() {
     this.setState({
-      show: false
+      show: false,
+      selectedStartTime: 0,
+      selectedEndTime: 0
     });
   }
 
@@ -75,7 +80,7 @@ class OperatorAvailability extends React.Component {
 
   render() {
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const times = ['6:00', '6:15', '6:30', '6:45', '7:00'];
+    const times = ['6:00', '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00', '8:15', '8:30', '8:45', '9:00', '9:15', '9:30', '9:45', '10:00'];
     return (
       <React.Fragment>
         <TopMenuGeneral title="MY AVAILABILITY"/>
@@ -95,7 +100,7 @@ class OperatorAvailability extends React.Component {
                     <tr key={day} className="row d-flex justify-content-end">
                       <td className="align-middle" style={{ backgroundColor: 'white', width: '2.8%', heigth: '10vh', border: '1px solid black' }}>
                         {day.slice(0, 3)}
-                        <button onClick={this.showModal} className="p-0 m-0" style={{ backgroundColor: 'yellow', border: '1px solid black' }}>Add</button>
+                        <button id={day} onClick={this.showModal} className="p-0 m-0" style={{ backgroundColor: 'yellow', border: '1px solid black' }} type="button">Add</button>
                       </td>
                       {this.buildDayCell(day)}
                     </tr>
@@ -106,11 +111,11 @@ class OperatorAvailability extends React.Component {
           </table>
           <div style={{ width: '5%' }}></div>
         </div>
-        <OperatorAvailabilityModal show={this.state.show} close={this.hideModal}>
+        <OperatorAvailabilityModal day={this.state.day} show={this.state.show} close={this.hideModal}>
           <div className="d-flex">
-            <div>
-              <div id="startTime">{this.state.selectedStartTime}</div>
-              <div className="dropdown">
+            <div className="mr-2">
+              <div className="m-2 border" id="startTime">{this.state.selectedStartTime}</div>
+              <div className="dropdown mb-2">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 StartTime
                 </button>
@@ -126,9 +131,9 @@ class OperatorAvailability extends React.Component {
               </div>
             </div>
 
-            <div>
-              <div id="endTime">{this.state.selectedEndTime}</div>
-              <div className="dropdown">
+            <div className="ml-2">
+              <div className="m-2 border" id="endTime">{this.state.selectedEndTime}</div>
+              <div className="dropdown mb-2">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 End Time
                 </button>
