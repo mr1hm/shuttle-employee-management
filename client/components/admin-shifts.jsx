@@ -48,7 +48,9 @@ class AdminShiftsDay extends React.Component {
       .then(response => response.json())
       .then(data => {
         console.log(data);
-        this.shiftsGroupedByLineAndBus(data);
+        this.setState({
+          groupedShifts: data
+        });
       })
       .catch(error => { throw (error); });
   }
@@ -360,8 +362,8 @@ class AdminShiftsDay extends React.Component {
       elements.push(
         <div key={index} className="bus-line adminLineRow d-flex justify-content-center border w-100">
           < RouteBusDisplay
-            bus={element[1]} // bus number
-            route={element[0]} // line letter
+            bus={element.bus_number} // bus number
+            route={element.line_name} // line letter
           />
         </div>);
     });
@@ -373,7 +375,7 @@ class AdminShiftsDay extends React.Component {
     for (var groupIndex = 0; groupIndex < shiftsGroupedByLine.length; groupIndex++) {
       elements.push(
         <div key={groupIndex} className="adminShiftRows d-flex align-items-center border">
-          {shiftsGroupedByLine[groupIndex][2].map((element, index) => {
+          {shiftsGroupedByLine[groupIndex].shifts.map((element, index) => {
             var roundType = '';
             var selectingType = null;
             if (element.user_id === 'n/a') {
@@ -395,7 +397,7 @@ class AdminShiftsDay extends React.Component {
                 rounds={element.rounds}
                 roundId={element.round_id}
                 range={{ min: 600, max: 2400 }}
-                shiftData={{ start: element.start_time, end: element.end_time }}
+                shiftData={{ start: element.start_time.toString(), end: element.end_time.toString() }}
                 selecting={selectingType}
                 onClickShifts={this.handleShiftClick}
               />
