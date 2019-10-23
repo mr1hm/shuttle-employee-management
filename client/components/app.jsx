@@ -8,7 +8,6 @@ import ShiftsAvailable from './shifts/available/shifts-available';
 import ShiftsDetails from './shifts/details/shifts-details';
 import Login from './login/login';
 import Welcome from './welcome/welcome';
-import Modal from './post-modal';
 import OperatorAvailability from './operator-availability';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
@@ -19,7 +18,7 @@ import Post from './post';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    //console.log('app props', props.state);
+    // console.log('app props', props.state);
     this.state = {
       userLogin: false,
       userId: [],
