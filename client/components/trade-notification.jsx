@@ -14,9 +14,9 @@ class TradeNotification extends React.Component {
   componentDidMount() {
     fetch(`/api/get-notifications.php?id=${this.props.userId}`)
       .then(response => response.json())
-      .then(shiftsArray => {
+      .then(shiftsArrayOfObjects => {
         this.setState({
-          newShifts: shiftsArray
+          newShifts: shiftsArrayOfObjects
         });
       })
       .catch(error => console.error('Fetch failed', error));
@@ -57,7 +57,7 @@ class TradeNotification extends React.Component {
         </div>
         {this.state.newShifts.map(oneShift => {
           return (
-            <div key={oneShift.roundID} className="row text-center">
+            <div key={oneShift.id} className="row text-center">
               <div className="col-2">
                 <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
               </div>
