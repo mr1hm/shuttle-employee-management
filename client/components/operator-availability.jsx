@@ -17,10 +17,14 @@ class OperatorAvailability extends React.Component {
         'Friday': [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
-      show: false
+      show: false,
+      selectedStartTime: 0,
+      selectedEndTime: 0
     };
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
+    this.setStartTime = this.setStartTime.bind(this);
+    this.setEndTime = this.setEndTime.bind(this);
   }
 
   buildDayCell(day) {
@@ -57,8 +61,21 @@ class OperatorAvailability extends React.Component {
     });
   }
 
+  setStartTime(event) {
+    this.setState({
+      selectedStartTime: event.currentTarget.textContent
+    });
+  }
+
+  setEndTime(event) {
+    this.setState({
+      selectedEndTime: event.currentTarget.textContent
+    });
+  }
+
   render() {
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const times = ['6:00', '6:15', '6:30', '6:45', '7:00'];
     return (
       <React.Fragment>
         <TopMenuGeneral title="MY AVAILABILITY"/>
@@ -78,7 +95,7 @@ class OperatorAvailability extends React.Component {
                     <tr key={day} className="row d-flex justify-content-end">
                       <td className="align-middle" style={{ backgroundColor: 'white', width: '2.8%', heigth: '10vh', border: '1px solid black' }}>
                         {day.slice(0, 3)}
-                        <button onClick={this.showModal} className="p-0 m-0" style={{backgroundColor: 'yellow', border: '1px solid black'}}>Add</button>
+                        <button onClick={this.showModal} className="p-0 m-0" style={{ backgroundColor: 'yellow', border: '1px solid black' }}>Add</button>
                       </td>
                       {this.buildDayCell(day)}
                     </tr>
@@ -90,8 +107,43 @@ class OperatorAvailability extends React.Component {
           <div style={{ width: '5%' }}></div>
         </div>
         <OperatorAvailabilityModal show={this.state.show} close={this.hideModal}>
-          <p>This is a test</p>
-          <p>This is the second line of the test</p>
+          <div className="d-flex">
+            <div>
+              <div id="startTime">{this.state.selectedStartTime}</div>
+              <div className="dropdown">
+                <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                StartTime
+                </button>
+                <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  {
+                    times.map(time => {
+                      return (
+                        <button key={time} className="dropdown-item" onClick={this.setStartTime} type="button">{time}</button>
+                      );
+                    })
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div id="endTime">{this.state.selectedEndTime}</div>
+              <div className="dropdown">
+                <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                End Time
+                </button>
+                <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  {
+                    times.map(time => {
+                      return (
+                        <button key={time} className="dropdown-item" onClick={this.setEndTime} type="button">{time}</button>
+                      );
+                    })
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
         </OperatorAvailabilityModal>
       </React.Fragment>
     );
