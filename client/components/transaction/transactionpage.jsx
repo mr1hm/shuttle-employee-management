@@ -13,33 +13,18 @@ class Transaction extends React.Component {
       userId: null,
       cellProvider: []
     }
-    this.getTransactionLog = this.getTransactionLog.bind(this);
     this.getAllUserNames = this.getAllUserNames.bind(this);
     this.searchByName = this.searchByName.bind(this);
     this.searchByType = this.searchByType.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
+    this.handlePageSwitch = this.handlePageSwitch.bind(this);
   }
 
   componentDidMount(){
     this.getAllUserNames();
-    if(this.state.userName.length === 0){
-      this.getTransactionLog();
-    }
+    this.handlePageSwitch();
   }
-  getTransactionLog(){
-    fetch(`/api/transaction-page.php`,{
-      method: 'GET'
-    })
-      .then(response => {
-        return response.json()
-      })
-      .then(response => {
-        this.setState({
-          transactionInfo: response
-        })
-      });
 
-  }
   searchByName(event) {
     let nameIndex = event.target.selectedIndex;
     let userId = event.target[nameIndex].value;
@@ -59,8 +44,9 @@ class Transaction extends React.Component {
   searchByType(event) {
     let typeIndex = event.target.selectedIndex;
     let userType = event.target[typeIndex].value;
-    console.log("event0", event.target[typeIndex].value);
-    console.log("event1", event.target.selectedIndex);
+    if(userType === 'ALL'){
+      return this.handlePageSwitch();
+    }
     fetch(`/api/transaction-get.php?type=${userType}`, {
       method: 'GET',
     })
@@ -88,22 +74,39 @@ class Transaction extends React.Component {
       })
       .catch(error => { throw (error) });
   }
+
+  handlePageSwitch(){
+    let currentPage = this.state.transactionInfo.currentPage;
+    console.log("pagrnum",currentPage);
+    fetch(`/api/transaction-get.php?page=${currentPage}`, {
+      method: 'GET',
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(response => {
+        this.setState({
+          transactionInfo: response
+        })
+      })
+      .catch(error => { throw (error) });
+  }
+
   handlePaginationClick(event) {
     let pageNum = parseInt(event.target.textContent) -1;
-    console.log("pageinationclick", pageNum);
-    console.log("currentpagevalue", this.state.transactionInfo.currentPage);
-    const currentPage = this.state.transactionInfo.currentPage;
+    let page = {...this.state.transactionInfo}
+    page.currentPage = pageNum;
     this.setState({
-      currentPage: currentPage + pageNum
+      transactionInfo: page
     })
-    console.log("aftercurrentpagevalue", this.state.transactionInfo.currentPage);
+    setTimeout(() => {
+      this.handlePageSwitch();
+    }, 200);
   }
 
   render() {
-    console.log("transaction",this.state.transactionInfo);
-    var log = null;
-    var pagination = this.state.transactionInfo.totalPages;
-    console.log("page", pagination);
+    let log = null;
+    let pagination = this.state.transactionInfo.totalPages;
     if (this.state.transactionInfo.data === undefined) {
     log = this.state.transactionInfo.map((log, index) => {
        return(
@@ -144,9 +147,6 @@ class Transaction extends React.Component {
       pagination = <li className="page-item"><a onClick={this.handlePaginationClick} className="page-link" href="#">1</a></li>;
     }
 
-
-
-       console.log("log",log);
       return (
         <React.Fragment>
           <TopMenuGeneral title="Transaction Log" />
@@ -172,10 +172,11 @@ class Transaction extends React.Component {
               <option value="post">POST</option>
               <option value="trade">TRADE</option>
               <option value="cancel">CANCEL</option>
+              <option value="ALL">ALL</option>
             </select>
           </div>
           <nav aria-label="...">
-            <ul className="pagination">
+            <ul className="pagination ml-5 mt-2">
               <li className="page-item disabled">
                 <span className="page-link">Previous</span>
               </li>
