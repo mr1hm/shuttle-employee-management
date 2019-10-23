@@ -1,7 +1,7 @@
 import React from 'react';
 import './operator-availability.css';
 
-class OperatorAvailabilityModal extends React.Component {
+class SelectAvailabilityModal extends React.Component {
   render() {
     return (
       <div className={this.props.show ? 'modal display-block' : 'modal display-none'}>
@@ -15,4 +15,4 @@ class OperatorAvailabilityModal extends React.Component {
   }
 }
 
-export default OperatorAvailabilityModal;
+export default SelectAvailabilityModal;

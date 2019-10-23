@@ -17,6 +17,12 @@
   transform: translate(-50%,-50%);
 }
 
+.scrollable-menu {
+  height: auto;
+  max-height: 200px;
+  overflow-x: hidden;
+}
+
 .display-block {
   display: block;
 }
