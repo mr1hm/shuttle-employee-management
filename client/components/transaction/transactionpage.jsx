@@ -47,6 +47,7 @@ class Transaction extends React.Component {
     if(userType === 'ALL'){
       return this.handlePageSwitch();
     }
+    console.log(userType);
     fetch(`/api/transaction-get.php?type=${userType}`, {
       method: 'GET',
     })
@@ -77,7 +78,6 @@ class Transaction extends React.Component {
 
   handlePageSwitch(){
     let currentPage = this.state.transactionInfo.currentPage;
-    console.log("pagrnum",currentPage);
     fetch(`/api/transaction-get.php?page=${currentPage}`, {
       method: 'GET',
     })
@@ -169,10 +169,10 @@ class Transaction extends React.Component {
           <div className="row fill2">
             <div className="col-6">Search By Type</div>
             <select onChange={() => this.searchByType(event)} className="col-6 mb-2 editInput" type="text" >
+              <option value="ALL">ALL</option>
               <option value="post">POST</option>
               <option value="trade">TRADE</option>
               <option value="cancel">CANCEL</option>
-              <option value="ALL">ALL</option>
             </select>
           </div>
           <nav aria-label="...">
