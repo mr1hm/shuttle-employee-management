@@ -497,9 +497,13 @@ function populateSchedule($operators, $rounds, $conn)  {
       $getFollowingOperator = true;
     }
   }
-  // print('<pre>');
-  // print_r($leftovers);
-  // print('<pre>');
+
+  // remove unassigned shifts that don't have a previous/following operator
+  $leftovers = array_filter($leftovers, 'filterFollowingOperators');
+  $leftovers = array_filter($leftovers, 'filterPreviousOperators');
+  print('<pre>');
+  print_r($leftovers);
+  print('<pre>');
   assignLeftovers($leftovers, $rounds);
   updateRoundsInDatabase($conn, $rounds);
   $rounds = json_encode($rounds);
@@ -573,32 +577,71 @@ function countAvailableRounds($rounds, $roundsIndex, $numberRounds) {
   return $availableRounds;
 }
 
+function filterPreviousOperators($leftover) {
+  if ( $leftover['previousOperator'] ) {
+    $outsideAvailableTime = true;
+    for ($time = 0; $time < count($leftover['previousOperator']['available_times']); ++$time) {
+      if (intval($leftover['previousOperator']['available_times'][$time][0]) <= intval($leftover['unassignedRound']['round_start']) &&
+          intval($leftover['previousOperator']['available_times'][$time][1]) >= intval($leftover['unassignedRound']['round_end'])) {
+        $outsideAvailableTime = false;
+        break;
+      }
+    }
+
+    if ( !(!hasSpecialStatus($leftover['unassignedRound'], $leftover['previousOperator']) ||
+            shiftTimeRestriction($leftover['unassignedRound'], $leftover['previousOperator']) ||
+            totalShiftTimeRestriction($leftover['unassignedRound']['round_start'], $leftover['unassignedRound']['round_end'], $leftover['previousOperator']) ||
+            enforce30MinuteBreak($leftover['unassignedRound']['round_start'], $leftover['previousOperator']) ||
+            $outsideAvailableTime) ) {
+      return true;
+    }
+  }
+
+  return !!$leftover['followingOperator'];
+}
+
+function filterFollowingOperators($leftover) {
+  if ( $leftover['followingOperator'] ) {
+    $currentBlock = 0;
+    $violates30MinuteBreak = false;
+    $outsideAvailableTime = true;
+    if (intval($leftover['unassignedRound']['round_start']) - intval($leftover['followingOperator']['shift_restrictions']['30minute_break']) < 30) {
+      $violates30MinuteBreak = true;
+    }
+    for ($time = 0; $time < count($leftover['followingOperator']['available_times']); ++$time) {
+      if (intval($leftover['followingOperator']['available_times'][$time][0]) === intval($leftover['unassignedRound']['round_end'])) {
+        $currentBlock = calculateShiftMinutes(intval($leftover['followingOperator']['available_times'][$time][0]), intval($leftover['followingOperator']['available_times'][$time][1])) +
+                        calculateShiftMinutes(intval($leftover['unassignedRound']['round_start']), intval($leftover['unassignedRound']['round_end']));
+        if (!$outsideAvailableTime) break;
+      }
+      if (intval($leftover['followingOperator']['available_times'][$time][0]) <= intval($leftover['unassignedRound']['round_start']) &&
+          intval($leftover['followingOperator']['available_times'][$time][1]) >= intval($leftover['unassignedRound']['round_end'])) {
+        $outsideAvailableTime = false;
+        if ($currentBlock) break;
+      }
+    }
+
+    if ( !(!hasSpecialStatus($leftover['unassignedRound'], $leftover['followingOperator']) ||
+            shiftTimeRestriction($leftover['unassignedRound'], $leftover['followingOperator']) ||
+            totalShiftTimeRestriction($leftover['unassignedRound']['round_start'], $leftover['unassignedRound']['round_end'], $leftover['followingOperator']) ||
+            $currentBlock > 500 ||
+            $violates30MinuteBreak ||
+            $outsideAvailableTime) ) {
+      return true;
+    }
+  }
+
+  return !!$leftover['previousOperator'];
+}
+
 function assignLeftovers($leftovers, &$rounds) {
   foreach ($leftovers as $leftover) {
-    if ( !$leftover || (!$leftover['previousOperator'] && !$leftover['followingOperator']) ) continue;
-
-    if ( $leftover['previousOperator']) {
-
-      print('<pre>');
-      print_r($leftover['previousOperator'] ? '' : 'prev');
-      print('<pre>');
-
-      // if the shift does not conflict with the previous operator, assign the operator to the shift
-      if ( !(!hasSpecialStatus($leftover['unassignedRound'], $leftover['previousOperator']) ||
-             shiftTimeRestriction($leftover['unassignedRound'], $leftover['previousOperator']) ||
-             totalShiftTimeRestriction($leftover['unassignedRound']['round_start'], $leftover['unassignedRound']['round_end'], $leftover['previousOperator']) ||
-             enforce30MinuteBreak($leftover['unassignedRound']['round_start'], $leftover['previousOperator'])) ) {
+    if ( $leftover['previousOperator'] ) {
         updateRounds($rounds, $leftover['roundIndex'], 1, $leftover['previousOperator']);
       }
-    }
     if ( $leftover['followingOperator'] ) {
-      // if the shift does not conflict with the following operator, assign the operator to the shift
-      if ( !(!hasSpecialStatus($leftover['unassignedRound'], $leftover['followingOperator']) ||
-             shiftTimeRestriction($leftover['unassignedRound'], $leftover['followingOperator']) ||
-             totalShiftTimeRestriction($leftover['unassignedRound']['round_start'], $leftover['unassignedRound']['round_end'], $leftover['followingOperator'])) ) {
-
+        updateRounds($rounds, $leftover['roundIndex'], 1, $leftover['followingOperator']);
       }
-    }
   }
   unset($leftover);
 }

@@ -27,11 +27,6 @@ function shiftTimeRestriction($round, $operator) {
 
 function totalShiftTimeRestriction($roundStart, $roundEnd, $operator) {
   $totalShiftTime = calculateShiftMinutes(intval($roundStart), intval($roundEnd));
-
-    // print('<pre>');
-    // print_r($operator ? $operator['total_daily_minutes'] : 'empty');
-    // print('<pre>');
-
   $totalMinutesInDay = intval($operator['total_daily_minutes']) + $totalShiftTime;
   $totalWeeklyMinutes = intval($operator['total_weekly_minutes']) + $totalShiftTime;
   //if operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
