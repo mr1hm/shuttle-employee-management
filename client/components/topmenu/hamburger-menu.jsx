@@ -19,13 +19,15 @@ class HamburgerMenu extends React.Component {
 
   render() {
     const visibleClass = this.state.open ? 'visible' : 'hidden';
+    const notification =
+    (<div className="notification-badge">
+      <div className="notification-count">{this.props.count} </div>
+    </div>);
     return (
           <>
             <div className="dropdown-icon" onClick={this.toggleOpen}>
               <FontAwesomeIcon icon={faBars} />
-              <div className="notification-badge">
-                {this.props.count}
-              </div>
+              {this.props.count > 0 && notification}
             </div>
             <div className={`dropdown-options ${visibleClass}`}>
               <div className="close-icon" onClick={this.toggleOpen}>

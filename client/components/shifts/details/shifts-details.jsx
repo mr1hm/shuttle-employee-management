@@ -137,13 +137,9 @@ class ShiftsDetails extends React.Component {
               <button className="btn btn-primary mb-2" onClick={this.toggleModal}>
                 Post
               </button>
-              <Link to={{
-                pathname: '/trade-swap',
-                state: {
-                  checkedRounds: this.state.checkedRounds
-                }
-              }}
-              className="btn btn-primary mb-2">
+              <Link to='/trade-swap'
+                className="btn btn-primary mb-2"
+                onClick={this.passCheckedRoundIds}>
                 Trade/Swap
               </Link>
               {/* <button className="btn btn-primary" onClick={this.props.history.goBack()}>My Shifts</button> */}
