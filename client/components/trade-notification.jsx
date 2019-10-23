@@ -12,14 +12,17 @@ class TradeNotification extends React.Component {
     this.removeShift = this.removeShift.bind(this);
   }
   componentDidMount() {
-    const newShifts = (this.props.location.state.newShiftsAndSelectedDriver) ? this.props.location.state.newShiftsAndSelectedDriver.newShifts : '';
-    const selectedDriver = (this.props.location.state.newShiftsAndSelectedDriver) ? this.props.location.state.newShiftsAndSelectedDriver.selectedDriver : '';
-    this.setState({
-      newShifts: newShifts,
-      selectedDriver: selectedDriver
-    });
+    fetch(`/api/get-notifications.php?id=${this.props.userId}`)
+      .then(response => response.json())
+      .then(shiftsArray => {
+        this.setState({
+          newShifts: shiftsArray
+        });
+      })
+      .catch(error => console.error('Fetch failed', error));
   }
   removeShift(roundID) {
+
     const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.roundID);
     this.setState({
       newShifts: newShifts
