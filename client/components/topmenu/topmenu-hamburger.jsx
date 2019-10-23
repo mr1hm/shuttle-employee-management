@@ -8,7 +8,7 @@ class TopMenuHamburger extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      numberOfShifts: 2
+      numberOfShifts: 0
     };
   }
   componentDidUpdate(prevProps) {
