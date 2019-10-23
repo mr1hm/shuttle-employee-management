@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import NotificationBadge from 'react-notification-badge';
 import './nav-styles.css';
-import { NotificationDotContext } from './topmenu-hamburger';
 
 class HamburgerMenu extends React.Component {
   constructor(props) {
@@ -26,11 +25,7 @@ class HamburgerMenu extends React.Component {
         <button className = "btn btn-light" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-haspopup = "true">
           <div className="row justify-content-end mb-2 ml-4">
             <div className="col-1">
-              <NotificationDotContext.Consumer>
-                {value => (
-                  <NotificationBadge count={value} className="justify-content-end" />
-                )}
-              </NotificationDotContext.Consumer>
+              <NotificationBadge count={this.props.count} className="justify-content-end" />
             </div>
           </div>
           <div>
