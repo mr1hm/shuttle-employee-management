@@ -15,4 +15,9 @@
 .arrowRight {
   border-left: 16px solid lightgray;
 }
+.moveNotificationTopRight {
+  position: relative;
+  bottom:5px;
+  left: 10px;
 
+}
