@@ -407,9 +407,9 @@ function populateSchedule($operators, $rounds, $conn)  {
     $availableRounds = countAvailableRounds($rounds, $roundsIndex, $numberRounds);
 
     //Are there adequate unassigned rounds, rounds on the same line, rounds on the same bus?
-      if (intval($availableRounds['unassignedRoundsAvailable']) === $numberRounds &&
-          intval($availableRounds['roundsOnLineAvailable']) === $numberRounds - 1 &&
-          intval($availableRounds['roundsOnBusAvailable']) === $numberRounds - 1) {
+    if (intval($availableRounds['unassignedRoundsAvailable']) === $numberRounds &&
+        intval($availableRounds['roundsOnLineAvailable']) === $numberRounds - 1 &&
+        intval($availableRounds['roundsOnBusAvailable']) === $numberRounds - 1) {
 
       //length of the operator array
       $lengthOperatorsArray = count($operators);
@@ -499,8 +499,11 @@ function populateSchedule($operators, $rounds, $conn)  {
   }
 
   // remove unassigned shifts that don't have a previous/following operator
-  $leftovers = array_filter($leftovers, 'filterFollowingOperators');
-  $leftovers = array_filter($leftovers, 'filterPreviousOperators');
+  // $leftovers = array_filter($leftovers, 'filterFollowingOperators');
+  // $leftovers = array_filter($leftovers, 'filterPreviousOperators');
+
+  // remove unassigned shifts that don't have a previous/following operator
+  $leftovers = array_filter($leftovers, function ($leftover) { return $leftover['previousOperator'] || $leftover['followingOperator']; });
   print('<pre>');
   print_r($leftovers);
   print('<pre>');
@@ -580,6 +583,8 @@ function countAvailableRounds($rounds, $roundsIndex, $numberRounds) {
 function filterPreviousOperators($leftover) {
   if ( $leftover['previousOperator'] ) {
     $outsideAvailableTime = true;
+    // $hasSameShift = false;
+
     for ($time = 0; $time < count($leftover['previousOperator']['available_times']); ++$time) {
       if (intval($leftover['previousOperator']['available_times'][$time][0]) <= intval($leftover['unassignedRound']['round_start']) &&
           intval($leftover['previousOperator']['available_times'][$time][1]) >= intval($leftover['unassignedRound']['round_end'])) {
@@ -587,17 +592,23 @@ function filterPreviousOperators($leftover) {
         break;
       }
     }
+    // for ($time = 0; $time < count($leftover['previousOperator']['times_assigned']); ++$time) {
+    //   if (intval($leftover['previousOperator']['times_assigned'][$time][0]) === intval($leftover['unassignedRound']['round_start'])) {
+    //     $hasSameShift = true;
+    //     break;
+    //   }
+    // }
 
     if ( !(!hasSpecialStatus($leftover['unassignedRound'], $leftover['previousOperator']) ||
             shiftTimeRestriction($leftover['unassignedRound'], $leftover['previousOperator']) ||
             totalShiftTimeRestriction($leftover['unassignedRound']['round_start'], $leftover['unassignedRound']['round_end'], $leftover['previousOperator']) ||
             enforce30MinuteBreak($leftover['unassignedRound']['round_start'], $leftover['previousOperator']) ||
             $outsideAvailableTime) ) {
-      return true;
+      return $leftover;
     }
   }
 
-  return !!$leftover['followingOperator'];
+  return null;
 }
 
 function filterFollowingOperators($leftover) {
@@ -637,11 +648,35 @@ function filterFollowingOperators($leftover) {
 function assignLeftovers($leftovers, &$rounds) {
   foreach ($leftovers as $leftover) {
     if ( $leftover['previousOperator'] ) {
-        updateRounds($rounds, $leftover['roundIndex'], 1, $leftover['previousOperator']);
+      $op = filterPreviousOperators($leftover);
+        if ($op) {
+          addAssignedTime($op, $rounds, 'previousOperator', $op['roundIndex'], 1);
+          for ($time = 0; $time < count($op['previousOperator']['available_times']); ++$time) {
+            if (intval($op['previousOperator']['available_times'][$time][0]) <= intval($op['unassignedRound']['round_start']) &&
+                intval($op['previousOperator']['available_times'][$time][1]) >= intval($op['unassignedRound']['round_end'])) {
+              adjustAvailableTimes($op, $rounds, 'previousOperator', $op['roundIndex'], 1, intval($op['previousOperator']['available_times'][$time][0]), intval($op['previousOperator']['available_times'][$time][1]), $time);
+              break;
+            }
+          }
+          updateOperatorMinutes(intval($op['unassignedRound']['round_start']), intval($op['unassignedRound']['round_end']), $op);
+          updateRounds($rounds, $op['roundIndex'], 1, $op['previousOperator']);
+        }
       }
     if ( $leftover['followingOperator'] ) {
-        updateRounds($rounds, $leftover['roundIndex'], 1, $leftover['followingOperator']);
+      $op = filterPreviousOperators($leftover);
+      if ($op) {
+        addAssignedTime($op, $rounds, 'followingOperator', $op['roundIndex'], 1);
+        for ($time = 0; $time < count($op['followingOperator']['available_times']); ++$time) {
+          if (intval($op['followingOperator']['available_times'][$time][0]) <= intval($op['unassignedRound']['round_start']) &&
+              intval($op['followingOperator']['available_times'][$time][1]) >= intval($op['unassignedRound']['round_end'])) {
+            adjustAvailableTimes($op, $rounds, 'followingOperator', $op['roundIndex'], 1, intval($op['followingOperator']['available_times'][$time][0]), intval($op['followingOperator']['available_times'][$time][1]), $time);
+            break;
+          }
+        }
+        updateOperatorMinutes(intval($op['unassignedRound']['round_start']), intval($op['unassignedRound']['round_end']), $op);
+        updateRounds($rounds, $op['roundIndex'], 1, $op['followingOperator']);
       }
+    }
   }
   unset($leftover);
 }
