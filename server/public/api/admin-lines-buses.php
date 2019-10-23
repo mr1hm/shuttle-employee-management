@@ -12,6 +12,7 @@ if ($method === 'GET'){
 $query = "SELECT
               bi.`id` AS 'busID',
               bi.`bus_number`,
+              bi.`gapDuration`,
               rt.`id` AS 'real_route_id',
               bi.`start_time`,
               bi.`end_time`,
@@ -99,6 +100,7 @@ if($method === 'GET') {
       $busInfo['endTime'] = $row['end_time'];
       $busInfo['daysActive'] = $row['daysActive'];
       $busInfo['gap'] = $row['gap'];
+      $busInfo['gapDuration'] = $row['gapDuration'];
       $busInfo['openingDuration'] = $row['opening_duration'];
       $busInfo['closingDuration'] = $row['closing_duration']; //I added the data
     }
@@ -109,6 +111,7 @@ if($method === 'GET') {
     unset($row['end_time']);
     unset($row['daysActive']);
     unset($row['gap']);
+    unset($row['gapDuration']);
     unset($row['opening_duration']);
     unset($row['closing_duration']);
     if (!isset($data[$routeId])) {
@@ -124,6 +127,7 @@ if($method === 'GET') {
   }
   $data = array_values($data);
   print(json_encode($data));
+
 } else if ($method === 'POST' && ($bodyData['id'])) {
 
   $new_id = $bodyData['id'];
@@ -143,11 +147,11 @@ if($method === 'GET') {
 }
 
 
-
-if ($method === 'POST'){
-  header("Location: http://localhost:3000/admin-routes");
-  exit();
-}
+// ASK IF THIS HEADER IS REQUIRED FOR ANYTHING ELSE.
+// if ($method === 'POST'){
+//   header("Location: http://localhost:3000/admin-routes");
+//   exit();
+// }
 
 // $row = [
 //   'route_id' => 1,

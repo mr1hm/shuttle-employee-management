@@ -10,6 +10,7 @@ import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import Lines from './admin-lines-buses-lines';
+import { runInThisContext } from 'vm';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
@@ -18,16 +19,16 @@ class AdminRoutes extends React.Component {
       session: null,
       linesBusesInfo: [],
       // busInfo: [],
-      addBusClicked: false,
       addLineClicked: false,
-      edit: {
-        lineID: null,
-        busID: {}
-      }
+      line_name: '',
+      lineExists: false
     }
     // this.addNewBus = this.addNewBus.bind(this);
     this.handleAddBusButton = this.handleAddBusButton.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
+    this.handleAddLineButton = this.handleAddLineButton.bind(this);
+    this.handleAddLineChange = this.handleAddLineChange.bind(this);
+    this.checkIfLineExists = this.checkIfLineExists.bind(this);
   }
 
   componentDidMount() {
@@ -46,6 +47,15 @@ class AdminRoutes extends React.Component {
     })
   }
 
+  handleAddLineChange(e) {
+    const name = e.target.name;
+    const value = e.target.value;
+    this.setState({
+      [name]: value
+    });
+    this.checkIfLineExists(value);
+  }
+
   getLinesBusesInfo() {
     fetch('api/admin-lines-buses.php')
       .then(response => response.json())
@@ -55,72 +65,32 @@ class AdminRoutes extends React.Component {
       .catch(error => console.error(error));
   }
 
-  // getBusId() {
+  changeLineExistsState() {
+    this.setState(state => ({
+      lineExists: !this.state.lineExists
+    }));
+  }
 
-  // }
-
-  // setEditBus(lineID, busID) {
-
-  // }
-
-  // editExistingBus(lineID) {
-  //   let lineIndex = this.state.linesBusesInfo.findIndex(value => {
-  //     return value.id === lineID;
-  //   });
-  //   const myInit = {
-  //     method: 'PUT',
-  //     body: JSON.stringify(lineID),
-  //     header: {
-  //       'Content-Type': 'application/json'
-  //     }
-  //   };
-  //   fetch('/api/admin-lines-buses.php', myInit)
-  //     .then(response => response.json())
-  //     .then(busToEdit => )
-  // }
-
-//   addNewBus(newBus) {
-//    // fetch with post method, add new bus to database and line.
-//    const myInit = {
-//     method: 'POST',
-//     body: JSON.stringify(newBus),
-//     header: {
-//       'Content-Type': 'application/json'
-//     }
-//    };
-//    fetch('/api/admin-lines-buses.php', myInit)
-//     .then(response => response.json())
-//     .then(busToBeAdded => {
-//       let newBusInfo = this.state.busInfo.slice();
-//       newBusInfo.push(busToBeAdded);
-//       this.setState({
-//         busInfo: newBusInfo
-//       })
-//     })
-//     .catch(error => console.error(error));
-//  }
-
-  // handleRoutesInformation(url, method) {
-  //   fetch(url, { method: method })
-  //     .then(response => response.json())
-  //     .then(routeInfo => {
-  //     this.setState({
-  //       routeInfo: routeInfo
-  //     });
-  //     console.log(routeInfo);
-  //   });
-  // }
-
-  // handleBusesInformation(url, method) {
-  //   fetch(url, { method: method })
-  //     .then(response => { return response.json() })
-  //     .then(busInfo => {
-  //       this.setState({
-  //         busInfo: busInfo
-  //       })
-  //       console.log(busInfo);
-  //     })
-  // }
+  checkIfLineExists(value) {
+    let doesExist = false;
+    let line = this.state.linesBusesInfo;
+    let linesBusesInfoLength = this.state.linesBusesInfo.length;
+    for (let i = 0; i < linesBusesInfoLength; i++) {
+      if (value === line[i].line_name) {
+        doesExist = true;
+        break;
+      }
+    }
+    if (doesExist) {
+      this.setState({
+        lineExists: true
+      });
+    } else {
+      this.setState({
+        lineExists: false
+      });
+    }
+  }
 
     render() {
       if (!this.state.linesBusesInfo) {
@@ -149,7 +119,7 @@ class AdminRoutes extends React.Component {
                 </form>
               </div>
               <div className="row justify-content-end">
-                <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>
+                {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
               </div>
             </div>
             <div className="card" >
@@ -159,8 +129,13 @@ class AdminRoutes extends React.Component {
                   <div className="row" >
 
                     <div>
-                      <label>Line Name</label>
-                      <input className="col border border-primary" type="text" name="line_name"></input>
+                      {this.state.lineExists ? <label>Line Name - <span className="addNewLineNameExists"><i>Line {`${this.state.line_name}`} Already Exists</i></span></label> : <label>Line Name - <span className="addNewLineName"><i>Name Available</i></span></label>}
+                      <input defaultValue={this.state.line_name}
+                             className="col border border-primary"
+                             type="text"
+                             name="line_name"
+                             onChange={this.handleAddLineChange}>
+                      </input>
                     </div>
                     <div>
                       <label>Active</label>
@@ -174,10 +149,7 @@ class AdminRoutes extends React.Component {
                       <label>Regular Service</label>
                       <input className="col border border-primary" type="text" name="regular_service"></input>
                     </div>
-                    <button className="btn btn-primary" type="submit" name="submit" >
-                      Save
-                    </button>
-
+                    {this.state.lineExists ? <button className="btn btn-danger" type="submit" name="submit">NOPE</button> : <button className="btn btn-success" type="submit" name="submit">ADD</button>}
                   </div>
                 </form>
 
@@ -196,6 +168,9 @@ class AdminRoutes extends React.Component {
 
           </React.Fragment>
         );
+
+      }
+      if (this.state.linesBusesInfo.includes(this.state.line_name)) {
 
       }
 

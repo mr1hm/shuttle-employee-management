@@ -40,7 +40,6 @@ export default class Lines extends React.Component {
   render() {
     const { line } = this.props;
     const { activeBuses } = this.props.line;
-    console.log(line);
     if (!this.props.line.real_route_id) {
       return null;
     }
