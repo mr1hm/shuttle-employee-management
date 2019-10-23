@@ -16,8 +16,8 @@ class AdminShiftsCombinedRounds extends React.Component {
   }
   convertRoundTimesToTimeMeridian(rounds) {
     for (let roundIndex = 0; roundIndex < rounds.length; roundIndex++) {
-      let roundStartMeridian = convertMilitaryTime(rounds[roundIndex].start);
-      let roundEndMeridian = convertMilitaryTime(rounds[roundIndex].end);
+      let roundStartMeridian = convertMilitaryTime(rounds[roundIndex].start.toString());
+      let roundEndMeridian = convertMilitaryTime(rounds[roundIndex].end.toString());
       rounds[roundIndex]['roundTime'] = roundStartMeridian + ' - ' + roundEndMeridian;
     }
     return rounds;
