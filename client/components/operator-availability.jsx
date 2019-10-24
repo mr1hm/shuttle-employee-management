@@ -41,19 +41,13 @@ class OperatorAvailability extends React.Component {
     return (
       this.state.availability[day].map((element, index) => {
         if (element) {
-          console.log('rendering one for', day)
           return <td key={index} style={{ backgroundColor: 'green', width: '1.35%', height: '10vh', border: '1px solid black' }}></td>;
         } else {
-          console.log('rendering zero for', day)
           return <td key={index} style={{ backgroundColor: 'initial', width: '1.35%', height: '10vh', border: '1px solid black' }}></td>;
         }
       })
     );
   }
-
-  // componentDidUpdate() {
-  //   console.log('update', this.state.availability);
-  // }
 
   // updating the db with the autopopulated rounds
   fetchAutoPopulatedData() {
@@ -95,11 +89,14 @@ class OperatorAvailability extends React.Component {
     const endIndex = timeIndex[this.state.selectedEndTime];
 
     if (startIndex > endIndex || startIndex === endIndex || endIndex - startIndex < 6) {
+      console.log('inside error');
       this.showError();
     } else {
       var availabilityObject = Object.assign({}, this.state.availability);
       var availabilityDay = availabilityObject[this.state.day].map((cell, index) => {
         if (index >= startIndex && index < endIndex) {
+          return 1;
+        } if (cell === 1) {
           return 1;
         } else {
           return 0;
@@ -110,14 +107,13 @@ class OperatorAvailability extends React.Component {
         availability: availabilityObject,
         selectedStartTime: 0,
         selectedEndTime: 0
-      }, () => {
-        console.log('inside first pass', JSON.stringify(this.state.availability, null, 2));
       });
 
     }
   }
 
   showError() {
+    console.log('inside show error method')
     this.setState({
       error: true
     });
@@ -142,13 +138,8 @@ class OperatorAvailability extends React.Component {
     var day = this.state.day;
     var availabilityObject = Object.assign({}, this.state.availability);
     var availabilityDay = availabilityObject[day].map(cell => 0);
-    // var availabilityDay = this.state.availability[day].map;
-    // console.log('day', this.state.day);
     availabilityObject[day] = availabilityDay;
-    // for (var index = 0; index < 72; index++) {
-    //   availabilityObject[this.state.day][index] = 0;
-    //   // console.log(availabilityObject[this.state.day][index]);
-    // }
+
     this.setState({
       availability: availabilityObject,
       clear: false,
@@ -254,16 +245,19 @@ class OperatorAvailability extends React.Component {
             </div>
           </div>
         </SelectAvailabilityModal>
+
         <ErrorModal day={this.state.day} errorShow={this.state.error} closeError={this.hideErrorModal}>
           <div className="d-flex justify-content-center">
             <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>The end time must be at least 1 hr 30 min after the start time</p>
           </div>
         </ErrorModal>
+
         <ClearDayModal day={this.state.day} clearShow={this.state.clear} closeClear={this.hideClearModal} cancelClear={this.cancelClearModal}>
           <div className="d-flex justify-content-center">
             <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>Are you sure you want to clear all the availables times for this day?</p>
           </div>
         </ClearDayModal>
+
       </React.Fragment>
     );
   }
