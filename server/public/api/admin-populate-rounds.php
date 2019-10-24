@@ -9,7 +9,6 @@ function populateSchedule(&$operators, $rounds, $conn) {
   // Traverse through all rounds
   while ( current($rounds) ) {
     $shift = getShift(current($rounds)['line_name'], $rounds);
-    if (key($rounds) >= count($rounds) - count($shift)) break;
     $madeAssignment = false;
 
     if ( hasAdequateRounds($shift) ) {
@@ -64,8 +63,9 @@ function updateShiftFlags(&$operator, $shift) {
     $operator['shift_restrictions']['need_30_minute_break'] = true;
   } else if ( intval($operator['minutes_without_30_minute_break']) > 300 ) {
     $operator['minutes_without_30_minute_break'] -= 300;
-    $operator['shift_restrictions']['need_30_minute_break'] = true;
+    $operator['shift_restrictions']['need_30_minute_break'] = false;
   }
+
   if ( intval(end($shift)['round_end']) > 2100 ) {
     $operator['shift_restrictions']['worked_passed_10']['current_day'] = false;
   }
