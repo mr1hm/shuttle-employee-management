@@ -5,36 +5,31 @@ set_exception_handler('error_handler');
 require_once('db_connection.php');
 require_once('shift-restrictions.php');
 
-// Populates the schedule for 1 day
 function populateSchedule(&$operators, $rounds, $conn) {
   // Traverse through all rounds
-  while (current($rounds)) {
-
+  while ( current($rounds) ) {
     $shift = getShift(current($rounds)['line_name'], $rounds);
-
     if (key($rounds) >= count($rounds) - count($shift)) break;
-
     $madeAssignment = false;
 
-    if (hasAdequateRounds($shift)) {
+    if ( hasAdequateRounds($shift) ) {
       uasort($operators, 'operatorSort');
       // Traverse operators
-      while (current($operators)) {
-        if (canTakeShift(current($operators), $shift)) {
-          assignShiftToOperator(current($operators), $shift);
-          assignOperatorToShift(current($operators), $shift);
+      foreach ( $operators as &$operator ) {
+        if ( canTakeShift($operator, $shift) ) {
+          assignShiftToOperator($operator, $shift);
+          assignOperatorToShift($operator, $shift);
 
-          // updateDatabase($conn, $shift);
           $madeAssignment = true;
           break;
         }
-        next($operators);
       }
-      reset($operators);
+      unset($operator);
     }
 
     if ($madeAssignment) {
-      // print('cool');
+      print('cool');
+      updateDatabase($conn, $shift);
     }
     next($rounds);
   }
@@ -65,24 +60,24 @@ function getShift($lineName, &$rounds) {
  * - All of the rounds in this shift are on the same line
  * - All of the rounds in this shift are on the same bus */
 function hasAdequateRounds($shift) {
-  $roundsInShift = count($shift);
+  // $roundsInShift = count($shift);
 
-  // Make sure all of the rounds in the shift are unassigned
-  for ($i = 0; $i < $roundsInShift; ++$i) {
-    if (intval($shift[$i]['user_id']) !== 1) return false;
-  }
+  // // Make sure all of the rounds in the shift are unassigned
+  // for ($i = 0; $i < $roundsInShift; ++$i) {
+  //   if (intval($shift[$i]['user_id']) !== 1) return false;
+  // }
 
-  // Make sure all of the rounds in the shift are on the same line
-  $lineName = $shift[0]['line_name'];
-  for ($i = 1; $i < $roundsInShift; ++$i) {
-    if ($shift[$i] !== $lineName) return false;
-  }
+  // // Make sure all of the rounds in the shift are on the same line
+  // $lineName = $shift[0]['line_name'];
+  // for ($i = 1; $i < $roundsInShift; ++$i) {
+  //   if ($shift[$i] !== $lineName) return false;
+  // }
 
-  // Make sure all of the rounds in the shift are on the same bus
-  $busNumber = intval($shift[0]['bus_number']);
-  for ($i = 1; $i < $roundsInShift; ++$i) {
-    if (intval($shift[$i]) !== $busNumber) return false;
-  }
+  // // Make sure all of the rounds in the shift are on the same bus
+  // $busNumber = intval($shift[0]['bus_number']);
+  // for ($i = 1; $i < $roundsInShift; ++$i) {
+  //   if (intval($shift[$i]) !== $busNumber) return false;
+  // }
 
   return true;
 }
@@ -90,16 +85,41 @@ function hasAdequateRounds($shift) {
 function assignShiftToOperator(&$operator, $shift) {
   // TODO:
   // Update operators times_assigned associative array with shift times
-
-  // Update operators times_available associative array (formerly called available_times)
+  // Update operators times_available associative array
+  updateOperatorTimes($operator, $shift);
+  updateOperatorTimes($operator, $shift);
 
   // Update operators daily & weekly minutes
-
+  $shiftTime = calculateShiftMinutes(reset($shift)[0], end($shift)[1]);
+  $operator['total_daily_minutes'] += $shiftTime;
+  $operator['total_weekly_minutes'] += $shiftTime;
 }
 
+function updateOperatorTimes (&$operator, $shift) {
+  $shiftStart = intval(reset($shift)[0]);
+  $shiftEnd = intval(reset($shift)[1]);
+
+  if (empty($operator['assigned_times'])) {
+    array_push($operator, [$shiftStart, $shiftEnd]);
+  } else {
+    $previousKey = null;
+    foreach ($operator['assigned_times'] as $key => &$timeBlock) {
+
+    }
+    unset($timeBlock);
+  }
+}
+
+
+// Update each round in the shift with the operators information
 function assignOperatorToShift($operator, &$shift) {
-  // TODO:
-  // Update each round in the shift with the operators information
+  foreach ( $shift as &$round ) {
+    $round['user_id'] = $operator['user_id'];
+    $round['last_name'] = $operator['last_name'];
+    $round['first_name'] = $operator['first_name'];
+    $round['status'] = 'scheduled';
+  }
+  unset($round);
 
 }
 
@@ -178,10 +198,10 @@ function getOperatorsForWeek ($conn) {
     'available_times' => [],
     'assigned_times' => [],
     'shift_restrictions' => [
-      '30minute_break' => 0,
       'worked_passed_10' => ['prior_day' => 0, 'current_day' => 0],
       'shift_passed_15_hour_window' => ['shift_start' => 0]
     ],
+    'continuous_minutes_worked' => 0,
     'total_daily_minutes' => 0
   ];
 
@@ -308,11 +328,6 @@ function populateWeek ($conn, $rounds, $operators) {
     $roundsForDay = getRoundsForDay($rounds, 'Sun');
     $operatorsForDay = getOperatorsForDay($operators, 'Sun');
     populateSchedule($operatorsForDay, $roundsForDay, $conn);
-
-    print('<pre>');
-    print_r($operatorsForDay);
-    print('<pre>');
-
     foreach ( $operators as &$operator ) {
       $key = array_search(intval($operator['user_id']), array_column($operatorsForDay, 'user_id'));
       if ( $key !== false ) {

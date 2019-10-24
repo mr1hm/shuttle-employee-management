@@ -3,8 +3,9 @@
 function canTakeShift ($operator, $shift) {
   if ( !shiftWithinAvailability($operator, $shift) ) return false;
   if ( !hasSpecialStatus($operator, $shift) ) return false;
-  // if ( shiftTimeRestriction($operator, $shift) ) return false;
-  // if ( totalShiftTimeRestriction($operator, $shift) ) return false;
+  if ( shiftTimeRestriction($operator, $shift) ) return false;
+  if ( totalShiftTimeRestriction($operator, $shift) ) return false;
+  return true;
 }
 
 function shiftWithinAvailability ($operator, $shift) {
