@@ -7,7 +7,7 @@ require_once("db_connection.php");
 $data = getbodyData();
 $checkedRounds = $data['checkedRounds'];
 $userId = $data['userId'];
-$date = $data["date"];
+$date = round(microtime(true) * 1000);
 $type = $data['type'];
 $comment = $data['comment'];
 

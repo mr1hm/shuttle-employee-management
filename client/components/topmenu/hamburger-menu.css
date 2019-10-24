@@ -1,5 +1,23 @@
 .dropdown-icon{
+  margin-right:3rem;
   position: relative;
+  font-size:2rem;
+}
+.notification-count {
+  position: relative;
+  right: 5px;
+}
+.notification-badge {
+    position: absolute;
+    top: -7px;
+    width: 1px;
+    left: 26px;
+    border: 1px solid red;
+    background-color: red;
+    padding: 0 12px;
+    font-size: 1rem;
+    color: white;
+    border-radius: 50px;
 }
 .close-icon{
   font-size:2rem;;
