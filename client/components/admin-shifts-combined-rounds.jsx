@@ -56,7 +56,8 @@ class AdminShiftsCombinedRounds extends React.Component {
       'shift_time': this.shiftTimeMeridian,
       'rounds': this.convertRoundTimesToTimeMeridian(this.props.rounds),
       'round_id': this.props.roundId,
-      'shift_type': this.props.type
+      'shift_type': this.props.type,
+      'line_bus': this.props.lineBus
     });
   }
   generateShiftHoverElement() {
