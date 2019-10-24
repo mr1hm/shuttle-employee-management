@@ -2,6 +2,8 @@ import React from 'react';
 import TopMenuGeneral from './topmenu/topmenu-general';
 import './operator-availability.css';
 import SelectAvailabilityModal from './operator-availability-modal';
+import ErrorModal from './operator-error-modal';
+import ClearDayModal from './operator-clear-day-modal';
 
 // dummy data only right now (not connected to endpoint)
 class OperatorAvailability extends React.Component {
@@ -18,26 +20,50 @@ class OperatorAvailability extends React.Component {
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
       show: false,
+      clear: false,
       day: null,
+      error: false,
       selectedStartTime: 0,
       selectedEndTime: 0
     };
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
+    this.hideErrorModal = this.hideErrorModal.bind(this);
+    this.showError = this.showError.bind(this);
     this.setStartTime = this.setStartTime.bind(this);
     this.setEndTime = this.setEndTime.bind(this);
+    this.showClearModal = this.showClearModal.bind(this);
+    this.hideClearModal = this.hideClearModal.bind(this);
+    this.cancelClearModal = this.cancelClearModal.bind(this);
   }
 
   buildDayCell(day) {
     return (
       this.state.availability[day].map((element, index) => {
         if (element) {
+          console.log('rendering one for', day)
           return <td key={index} style={{ backgroundColor: 'green', width: '1.35%', height: '10vh', border: '1px solid black' }}></td>;
         } else {
-          return <td key={index} style={{ backgroundColor: 'none', width: '1.35%', height: '10vh', border: '1px solid black' }}></td>;
+          console.log('rendering zero for', day)
+          return <td key={index} style={{ backgroundColor: 'initial', width: '1.35%', height: '10vh', border: '1px solid black' }}></td>;
         }
       })
     );
+  }
+
+  // componentDidUpdate() {
+  //   console.log('update', this.state.availability);
+  // }
+
+  // updating the db with the autopopulated rounds
+  fetchAutoPopulatedData() {
+    fetch(`/api/operator-availability.php`, {
+      method: 'POST'
+    })
+      // .then(() => {
+      //   this.fetchCallMethod();
+      // })
+      .catch(error => { throw (error); });
   }
 
   buildHeaderTimes() {
@@ -67,20 +93,73 @@ class OperatorAvailability extends React.Component {
 
     const startIndex = timeIndex[this.state.selectedStartTime];
     const endIndex = timeIndex[this.state.selectedEndTime];
-    var availabiltyObject = this.state.availability;
 
-    // if (this.state.selectedStartTime > this.state.selectedEndTime || this.state.selectedStartTime === this.state.selectedEndTime) {
-    // modal saying end time must be after start time
-    // make the person actually click a button to enter agaiin
-    // else {
+    if (startIndex > endIndex || startIndex === endIndex || endIndex - startIndex < 6) {
+      this.showError();
+    } else {
+      var availabilityObject = Object.assign({}, this.state.availability);
+      var availabilityDay = availabilityObject[this.state.day].map((cell, index) => {
+        if (index >= startIndex && index < endIndex) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      availabilityObject[this.state.day] = availabilityDay;
+      this.setState({
+        availability: availabilityObject,
+        selectedStartTime: 0,
+        selectedEndTime: 0
+      }, () => {
+        console.log('inside first pass', JSON.stringify(this.state.availability, null, 2));
+      });
 
-    for (var index = startIndex; index < endIndex; index++) {
-      availabiltyObject[this.state.day][index] = 1;
     }
+  }
+
+  showError() {
     this.setState({
-      availability: availabiltyObject,
+      error: true
+    });
+
+  }
+  hideErrorModal() {
+    this.setState({
+      error: false,
       selectedStartTime: 0,
       selectedEndTime: 0
+    });
+  }
+
+  showClearModal(event) {
+    this.setState({
+      clear: true,
+      day: event.currentTarget.id
+    });
+  }
+
+  hideClearModal() {
+    var day = this.state.day;
+    var availabilityObject = Object.assign({}, this.state.availability);
+    var availabilityDay = availabilityObject[day].map(cell => 0);
+    // var availabilityDay = this.state.availability[day].map;
+    // console.log('day', this.state.day);
+    availabilityObject[day] = availabilityDay;
+    // for (var index = 0; index < 72; index++) {
+    //   availabilityObject[this.state.day][index] = 0;
+    //   // console.log(availabilityObject[this.state.day][index]);
+    // }
+    this.setState({
+      availability: availabilityObject,
+      clear: false,
+      selectedStartTime: 0,
+      selectedEndTime: 0
+    });
+  }
+
+  cancelClearModal() {
+    this.setState({
+      clear: false
     });
   }
 
@@ -100,13 +179,17 @@ class OperatorAvailability extends React.Component {
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     const times = ['6:00 am', '6:15 am', '6:30 am', '6:45 am', '7:00 am', '7:15 am', '7:30 am', '7:45 am', '8:00 am', '8:15 am', '8:30 am', '8:45 am', '9:00 am', '9:15 am', '9:30 am', '9:45 am', '10:00 am', '10:15 am', '10:30 am', '10:45 am', '11:00 am', '11:15 am', '11:30 am', '11:45 am', '12:00 pm', '12:15 pm', '12:30 pm', '12:45 pm', '1:00 pm', '1:15 pm', '1:30 pm', '1:45 pm', '2:00 pm', '2:15 pm', '2:30 pm', '2:45 pm', '3:00 pm', '3:15 pm', '3:30 pm', '3:45 pm', '4:00 pm', '4:15 pm', '4:30 pm', '4:45 pm', '5:00 pm', '5:15 pm', '5:30 pm', '5:45 pm', '6:00 pm', '6:15 pm', '6:30 pm', '6:45 pm', '7:00 pm', '7:15 pm', '7:30 pm', '7:45 pm', '8:00 pm', '8:15 pm', '8:30 pm', '8:45 pm', '9:00 pm', '9:15 pm', '9:30 pm', '9:45 pm', '10:00 pm', '10:15 pm', '10:30 pm', '10:45 pm', '11:00 pm', '11:15 pm', '11:30 pm', '11:45 pm', '12:00 am'];
-
     return (
       <React.Fragment>
         <TopMenuGeneral title="MY AVAILABILITY"/>
+        <div className="d-flex flex-row-reverse">
+          <div style={{ width: '5%' }}></div>
+          <button className=" btn btn-primary mt-3" >Submit Availability</button>
+          <div style={{ width: '5%' }}></div>
+        </div>
         <div className="d-flex">
           <div style={{ width: '5%' }}></div>
-          <table className="mt-5 mr-0" style={{ width: '90%' }}>
+          <table className="mt-4 mr-0" style={{ width: '90%' }}>
             <thead className="container">
               <tr className="row d-flex justify-content-end">
                 <th style={{ width: '2.8%', height: '5vh', border: '1px solid black' }}>Day</th>
@@ -120,8 +203,8 @@ class OperatorAvailability extends React.Component {
                     <tr key={day} className="row d-flex justify-content-end">
                       <td className="align-middle" style={{ backgroundColor: 'white', width: '2.8%', heigth: '10vh', border: '1px solid black', fontWeight: 'bold' }}>
                         {day.slice(0, 3)}
-                        <button id={day} onClick={this.showModal} className="p-0 m-0" style={{ backgroundColor: '#86b677', border: '1px solid black' }} type="button">Add</button>
-                        <button id={day} onClick={this.showModal} className="p-0 mt-1" style={{ backgroundColor: '#ce8577', border: '1px solid black' }} type="button">Clear</button>
+                        <button id={day} onClick={this.showModal} className="p-0 m-0 btn btn-success" type="button">Add</button>
+                        <button id={day} onClick={this.showClearModal} className="p-0 mt-1 btn btn-danger" type="button">Clear</button>
                       </td>
                       {this.buildDayCell(day)}
                     </tr>
@@ -171,6 +254,16 @@ class OperatorAvailability extends React.Component {
             </div>
           </div>
         </SelectAvailabilityModal>
+        <ErrorModal day={this.state.day} errorShow={this.state.error} closeError={this.hideErrorModal}>
+          <div className="d-flex justify-content-center">
+            <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>The end time must be at least 1 hr 30 min after the start time</p>
+          </div>
+        </ErrorModal>
+        <ClearDayModal day={this.state.day} clearShow={this.state.clear} closeClear={this.hideClearModal} cancelClear={this.cancelClearModal}>
+          <div className="d-flex justify-content-center">
+            <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>Are you sure you want to clear all the availables times for this day?</p>
+          </div>
+        </ClearDayModal>
       </React.Fragment>
     );
   }
