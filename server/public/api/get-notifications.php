@@ -12,7 +12,7 @@ if(!$id){
 
 $query = "SELECT t.`id`, t.`user_id`, t.`target_user_id`, t.`date` as request_date, t.`type`, t.`comment`, t.`status`,
 
-          r.`user_id`, r.`date` as shift_date, r.`start_time`, r.`end_time`, r.`bus_info_id`, r.`id` as round_id
+          r.`user_id`, r.`date` as shift_date, r.`start_time`, r.`end_time`, r.`bus_info_id`, r.`id` as round_id,
           (
             SELECT `line_name`
             FROM `route`
