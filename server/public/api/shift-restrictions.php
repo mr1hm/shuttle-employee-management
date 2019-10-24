@@ -5,6 +5,7 @@ function canTakeShift ($operator, $shift) {
   if ( !hasSpecialStatus($operator, $shift) ) return false;
   if ( shiftTimeRestriction($operator, $shift) ) return false;
   if ( totalShiftTimeRestriction($operator, $shift) ) return false;
+  if ( requireBreak($operator, $shift) ) return false;
   return true;
 }
 
@@ -27,7 +28,7 @@ function hasSpecialStatus ($operator, $shift) {
  * If the operator has a shift before 8am, they cannot take a shift that ends later than 9pm */
 function shiftTimeRestriction ($operator, $shift) {
   return (
-    ( intval(reset($shift)['round_start']) < 800 && intval($operator['shift_restrictions']['worked_passed_10']['prior_day']) === 1 ) ||
+    ( intval(reset($shift)['round_start']) < 800 && $operator['shift_restrictions']['worked_passed_10']['prior_day'] ) ||
     ( intval(end($shift)['round_end']) > 2100 && intval($operator['shift_restrictions']['shift_passed_15_hour_window']['shift_start']) < 800 )
   );
 }
@@ -44,7 +45,10 @@ function totalShiftTimeRestriction ($operator, $shift) {
 }
 
 function requireBreak ($operator, $shift) {
-
+  return (
+    $operator['shift_restrictions']['need_30_minute_break'] &&
+    intval(reset($shift)['round_start']) - intval(end($operator['assigned_times'])[1]) < 30
+  );
 }
 
 // Takes a start and end time, calculates the difference and returns it

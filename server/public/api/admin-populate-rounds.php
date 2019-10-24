@@ -19,6 +19,7 @@ function populateSchedule(&$operators, $rounds, $conn) {
         if ( canTakeShift($operator, $shift) ) {
           assignOperatorToShift($operator, $shift);
           assignShiftToOperator($operator, $shift);
+          updateShiftFlags($operator, $shift);
 
           print('<pre>');
           print_r($operator);
@@ -31,7 +32,7 @@ function populateSchedule(&$operators, $rounds, $conn) {
       unset($operator);
     }
 
-    if ($madeAssignment) {
+    if ( $madeAssignment ) {
       updateDatabase($conn, $shift);
     }
     next($rounds);
@@ -42,7 +43,7 @@ function populateSchedule(&$operators, $rounds, $conn) {
  * assigned in a shift */
 function getShift($lineName, &$rounds) {
   $lineRounds = [
-    'C' => 3,
+    'C' => 1,
     'D' => 4,
     'Hs' => 5,
     'S' => 5
@@ -56,6 +57,21 @@ function getShift($lineName, &$rounds) {
   }
 
   return $shift;
+}
+
+function updateShiftFlags(&$operator, $shift) {
+  if ( intval($operator['minutes_without_30_minute_break']) === 300 ) {
+    $operator['shift_restrictions']['need_30_minute_break'] = true;
+  } else if ( intval($operator['minutes_without_30_minute_break']) > 300 ) {
+    $operator['minutes_without_30_minute_break'] -= 300;
+    $operator['shift_restrictions']['need_30_minute_break'] = true;
+  }
+  if ( intval(end($shift)['round_end']) > 2100 ) {
+    $operator['shift_restrictions']['worked_passed_10']['current_day'] = false;
+  }
+  if ( intval($operator['assigned_times'][0][0]) < 800 ) {
+    $operator['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = intval($operator['assigned_times'][0][0]);
+  }
 }
 
 /* Make sure:
@@ -87,6 +103,7 @@ function assignShiftToOperator(&$operator, $shift) {
   updateOperatorAvailableTimes($operator, $shift);
 
   $shiftTime = calculateShiftMinutes(reset($shift)['round_start'], end($shift)['round_end']);
+  $operator['minutes_without_30_minute_break'] += $shiftTime;
   $operator['total_daily_minutes'] += $shiftTime;
   $operator['total_weekly_minutes'] += $shiftTime;
 }
@@ -263,10 +280,11 @@ function getOperatorsForWeek ($conn) {
     'available_times' => [],
     'assigned_times' => [],
     'shift_restrictions' => [
+      'need_30_minute_break' => false,
       'worked_passed_10' => ['prior_day' => 0, 'current_day' => 0],
       'shift_passed_15_hour_window' => ['shift_start' => 0]
     ],
-    'continuous_minutes_worked' => 0,
+    'minutes_without_30_minute_break' => 0,
     'total_daily_minutes' => 0
   ];
 
@@ -374,7 +392,8 @@ function getOperatorsForDay($operators, $day) {
       $op['total_weekly_minutes'] = $operator['total_weekly_minutes'];
       $op['available_times'] = $operator['assignment_details'][$day]['available_times'];
       $op['assigned_times'] = $operator['assignment_details'][$day]['assigned_times'];
-      $op['continuous_minutes_worked'] = $operator['assignment_details'][$day]['continuous_minutes_worked'];
+      $op['minutes_without_30_minute_break'] = $operator['assignment_details'][$day]['minutes_without_30_minute_break'];
+      $op['shift_restrictions']['need_30_minute_break'] = $operator['assignment_details'][$day]['shift_restrictions']['need_30_minute_break'];
       $op['shift_restrictions']['worked_passed_10']['prior_day'] = $operator['assignment_details'][$day]['shift_restrictions']['worked_passed_10']['prior_day'];
       $op['shift_restrictions']['worked_passed_10']['current_day'] = $operator['assignment_details'][$day]['shift_restrictions']['worked_passed_10']['current_day'];
       $op['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = $operator['assignment_details'][$day]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'];
@@ -397,8 +416,8 @@ function populateWeek ($conn, $rounds, $operators) {
       $key = array_search(intval($operator['user_id']), array_column($operatorsForDay, 'user_id'));
       if ( $key !== false ) {
         $operator['total_weekly_minutes'] = $operatorsForDay[$key]['total_weekly_minutes'];
-        if ( intval($operatorsForDay[$key]['shift_restrictions']['worked_passed_10']['current_day']) === 1 ) {
-          $operator[$key]['shift_restrictions']['worked_passed_10']['prior_day'] = 1;
+        if ( $operatorsForDay[$key]['shift_restrictions']['worked_passed_10']['current_day'] ) {
+          $operator[$key]['shift_restrictions']['worked_passed_10']['prior_day'] = true;
         }
       }
     }
