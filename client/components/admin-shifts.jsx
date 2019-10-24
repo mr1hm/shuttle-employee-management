@@ -229,6 +229,9 @@ class AdminShiftsDay extends React.Component {
   }
   renderShiftComponents() {
     const shiftsGroupedByLine = this.state.groupedShifts;
+    if (shiftsGroupedByLine.length === 0) {
+      return <h1 className="noDataAvailable">No Shifts Available</h1>;
+    }
     var shiftRowArray = [];
     for (var groupIndex = 0; groupIndex < shiftsGroupedByLine.length; groupIndex++) {
       var shiftRow = shiftsGroupedByLine[groupIndex].shifts.map((element, index) => {
@@ -236,7 +239,7 @@ class AdminShiftsDay extends React.Component {
         var selectingType = null;
         if (element.user_id === 'n/a') {
           roundType = 'nonOperational';
-        } else if (element.user_id == 1) {
+        } else if (element.user_id === 1 || element.user_id === '1') {
           roundType = 'alertShift';
           selectingType = this.state.selectingAssign;
         } else {
@@ -323,7 +326,7 @@ class AdminShiftsDay extends React.Component {
   render() {
     return (
       <div>
-        <TopMenuShift title="Admin" page='day' date={this.state.date} />
+        {/* <TopMenuShift title="Admin" page='day' date={this.state.date} /> */}
         <AdminWeekNav date={this.state.date} onClickDayOfWeek={this.handleClickGoToDay}/>
         <div className="selectShiftsButtonContainer d-flex w-100 px-5">
           <button className="btn btn-primary m-2" onClick={this.autopopulateAndFetchData}> AUTO POPULATE </button>
