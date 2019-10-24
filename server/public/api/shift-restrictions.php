@@ -8,10 +8,11 @@ function canTakeShift ($operator, $shift) {
 }
 
 function shiftWithinAvailability ($operator, $shift) {
-  foreach ( $operator['times_available'] as $slot ) {
+  foreach ( $operator['available_times'] as $slot ) {
     if ( intval($slot[0]) <= intval(reset($shift)['round_start']) &&
          intval($slot[1]) >= intval(end($shift)['round_end']) ) return true;
   }
+  unset($slot);
   return false;
 }
 
