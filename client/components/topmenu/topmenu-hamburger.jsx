@@ -5,7 +5,6 @@ import HamburgerMenu from './hamburger-menu';
 import { createDateStringFromDateObject } from '../../lib/time-functions';
 
 const TopMenuHamburger = props => {
-  console.log('DATE:', props.date);
   const currentDateString = props.date ? createDateStringFromDateObject(props.date) : '';// converts unix time to date/at midnight
   return (
     <HamburgerMenu>

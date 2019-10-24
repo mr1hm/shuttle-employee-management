@@ -197,7 +197,6 @@
   width: 200px;
   background-color: lightblue;
   padding: 5px;
-  z-index: 1;
   box-shadow:0 1px 8px rgba(0,0,0,0.5);
 }
 .hoverMessage i::after {
@@ -266,4 +265,19 @@
 }
 .angleIconRotate{
     transform: rotate(90deg);
+}
+.adminShiftWeekContainer{
+    height: 100px;
+}
+.dayOfWeekContainer {
+    width: 120px;
+}
+.dayOfWeekContainer:hover{
+    background-color: lightblue;
+}
+.dayOfWeekSelected {
+    background-color: lightblue;
+}
+.nextWeekButton:hover, .prevWeekButton:hover{
+    background-color: lightgray;
 }
