@@ -13,6 +13,7 @@ function populateSchedule(&$operators, $rounds, $conn) {
     $madeAssignment = false;
 
     if ( hasAdequateRounds($shift) ) {
+      print('good');
       uasort($operators, 'operatorSort');
       // Traverse operators
       foreach ( $operators as &$operator ) {
@@ -25,10 +26,13 @@ function populateSchedule(&$operators, $rounds, $conn) {
         }
       }
       unset($operator);
+    } else {
+      print('<pre>');
+      print_r($shift);
+      print('<pre>');
     }
 
     if ($madeAssignment) {
-      print('cool');
       updateDatabase($conn, $shift);
     }
     next($rounds);
@@ -60,24 +64,18 @@ function getShift($lineName, &$rounds) {
  * - All of the rounds in this shift are on the same line
  * - All of the rounds in this shift are on the same bus */
 function hasAdequateRounds($shift) {
-  // $roundsInShift = count($shift);
+  foreach ( $shift as $round ) {
+    if (intval($round['user_id']) !== 1) return false;
+  }
+  unset($round);
 
-  // // Make sure all of the rounds in the shift are unassigned
-  // for ($i = 0; $i < $roundsInShift; ++$i) {
-  //   if (intval($shift[$i]['user_id']) !== 1) return false;
-  // }
-
-  // // Make sure all of the rounds in the shift are on the same line
-  // $lineName = $shift[0]['line_name'];
-  // for ($i = 1; $i < $roundsInShift; ++$i) {
-  //   if ($shift[$i] !== $lineName) return false;
-  // }
-
-  // // Make sure all of the rounds in the shift are on the same bus
-  // $busNumber = intval($shift[0]['bus_number']);
-  // for ($i = 1; $i < $roundsInShift; ++$i) {
-  //   if (intval($shift[$i]) !== $busNumber) return false;
-  // }
+  $lineName = $shift[0]['line_name'];
+  $busNumber = intval($shift[0]['bus_number']);
+  foreach ( $shift as $round ) {
+    if ( $round['line_name'] !== $lineName ||
+         intval($round['bus_number']) !== $busNumber ) return false;
+  }
+  unset($round);
 
   return true;
 }
@@ -87,25 +85,25 @@ function assignShiftToOperator(&$operator, $shift) {
   // Update operators times_assigned associative array with shift times
   // Update operators times_available associative array
   updateOperatorTimes($operator, $shift);
-  updateOperatorTimes($operator, $shift);
+  // updateOperatorTimes($operator, $shift);
 
   // Update operators daily & weekly minutes
-  $shiftTime = calculateShiftMinutes(reset($shift)[0], end($shift)[1]);
+  $shiftTime = calculateShiftMinutes(reset($shift)['round_start'], end($shift)['round_end']);
   $operator['total_daily_minutes'] += $shiftTime;
   $operator['total_weekly_minutes'] += $shiftTime;
 }
 
 function updateOperatorTimes (&$operator, $shift) {
-  $shiftStart = intval(reset($shift)[0]);
-  $shiftEnd = intval(reset($shift)[1]);
+  $shiftStart = intval(reset($shift)['round_start']);
+  $shiftEnd = intval(end($shift)['round_end']);
 
   if (empty($operator['assigned_times'])) {
     array_push($operator, [$shiftStart, $shiftEnd]);
   } else {
-    $previousKey = null;
-    foreach ($operator['assigned_times'] as $key => &$timeBlock) {
+    // $previousKey = null;
+    // foreach ($operator['assigned_times'] as $key => &$timeBlock) {
 
-    }
+    // }
     unset($timeBlock);
   }
 }
@@ -309,7 +307,7 @@ function getOperatorsForDay($operators, $day) {
       $op['total_weekly_minutes'] = $operator['total_weekly_minutes'];
       $op['available_times'] = $operator['assignment_details'][$day]['available_times'];
       $op['assigned_times'] = $operator['assignment_details'][$day]['assigned_times'];
-      $op['shift_restrictions']['30minute_break'] = $operator['assignment_details'][$day]['shift_restrictions']['30minute_break'];
+      $op['continuous_minutes_worked'] = $operator['assignment_details'][$day]['continuous_minutes_worked'];
       $op['shift_restrictions']['worked_passed_10']['prior_day'] = $operator['assignment_details'][$day]['shift_restrictions']['worked_passed_10']['prior_day'];
       $op['shift_restrictions']['worked_passed_10']['current_day'] = $operator['assignment_details'][$day]['shift_restrictions']['worked_passed_10']['current_day'];
       $op['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = $operator['assignment_details'][$day]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'];
