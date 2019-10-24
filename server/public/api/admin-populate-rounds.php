@@ -10,28 +10,29 @@ function populateSchedule (&$operators, $rounds, $conn) {
   // Traverse through all rounds
   while ( current($rounds) ) {
 
-    $shift = getShift( current($rounds)['line_name'], $rounds );
+    $shift = getShift(current($rounds)['line_name'], $rounds);
 
     if ( key($rounds) >= count($rounds) - count($shift)) break;
 
     $madeAssignment = false;
 
-    if ( hasAdequateRounds( $shift ) ) {
-      // Sort operators so that they are in order by the operator that has the least amount of weekly minutes
-      uasort($operators, function ($a, $b) {
-        if (intval($a['total_weekly_minutes']) === intval($b['total_weekly_minutes'])) {
-          return 0;
-        } else {
-          return (intval($a['total_weekly_minutes']) < intval($b['total_weekly_minutes'])) ? -1 : 1;
-        }
-      });
+    if ( hasAdequateRounds($shift) ) {
+      uasort($operators, 'operatorSort');
       // Traverse operators
       while ( current($operators) ) {
-        if ( canBeAssigned( current($operators), $shift ) ) {
+        if ( canTakeShift(current($operators), $shift) ) {
+
+          print('<pre>');
+          print('Operator: ');
+          print_r(current($operators));
+          print('Shift: ');
+          print_r($shift);
+          print('<pre>');
+
           assignShiftToOperator(current($operators), $shift);
           assignOperatorToShift(current($operators), $shift);
 
-          updateDatabase($conn, $shift);
+          // updateDatabase($conn, $shift);
           $madeAssignment = true;
           break;
         }
@@ -41,7 +42,7 @@ function populateSchedule (&$operators, $rounds, $conn) {
     }
 
     if ($madeAssignment) {
-      print('cool');
+      // print('cool');
     }
     next($rounds);
   }
@@ -111,8 +112,8 @@ function assignOperatorToShift ($operator, &$shift) {
 
 }
 
+// Update all of the rounds in this shift in the database
 function updateDatabase ($conn, $shift) {
-  // Update all of the rounds in this shift in the database
   while ( current($shift) ) {
     $user_id = current($shift)['user_id'];
     $id = current($shift)['id'];
@@ -126,6 +127,15 @@ function updateDatabase ($conn, $shift) {
       throw new Exception('MySQL error: ' . mysqli_error($conn));
     }
     next($shift);
+  }
+}
+
+// Sort operators so that they are in order by the operator that has the least amount of weekly minutes
+function operatorSort ($a, $b) {
+  if (intval($a['total_weekly_minutes']) === intval($b['total_weekly_minutes'])) {
+    return 0;
+  } else {
+    return (intval($a['total_weekly_minutes']) < intval($b['total_weekly_minutes'])) ? -1 : 1;
   }
 }
 
