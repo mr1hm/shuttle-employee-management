@@ -10,10 +10,6 @@ class AdminClickedShiftDetailsAside extends React.Component {
       expanded: false
     };
     this.handleClickExpand = this.handleClickExpand.bind(this);
-    this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
-  }
-  handleClickUnassignOperator() {
-
   }
   handleClickExpand() {
     this.setState({
