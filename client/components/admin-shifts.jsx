@@ -8,6 +8,7 @@ import AdminShiftsCombinedRounds from './admin-shifts-combined-rounds';
 import AdminAvailableOperatorsDisplay from './admin-available-operators-display';
 import { returnWeekInfoArray } from '../lib/time-functions';
 import './admin-shifts-display.css';
+import AdminConfirmModal from './admin-confirm-modal';
 class AdminShiftsDay extends React.Component {
   constructor(props) {
     super(props);
@@ -18,7 +19,9 @@ class AdminShiftsDay extends React.Component {
     this.handleClickGoToDay = this.handleClickGoToDay.bind(this);
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
     this.handleClickAssignShifts = this.handleClickAssignShifts.bind(this);
+    this.handleClickAssignShiftConfirm = this.handleClickAssignShiftConfirm.bind(this);
     this.handleClickUnassignShifts = this.handleClickUnassignShifts.bind(this);
+    this.handleClickUnassignShift = this.handleClickUnassignShift.bind(this);
     this.handleClickCancel = this.handleClickCancel.bind(this);
     this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
     const defaultDate = 1566619200;
@@ -27,9 +30,11 @@ class AdminShiftsDay extends React.Component {
       week: null,
       rounds: null,
       availableOperators: [],
+      operatorSelected: { name: 'n/a', id: 'n/a' },
       shiftsSelected: [],
       roundsSelected: [],
       roundTimes: [],
+      roundToUnassign: null,
       selectingAssign: false,
       selectingUnassign: false,
       groupedShifts: []
@@ -104,12 +109,20 @@ class AdminShiftsDay extends React.Component {
   handleClickGoToDay(timestamp) {
     this.getTodaysShiftData(timestamp);
   }
-  handleClickAssignShift(event) {
-    console.log(event.target.id, this.state.roundsSelected);
+  handleClickAssignShift(name, id) {
+    this.setState({
+      operatorSelected: {
+        name: name,
+        id: id
+      }
+    });
+  }
+  handleClickAssignShiftConfirm(id) {
+    console.log(id, this.state.roundsSelected);
     const data = {
       method: 'POST',
       body: JSON.stringify({
-        'user_id': event.target.id,
+        'user_id': id,
         'rounds': this.state.roundsSelected
       }),
       headers: { 'Content-Type': 'application/json' }
@@ -140,6 +153,9 @@ class AdminShiftsDay extends React.Component {
     }
     this.setState({ selectingUnassign: true });
   }
+  handleClickUnassignShift(event) {
+    this.setState({ roundToUnassign: event.target.id });
+  }
   handleClickCancel() {
     this.setState({
       selectingAssign: false,
@@ -168,9 +184,8 @@ class AdminShiftsDay extends React.Component {
       this.setState({ shiftsSelected: shiftsSelected });
     }
   }
-  handleClickUnassignOperator(event) {
-    console.log('event target: ', event.target.id);
-    let roundId = event.target.id;
+  handleClickUnassignOperator() {
+    let roundId = this.state.roundToUnassign;
     const data = {
       method: 'POST',
       body: JSON.stringify({
@@ -284,7 +299,7 @@ class AdminShiftsDay extends React.Component {
           rounds={shift.rounds}
           roundId={shift.round_id}
           shiftType={shift.shift_type}
-          onClickUnassignOperator={this.handleClickUnassignOperator}
+          onClickUnassignOperator={this.handleClickUnassignShift}
         />
       );
       return (
@@ -366,6 +381,14 @@ class AdminShiftsDay extends React.Component {
             </div>
           </div>
         </div>
+        <AdminConfirmModal
+          assign={this.state.selectingAssign}
+          unassign={this.state.selectingUnassign}
+          round={this.state.roundToUnassign}
+          shifts={this.state.shiftsSelected}
+          operator={this.state.operatorSelected}
+          onClickConfirmAssign={this.handleClickAssignShiftConfirm}
+          onClickConfirmUnassign={this.handleClickUnassignOperator} />
       </div>
     );
   }
