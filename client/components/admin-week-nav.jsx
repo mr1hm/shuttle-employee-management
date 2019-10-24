@@ -48,7 +48,7 @@ export default class AdminWeekNav extends React.Component {
           key={dayObj.unix}
           id={dayObj.unix}
           onClick={this.handleClickDayOfWeek}
-          className={`dayOfWeekContainer p-2 border h-100 ${this.checkIfCurrentDay(dayObj.unix)}`}>
+          className={`dayOfWeekContainer d-flex flex-column justify-content-center align-items-center border h-100 p-2 ${this.checkIfCurrentDay(dayObj.unix)}`}>
           <div className="dayOfWeek">{dayObj.day}</div>
           <div className="currentMonth">{dayObj.month} {dayObj.date.getDate()}</div>
           <div className="currentYear">{dayObj.date.getFullYear()}</div>
@@ -59,7 +59,7 @@ export default class AdminWeekNav extends React.Component {
   }
   render() {
     return (
-      <div className="adminShiftWeekContainer d-flex justify-content-center px-5">
+      <div className="adminShiftWeekContainer d-flex justify-content-center px-5 mt-3">
         <div className="prevWeekButtonContainer p-1">
           <div
             onClick={this.handleClickPrevWeek}
