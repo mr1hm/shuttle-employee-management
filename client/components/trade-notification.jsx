@@ -30,7 +30,7 @@ class TradeNotification extends React.Component {
     };
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    fetch('/api/make-shift-trade.php', {
+    fetch('/api/request-shift-trade.php', {
       method: 'POST',
       body: JSON.stringify(selectedDriverToTradeWith),
       headers: headers
