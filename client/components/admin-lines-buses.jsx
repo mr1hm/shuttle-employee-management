@@ -15,7 +15,7 @@ import Lines from './admin-lines-buses-lines';
 class AdminRoutes extends React.Component {
   constructor(props) {
     super(props);
-    this.newLineClass = '';
+    this.ref = React.createRef();
     this.state = {
       session: null,
       linesBusesInfo: [],
@@ -42,6 +42,13 @@ class AdminRoutes extends React.Component {
     this.getLinesBusesInfo();
   }
 
+  scrollToNewLine() {
+    this.ref.current.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }
+
   addNewLine(newLine, e) {
     e.preventDefault();
     const init = {
@@ -58,6 +65,7 @@ class AdminRoutes extends React.Component {
       .catch(error => console.error(error));
       this.handleAddLineButton();
       this.getLinesBusesInfo();
+      this.scrollToNewLine();
   }
 
   handleAddLineButton() {
@@ -66,9 +74,9 @@ class AdminRoutes extends React.Component {
     })
   }
 
-  // handleAddLineSubmit(e) {
+  findLargestRouteID() {
 
-  // }
+  }
 
   handleAddLineChange(e) {
     const name = e.target.name;
@@ -118,135 +126,169 @@ class AdminRoutes extends React.Component {
     }
   }
 
-    render() {
-      if (!this.state.linesBusesInfo) {
-        return (
-          <div>LOADING</div>
-        );
+  render() {
+    const linesInfoLength = this.state.linesBusesInfo.length;
+    let linesInfo = this.state.linesBusesInfo;
+    let largestID = 0;
+    for (let i = 0; i < linesInfoLength; i++) {
+      let routeIDNum = parseInt(linesInfo[i].real_route_id);
+      if (routeIDNum > largestID) {
+        largestID = routeIDNum;
       }
-      if (this.state.addLineClicked) {
-        return (
-          <React.Fragment>
-            <TopMenuGeneral title="ADMIN - Routes/Buses" />
-            {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
-            <div className="container mt-2">
-              <div className="row ">
-                <form onSubmit={this.handleSubmit}>
-                  <label >
-                    Start Date:
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
-                  </label>
-                  <input type="submit" value="Submit" />
-                  <label>
-                    End Date:
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
-                  </label>
-                  <input type="submit" value="Submit" />
-                </form>
-              </div>
-              <div className="row justify-content-end">
-                {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
-              </div>
+    }
+    console.log('largest route id:', largestID);
+    if (!this.state.linesBusesInfo) {
+      return (
+        <div>LOADING</div>
+      );
+    }
+    if (this.state.addLineClicked) {
+      return (
+        <React.Fragment>
+          <TopMenuGeneral title="ADMIN - Routes/Buses" />
+          {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
+          <div className="container mt-2">
+            <div className="row ">
+              <form onSubmit={this.handleSubmit}>
+                <label >
+                  Start Date:
+                  <input type="text" value={this.state.value} onChange={this.handleChange} />
+                </label>
+                <input type="submit" value="Submit" />
+                <label>
+                  End Date:
+                  <input type="text" value={this.state.value} onChange={this.handleChange} />
+                </label>
+                <input type="submit" value="Submit" />
+              </form>
             </div>
-            <div className="card" >
-              <div className="card-header" >
+            <div className="row justify-content-end">
+              {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
+            </div>
+          </div>
+          <div className="card" >
+            <div className="card-header" >
 
-                <form method="POST" action="/api/admin-lines-buses.php">
-                  <div className="row" >
+              <form method="POST" action="/api/admin-lines-buses.php">
+                <div className="row" >
 
-                    <div className="col">
-                      {this.state.lineExists ? <label>Line Name<br /><span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span></label> : <label>Line Name<br /><span className="addNewLineName"><i>Name Available</i></span></label>}
-                      <input defaultValue={this.state.newLineName}
-                             className="col border border-primary"
-                             type="text"
-                             name="line_name"
-                             onChange={this.handleAddLineChange}>
-                      </input>
-                    </div>
-                    <div className="col">
-                      <label>
-                        Status
-                        <br />
-                        <span className="addLineHeaderDescription"><i>active/inactive</i></span>
-                      </label>
-                      <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" />
-                    </div>
-                    <div className="col">
-                      <label>
-                        Rounds
-                        <br />
-                        <span className="addLineHeaderDescription"><i>Number of Rounds</i></span>
-                      </label>
-                      <input onChange={this.handleAddLineChange} type="text" className="col border border-primary" name="rounds" />
-                    </div>
-                    <div className="col">
-                      <label>
-                        Round Duration
-                        <br />
-                        <span className="addLineHeaderDescription"><i>Number of Minutes</i></span>
-                      </label>
-                      <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="roundDuration" />
-                    </div>
-                    <div className="col">
-                      <label>
-                        Public
-                        <br />
-                        <span className="addLineHeaderDescription"><i>True/False</i></span>
-                      </label>
-                      <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="public" />
-                    </div>
-                    <div className="col">
-                      <label>
-                        Regular Service
-                        <br />
-                        <span className="addLineHeaderDescription"><i>True/False</i></span>
-                      </label>
-                      <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="regularService" />
-                    </div>
-                    {this.state.lineExists ? <button className="btn btn-danger" type="submit" name="submit">NOPE</button> : <button onClick={(e) => this.addNewLine(this.state.newLine, e)} className="btn btn-success" type="submit" name="submit">ADD</button>}
+                  <div className="col">
+                    {this.state.lineExists ? <label>Line Name<br /><span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span></label> : <label>Line Name<br /><span className="addNewLineName"><i>Name Available</i></span></label>}
+                    <input defaultValue={this.state.newLineName}
+                            className="col border border-primary"
+                            type="text"
+                            name="line_name"
+                            onChange={this.handleAddLineChange}>
+                    </input>
                   </div>
-                </form>
-              </div>
+                  <div className="col">
+                    <label>
+                      Status
+                      <br />
+                      <span className="addLineHeaderDescription"><i>active/inactive</i></span>
+                    </label>
+                    <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" />
+                  </div>
+                  <div className="col">
+                    <label>
+                      Rounds
+                      <br />
+                      <span className="addLineHeaderDescription"><i>Number of Rounds</i></span>
+                    </label>
+                    <input onChange={this.handleAddLineChange} type="text" className="col border border-primary" name="rounds" />
+                  </div>
+                  <div className="col">
+                    <label>
+                      Round Duration
+                      <br />
+                      <span className="addLineHeaderDescription"><i>Number of Minutes</i></span>
+                    </label>
+                    <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="roundDuration" />
+                  </div>
+                  <div className="col">
+                    <label>
+                      Public
+                      <br />
+                      <span className="addLineHeaderDescription"><i>True/False</i></span>
+                    </label>
+                    <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="public" />
+                  </div>
+                  <div className="col">
+                    <label>
+                      Regular Service
+                      <br />
+                      <span className="addLineHeaderDescription"><i>True/False</i></span>
+                    </label>
+                    <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="regularService" />
+                  </div>
+                  {this.state.lineExists ? <button className="btn btn-danger" type="submit" name="submit">NOPE</button> : <button onClick={(e) => this.addNewLine(this.state.newLine, e)} className="btn btn-success" type="submit" name="submit">ADD</button>}
+                </div>
+              </form>
             </div>
-            <div className="accordion" id="accordionExample">
-              {this.state.linesBusesInfo.map((line, index) =>
-                <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.line_name + index} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
-              )}
-            </div>
-          </React.Fragment>
-        );
-      }
-    return (
-      <React.Fragment>
-      <TopMenuGeneral title="ADMIN - Routes/Buses" />
-        {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
-      <div className = "container mt-2">
-        <div className = "row ">
-            <form onSubmit={this.handleSubmit}>
-              <label >
-                Start Date:
-        <input  type="text" value={this.state.value} onChange={this.handleChange} />
-              </label>
-              <input type="submit" value="Submit" />
-              <label>
-                End Date:
-        <input type="text" value={this.state.value} onChange={this.handleChange} />
-              </label>
-              <input type="submit" value="Submit" />
-            </form>
-        </div>
-        <div className = "row justify-content-end">
-            <div className="btn btn-outline-dark "  onClick={() => this.handleAddLineButton()}> Add Line + </div>
-        </div>
-      </div>
-        <div className="accordion" id="accordionExample">
-          {this.state.linesBusesInfo.map((line, index) =>
-            <Lines key={line.line_name + index} getLinesBusesInfo={this.getLinesBusesInfo} lineID={line.real_route_id} accordionID={line.real_route_id + index} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+          </div>
+          <div className="accordion" id="accordionExample">
+            {this.state.linesBusesInfo.map((line, index) => {
+              if (largestID == line.real_route_id) {
+                return (
+                  <div className="newLine" key={line.real_route_id} ref={this.ref}>
+                    <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                  </div>
+                );
+              }
+              return (
+                <div key={line.real_route_id}>
+                  <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                </div>
+              );
+            }
           )}
-        </div>
-      </React.Fragment>
-    );
-  }
+          </div>
+        </React.Fragment>
+      );
+    }
+  return (
+    <React.Fragment>
+    <TopMenuGeneral title="ADMIN - Routes/Buses" />
+      {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
+    <div className="container mt-2">
+      <div className="row">
+          <form onSubmit={this.handleSubmit}>
+            <label >
+              Start Date:
+      <input  type="text" value={this.state.value} onChange={this.handleChange} />
+            </label>
+            <input type="submit" value="Submit" />
+            <label>
+              End Date:
+      <input type="text" value={this.state.value} onChange={this.handleChange} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+      </div>
+      <div className="row justify-content-end">
+          <div className="btn btn-outline-dark" onClick={() => this.handleAddLineButton()}> Add Line + </div>
+      </div>
+    </div>
+      <div className="accordion" id="accordionExample">
+        {this.state.linesBusesInfo.map((line, index) => {
+          if (largestID == line.real_route_id) {
+            return (
+              <div className="newLine" key={line.real_route_id} ref={this.ref}>
+                <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+              </div>
+            );
+          }
+          return (
+            <div key={line.real_route_id}>
+              <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+            </div>
+          );
+        }
+      )}
+      </div>
+    </React.Fragment>
+  );
+}
 }
 
 export default AdminRoutes;

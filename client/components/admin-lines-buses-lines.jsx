@@ -25,11 +25,6 @@ export default class Lines extends React.Component {
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
   }
 
-  scrollToNewLine() {
-    const newLine = document.querySelector(this.props.newLineClass);
-    newLine.scrollIntoView({behavior: 'smooth'});
-  }
-
   handleAddBusButtonClick() {
     this.setState({
       addBusClicked: !this.state.addBusClicked
@@ -48,7 +43,7 @@ export default class Lines extends React.Component {
     }
     return (
       <div id="accordion">
-        <div className="card" key={line.line_name + activeBuses.busNumber}>
+        <div className="card" ref={this.props.ref} id={line.real_route_id}>
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
             <div className="row lineHeaderFirstRow">
               <div className={`col-2 ${line.line_name}`}>Line</div>
@@ -110,8 +105,7 @@ export default class Lines extends React.Component {
                   </thead>
                   {activeBuses.map((bus, index) => {
                     return <BusesTable linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
-                  }
-
+                    }
                   )}
                 </table>
               </div>
@@ -121,6 +115,7 @@ export default class Lines extends React.Component {
       </div>
     );
   }
+}
   // return (
   //   <div key={line.line_name + line.bus_number} id={"collapse" + line.line_name} className="collapse" aria-labelledby={"heading" + line.line_name}
   //     data-parent="#accordionExample">
@@ -146,4 +141,3 @@ export default class Lines extends React.Component {
   //     </div>
   //   </div>
   // );
-}

@@ -138,7 +138,7 @@ if($method === 'GET') {
 
 } else if ($method === 'POST' && (isset($bodyData['line_name']))) { // add a new line
 
-    $lineName = $_POST['line_name'];
+    // $lineName = $_POST['line_name'];
     $query = "SELECT * FROM `route`";
     $result = mysqli_query($conn, $query);
 
