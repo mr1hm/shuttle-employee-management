@@ -87,7 +87,7 @@ class TradeNotification extends React.Component {
                 <button onClick={() => this.giveShifttoSelectedDriver(oneShift.round_id, oneShift.target_user_id)} type="button" className="btn btn-success">Take Shift</button>
               </div>
               <div className="col-1">
-                <button onClick={() => this.removeShift(oneShift.roundID)} type="button" className="btn btn-danger">Cancel</button>
+                <button onClick={() => this.removeShift(oneShift.round_id)} type="button" className="btn btn-danger">Cancel</button>
               </div>
             </div>
           );
