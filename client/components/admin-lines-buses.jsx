@@ -10,35 +10,54 @@ import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import Lines from './admin-lines-buses-lines';
-import { runInThisContext } from 'vm';
+// import { runInThisContext } from 'vm';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
     super(props);
+    this.newLineClass = '';
     this.state = {
       session: null,
       linesBusesInfo: [],
       // busInfo: [],
       addLineClicked: false,
       line_name: '',
-      lineExists: false
+      lineExists: false,
+      newLine: {
+        line_name: null,
+        status: null,
+        rounds: null,
+        roundDuration: null,
+        public: null,
+        regularService: null
+      }
     }
-    // this.addNewBus = this.addNewBus.bind(this);
-    this.handleAddBusButton = this.handleAddBusButton.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
     this.handleAddLineButton = this.handleAddLineButton.bind(this);
     this.handleAddLineChange = this.handleAddLineChange.bind(this);
     this.checkIfLineExists = this.checkIfLineExists.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount() { // runs right after render runs.
     this.getLinesBusesInfo();
   }
 
-  handleAddBusButton() {
-    this.setState({
-      addBusClicked: !this.state.addBusClicked
-    })
+  addNewLine(newLine, e) {
+    e.preventDefault();
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(newLine)
+    };
+    fetch(`api/admin-lines-buses.php`, init)
+      .then(response => response.json())
+      .then(lineInfo => {
+        console.log(lineInfo);
+        // this.props.handleEditBusClicked();
+        // this.props.getLinesBusesInfo();
+      })
+      .catch(error => console.error(error));
+      this.handleAddLineButton();
+      this.getLinesBusesInfo();
   }
 
   handleAddLineButton() {
@@ -47,12 +66,19 @@ class AdminRoutes extends React.Component {
     })
   }
 
+  // handleAddLineSubmit(e) {
+
+  // }
+
   handleAddLineChange(e) {
     const name = e.target.name;
     const value = e.target.value;
-    this.setState({
-      [name]: value
-    });
+    this.setState(prevState => ({
+      newLine: {
+        ...prevState.newLine,
+        [name]: value
+      }
+    }));
     this.checkIfLineExists(value);
   }
 
@@ -128,52 +154,68 @@ class AdminRoutes extends React.Component {
                 <form method="POST" action="/api/admin-lines-buses.php">
                   <div className="row" >
 
-                    <div>
-                      {this.state.lineExists ? <label>Line Name - <span className="addNewLineNameExists"><i>Line {`${this.state.line_name}`} Already Exists</i></span></label> : <label>Line Name - <span className="addNewLineName"><i>Name Available</i></span></label>}
-                      <input defaultValue={this.state.line_name}
+                    <div className="col">
+                      {this.state.lineExists ? <label>Line Name<br /><span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span></label> : <label>Line Name<br /><span className="addNewLineName"><i>Name Available</i></span></label>}
+                      <input defaultValue={this.state.newLineName}
                              className="col border border-primary"
                              type="text"
                              name="line_name"
                              onChange={this.handleAddLineChange}>
                       </input>
                     </div>
-                    <div>
-                      <label>Active</label>
-                      <input className="col border border-primary" type="text" name="active"></input>
+                    <div className="col">
+                      <label>
+                        Status
+                        <br />
+                        <span className="addLineHeaderDescription"><i>active/inactive</i></span>
+                      </label>
+                      <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" />
                     </div>
-                    <div>
-                      <label>Public</label>
-                      <input className="col border border-primary" type="text" name="public"></input>
+                    <div className="col">
+                      <label>
+                        Rounds
+                        <br />
+                        <span className="addLineHeaderDescription"><i>Number of Rounds</i></span>
+                      </label>
+                      <input onChange={this.handleAddLineChange} type="text" className="col border border-primary" name="rounds" />
                     </div>
-                    <div>
-                      <label>Regular Service</label>
-                      <input className="col border border-primary" type="text" name="regular_service"></input>
+                    <div className="col">
+                      <label>
+                        Round Duration
+                        <br />
+                        <span className="addLineHeaderDescription"><i>Number of Minutes</i></span>
+                      </label>
+                      <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="roundDuration" />
                     </div>
-                    {this.state.lineExists ? <button className="btn btn-danger" type="submit" name="submit">NOPE</button> : <button className="btn btn-success" type="submit" name="submit">ADD</button>}
+                    <div className="col">
+                      <label>
+                        Public
+                        <br />
+                        <span className="addLineHeaderDescription"><i>True/False</i></span>
+                      </label>
+                      <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="public" />
+                    </div>
+                    <div className="col">
+                      <label>
+                        Regular Service
+                        <br />
+                        <span className="addLineHeaderDescription"><i>True/False</i></span>
+                      </label>
+                      <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="regularService" />
+                    </div>
+                    {this.state.lineExists ? <button className="btn btn-danger" type="submit" name="submit">NOPE</button> : <button onClick={(e) => this.addNewLine(this.state.newLine, e)} className="btn btn-success" type="submit" name="submit">ADD</button>}
                   </div>
                 </form>
-
               </div>
             </div>
-
-
             <div className="accordion" id="accordionExample">
               {this.state.linesBusesInfo.map((line, index) =>
-                <Lines key={line.line_name + index} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.line_name + index} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
               )}
-              {/* {this.readRouteBusComponent(this.state.routeInfo)} */}
-
-
             </div>
-
           </React.Fragment>
         );
-
       }
-      if (this.state.linesBusesInfo.includes(this.state.line_name)) {
-
-      }
-
     return (
       <React.Fragment>
       <TopMenuGeneral title="ADMIN - Routes/Buses" />
@@ -198,12 +240,9 @@ class AdminRoutes extends React.Component {
         </div>
       </div>
         <div className="accordion" id="accordionExample">
-
-          {/* {this.readRouteBusComponent(this.state.routeInfo)} */}
           {this.state.linesBusesInfo.map((line, index) =>
             <Lines key={line.line_name + index} getLinesBusesInfo={this.getLinesBusesInfo} lineID={line.real_route_id} accordionID={line.real_route_id + index} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
           )}
-
         </div>
       </React.Fragment>
     );
