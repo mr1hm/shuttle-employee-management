@@ -60,7 +60,9 @@ class AdminShiftsDay extends React.Component {
         this.setState({
           groupedShifts: data,
           date: timestamp,
-          week: returnWeekInfoArray(timestamp)
+          week: returnWeekInfoArray(timestamp),
+          selectingAssign: false,
+          selectingUnassign: false
         });
       })
       .catch(error => { throw (error); });
@@ -345,8 +347,16 @@ class AdminShiftsDay extends React.Component {
         <AdminWeekNav date={this.state.date} onClickDayOfWeek={this.handleClickGoToDay}/>
         <div className="selectShiftsButtonContainer d-flex w-100 px-5">
           <button className="btn btn-primary m-2" onClick={this.autopopulateAndFetchData}> AUTO POPULATE </button>
-          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickAssignShifts}>Select Shifts to Assign</button>
-          <button className="selectShiftsButton btn btn-primary m-2" onClick={this.handleClickUnassignShifts}>Select Shift to Unassign</button>
+          <button
+            className={`selectShiftsButton btn btn-${this.state.selectingAssign ? 'primary' : 'light'} border m-2`}
+            onClick={this.handleClickAssignShifts}>
+            Select Shifts to Assign
+          </button>
+          <button
+            className={`selectShiftsButton btn btn-${this.state.selectingUnassign ? 'primary' : 'light'} border m-2`}
+            onClick={this.handleClickUnassignShifts}>
+            Select Shift to Unassign
+          </button>
           <div className="selectModeContainer d-flex flex-fill justify-content-center align-items-center">
             {this.renderSelectModeHeader()}
           </div>
