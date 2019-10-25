@@ -8,7 +8,7 @@ export default class EditBusModal extends React.Component {
     super(props);
     this.state = {
       busInfo: null,
-      editBus: { // need ALL information for a PUT method. PATCH should work with only the line being editted.
+      editBus: { // need ALL information for a PUT method. PATCH should work with only the line being editted. - IM ACTUALLY USING POST NOW.
         id: this.props.busInfo.busID,
         bus_number: this.props.busInfo.busNumber,
         start_time: this.props.busInfo.startTime,
@@ -44,7 +44,7 @@ export default class EditBusModal extends React.Component {
       body: JSON.stringify(bus)
     };
     fetch(`api/admin-lines-buses.php`, init)
-      .then(response => response.text())
+      .then(response => response.json())
       .then(busInfo => {
         console.log(busInfo);
         this.setState({
@@ -86,27 +86,32 @@ export default class EditBusModal extends React.Component {
               <input defaultValue={busInfo.gap} name="gap" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
-              <button onClick={this.props.handleEditBusClicked} className="closeModal btn btn-danger">
-                <FontAwesomeIcon className="closeEditWindow" icon={faWindowClose} />
+              <button onClick={this.props.handleEditBusClicked} className="w-40 closeModal btn btn-warning">
+                CANCEL
+                {/* <FontAwesomeIcon className="closeEditWindow" icon={faWindowClose} /> */}
               </button>
             </td>
           </tr>
           <tr>
             <td></td>
             <td>
-              <label className="editOpeningPeriod">Opening Duration</label>
+              <label className="editOpeningDuration">Opening Duration</label>
               <br/>
               <input defaultValue={busInfo.openingDuration} name="opening_duration" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
-              <label className="editClosingPeriod">Closing Duration</label>
+              <label className="editClosingDuration">Closing Duration</label>
               <br/>
               <input defaultValue={busInfo.closingDuration} name="closing_duration" onChange={this.handleEditChange} type="text" />
             </td>
             <td></td>
-            <td></td>
             <td>
-              <button onClick={() => this.editBus(this.state.editBus)} type="submit" className="saveChangesBtn btn btn-success">Save Changes</button>
+              <label className="editGapDuration">Gap Duration</label>
+              <br />
+              <input defaultValue={busInfo.gapDuration} name="gapDuration" onChange={this.handleEditChange} type="text" />
+            </td>
+            <td>
+              <button onClick={() => this.editBus(this.state.editBus)} type="submit" className="w-40 saveChangesBtn btn btn-success">UPDATE</button>
             </td>
           </tr>
         </tbody>

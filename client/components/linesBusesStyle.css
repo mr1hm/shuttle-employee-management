@@ -35,6 +35,12 @@
   color: red;
 }
 
+.editOpeningDuration,
+.editClosingDuration,
+.editGapDuration {
+  font-weight: 700;
+}
+
 .editBusModal {
   position: fixed;
   width: 75%;
@@ -45,4 +51,31 @@
   border: 2px solid black;
   background-color: rgba(182, 182, 182, 0.6);
   border-radius: 5px;
+}
+
+.addNewLineNameExists {
+  font-weight: 700;
+  color: red;
+}
+
+.addNewLineName {
+  font-weight: 700;
+  color: green;
+}
+
+.newLine .lineCardHeader {
+  /* width: 200px;
+  height: 200px; */
+  /* border-radius: 100px; */
+  /* background-color: #ccc; */
+  animation: glow 1s 30 alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: inset 0 0 10px -10px #aef4af;
+  }
+  to {
+    box-shadow: inset 0 0 10px 10px #aef4af;
+  }
 }

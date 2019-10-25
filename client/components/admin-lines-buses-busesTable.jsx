@@ -2,25 +2,43 @@ import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import EditBusModal from './admin-lines-buses-editBus';
 import AdminRoutes from './admin-lines-buses';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 export default class BusesTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
       busExistsOnRoute: false,
-      editBusClicked: false
+      editBusClicked: false,
+      checkLinesBusesInfo: null
     }
     this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
     this.closeEditBus = this.closeEditBus.bind(this);
-    // this.handleEditClick = this.handleEditClick.bind(this);
   }
 
-  checkForActiveBuses() {
+  // componentDidMount() {
+  //   this.setState({
+  //     checkLinesBusesInfo: this.props.linesBusesInfo
+  //   })
+  // }
+
+  checkForActiveBuses() { // check for already existing buses.
     if (line.buses.busNumber)
     this.setState({
       busExistsOnRoute: true
     })
+  }
+
+  deleteBus(busID, e) { // delete a bus.
+    const init = {
+      method: 'DELETE',
+      body: JSON.stringify(busID)
+    };
+    fetch(`api/admin-lines-buses.php`, init)
+      .then(response => response.json())
+      .then(busDeleted => console.log(busDeleted))
+      .catch(error => console.error(error));
   }
 
   closeEditBus() {
@@ -28,12 +46,6 @@ export default class BusesTable extends React.Component {
       editBusClicked: false
     })
   }
-
-  // handleEditBusClick() {
-  //   this.setState({
-  //     showModal: !this.state.showModal
-  //   })
-  // }
 
   handleEditBusClicked() {
     this.setState({
@@ -44,7 +56,6 @@ export default class BusesTable extends React.Component {
   render() {
     const { line } = this.props;
     const { busInfo } = this.props;
-    console.log(busInfo);
     if (this.state.showModal) {
       return (
         <div className="container editBusModal">
@@ -76,20 +87,17 @@ export default class BusesTable extends React.Component {
           </td>
           <td>{busInfo.startTime}</td>
           <td>{busInfo.endTime}</td>
-          {/* <td>24 Rds</td> */}
           <td>{busInfo.daysActive}</td>
           <td>{busInfo.gap}</td>
           <td>
-            <button onClick={this.handleEditBusClicked} className="btn btn-primary">EDIT</button>
+            <button onClick={this.handleEditBusClicked} className="btn btn-warning">EDIT <FontAwesomeIcon icon={faEdit} /></button>
           </td>
         </tr>
         <tr>
-          <td className="startTimeDuration">{busInfo.openingDuration + "min."}</td>
-          <td className="endTimeDuration">{busInfo.closingDuration + "min."}</td>
-          {/* <td>{busInfo.gapDuration}</td> */}
-          {/* <td className="roundsDuration">30min</td> */}
+          <td className="startTimeDuration">{`${busInfo.openingDuration}min`}</td>
+          <td className="endTimeDuration">{`${busInfo.closingDuration}min`}</td>
           <td></td>
-          <td></td>
+          <td>{busInfo.gapDuration}</td>
           <td>
             <button className="btn btn-danger">DELETE</button>
           </td>
