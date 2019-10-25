@@ -21,11 +21,12 @@ function buildStartEndArray($availability) {
         array_push($temporaryArray, $day);
         array_push($temporaryArray, $indexTimes[$hourIndex]);
       } if ($hourIndex !== 0 and $dayArray[$hourIndex -1] === 1 and $dayArray[$hourIndex] === 0) {
-        array_push($temporaryArray, $indexTimes[$hourIndex - 1]);          
+        array_push($temporaryArray, $indexTimes[$hourIndex]);          
       } if ($hourIndex === 71 and $dayArray[$hourIndex] === 1) {
         array_push($temporaryArray, 2400);   
       }if (count($temporaryArray) === 3) {
         array_push($startEndArray, $temporaryArray);
+        print_r($temporaryArray);
         $temporaryArray = [];
       }
     }
