@@ -30,18 +30,28 @@ class TradeNotification extends React.Component {
     };
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    fetch('/api/request-shift-trade.php', {
+    fetch('/api/make-shift-trade.php', {
       method: 'POST',
       body: JSON.stringify(selectedDriverToTradeWith),
       headers: headers
     })
-      .then(response => response.json())
-      .then(data => {
-      })
       .catch(error => console.error('Fetch failed', error));
-
+    const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
+    this.setState({
+      newShifts: newShifts
+    });
   }
   removeShift(roundID) {
+    const response = fetch('/api/decline-shift-trade.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: roundID
+      })
+    });
+    response.catch(err => console.error(err));
     const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
     this.setState({
       newShifts: newShifts
@@ -76,7 +86,7 @@ class TradeNotification extends React.Component {
         </div>
         {this.state.newShifts.map(oneShift => {
           return (
-            <div key={oneShift.id} className="row text-center">
+            <div key={oneShift.id} className="row mb-3 text-center">
               <div className="col-2">
                 <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
               </div>
