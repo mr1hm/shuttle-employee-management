@@ -24,7 +24,10 @@ class OperatorAvailability extends React.Component {
       day: null,
       error: false,
       selectedStartTime: 0,
-      selectedEndTime: 0
+      selectedEndTime: 0,
+      // eventually this needs to be passed by props
+      userId: 45,
+      sessionId: 1
     };
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
@@ -35,6 +38,7 @@ class OperatorAvailability extends React.Component {
     this.showClearModal = this.showClearModal.bind(this);
     this.hideClearModal = this.hideClearModal.bind(this);
     this.cancelClearModal = this.cancelClearModal.bind(this);
+    this.updateDatabase = this.updateDatabase.bind(this);
   }
 
   buildDayCell(day) {
@@ -49,14 +53,17 @@ class OperatorAvailability extends React.Component {
     );
   }
 
-  // updating the db with the autopopulated rounds
-  fetchAutoPopulatedData() {
-    fetch(`/api/operator-availability.php`, {
-      method: 'POST'
+  // updating the db with the availability
+  updateDatabase() {
+    fetch('/api/operator-availability.php', {
+      method: 'POST',
+      body: JSON.stringify({
+        'user_id': this.state.userId,
+        'availability': this.state.availability,
+        'session_id': this.state.sessionId
+      }),
+      headers: { 'Content-Type': 'application/json' }
     })
-      // .then(() => {
-      //   this.fetchCallMethod();
-      // })
       .catch(error => { throw (error); });
   }
 
@@ -113,7 +120,6 @@ class OperatorAvailability extends React.Component {
   }
 
   showError() {
-    console.log('inside show error method')
     this.setState({
       error: true
     });
@@ -175,7 +181,7 @@ class OperatorAvailability extends React.Component {
         <TopMenuGeneral title="MY AVAILABILITY"/>
         <div className="d-flex flex-row-reverse">
           <div style={{ width: '5%' }}></div>
-          <button className=" btn btn-primary mt-3" >Submit Availability</button>
+          <button className=" btn btn-primary mt-3" onClick={this.updateDatabase}>Submit Availability</button>
           <div style={{ width: '5%' }}></div>
         </div>
         <div className="d-flex">
