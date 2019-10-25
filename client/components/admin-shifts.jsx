@@ -62,7 +62,9 @@ class AdminShiftsDay extends React.Component {
           date: timestamp,
           week: returnWeekInfoArray(timestamp),
           selectingAssign: false,
-          selectingUnassign: false
+          selectingUnassign: false,
+          shiftsSelected: [],
+          availableOperators: []
         });
       })
       .catch(error => { throw (error); });
