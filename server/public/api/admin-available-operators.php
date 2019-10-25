@@ -92,7 +92,7 @@ foreach($data as &$date){
     $id['total_hours'] = $total_hours;
   }
 }
-// check if times overlap, return true if they don't, return true if they do
+// check if times overlap, return true if they don't, return false if they do
 function checkIfTimesOverlap($times){
   $noOverlap = true;
   for($time_index1 = 0; $time_index1 < count($times); $time_index1++){
@@ -160,8 +160,9 @@ function operatorsOrderedByDailyHours($operators){
   return $operators_ordered;
 }
 
-// check if rounds are added shifts are no more than 5 hours
-// if a shift is 5 hours the next shift has to come at least 30 min later
+// check if scheduled rounds and shifts to add are no more than 5 hours
+// without a 30 min (consecutive) break within the 5 hour block
+// if a shift is 5 hours without a 30 min break the next shift has to come at least 30 min later
 function operatorsUnderMaxConsecutiveHours($operators, $times){
   $operators_under_consecutive_max = [];
   foreach($operators as $id=>$operator_data){
@@ -187,19 +188,18 @@ function operatorsUnderMaxConsecutiveHours($operators, $times){
     $consecutive_hours = calculateTotalHours([$previous_shift]);
     for ($shift_index = 1; $shift_index < count($operator_shifts); $shift_index++){
       $current_shift = $operator_shifts[$shift_index];
-      //print($consecutive_hours. ' ');
-      if($consecutive_hours > 4.99 && $consecutive_hours <= 5 && $previous_shift['stop_time'] !== $current_shift['start_time']){
-        $time = [
-          'start_time' => $previous_shift['stop_time'],
-          'stop_time' => $current_shift['start_time']
-        ];
-        $hours_between_shift = calculateTotalHours([$time]);
-        if($hours_between_shift < .5){
-          $operator_available = false;
+      $timeBetweenShifts = [
+        'start_time' => $previous_shift['stop_time'],
+        'stop_time' => $current_shift['start_time']
+      ];
+      $hours_between_shift = calculateTotalHours([$timeBetweenShifts]);
+      if($consecutive_hours > 4.99 && $consecutive_hours <= 5 &&
+        $previous_shift['stop_time'] !== $current_shift['start_time'] &&
+        $hours_between_shift < .5) {
+        $operator_available = false;
           break;
-        }
       }
-      if($previous_shift['stop_time'] === $current_shift['start_time']){
+      if($previous_shift['stop_time'] === $current_shift['start_time'] || $hours_between_shift < .5){
         $consecutive_hours += calculateTotalHours([$current_shift]);
       } else {
         $consecutive_hours = calculateTotalHours([$current_shift]);
