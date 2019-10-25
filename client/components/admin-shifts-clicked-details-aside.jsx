@@ -10,10 +10,6 @@ class AdminClickedShiftDetailsAside extends React.Component {
       expanded: false
     };
     this.handleClickExpand = this.handleClickExpand.bind(this);
-    this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
-  }
-  handleClickUnassignOperator() {
-
   }
   handleClickExpand() {
     this.setState({
@@ -44,7 +40,14 @@ class AdminClickedShiftDetailsAside extends React.Component {
         {this.props.rounds.map(round =>
           <div key={round.id} className="roundDetailContainer">
             <div className="roundTime">{round.roundTime}</div>
-            <button id={round.id} className="btn btn-danger" onClick={this.props.onClickUnassignOperator}>Unassign Operator</button>
+            <button
+              id={round.id}
+              className="btn btn-danger"
+              data-toggle="modal"
+              data-target="#confirmModal"
+              onClick={this.props.onClickUnassignOperator}>
+              Unassign Operator
+            </button>
           </div>)}
       </div>
     );

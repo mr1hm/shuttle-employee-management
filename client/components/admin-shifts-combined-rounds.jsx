@@ -6,13 +6,29 @@ import './admin-shifts-display.css';
 class AdminShiftsCombinedRounds extends React.Component {
   constructor(props) {
     super(props);
-    this.shiftStartMeridian = convertMilitaryTime(this.props.shiftData.start);
-    this.shiftEndMeridian = convertMilitaryTime(this.props.shiftData.end);
+    this.shiftStartMeridian = this.convertMilitartyTimeToStringWithColon(this.props.shiftData.start);
+    this.shiftEndMeridian = this.convertMilitartyTimeToStringWithColon(this.props.shiftData.end);
     this.shiftTimeMeridian = this.shiftStartMeridian + ' - ' + this.shiftEndMeridian;
     this.handleClick = this.handleClick.bind(this);
     this.state = {
+      shiftTime: this.props.shiftData,
       selected: this.props.selecting
     };
+  }
+  convertMilitartyTimeToStringWithColon(time) {
+    let hours = Math.floor(time / 100);
+    let amOrPm = '';
+    if (hours >= 12) {
+      amOrPm = 'PM';
+    } else {
+      amOrPm = 'AM';
+    }
+    if (hours > 12) {
+      hours = hours % 12;
+    }
+    time = time.toString();
+    let minutes = time[time.length - 2] + time[time.length - 1];
+    return hours + ':' + minutes + amOrPm;
   }
   convertRoundTimesToTimeMeridian(rounds) {
     for (let roundIndex = 0; roundIndex < rounds.length; roundIndex++) {
@@ -40,7 +56,8 @@ class AdminShiftsCombinedRounds extends React.Component {
       'shift_time': this.shiftTimeMeridian,
       'rounds': this.convertRoundTimesToTimeMeridian(this.props.rounds),
       'round_id': this.props.roundId,
-      'shift_type': this.props.type
+      'shift_type': this.props.type,
+      'line_bus': this.props.lineBus
     });
   }
   generateShiftHoverElement() {
