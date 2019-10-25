@@ -30,7 +30,6 @@ class Transaction extends React.Component {
   }
 
   getDataForCurrentRequest(requestData){
-    debugger;
     if(requestData.type != this.state.selected.type){
       requestData.page = 0;
     }
