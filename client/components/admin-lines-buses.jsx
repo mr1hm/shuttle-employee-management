@@ -131,7 +131,7 @@ class AdminRoutes extends React.Component {
       if (this.state.addLineClicked) {
         return (
           <React.Fragment>
-            <TopMenuGeneral title="ADMIN - Routes/Buses" />
+            <TopMenuGeneral title="ADMIN - Routes/Buses" userId={this.props.userId} />
             {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
             <div className="container mt-2">
               <div className="row ">
@@ -201,7 +201,7 @@ class AdminRoutes extends React.Component {
 
     return (
       <React.Fragment>
-      <TopMenuGeneral title="ADMIN - Routes/Buses" />
+      <TopMenuGeneral title="ADMIN - Routes/Buses" userId={this.props.userId} />
         {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
       <div className = "container mt-2">
         <div className = "row ">

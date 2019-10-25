@@ -83,7 +83,7 @@ class OperatorAvailability extends React.Component {
     const times = ['6:00', '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00', '8:15', '8:30', '8:45', '9:00', '9:15', '9:30', '9:45', '10:00'];
     return (
       <React.Fragment>
-        <TopMenuGeneral title="MY AVAILABILITY"/>
+        <TopMenuGeneral userId={this.props.userId} title="MY AVAILABILITY"/>
         <div className="d-flex">
           <div style={{ width: '5%' }}></div>
           <table className="mt-5 mr-0" style={{ width: '90%' }}>

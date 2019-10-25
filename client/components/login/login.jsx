@@ -46,7 +46,7 @@ class Login extends React.Component {
     const errorDisplay = <div className="text-danger">Invalid Email or Password</div>;
     return (
       <>
-        <TopMenuGeneral title="LOGIN" />
+        <TopMenuGeneral userId={this.props.userId} title="LOGIN" />
         <div className="container mt-5 d-flex justify-content-center">
           <form className="w-50" encType="multipart/form-data" onSubmit={this.checkLoginInfo}>
             <div className="form-group">

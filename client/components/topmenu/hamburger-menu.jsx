@@ -2,12 +2,12 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import './hamburger-menu.css';
-
 class HamburgerMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      notificationCount: 0
     };
     this.toggleOpen = this.toggleOpen.bind(this);
   }
@@ -16,29 +16,38 @@ class HamburgerMenu extends React.Component {
       open: !this.state.open
     });
   }
-
+  componentDidMount() {
+    const ID = this.props.userId ? this.props.userId : 17;
+    fetch(`/api/get-notifications.php?id=${ID}`)
+      .then(response => response.json())
+      .then(shiftsArrayOfObjects => {
+        this.setState({
+          notificationCount: parseInt(shiftsArrayOfObjects.length)
+        });
+      })
+      .catch(error => console.error('Fetch failed', error));
+  }
   render() {
     const visibleClass = this.state.open ? 'visible' : 'hidden';
     const notification =
-    (<div className="notification-badge">
-      <div className="notification-count">{this.props.count} </div>
-    </div>);
+      (<div className="notification-badge">
+        <div className="notification-count">{this.state.notificationCount}</div>
+      </div>);
     return (
-          <>
-            <div className="dropdown-icon" onClick={this.toggleOpen}>
-              <FontAwesomeIcon icon={faBars} />
-              {this.props.count > 0 && notification}
-            </div>
-            <div className={`dropdown-options ${visibleClass}`}>
-              <div className="close-icon" onClick={this.toggleOpen}>
-                <FontAwesomeIcon icon={faTimes} />
-              </div>
-              {this.props.children}
-            </div>
-            <div className={`shadow ${visibleClass}`}></div>
-          </>
+      <>
+        <div className="dropdown-icon" onClick={this.toggleOpen}>
+          <FontAwesomeIcon icon={faBars} />
+          {this.state.notificationCount > 0 && notification}
+        </div>
+        <div className={`dropdown-options ${visibleClass}`}>
+          <div className="close-icon" onClick={this.toggleOpen}>
+            <FontAwesomeIcon icon={faTimes} />
+          </div>
+          {this.props.children}
+        </div>
+        <div className={`shadow ${visibleClass}`}></div>
+      </>
     );
   }
 }
-
 export default HamburgerMenu;
