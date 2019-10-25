@@ -98,7 +98,7 @@ function assignShiftToOperator(&$operator, $shift) {
   updateOperatorAssignedTimes($operator, $shift);
   updateOperatorAvailableTimes($operator, $shift);
 
-  $shiftTime = calculateShiftMinutes(reset($shift)['round_start'], end($shift)['round_end']);
+  $shiftTime = calculateShiftMinutes(intval(reset($shift)['round_start']), intval(end($shift)['round_end']));
   $operator['minutes_without_30_minute_break'] += $shiftTime;
   $operator['total_daily_minutes'] += $shiftTime;
   $operator['total_weekly_minutes'] += $shiftTime;
@@ -140,7 +140,7 @@ function updateOperatorAssignedTimes (&$operator, $shift) {
   $insertIndex = 0;
   foreach ( $operator['assigned_times'] as $key => &$timeBlock ) {
     if ( $prevTimeBlock && ($shiftStart >= $prevTimeBlock[1] && $shiftEnd <= $timeBlock[0]) ) {
-      array_splice($operator['assigned_times'], $key, 1, [$shiftStart, $shiftEnd]);
+      array_splice($operator['assigned_times'], $key, 1, [ [$shiftStart, $shiftEnd] ]);
       $insertIndex = $key;
       break;
     }
@@ -149,15 +149,17 @@ function updateOperatorAssignedTimes (&$operator, $shift) {
   unset($timeBlock);
 
   /* If inserted shift has start/end times that are equivalent to neighboring
-   * shifts - trunctate the shift(s) into a single shift */
-  if ( intval($operator['assigned_times'][$insertIndex - 1][1]) === intval($operator['assigned_times'][$insertIndex][0]) ) {
+    * shifts - trunctate the shift(s) into a single shift */
+  if (intval($operator['assigned_times'][$insertIndex - 1][1]) === intval($operator['assigned_times'][$insertIndex][0])) {
     $operator['assigned_times'][$insertIndex - 1][1] = $operator['assigned_times'][$insertIndex][1];
     array_splice($operator['assigned_times'], $insertIndex, 1);
     --$insertIndex;
   }
-  if (intval($operator['assigned_times'][$insertIndex + 1][0]) === intval($operator['assigned_times'][$insertIndex][1])) {
-    $operator['assigned_times'][$insertIndex + 1][0] = $operator['assigned_times'][$insertIndex][0];
-    array_splice($operator['assigned_times'], $insertIndex, 1);
+  if ( isset($operator['assigned_times'][$insertIndex + 1]) ) {
+    if (intval($operator['assigned_times'][$insertIndex + 1][0]) === intval($operator['assigned_times'][$insertIndex][1])) {
+      $operator['assigned_times'][$insertIndex + 1][0] = $operator['assigned_times'][$insertIndex][0];
+      array_splice($operator['assigned_times'], $insertIndex, 1);
+    }
   }
 }
 
@@ -239,14 +241,13 @@ function getRoundsForWeek ($conn, $sessionTimestamp) {
   }
 
   $query = "SELECT `rd`.`id`, `rt`.`line_name`, `bi`.`bus_number`, `rd`.`start_time` AS 'round_start', `rd`.`end_time` AS 'round_end',
-                    `us`.`id` AS 'user_id', `us`.`last_name`, `us`.`first_name`, `rd`.`date`, `rd`.`status`
+                   `us`.`id` AS 'user_id', `us`.`last_name`, `us`.`first_name`, `rd`.`date`, `rd`.`status`
             FROM `route` AS `rt`
             JOIN `bus_info` AS bi ON `bi`.`route_id` = `rt`.`id`
             JOIN `round` AS rd ON `rd`.`bus_info_id` = `bi`.`id`
             JOIN `user` AS us ON `rd`.`user_id` = `us`.`id`
             WHERE `rd`.`session_id` = 1 AND `rd`.`date` IN ({$weekdays})
             ORDER BY date ASC, line_name ASC, bus_number ASC, round_start ASC, round_end ASC";
-
   $result = mysqli_query($conn, $query);
   if (!$result) {
     throw new Exception('MySQL error: ' . mysqli_error($conn));
@@ -277,7 +278,7 @@ function getOperatorsForWeek ($conn) {
     'assigned_times' => [],
     'shift_restrictions' => [
       'need_30_minute_break' => false,
-      'worked_passed_10' => ['prior_day' => 0, 'current_day' => 0],
+      'worked_passed_10' => ['prior_day' => false, 'current_day' => false],
       'shift_passed_15_hour_window' => ['shift_start' => 0]
     ],
     'minutes_without_30_minute_break' => 0,
@@ -403,8 +404,7 @@ function getOperatorsForDay($operators, $day) {
 
 // Populate the week day by day
 function populateWeek ($conn, $rounds, $operators) {
-  // $week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  $week = ['Tue', 'Wed'];
+  $week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   foreach ( $week as $day ) {
     $roundsForDay = getRoundsForDay($rounds, $day);
     $operatorsForDay = getOperatorsForDay($operators, $day);
@@ -423,16 +423,15 @@ function populateWeek ($conn, $rounds, $operators) {
   unset($day);
 }
 
-//////////
-
 $sessionStartTimestamp = 1566100800;
 $sessionEndTimestamp = 1576904400;
+
 //populate the entire quarter week by week
-// while ( $sessionStartTimestamp < $sessionEndTimestamp ) {
+while ( $sessionStartTimestamp < $sessionEndTimestamp ) {
   $rounds = getRoundsForWeek($conn, $sessionStartTimestamp);
   $operators = getOperatorsForWeek($conn);
-
   populateWeek($conn, $rounds, $operators);
   $sessionStartTimestamp = strtotime('+7 days', $sessionStartTimestamp);
-// }
+}
+
 ?>

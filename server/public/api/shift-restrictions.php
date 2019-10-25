@@ -36,18 +36,20 @@ function shiftTimeRestriction ($operator, $shift) {
 /* If operator will exceed 8 hours (480 minutes) once the shift is added, skip the operator
  * If the total weekly minutes exceeds 29 hours (1740 minutes) once the shift is added, skip the operator */
 function totalShiftTimeRestriction ($operator, $shift) {
-  $shiftLength = calculateShiftMinutes(reset($shift)['round_start'], end($shift)['round_end']);
+  $shiftLength = calculateShiftMinutes(intval(reset($shift)['round_start']), intval(end($shift)['round_end']));
   return (
     intval($operator['total_daily_minutes']) + $shiftLength > 480 ||
     intval($operator['total_weekly_minutes']) + $shiftLength > 1740
   );
-
 }
 
 function requireBreak ($operator, $shift) {
+  $shiftLength = calculateShiftMinutes(intval(reset($shift)['round_start']), intval(end($shift)['round_end']));
+  $gap = calculateShiftMinutes(intval(end($operator['assigned_times'])[1]), intval(reset($shift)['round_start']));
+
   return (
-    $operator['shift_restrictions']['need_30_minute_break'] &&
-    intval(reset($shift)['round_start']) - intval(end($operator['assigned_times'])[1]) < 30
+    ($operator['shift_restrictions']['need_30_minute_break'] && $gap < 30) ||
+    intval($operator['minutes_without_30_minute_break']) + $shiftLength > 300
   );
 }
 
