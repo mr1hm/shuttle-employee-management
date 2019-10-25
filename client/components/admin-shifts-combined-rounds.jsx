@@ -1,42 +1,98 @@
-import React from "react";
+import React from 'react';
+import AdminShiftsHoverDetailsAndLabels from './admin-shifts-hover-details-and-labels';
+import { convertMilitaryTime } from '../lib/time-functions';
 import './admin-shifts-display.css';
 
 class AdminShiftsCombinedRounds extends React.Component {
   constructor(props) {
     super(props);
+    this.shiftStartMeridian = this.convertMilitartyTimeToStringWithColon(this.props.shiftData.start);
+    this.shiftEndMeridian = this.convertMilitartyTimeToStringWithColon(this.props.shiftData.end);
+    this.shiftTimeMeridian = this.shiftStartMeridian + ' - ' + this.shiftEndMeridian;
+    this.handleClick = this.handleClick.bind(this);
+    this.state = {
+      shiftTime: this.props.shiftData,
+      selected: this.props.selecting
+    };
+  }
+  convertMilitartyTimeToStringWithColon(time) {
+    let hours = Math.floor(time / 100);
+    let amOrPm = '';
+    if (hours >= 12) {
+      amOrPm = 'PM';
+    } else {
+      amOrPm = 'AM';
+    }
+    if (hours > 12) {
+      hours = hours % 12;
+    }
+    time = time.toString();
+    let minutes = time[time.length - 2] + time[time.length - 1];
+    return hours + ':' + minutes + amOrPm;
+  }
+  convertRoundTimesToTimeMeridian(rounds) {
+    for (let roundIndex = 0; roundIndex < rounds.length; roundIndex++) {
+      let roundStartMeridian = convertMilitaryTime(rounds[roundIndex].start.toString());
+      let roundEndMeridian = convertMilitaryTime(rounds[roundIndex].end.toString());
+      rounds[roundIndex]['roundTime'] = roundStartMeridian + ' - ' + roundEndMeridian;
+    }
+    return rounds;
+  }
+  timeInMinutesFromMidnight(time) {
+    let hoursToMinutes = Math.floor(time / 100) * 60;
+    let minutesFromTime = time - Math.floor(time / 100) * 100;
+    return hoursToMinutes + minutesFromTime;
+  }
+  handleClick() {
+    if (!this.props.selecting) {
+      return;
+    }
+    this.setState({ selected: !this.state.selected });
+    console.log(this.props.shiftData, parseInt(this.props.roundId), this.props.userId);
+    this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
+    this.props.onClickShifts({
+      'user_name': this.props.userName,
+      'user_id': this.props.userId,
+      'shift_time': this.shiftTimeMeridian,
+      'rounds': this.convertRoundTimesToTimeMeridian(this.props.rounds),
+      'round_id': this.props.roundId,
+      'shift_type': this.props.type,
+      'line_bus': this.props.lineBus
+    });
+  }
+  generateShiftHoverElement() {
+    if (this.props.type === 'active') {
+      return (
+        <AdminShiftsHoverDetailsAndLabels
+          userName={this.props.userName}
+          userId={this.props.userId}
+          shiftTime={this.shiftTimeMeridian}
+          rounds={this.props.rounds.length}
+        />
+      );
+    } else return <div></div>;
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.selecting !== prevProps.selecting) {
+      this.setState({ selected: this.props.selected });
+    }
   }
   render() {
-    const range = this.props.range;
-    const shiftData = this.props.shiftData;
-    const rangeDistance = range.max - range.min;
-    const startPercent = ((shiftData.start - range.min) / rangeDistance) * 100;
-    const endPercent = ((shiftData.end - range.min) / rangeDistance) * 100;
-    const widthPercent = endPercent - startPercent;
-    // console.log('this.props.type: ', this.props.type);
-    // console.log('widthPercet: ', widthPercent);
-    // console.log('rangeDistance: ', rangeDistance);
-    // console.log('endPercent: ', endPercent);
-    // console.log('startPercent: ', startPercent);
-    // console.log('shiftData: ', shiftData);
-    // console.log('range ', range);
+    const rangeMax = this.timeInMinutesFromMidnight(this.props.range.max);
+    const rangeMin = this.timeInMinutesFromMidnight(this.props.range.min);
+    const shiftStart = this.timeInMinutesFromMidnight(this.props.shiftData.start);
+    const shiftEnd = this.timeInMinutesFromMidnight(this.props.shiftData.end);
+    const rangeDistance = rangeMax - rangeMin;
+    const widthPercent = (shiftEnd - shiftStart) / rangeDistance;
     return (
       <div
-        className={`shift shiftBase ${this.props.type}`}
-        style={{
-          width: widthPercent + "%",
-          left: startPercent + "%",
-          borderLeft: "1px solid black",
-          borderRight: "1px solid black"
-        }}></div>
+        onClick={this.handleClick}
+        className={`operatorShift rounded border h-75 ${this.props.type} ${this.state.selected ? 'shiftSelected' : ''}`}
+        style={{ width: widthPercent * 1808 + 'px' }}>
+        {this.generateShiftHoverElement()}
+      </div>
     );
   }
 }
-
-//             // test={data.test}
-//             key={index}
-//             type={element.user_id === "1" || element.user_id === 1? 'alertShift' : 'active'}
-//             range={{ min: 6, max: 24 }}
-//             shiftData={{start: element.start_time, end: element.end_time} } 
-//             // children={[]
 
 export default AdminShiftsCombinedRounds;

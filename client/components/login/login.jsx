@@ -1,103 +1,81 @@
 import React from 'react';
 import TopMenuGeneral from '../topmenu/topmenu-general';
-import Welcome from '../welcome/welcome'
-import "./login.css";
+import './login.css';
 
 class Login extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    console.log("props", props);
     this.state = {
-      userID : null,
-      email:null,
-      password:null,
-      loginError:false
-    }
+      userID: null,
+      email: null,
+      password: null,
+      loginError: false
+    };
     this.checkLoginInfo = this.checkLoginInfo.bind(this);
     this.handlechange = this.handlechange.bind(this);
   }
 
-  handlechange(event){
+  handlechange(event) {
     this.setState({
       [event.target.name]: event.target.value
     });
   }
 
-
   checkLoginInfo(event) {
     event.preventDefault();
-    const email = this.state.email;
-    const password = this.state.password;
+    const { email, password } = this.state;
     const form = new FormData(event.target);
-    form.append("email", email);
-    form.append("password",password);
+    form.append('email', email);
+    form.append('password', password);
     fetch(`/api/login-page.php`, {
       method: 'POST',
-      body: form,
+      body: form
     })
-      .then(response => {
-        return response.json()
-      })
+      .then(response => response.json())
       .then(response => {
         this.setState({
-          userID:response[0]
+          userID: response[0]
         });
         this.props.onClick(this.state.userID);
       })
-      .catch(error => { throw (error) })
-      .catch (()=>{this.setState({loginError:true});});
+      .catch(() => { this.setState({ loginError: true }); });
   }
-  render(){
-    const id = this.state.userID;
-    console.log(this.state.userID);
-    console.log(this.state.loginError);
-    if(this.state.loginError === true){
-      return (
-        <React.Fragment>
-          <TopMenuGeneral title="LOGIN" />
-          <form className="loginForm" method="POST" encType="multipart/form-data" onSubmit={(event => this.checkLoginInfo(event))}>
+  render() {
+    const { loginError } = this.state;
+    const inputClass = loginError ? 'form-control errorLogin' : 'form-control';
+    const errorDisplay = <div className="text-danger">Invalid Email or Password</div>;
+    return (
+      <>
+        <TopMenuGeneral userId={this.props.userId} title="LOGIN" />
+        <div className="container mt-5 d-flex justify-content-center">
+          <form className="w-50" encType="multipart/form-data" onSubmit={this.checkLoginInfo}>
             <div className="form-group">
-              <label className="control-label text-danger" htmlFor="inputError">Invaild email</label>
-              <input onChange={(event => this.handlechange(event))} pattern="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$" type="email" name="email" className="form-control errorLogin text-center" id="inputError" placeholder="email@example.com" />
+              <div className="row">
+                <div className="col">
+                  <label htmlFor="email">Email address</label>
+                </div>
+                <div className="col text-right">
+                  {loginError && errorDisplay}
+                </div>
+              </div>
+              <input onChange={this.handlechange} pattern="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$" type="email" name="email" className={inputClass} id="email" placeholder="email@example.com" />
             </div>
             <div className="form-group">
-              <label className="control-label text-danger" htmlFor="inputError">Invaild Password</label>
-              <input onChange={(event => this.handlechange(event))} type="password" className="form-control errorLogin" id="inputError" name="password" placeholder="Password" />
+              <label htmlFor="password">Password</label>
+              <input onChange={this.handlechange} type="password" className={inputClass} id="password" name="password" placeholder="Password" />
             </div>
-            <div className="form-check">
-              <input type="checkbox" className="form-check-input" id="dropdownCheck2" />
-              <label className="form-check-label" htmlFor="dropdownCheck2">
-                Remember me
-                  </label>
+            <div className="form-check mb-2">
+              <input className="form-check-input" type="checkbox" value="" id="checkbox" />
+              <label className="form-check-label" htmlFor="checkbox">
+                Remember Me
+              </label>
             </div>
             <button type="submit" className="btn btn-primary">Sign in</button>
           </form>
-        </React.Fragment>
-      );
-    }
-    return(
-      <React.Fragment>
-          <TopMenuGeneral title="LOGIN" />
-        <form className="loginForm" method="POST" encType="multipart/form-data" onSubmit={(event => this.checkLoginInfo(event))}>
-            <div className="form-group">
-               <label htmlFor="exampleDropdownFormEmail2">Email address</label>
-            <input onChange={(event => this.handlechange(event))} pattern="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$" type="email" name="email" className="form-control" id="email" placeholder="email@example.com"/>
-            </div>
-            <div className="form-group">
-                <label htmlFor="exampleDropdownFormPassword2">Password</label>
-            <input onChange={(event => this.handlechange(event))}  type="password" className="form-control" id="password" name="password" placeholder="Password"/>
-            </div>
-                <div className="form-check">
-            <input type="checkbox" className="form-check-input" id="dropdownCheck2"/>
-                  <label className="form-check-label" htmlFor="dropdownCheck2">
-                      Remember me
-                  </label>
-             </div>
-                  <button  type="submit" className="btn btn-primary">Sign in</button>
-           </form>
-      </React.Fragment>
+        </div>
+      </>
     );
-  };
+  }
 }
 
 export default Login;
