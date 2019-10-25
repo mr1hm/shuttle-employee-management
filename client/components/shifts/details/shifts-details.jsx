@@ -2,17 +2,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { convertMilitaryTime, createDateObject } from '../../../lib/time-functions';
 import RouteBusDisplay from '../../route-bus-display';
+import PostModal from './post-modal';
 
 class ShiftsDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      postModalOpen: false,
       shiftOverview: null,
       shiftDetails: null,
       checkedRounds: []
     };
     this.passCheckedRoundIds = this.passCheckedRoundIds.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
   }
   getShifts(query) {
     const { date, userId } = this.props;
@@ -54,6 +57,9 @@ class ShiftsDetails extends React.Component {
     const shiftDetails = this.state.shiftDetails.filter(shift => this.state.checkedRounds.includes(shift.roundID));
     this.props.startSwapTradeTransaction(shiftDetails);
   }
+  toggleModal(e) {
+    this.setState({ postModalOpen: !this.state.postModalOpen });
+  }
   render() {
     if (!this.state.shiftDetails) {
       return (
@@ -90,46 +96,57 @@ class ShiftsDetails extends React.Component {
       </div>
       </>
     );
+    const { checkedRounds } = this.state;
+    const { userId, date: unixDate } = this.props;
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col">
-            <h1>Shift Details</h1>
+      <>
+        {this.state.postModalOpen && <PostModal date={unixDate} userId={userId} checkedRounds={checkedRounds} toggleModal={this.toggleModal}/>}
+        <div className="container">
+          <div className="row">
+            <div className="col">
+              <h1>Shift Details</h1>
+            </div>
+          </div>
+          <div className="row align-items-center mb-2">
+            <div className="col-1">
+              <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.bus_info_id}/>
+            </div>
+            <div className="col-4">
+              {timeDisplay}
+            </div>
+          </div>
+          <div className="row">
+            <div className="col text-left"><h5>Select the shifts you want to change</h5></div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <table className="table table-bordered text-center">
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rounds}
+                </tbody>
+              </table>
+            </div>
+            <div className="col-2 d-flex flex-column justify-content-space-between">
+              <button className="btn btn-primary mb-2" onClick={this.toggleModal}>
+                Post
+              </button>
+              <Link to='/trade-swap'
+                className="btn btn-primary mb-2"
+                onClick={this.passCheckedRoundIds}>
+                Trade/Swap
+              </Link>
+              {/* <button className="btn btn-primary" onClick={this.props.history.goBack()}>My Shifts</button> */}
+            </div>
           </div>
         </div>
-        <div className="row align-items-center mb-2">
-          <div className="col-1">
-            <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.bus_info_id}/>
-          </div>
-          <div className="col-4">
-            {timeDisplay}
-          </div>
-        </div>
-        <div className="row">
-          <div className="col text-left"><h5>Select the shifts you want to change</h5></div>
-        </div>
-        <div className="row">
-          <div className="col">
-            <table className="table table-bordered text-center">
-              <thead>
-                <tr>
-                  <th scope="col"></th>
-                  <th scope="col">Start</th>
-                  <th scope="col">End</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rounds}
-              </tbody>
-            </table>
-          </div>
-          <div className="col-2 d-flex flex-column justify-content-space-between">
-            <button className="btn btn-primary mb-2">Post</button>
-            <Link to='/trade-swap' className="btn btn-primary mb-2" onClick={this.passCheckedRoundIds}>Trade/Swap</Link>
-            <button className="btn btn-primary">My Shifts</button>
-          </div>
-        </div>
-      </div>
+      </>
     );
   }
 }

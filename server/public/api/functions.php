@@ -20,8 +20,7 @@ if (!function_exists('handleCors')) {
   }
 }
 if(!function_exists('getBodyData')){
-  function getBodyData()
-  {
+  function getBodyData() {
     $data = file_get_contents('php://input');
     return json_decode($data, true);
   }
