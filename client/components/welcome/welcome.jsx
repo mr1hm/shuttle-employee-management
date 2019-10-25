@@ -29,8 +29,8 @@ class Welcome extends React.Component {
             <h1>VERMINLINGUA<br/>EXPRESS</h1>
           </div>
         </div>
-        <div className="row pb-5 justify-self-end">
-          <div className="col text-center">
+        <div className="row pb-5 d-flex justify-content-center justify-self-end">
+          <div className="col-10 text-center">
             Vermilingua Express is a University's campus bus system. Our website is the shift scheduling platform for student drivers and administrators. It lets the drivers read, add, remove, trade, and swap desired shifts. Administrators are able to set up initial shifts and accept ordeny changes requested by drivers.
           </div>
         </div>
