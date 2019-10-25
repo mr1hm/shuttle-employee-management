@@ -4,6 +4,7 @@ import './operator-availability.css';
 import SelectAvailabilityModal from './operator-availability-modal';
 import ErrorModal from './operator-error-modal';
 import ClearDayModal from './operator-clear-day-modal';
+import SubmitModal from './operator-submit-modal';
 
 // dummy data only right now (not connected to endpoint)
 class OperatorAvailability extends React.Component {
@@ -21,10 +22,14 @@ class OperatorAvailability extends React.Component {
       },
       show: false,
       clear: false,
+      submit: false,
       day: null,
       error: false,
       selectedStartTime: 0,
-      selectedEndTime: 0
+      selectedEndTime: 0,
+      // eventually this needs to be passed by props
+      userId: 45,
+      sessionId: 1
     };
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
@@ -35,6 +40,10 @@ class OperatorAvailability extends React.Component {
     this.showClearModal = this.showClearModal.bind(this);
     this.hideClearModal = this.hideClearModal.bind(this);
     this.cancelClearModal = this.cancelClearModal.bind(this);
+    this.updateDatabase = this.updateDatabase.bind(this);
+    this.showSubmitModal = this.showSubmitModal.bind(this);
+    this.handleSubmitModal = this.handleSubmitModal.bind(this);
+    this.cancelSubmitModal = this.cancelSubmitModal.bind(this);
   }
 
   buildDayCell(day) {
@@ -49,14 +58,17 @@ class OperatorAvailability extends React.Component {
     );
   }
 
-  // updating the db with the autopopulated rounds
-  fetchAutoPopulatedData() {
-    fetch(`/api/operator-availability.php`, {
-      method: 'POST'
+  // updating the db with the availability
+  updateDatabase() {
+    fetch('/api/operator-availability.php', {
+      method: 'POST',
+      body: JSON.stringify({
+        'user_id': this.state.userId,
+        'availability': this.state.availability,
+        'session_id': this.state.sessionId
+      }),
+      headers: { 'Content-Type': 'application/json' }
     })
-      // .then(() => {
-      //   this.fetchCallMethod();
-      // })
       .catch(error => { throw (error); });
   }
 
@@ -113,7 +125,6 @@ class OperatorAvailability extends React.Component {
   }
 
   showError() {
-    console.log('inside show error method')
     this.setState({
       error: true
     });
@@ -154,6 +165,25 @@ class OperatorAvailability extends React.Component {
     });
   }
 
+  showSubmitModal() {
+    this.setState({
+      submit: true
+    });
+  }
+
+  handleSubmitModal() {
+    this.updateDatabase();
+    this.setState({
+      submit: false
+    });
+  }
+
+  cancelSubmitModal() {
+    this.setState({
+      submit: false
+    });
+  }
+
   setStartTime(event) {
     this.setState({
       selectedStartTime: event.currentTarget.textContent
@@ -173,6 +203,13 @@ class OperatorAvailability extends React.Component {
     return (
       <React.Fragment>
         <TopMenuGeneral userId={this.props.userId} title="MY AVAILABILITY"/>
+        <div className="d-flex flex-row-reverse">
+          <div style={{ width: '5%' }}></div>
+          <button className=" btn btn-primary mt-3" onClick={this.showSubmitModal}>Submit Availability</button>
+          <div style={{ width: '5%' }}></div>
+        </div>
+
+
         <div className="d-flex">
           <div style={{ width: '5%' }}></div>
           <table className="mt-4 mr-0" style={{ width: '90%' }}>
@@ -246,6 +283,12 @@ class OperatorAvailability extends React.Component {
             <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>The end time must be at least 1 hr 30 min after the start time</p>
           </div>
         </ErrorModal>
+
+        <SubmitModal day={this.state.day} submitShow={this.state.submit} submitAndClose={this.handleSubmitModal} submitCancel={this.cancelSubmitModal}>
+          <div className="d-flex justify-content-center">
+            <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>Are you sure you want to submit your available times?</p>
+          </div>
+        </SubmitModal>
 
         <ClearDayModal day={this.state.day} clearShow={this.state.clear} closeClear={this.hideClearModal} cancelClear={this.cancelClearModal}>
           <div className="d-flex justify-content-center">
