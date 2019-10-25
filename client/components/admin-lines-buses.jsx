@@ -8,7 +8,7 @@ import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCaretUp, faBus, faCaretDown, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import Lines from './admin-lines-buses-lines';
 // import { runInThisContext } from 'vm';
 
@@ -16,6 +16,7 @@ class AdminRoutes extends React.Component {
   constructor(props) {
     super(props);
     this.ref = React.createRef();
+    this.lineAdded = null;
     this.state = {
       session: null,
       linesBusesInfo: [],
@@ -32,19 +33,21 @@ class AdminRoutes extends React.Component {
         regularService: null
       }
     }
+    this.getUpdatedLines = this.getUpdatedLines.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
     this.handleAddLineButton = this.handleAddLineButton.bind(this);
     this.handleAddLineChange = this.handleAddLineChange.bind(this);
     this.checkIfLineExists = this.checkIfLineExists.bind(this);
+    this.scrollToNewLine = this.scrollToNewLine.bind(this);
   }
 
-  componentDidMount() { // runs right after render runs.
+  componentWillMount() { // runs right before render runs.
     this.getLinesBusesInfo();
   }
 
   scrollToNewLine() {
     this.ref.current.scrollIntoView({
-      behavior: 'smooth',
+      behavior: 'auto',
       block: 'start',
     });
   }
@@ -59,23 +62,16 @@ class AdminRoutes extends React.Component {
       .then(response => response.json())
       .then(lineInfo => {
         console.log(lineInfo);
-        // this.props.handleEditBusClicked();
-        // this.props.getLinesBusesInfo();
+        this.getUpdatedLines();
       })
       .catch(error => console.error(error));
       this.handleAddLineButton();
-      this.getLinesBusesInfo();
-      this.scrollToNewLine();
   }
 
   handleAddLineButton() {
     this.setState({
       addLineClicked: !this.state.addLineClicked
     })
-  }
-
-  findLargestRouteID() {
-
   }
 
   handleAddLineChange(e) {
@@ -88,6 +84,15 @@ class AdminRoutes extends React.Component {
       }
     }));
     this.checkIfLineExists(value);
+  }
+
+  getUpdatedLines() {
+    fetch('api/admin-lines-buses.php')
+      .then(response => response.json())
+      .then(linesBusesInfo => this.setState({
+        linesBusesInfo: linesBusesInfo
+      }, this.scrollToNewLine))
+      .catch(error => console.error(error));
   }
 
   getLinesBusesInfo() {
@@ -137,6 +142,9 @@ class AdminRoutes extends React.Component {
       }
     }
     console.log('largest route id:', largestID);
+    if (largestID === 0) {
+      return null;
+    }
     if (!this.state.linesBusesInfo) {
       return (
         <div>LOADING</div>

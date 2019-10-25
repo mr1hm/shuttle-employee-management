@@ -68,7 +68,7 @@
   height: 200px; */
   /* border-radius: 100px; */
   /* background-color: #ccc; */
-  animation: glow 1s 20 alternate;
+  animation: glow 1s 30 alternate;
 }
 
 @keyframes glow {

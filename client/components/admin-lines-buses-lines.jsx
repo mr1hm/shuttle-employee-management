@@ -43,7 +43,7 @@ export default class Lines extends React.Component {
     }
     return (
       <div id="accordion">
-        <div className="card" ref={this.props.ref} id={line.real_route_id}>
+        <div className="card" id={line.real_route_id}>
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
             <div className="row lineHeaderFirstRow">
               <div className={`col-2 ${line.line_name}`}>Line</div>
