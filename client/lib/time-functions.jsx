@@ -130,13 +130,24 @@ function calculateShiftHours(startTime, endTime) { // takes two string military 
   let shiftLengthInMinutes = ((endHourDigits - startHourDigits) * 60) + (endMinuteDigits - startMinuteDigits);
   return Math.round(shiftLengthInMinutes);// Output: 80
 }
-function createDateStringFromDateObject(timestamp) { // not working zeroPadNumber is not defined // This seems to be the same as convertUnixMonthDay
-  if (typeof timestamp === 'number') {
-    var dateObject = new Date(timestamp);
+// function createDateStringFromDateObject(timestamp) { // not working zeroPadNumber is not defined // This seems to be the same as convertUnixMonthDay
+//   if (typeof timestamp === 'number') {
+//     var dateObject = new Date(timestamp);
+//   }
+//   const stringDate = `${dateObject.getFullYear()}-${zeroPadNumber(dateObject.getMonth() + 1)}-${zeroPadNumber(dateObject.getDate())}`;
+//   return stringDate;
+// }
+function createDateStringFromDateObject(dateObject) { // not working zeroPadNumber is not defined // This seems to be the same as convertUnixMonthDay
+  // if (!dateObject){
+  //   return;
+  // }
+  if (typeof dateObject === 'number') {
+    dateObject = new Date(dateObject);
   }
   const stringDate = `${dateObject.getFullYear()}-${zeroPadNumber(dateObject.getMonth() + 1)}-${zeroPadNumber(dateObject.getDate())}`;
   return stringDate;
 }
+
 function createDateObjFromDateString(dateString, setToMidnight = true) { // converts unix time to date/at midnight example: input: createDateObjFromDateString(1568670748829)
   let date = new Date();
   if (typeof dateString === 'number') { // the dateString is actually a timestamp

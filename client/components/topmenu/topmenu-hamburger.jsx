@@ -22,7 +22,6 @@ class TopMenuHamburger extends React.Component {
   }
   render() {
     const currentDateString = this.props.date ? createDateStringFromDateObject(this.props.date) : '';// converts unix time to date/at midnight
-    // const numberOfShifts = this.props.tradeNotification ? this.props.tradeNotification.newShifts.length : 0;
     return (
 
       <HamburgerMenu userId={this.props.userId} count={this.state.numberOfShifts}>
@@ -37,7 +36,7 @@ class TopMenuHamburger extends React.Component {
     );
 
   }
-  // const numberOfShifts = (props.tradeNotification.newShifts.length > 0) ? props.tradeNotification.newShifts.length : 0;
+
 
 }
 
