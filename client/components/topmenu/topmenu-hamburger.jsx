@@ -4,19 +4,40 @@ import './topmenu.css';
 import HamburgerMenu from './hamburger-menu';
 import { createDateStringFromDateObject } from '../../lib/time-functions';
 
-const TopMenuHamburger = props => {
-  console.log('DATE:', props.date);
-  const currentDateString = props.date ? createDateStringFromDateObject(props.date) : '';// converts unix time to date/at midnight
-  return (
-    <HamburgerMenu>
-      <Link to="/myinfo/">My Info</Link>
-      <Link to={`/shifts/day/shifts-day/${currentDateString}`}>Day</Link>
-      <Link to={`/shifts/week/shifts-week/${currentDateString}`}>Week</Link>
-      <Link to={`/shifts/month/shifts-month/${currentDateString}`}>Month</Link>
-      <Link to={`/shifts/available/${currentDateString}`}>Available</Link>
-    </HamburgerMenu>
+class TopMenuHamburger extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      numberOfShifts: 0
+    };
+  }
+  componentDidUpdate(prevProps) {
+    const prevNumberOfShifts = prevProps.tradeNotification ? prevProps.tradeNotification.newShifts.length : 0;
+    const numberOfShifts = this.props.tradeNotification ? this.props.tradeNotification.newShifts.length : 0;
+    if (numberOfShifts !== prevNumberOfShifts) {
+      this.setState({
+        numberOfShifts: numberOfShifts
+      });
+    }
+  }
+  render() {
+    const currentDateString = this.props.date ? createDateStringFromDateObject(this.props.date) : '';// converts unix time to date/at midnight
+    return (
 
-  );
-};
+      <HamburgerMenu userId={this.props.userId} count={this.state.numberOfShifts}>
+        <Link to="/myinfo/">My Info</Link>
+        <Link to={`/shifts/day/shifts-day/${currentDateString}`}>Day</Link>
+        <Link to={`/shifts/week/shifts-week/${currentDateString}`}>Week</Link>
+        <Link to={`/shifts/month/shifts-month/${currentDateString}`}>Month</Link>
+        <Link to={`/shifts/available/${currentDateString}`}>Available</Link>
+        <Link to={{ pathname: '/trade-notification/', state: { newShiftsAndSelectedDriver: this.props.tradeNotification } }}>Notifications</Link>
+      </HamburgerMenu>
+
+    );
+
+  }
+
+
+}
 
 export default TopMenuHamburger;

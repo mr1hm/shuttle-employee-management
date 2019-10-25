@@ -212,10 +212,10 @@ class AdminRoutes extends React.Component {
         console.log(busInfo);
       })
   }
-    render(){
+    render() {
       return (
         <React.Fragment>
-        <TopMenuGeneral title="ADMIN - Routes/Buses" />
+        <TopMenuGeneral userId={this.props.userId} title="ADMIN - Routes/Buses" />
           {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
         <div className = "container mt-2">
           <div className = "row ">

@@ -196,8 +196,8 @@ class ShiftsMonth extends React.Component {
     }
     return (
       <div className ="calenderContainer">
-        <TopMenuShift title="MONTH" page='month' date={dateToPass}/>
-        <div className="row" className="calendarBox">
+        <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass}/>
+        <div className="row calendarBox">
           <div className="monthCalendar">
             <div className="dayOfMonth Title">
               <div>SUN</div>

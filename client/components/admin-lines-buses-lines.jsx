@@ -4,7 +4,7 @@ import TopMenuGeneral from './topmenu/topmenu-general';
 import TopMenuHamburger from './topmenu/topmenu-hamburger';
 import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
-import BusesTable from './admin-lines-buses-tableData';
+import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,10 +14,12 @@ import AdminRoutes from './admin-lines-buses';
 export default class Lines extends React.Component {
   constructor(props) {
     super(props);
+    this.newLineRef = React.createRef();
     this.state = {
       busDetailsClicked: false,
       addBusClicked: false,
-      busAdded: false
+      busAdded: false,
+      newLineClass: ''
     };
     this.displayBusDetails = this.displayBusDetails.bind(this);
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
@@ -36,15 +38,17 @@ export default class Lines extends React.Component {
   render() {
     const { line } = this.props;
     const { activeBuses } = this.props.line;
-    console.log(line);
+    if (!this.props.line.real_route_id) {
+      return null;
+    }
     return (
       <div id="accordion">
-        <div className="card" key={line.line_name + activeBuses.busNumber}>
+        <div className="card" id={line.real_route_id}>
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
             <div className="row lineHeaderFirstRow">
-              <div className="col-2 lineHeader">Line</div>
+              <div className={`col-2 ${line.line_name}`}>Line</div>
               <div className="col">Status</div>
-              <div className="col">24 Rds</div>
+              <div className="col">{`${line.rounds} Rounds`}</div>
               <div className="col">Public</div>
               <div className="col">Regular Service</div>
               <div className="col">
@@ -56,10 +60,10 @@ export default class Lines extends React.Component {
                 <RouteBusDisplay route={line.line_name} />
               </div>
               <div className="col">
-                {line.status === 'active' ? <FontAwesomeIcon className="activeIcon" icon={faCircle} /> : <FontAwesomeIcon className="inactiveIcon" icon={faCircle} />}
+                {line.status === 'active' ? <FontAwesomeIcon className="lineActiveIcon" icon={faCircle} /> : <FontAwesomeIcon className="lineInactiveIcon" icon={faCircle} />}
                 {line.status}
               </div>
-              <div className="col">45min</div>
+              <div className="col">{`${line.roundDuration}min / Round`}</div>
               <div className="col">{line.public}</div>
               <div className="col">{line.regularService}</div>
               <div className="col">
@@ -77,14 +81,14 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="col">
                 <div id="accordion">
-                  <AddBus accordionID={this.props.accordionID} handleAddBusButton={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
+                  <AddBus getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="card col-12">
                 <div className="card-header">
-                    Active Buses
+                  Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
                   {/* making table main header clickable to collapse accordion */}
                 </div>
                 <table className="card-table table">
@@ -96,11 +100,12 @@ export default class Lines extends React.Component {
                       {/* <th scope="col">Rounds</th> */}
                       <th scope="col">Days</th>
                       <th scope="col">Gap</th>
-                      <th scope="col">Edit</th>
+                      <th scope="col">Operations</th>
                     </tr>
                   </thead>
-                  {activeBuses.map((bus, index) =>
-                    <BusesTable key={bus.busNumber + index} line={line} busInfo={bus} />
+                  {activeBuses.map((bus, index) => {
+                    return <BusesTable linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                    }
                   )}
                 </table>
               </div>
@@ -110,6 +115,7 @@ export default class Lines extends React.Component {
       </div>
     );
   }
+}
   // return (
   //   <div key={line.line_name + line.bus_number} id={"collapse" + line.line_name} className="collapse" aria-labelledby={"heading" + line.line_name}
   //     data-parent="#accordionExample">
@@ -135,4 +141,3 @@ export default class Lines extends React.Component {
   //     </div>
   //   </div>
   // );
-}
