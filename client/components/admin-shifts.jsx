@@ -343,7 +343,7 @@ class AdminShiftsDay extends React.Component {
   render() {
     return (
       <div>
-        {/* <TopMenuShift title="Admin" page='day' date={this.state.date} /> */}
+        <TopMenuShift userId={this.props.userId} title="Admin" page='day' date={this.state.dateToPass} />
         <AdminWeekNav date={this.state.date} onClickDayOfWeek={this.handleClickGoToDay}/>
         <div className="selectShiftsButtonContainer d-flex w-100 px-5">
           <button className="btn btn-primary m-2" onClick={this.autopopulateAndFetchData}> AUTO POPULATE </button>

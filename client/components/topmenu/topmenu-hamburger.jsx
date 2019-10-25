@@ -25,7 +25,7 @@ class TopMenuHamburger extends React.Component {
     // const numberOfShifts = this.props.tradeNotification ? this.props.tradeNotification.newShifts.length : 0;
     return (
 
-      <HamburgerMenu count={this.state.numberOfShifts}>
+      <HamburgerMenu userId={this.props.userId} count={this.state.numberOfShifts}>
         <Link to="/myinfo/">My Info</Link>
         <Link to={`/shifts/day/shifts-day/${currentDateString}`}>Day</Link>
         <Link to={`/shifts/week/shifts-week/${currentDateString}`}>Week</Link>

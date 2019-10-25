@@ -19,7 +19,7 @@ class Welcome extends React.Component {
   render() {
     return (
       <div className="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg">
-        <TopMenuGeneral title="WELCOME" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
+        <TopMenuGeneral userId={this.props.userId} title="WELCOME" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
         <div className="col-md-5 p-lg-5 mx-auto my-5 bg-ae-blue">
           <kbd className="display-4 font-weight-normal bg-transparent">VERMINLINGUA EXPRESS</kbd>
         </div>

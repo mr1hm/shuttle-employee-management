@@ -42,8 +42,7 @@ class TradeNotification extends React.Component {
 
   }
   removeShift(roundID) {
-
-    const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.roundID);
+    const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
     this.setState({
       newShifts: newShifts
     });
@@ -86,8 +85,8 @@ class TradeNotification extends React.Component {
               <div className="col-2">
                 <button onClick={() => this.giveShifttoSelectedDriver(oneShift.round_id, oneShift.target_user_id)} type="button" className="btn btn-success">Take Shift</button>
               </div>
-              <div className="col-1">
-                <button onClick={() => this.removeShift(oneShift.round_id)} type="button" className="btn btn-danger">Cancel</button>
+              <div className="col-2">
+                <button onClick={() => this.removeShift(oneShift.round_id)} type="button" className="btn btn-danger">Remove Shift</button>
               </div>
             </div>
           );

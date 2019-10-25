@@ -116,7 +116,7 @@ class MyInfo extends React.Component {
     if (stateEditButton === true) {
       return (
         <React.Fragment>
-          <TopMenuGeneral title="MY INFO" />
+          <TopMenuGeneral userId={this.props.userId} title="MY INFO" />
           <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
           <div className="imageHolder">
             <img className="myInfoPic" src={stateUserInfo[0].url} />
@@ -172,7 +172,7 @@ class MyInfo extends React.Component {
 
     return (
       <React.Fragment>
-        <TopMenuGeneral title="MY INFO" />
+        <TopMenuGeneral userId={this.props.userId} title="MY INFO" />
         <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
         <div className="imageHolder">
           <img className="myInfoPic" src={stateUserInfo[0].url}/>
