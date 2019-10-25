@@ -11,13 +11,17 @@ class Transaction extends React.Component {
       editButton: false,
       transactionInfo: [],
       userId: null,
-      cellProvider: []
+      cellProvider: [],
+      selected: {
+        id: null,
+        type: null,
+        page: 0
+      }
     }
     this.getAllUserNames = this.getAllUserNames.bind(this);
-    this.searchByName = this.searchByName.bind(this);
-    this.searchByType = this.searchByType.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handlePageSwitch = this.handlePageSwitch.bind(this);
+    this.updateSearchByField = this.updateSearchByField.bind(this);
   }
 
   componentDidMount(){
@@ -25,30 +29,24 @@ class Transaction extends React.Component {
     this.handlePageSwitch();
   }
 
-  searchByName(event) {
-    let nameIndex = event.target.selectedIndex;
-    let userId = event.target[nameIndex].value;
-    fetch(`/api/transaction-get.php/?id=${userId}`, {
-      method: 'GET',
-    })
-      .then(response => {
-        return response.json()
-      })
-      .then(response => {
-        this.setState({
-          transactionInfo: response
-        })
-      })
-      .catch(error => { throw (error) });
-  }
-  searchByType(event) {
-    let typeIndex = event.target.selectedIndex;
-    let userType = event.target[typeIndex].value;
-    if(userType === 'ALL'){
-      return this.handlePageSwitch();
+  getDataForCurrentRequest(requestData){
+    debugger;
+    if(requestData.type != this.state.selected.type){
+      requestData.page = 0;
     }
-    console.log(userType);
-    fetch(`/api/transaction-get.php?type=${userType}`, {
+    if (requestData.type === 'ALL') {
+      requestData.type = null;
+    }
+    if(requestData.id === '-1'){
+      requestData.id = null;
+    }
+    let requestURL = '/api/transaction-get.php?'
+    for(let key in  requestData){
+      if (requestData[key] !== null && requestData[key] !== -1){
+        requestURL += `${key}=${requestData[key]}&`;
+      }
+    }
+    fetch(requestURL, {
       method: 'GET',
     })
       .then(response => {
@@ -61,6 +59,25 @@ class Transaction extends React.Component {
       })
       .catch(error => { throw (error) });
   }
+
+  updateSearchByField(event){
+    let seleted = this.state.selected;
+    if(event != undefined){
+    let targetElement = event.target;
+    let fieldName = targetElement.getAttribute('name');
+    let fieldValue = targetElement.value;
+    const newObj = {...this.state.selected};
+    newObj[fieldName] = fieldValue;
+      this.setState({
+        selected: newObj
+      });
+    this.getDataForCurrentRequest( newObj );
+
+    }else{
+    this.getDataForCurrentRequest(seleted);
+    }
+  }
+
   getAllUserNames() {
     fetch(`/api/transaction-get-name.php`, {
       method: 'GET'
@@ -89,18 +106,23 @@ class Transaction extends React.Component {
           transactionInfo: response
         })
       })
+      .then(this.updateSearchByField)
       .catch(error => { throw (error) });
+
   }
 
   handlePaginationClick(event) {
     let pageNum = parseInt(event.target.textContent) -1;
     let page = {...this.state.transactionInfo}
     page.currentPage = pageNum;
+    let newSelected = { ...this.state.selected }
+    newSelected.page = pageNum
     this.setState({
-      transactionInfo: page
+      transactionInfo: page,
+      selected: newSelected
     })
     setTimeout(() => {
-      this.handlePageSwitch();
+      this.updateSearchByField();
     }, 200);
   }
 
@@ -140,7 +162,7 @@ class Transaction extends React.Component {
       const count = pagination;
       pagination = [];
      for(let pageIndex=0;pageIndex<count;pageIndex++){
-       pagination.push(<li key={pageIndex} className="page-item"><a onClick={this.handlePaginationClick} key={pageIndex} value={pageIndex} className="page-link" href="#">{pageIndex+1}</a></li>)
+       pagination.push(<li name="page" key={pageIndex} className="page-item"><a onClick={(event) => this.handlePaginationClick(event)} key={pageIndex} value={pageIndex} className="page-link" href="#">{pageIndex+1}</a></li>)
 
      }
     }else{
@@ -162,13 +184,14 @@ class Transaction extends React.Component {
           </div>
           <div className="row fill1">
             <div className="col-6">Search By Name</div>
-            <select onChange={() => this.searchByName(event)} className="col-6 mb-2 editInput" type="text" >
+            <select name='id' onChange={() => this.updateSearchByField(event)} className="col-6 mb-2 editInput" type="text" >
+              <option key={-1} value={-1}>ALL USERS</option>
               {this.state.userName.map((data, index) => <option  key={index} value={data.id}>{data.first_name + " " + data.last_name}</option>)}
             </select>
           </div>
           <div className="row fill2">
             <div className="col-6">Search By Type</div>
-            <select onChange={() => this.searchByType(event)} className="col-6 mb-2 editInput" type="text" >
+            <select name='type' onChange={() => this.updateSearchByField(event)} className="col-6 mb-2 editInput" type="text" >
               <option value="ALL">ALL</option>
               <option value="post">POST</option>
               <option value="trade">TRADE</option>

@@ -14,19 +14,21 @@ if(empty($_GET['page'])){
   $page = intval($_GET['page']);
 }
 
-$query = "SELECT
-  user.first_name, user.last_name,
-  transaction.user_id, transaction.round_id,transaction.date,transaction.type,transaction.comment
-  FROM `transaction`
-    JOIN `user`
-      ON `user`.`id` = `transaction`.`user_id`";
 $queryPieces = [];
-if(!empty($_GET['id'])){
-  $queryPieces[] = "`user`.`id` = ". intval($_GET['id']);
+if (!empty($_GET['id'])) {
+  $queryPieces[] = "`transaction`.`user_id` = " . intval($_GET['id']);
 }
-if(!empty($_GET['type'])){
+if (!empty($_GET['type'])) {
   $queryPieces[] = "transaction.type= '" . addslashes($_GET['type']) . "'";
 }
+
+$query = "SELECT
+  user.first_name, user.last_name,user.id,
+  transaction.user_id, transaction.round_id,transaction.date,transaction.type,transaction.comment
+  FROM `user`
+    JOIN `transaction`
+      ON `user`.`id` = `transaction`.`user_id`";
+
 
 
 $countQuery = "SELECT COUNT(*) AS itemCount
