@@ -4,3 +4,15 @@
 .bg-ae-blue {
   background-color: rgb(8,25,114)
 }
+
+.blue{
+  color:white;
+  background-color: rgb(4,	29,	62);
+}
+.blue h1{
+  font-size:3rem;
+}
+
+.yellow{
+  background-color:rgb(255,	200,	39);
+}
