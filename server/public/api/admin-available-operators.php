@@ -159,6 +159,27 @@ function operatorsOrderedByDailyHours($operators){
   }
   return $operators_ordered;
 }
+// check if rounds to assign start at 6am and if they do make sure the operators
+// did not have a shift that ended after 10pm the previous day
+function operatorsCanTakeEarlyStartTimes($operators, $times, $conn, $date_to_check){
+  for ($times_index = 0; $times_index < count($times); $times_index++){
+    if($times[$times_index]['start_time'] < 800){
+      foreach($operators as $id=>$operator_data){
+        $query = "SELECT round.user_id AS user_id FROM round
+                  WHERE round.user_id = $id AND round.end_time > 2200 AND round.date = $date_to_check - 86400";
+        $result = mysqli_query($conn, $query);
+        if (!$result) {
+          throw new Exception('mysql error ' . mysqli_error($conn));
+        }
+        $row = mysqli_fetch_assoc($result);
+        if ((int)$row['user_id'] === $id){
+          unset($operators[$id]);
+        }
+      }
+    }
+  }
+  return $operators;
+}
 
 // check if scheduled rounds and shifts to add are no more than 5 hours
 // without a 30 min (consecutive) break within the 5 hour block
@@ -168,6 +189,8 @@ function operatorsUnderMaxConsecutiveHours($operators, $times){
   foreach($operators as $id=>$operator_data){
     $operator_shifts = [];
     $operator_available = true;
+    // make an array for an operator($id) with all the shifts in order
+    // add the times of the rounds you want to assign to the previous shifts array in order
     for($times_index = 0; $times_index < count($times); $times_index++){
       $time = [
         'start_time' => $times[$times_index]['start_time'],
@@ -175,6 +198,7 @@ function operatorsUnderMaxConsecutiveHours($operators, $times){
       ];
       $operator_shifts = insertTimeInOrder($operator_shifts, $time);
     }
+    // add the times of the rounds the operator is already assigned
     foreach($operator_data['rounds'] as $line){
       for ($line_index = 0; $line_index < count($line); $line_index++){
         $time = [
@@ -184,31 +208,31 @@ function operatorsUnderMaxConsecutiveHours($operators, $times){
         $operator_shifts = insertTimeInOrder($operator_shifts, $time);
       }
     }
-    $previous_shift = $operator_shifts[0];
-    $consecutive_hours = calculateTotalHours([$previous_shift]);
-    for ($shift_index = 1; $shift_index < count($operator_shifts); $shift_index++){
-      $current_shift = $operator_shifts[$shift_index];
-      $timeBetweenShifts = [
-        'start_time' => $previous_shift['stop_time'],
-        'stop_time' => $current_shift['start_time']
-      ];
-      $hours_between_shift = calculateTotalHours([$timeBetweenShifts]);
-      if($consecutive_hours > 4.99 && $consecutive_hours <= 5 &&
-        $previous_shift['stop_time'] !== $current_shift['start_time'] &&
-        $hours_between_shift < .5) {
-        $operator_available = false;
+    // check if shift added is to early or too late for same day compared to assigned shifts
+    $operator_available = operatorCanTakeEarlyOrLateShift($operator_shifts);
+    // go through the shifts and check for 5 hour blocks without a 30 min break
+    // also check for a shift earlier than 8am and if there is one make sure no shift after 9pm gets added
+    if($operator_available){
+      $previous_shift = $operator_shifts[0];
+      $consecutive_hours = calculateTotalHours([$previous_shift]);
+      for ($shift_index = 1; $shift_index < count($operator_shifts); $shift_index++) {
+        $current_shift = $operator_shifts[$shift_index];
+        $timeBetweenShifts = [
+          'start_time' => $previous_shift['stop_time'],
+          'stop_time' => $current_shift['start_time']
+        ];
+        $hours_between_shift = calculateTotalHours([$timeBetweenShifts]);
+        if ($hours_between_shift < .5) {
+          $consecutive_hours += calculateTotalHours([$current_shift]);
+        } else {
+          $consecutive_hours = calculateTotalHours([$current_shift]);
+        }
+        if ($consecutive_hours > 5) {
+          $operator_available = false;
           break;
+        }
+        $previous_shift = $current_shift;
       }
-      if($previous_shift['stop_time'] === $current_shift['start_time'] || $hours_between_shift < .5){
-        $consecutive_hours += calculateTotalHours([$current_shift]);
-      } else {
-        $consecutive_hours = calculateTotalHours([$current_shift]);
-      }
-      if($consecutive_hours > 5){
-        $operator_available = false;
-        break;
-      }
-      $previous_shift = $current_shift;
     }
     if($operator_available){
       $operators_under_consecutive_max[$id] = $operators[$id];
@@ -216,6 +240,18 @@ function operatorsUnderMaxConsecutiveHours($operators, $times){
   }
   return $operators_under_consecutive_max;
 }
+// check if operator has an early start time (before 8am)
+// and a late stop time (after 9pm)
+// if they do, they cannot take the shifts
+function operatorCanTakeEarlyOrLateShift($times){
+  $earliest_shift_start = $times[0]['start_time'];
+  $latest_shift_stop = $times[count($times) - 1]['stop_time'];
+  if ($earliest_shift_start < 800 && $latest_shift_stop > 2100){
+    return false;
+  }
+  return true;
+}
+// insert shift times
 function insertTimeInOrder($shifts, $time){
   if(count($shifts) === 0){
     $shifts[] = $time;
@@ -314,6 +350,7 @@ function convert24hrTimeToMinutes($time){
 $round_time_total_hours = calculateTotalHours($round_times);
 $operators = operatorsAvailableForDate($data, $date_to_check);
 $operators = operatorsAvailableForShift($operators, $round_times);
+$operators = operatorsCanTakeEarlyStartTimes($operators, $round_times, $conn, $date_to_check);
 $operators = operatorsUnderMaxConsecutiveHours($operators, $round_times);
 $operators = operatorsUnderMaxWeeklyHours($operators, $data, $round_time_total_hours);
 $operators = operatorsOrderedByDailyHours($operators);
