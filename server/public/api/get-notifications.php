@@ -20,7 +20,7 @@ $query = "SELECT t.`id`, t.`user_id`, t.`target_user_id`, t.`date` as request_da
           FROM `transaction` as t
           JOIN `round` as r
           ON  t.`round_id` = r.`id`
-          WHERE `target_user_id` = $id";
+          WHERE `target_user_id` = $id AND t.`status` = 'pending'";
 
 $result = mysqli_query($conn, $query);
 $output = [];
