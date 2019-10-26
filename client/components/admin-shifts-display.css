@@ -238,7 +238,7 @@
         transparent 1px,
         transparent 100px);
 }
-.adminHoursRow, .shiftDetailsHeader, .availableOperatorsHeader{
+.adminHoursRow {
     height: 30px;
 }
 .availableOperator, .adminShiftDetails{
