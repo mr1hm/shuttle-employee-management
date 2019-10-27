@@ -1,24 +1,9 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
-class AdminAvailableOperatorsDisplay extends React.Component {
+class AdminAvailableOperator extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      expanded: false
-    };
-    this.handleClickExpand = this.handleClickExpand.bind(this);
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
-  }
-  checkIfExpanded() {
-    if (this.state.expanded) {
-      return 'angleIconRotate';
-    }
-    return '';
-  }
-  handleClickExpand() {
-    this.setState({ expanded: !this.state.expanded });
   }
   handleClickAssignShift() {
     console.log('clicked: ', this.props.name, this.props.id);
@@ -41,5 +26,4 @@ class AdminAvailableOperatorsDisplay extends React.Component {
     );
   }
 }
-
-export default AdminAvailableOperatorsDisplay;
+export default AdminAvailableOperator;

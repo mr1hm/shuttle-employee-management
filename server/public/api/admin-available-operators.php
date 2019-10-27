@@ -3,13 +3,27 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once 'db_connection.php';
 
+$utc_offset = 25200;
 $max_weekly_hours = 19.5;
+$not_available_reasons = [
+  'unavailable to work today',
+  'unavailable to work during shift',
+  'already scheduled during shift',
+  'cannot work more than 5 hours without a 30 minute break',
+  'cannot work before 8am if shift ended after 10pm night before',
+  'cannot work before 8am and after 10pm on the same day',
+  'hours will exceed daily maximum',
+  'hours will exceed weekly maximum',
+  'not authorized for special route'
+];
 
 if(!empty($_GET['date'])){
   $date_to_check = $_GET['date'];
 } else {
   throw new Exception('no date');
 }
+$day_of_week = date('D', $date_to_check);
+
 if (!empty($_GET['sunday'])) {
   $sunday = (int)$_GET['sunday'];
 } else {
@@ -56,12 +70,11 @@ $result = mysqli_query($conn, $query);
 if (!$result) {
   throw new Exception('mysql error ' . mysqli_error($conn));
 }
-
+// organize data by day of week
 $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
   $date = $row['date'];
   $id = $row['user_id'];
-  $line_bus = $row['line_name'] . $row['bus_number'];
   if(empty($data[$date])){
     $data[$date] = [];
   }
@@ -73,25 +86,68 @@ while ($row = mysqli_fetch_assoc($result)) {
     $data[$date][$id]['special_route_ok'] = $row['special_route_ok'];
     $data[$date][$id]['total_hours'] = null;
   }
-  if(empty($data[$date][$id]['rounds'][$line_bus])){
-    $data[$date][$id]['rounds'][$line_bus] = [];
-  }
-  $data[$date][$id]['rounds'][$line_bus][] = [
+  $data[$date][$id]['rounds'][] = [
     'round_id' => $row['round_id'],
     'start_time' => $row['round_start'],
-    'stop_time' => $row['round_end']
+    'stop_time' => $row['round_end'],
+    'line_bus' => $row['line_name'] . $row['bus_number']
   ];
+}
+
+// get all operators available for the day
+$query = "SELECT oa.user_id, oa.day_of_week, oa.start_time, oa.end_time, u.first_name, u.last_name, u.special_route_ok
+          FROM operator_availability AS oa
+          JOIN user AS u ON oa.user_id = u.id
+          WHERE day_of_week = '$day_of_week'";
+
+$result = mysqli_query($conn, $query);
+if (!$result) {
+  throw new Exception('mysql error ' . mysqli_error($conn));
+}
+$operator_availability = [];
+// sort operators in assoc array by operator id
+while ($row = mysqli_fetch_assoc($result)) {
+  $id = $row['user_id'];
+  if (empty($operator_availability[$id])){
+    $operator_availability[$id] = [];
+    $operator_availability[$id]['first_name'] = $row['first_name'];
+    $operator_availability[$id]['last_name'] = $row['last_name'];
+    $operator_availability[$id]['times_available'] = [];
+    $operator_availability[$id]['special_route_ok'] = $row['special_route_ok'];
+  }
+  $operator_availability[$id]['times_available'][] = [
+    'start_time' => $row['start_time'],
+    'end_time' => $row['end_time']
+  ];
+}
+// add available operators to data if they weren't scheduled
+foreach($operator_availability as $id=>$availability_data){
+  if(empty($data[$date_to_check][$id])){
+    $data[$date_to_check][$id] = [];
+    $data[$date_to_check][$id]['rounds'] = [];
+    $data[$date_to_check][$id]['first_name'] = $availability_data['first_name'];
+    $data[$date_to_check][$id]['last_name'] = $availability_data['last_name'];
+    $data[$date_to_check][$id]['special_route_ok'] = $availability_data['special_route_ok'];
+    $data[$date_to_check][$id]['total_hours'] = null;
+  }
 }
 // total hours for each day for each operator
 foreach($data as &$date){
-  foreach($date as &$id){
-    $total_hours = 0;
-    foreach($id['rounds'] as $line){
-      $total_hours += calculateTotalHours($line);
-    }
-    $id['total_hours'] = $total_hours;
+  foreach($date as &$operator){
+    $operator['total_hours'] = calculateTotalHours($operator['rounds']);
   }
 }
+$round_time_total_hours = calculateTotalHours($round_times);
+
+$operators = [];
+operatorsAvailableForDate($operators, $data, $date_to_check);
+operatorsAvailableForShift($operators, $round_times);
+operatorsCanTakeEarlyStartTimes($operators, $round_times, $conn, $date_to_check);
+operatorsUnderMaxConsecutiveHours($operators, $round_times);
+operatorsUnderMaxWeeklyHours($operators, $data, $round_time_total_hours);
+operatorsOrderedByDailyHours($operators);
+print(json_encode($operators));
+
 // check if times overlap, return true if they don't, return false if they do
 function checkIfTimesOverlap($times){
   $noOverlap = true;
@@ -112,9 +168,9 @@ function checkIfTimesOverlap($times){
   }
   return $noOverlap;
 }
-// return an array of operators according to the hours scheduled for that day
+// sorts operators according to the hours scheduled for that day
 // lowest hours first, highest hours last
-function operatorsOrderedByDailyHours($operators){
+function operatorsOrderedByDailyHours(&$operators){
   $operators_ordered = [];
   foreach($operators as $id=>$operator_data){
     if (count($operators_ordered) === 0){
@@ -125,12 +181,12 @@ function operatorsOrderedByDailyHours($operators){
         'lastName' => $operator_data['last_name'],
         'specialRouteOk' => $operator_data['special_route_ok'],
         'totalHours' => $operator_data['total_hours'],
-        'weeklyHours' => $operator_data['weekly_hours']
+        'weeklyHours' => $operator_data['weekly_hours'],
+        'availability' => $operator_data['availability']
       ];
     } else {
       $number_operators_ordered = count($operators_ordered);
       for ($operator_index = 0; $operator_index < $number_operators_ordered; $operator_index++) {
-        $operator_inserted = false;
         if ($operator_data['total_hours'] < $operators_ordered[$operator_index]['totalHours']) {
           array_splice($operators_ordered, $operator_index, 0, [[
             'id' => $id,
@@ -139,7 +195,8 @@ function operatorsOrderedByDailyHours($operators){
             'lastName' => $operator_data['last_name'],
             'specialRouteOk' => $operator_data['special_route_ok'],
             'totalHours' => $operator_data['total_hours'],
-            'weeklyHours' => $operator_data['weekly_hours']
+            'weeklyHours' => $operator_data['weekly_hours'],
+            'availability' => $operator_data['availability']
           ]]);
           break;
         } else if ($operator_index === $number_operators_ordered - 1) {
@@ -150,21 +207,23 @@ function operatorsOrderedByDailyHours($operators){
             'lastName' => $operator_data['last_name'],
             'specialRouteOk' => $operator_data['special_route_ok'],
             'totalHours' => $operator_data['total_hours'],
-            'weeklyHours' => $operator_data['weekly_hours']
+            'weeklyHours' => $operator_data['weekly_hours'],
+            'availability' => $operator_data['availability']
           ];
           break;
         }
       }
     }
   }
-  return $operators_ordered;
+  $operators = $operators_ordered;
 }
 // check if rounds to assign start at 6am and if they do make sure the operators
 // did not have a shift that ended after 10pm the previous day
-function operatorsCanTakeEarlyStartTimes($operators, $times, $conn, $date_to_check){
+function operatorsCanTakeEarlyStartTimes(&$operators, $times, $conn, $date_to_check){
+  global $not_available_reasons;
   for ($times_index = 0; $times_index < count($times); $times_index++){
     if($times[$times_index]['start_time'] < 800){
-      foreach($operators as $id=>$operator_data){
+      foreach($operators as $id=>&$operator_data){
         $query = "SELECT round.user_id AS user_id FROM round
                   WHERE round.user_id = $id AND round.end_time > 2200 AND round.date = $date_to_check - 86400";
         $result = mysqli_query($conn, $query);
@@ -173,22 +232,21 @@ function operatorsCanTakeEarlyStartTimes($operators, $times, $conn, $date_to_che
         }
         $row = mysqli_fetch_assoc($result);
         if ((int)$row['user_id'] === $id){
-          unset($operators[$id]);
+          $operator_data['availability']['available'] = false;
+          $operator_data['availability']['reasons'][] = $not_available_reasons[4];
         }
       }
+      break;
     }
   }
-  return $operators;
 }
-
 // check if scheduled rounds and shifts to add are no more than 5 hours
 // without a 30 min (consecutive) break within the 5 hour block
 // if a shift is 5 hours without a 30 min break the next shift has to come at least 30 min later
-function operatorsUnderMaxConsecutiveHours($operators, $times){
-  $operators_under_consecutive_max = [];
-  foreach($operators as $id=>$operator_data){
+function operatorsUnderMaxConsecutiveHours(&$operators, $times){
+  global $not_available_reasons;
+  foreach($operators as $id=>&$operator_data){
     $operator_shifts = [];
-    $operator_available = true;
     // make an array for an operator($id) with all the shifts in order
     // add the times of the rounds you want to assign to the previous shifts array in order
     for($times_index = 0; $times_index < count($times); $times_index++){
@@ -199,20 +257,18 @@ function operatorsUnderMaxConsecutiveHours($operators, $times){
       $operator_shifts = insertTimeInOrder($operator_shifts, $time);
     }
     // add the times of the rounds the operator is already assigned
-    foreach($operator_data['rounds'] as $line){
-      for ($line_index = 0; $line_index < count($line); $line_index++){
-        $time = [
-          'start_time' => (int)$line[$line_index]['start_time'],
-          'stop_time' => (int)$line[$line_index]['stop_time']
-        ];
-        $operator_shifts = insertTimeInOrder($operator_shifts, $time);
-      }
+    for ($rounds_index = 0; $rounds_index < count($operator_data['rounds']); $rounds_index++){
+      $time = [
+        'start_time' => (int) $operator_data['rounds'][$rounds_index]['start_time'],
+        'stop_time' => (int) $operator_data['rounds'][$rounds_index]['stop_time']
+      ];
+      $operator_shifts = insertTimeInOrder($operator_shifts, $time);
     }
     // check if shift added is to early or too late for same day compared to assigned shifts
-    $operator_available = operatorCanTakeEarlyOrLateShift($operator_shifts);
+    operatorCanTakeEarlyOrLateShift($operator_data['availability'], $operator_shifts);
     // go through the shifts and check for 5 hour blocks without a 30 min break
     // also check for a shift earlier than 8am and if there is one make sure no shift after 9pm gets added
-    if($operator_available){
+    if($operator_data['availability']['available']){
       $previous_shift = $operator_shifts[0];
       $consecutive_hours = calculateTotalHours([$previous_shift]);
       for ($shift_index = 1; $shift_index < count($operator_shifts); $shift_index++) {
@@ -228,28 +284,26 @@ function operatorsUnderMaxConsecutiveHours($operators, $times){
           $consecutive_hours = calculateTotalHours([$current_shift]);
         }
         if ($consecutive_hours > 5) {
-          $operator_available = false;
+          $operator_data['availability']['available'] = false;
+          $operator_data['availability']['reasons'][] = $not_available_reasons[3];
           break;
         }
         $previous_shift = $current_shift;
       }
     }
-    if($operator_available){
-      $operators_under_consecutive_max[$id] = $operators[$id];
-    }
   }
-  return $operators_under_consecutive_max;
 }
-// check if operator has an early start time (before 8am)
-// and a late stop time (after 9pm)
-// if they do, they cannot take the shifts
-function operatorCanTakeEarlyOrLateShift($times){
+// check if operator has an early start time (before 8am) and a late stop time (after 9pm)
+// if they do, set availability to false
+function operatorCanTakeEarlyOrLateShift(&$operator_availability, $times){
+  global $not_available_reasons;
   $earliest_shift_start = $times[0]['start_time'];
   $latest_shift_stop = $times[count($times) - 1]['stop_time'];
   if ($earliest_shift_start < 800 && $latest_shift_stop > 2100){
-    return false;
+    $operator_availability['available'] = false;
+    $operator_availability['reasons'][] = $not_available_reasons[5];
+    return;
   }
-  return true;
 }
 // insert shift times
 function insertTimeInOrder($shifts, $time){
@@ -269,64 +323,61 @@ function insertTimeInOrder($shifts, $time){
   }
   return $shifts;
 }
-// returns all operators available for current day
-function operatorsAvailableForDate($data, $date){
-  $operators = [];
-  foreach($data[$date] as $id=>$value){
+// adds operators available for current day to $operators assoc array
+function operatorsAvailableForDate(&$operators, $data, $date){
+  foreach($data[$date] as $id=>$operator_data){
     if( $id != 1){
-      $operators[$id] = $value;
+      $operators[$id] = $operator_data;
+      $operators[$id]['availability'] = [
+        'available' => true,
+        'reasons' => []
+      ];
     }
   }
-  return $operators;
 }
-// returns all operators that would still be under the weekly limit
-function operatorsUnderMaxWeeklyHours($operators, $data, $round_time_total_hours){
-  $operators_under_weekly_max = [];
+// sets availability to false for operators that would be over the weekly limit
+function operatorsUnderMaxWeeklyHours(&$operators, $data, $round_time_total_hours){
+  global $not_available_reasons;
   global $max_weekly_hours;
-  foreach ($operators as $id => $operator_data) {
+  foreach ($operators as $id =>&$operator_data) {
     $weekly_total_hours = $round_time_total_hours;
     foreach ($data as $day) {
       if (!empty($day[$id])) {
         $weekly_total_hours += $day[$id]['total_hours'];
       }
     }
-    if ($weekly_total_hours <= $max_weekly_hours) {
-      $operators[$id]['weekly_hours'] = $weekly_total_hours - $round_time_total_hours;
-      $operators_under_weekly_max[$id] = $operators[$id];
+    $operator_data['weekly_hours'] = $weekly_total_hours - $round_time_total_hours;
+    if ($weekly_total_hours > $max_weekly_hours) {
+      $operator_data['availability']['available'] = false;
+      $operator_data['availability']['reasons'][] = $not_available_reasons[7];
     }
   }
-  return $operators_under_weekly_max;
 }
-// returns all operators that don't have a schedule conflict
-function operatorsAvailableForShift($operators, $times){
-  $operators_available = [];
-  foreach ($operators as $id=>$operator_data){
+// sets availibility to false for all operators that have a schedule conflict
+function operatorsAvailableForShift(&$operators, $times){
+  global $not_available_reasons;
+  foreach ($operators as $id=>&$operator_data){
     $rounds = $operator_data['rounds'];
-    $operator_available = true;
-    foreach ($rounds as $line){
-      for ($times_index = 0; $times_index < count($times); $times_index++) {
-        for ($line_index = 0; $line_index < count($line); $line_index++){
-          if (($times[$times_index]['start_time'] < (int)$line[$line_index]['start_time']  && !($times[$times_index]['stop_time'] <= (int)$line[$line_index]['start_time'])) ||
-              ($times[$times_index]['start_time'] > (int)$line[$line_index]['start_time']  && !($times[$times_index]['start_time'] >= (int)$line[$line_index]['stop_time'])) ||
-              ($times[$times_index]['start_time'] == (int)$line[$line_index]['start_time']) || ($times[$times_index]['stop_time'] == (int) $line[$line_index]['stop_time'])){
-            $operator_available = false;
-            break;
-          }
-          if (($times[$times_index]['stop_time']) > 2100 && (int)$line[$line_index]['start_time'] < 800){
-            $operator_available = false;
-            break;
-          }
+    for ($times_index = 0; $times_index < count($times); $times_index++) {
+      for ($round_index = 0; $round_index < count($rounds); $round_index++){
+        if (($times[$times_index]['start_time'] < (int)$rounds[$round_index]['start_time']  && !($times[$times_index]['stop_time'] <= (int)$rounds[$round_index]['start_time'])) ||
+            ($times[$times_index]['start_time'] > (int)$rounds[$round_index]['start_time']  && !($times[$times_index]['start_time'] >= (int)$rounds[$round_index]['stop_time'])) ||
+            ($times[$times_index]['start_time'] == (int)$rounds[$round_index]['start_time']) || ($times[$times_index]['stop_time'] == (int) $rounds[$round_index]['stop_time'])){
+          $operator_data['availability']['available'] = false;
+          $operator_data['availability']['reasons'][] = $not_available_reasons[2];
+          break;
         }
-        if(!$operator_available){
+        if (($times[$times_index]['stop_time']) > 2100 && (int)$rounds[$round_index]['start_time'] < 800){
+          $operator_data['availability']['available'] = false;
+          $operator_data['availability']['reasons'][] = $not_available_reasons[5];
           break;
         }
       }
-    }
-    if ($operator_available) {
-      $operators_available[$id] = $operators[$id];
+      if(!$operator_data['availability']['available']){
+        break;
+      }
     }
   }
-  return $operators_available;
 }
 // adds up the hours of an array of objects with keys start_time and stop_time
 function calculateTotalHours($times){
@@ -346,14 +397,5 @@ function convert24hrTimeToMinutes($time){
   $minutes = $time - ($hours * 100);
   return $minutes + ($hours * 60);
 }
-
-$round_time_total_hours = calculateTotalHours($round_times);
-$operators = operatorsAvailableForDate($data, $date_to_check);
-$operators = operatorsAvailableForShift($operators, $round_times);
-$operators = operatorsCanTakeEarlyStartTimes($operators, $round_times, $conn, $date_to_check);
-$operators = operatorsUnderMaxConsecutiveHours($operators, $round_times);
-$operators = operatorsUnderMaxWeeklyHours($operators, $data, $round_time_total_hours);
-$operators = operatorsOrderedByDailyHours($operators);
-print(json_encode($operators));
 
 ?>

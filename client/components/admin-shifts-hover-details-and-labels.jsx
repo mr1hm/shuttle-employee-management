@@ -10,14 +10,19 @@ class AdminShiftsHoverDetailsAndLabels extends React.Component {
     this.state = {
       timer: null,
       showing: false,
-      top: null
+      top: null,
+      left: null
     };
   }
   startTimer(event) {
-    var position = event.currentTarget.offsetTop;
+    var verticalPosition = event.currentTarget.offsetTop + 60;
+    var horizontalPosition = event.currentTarget.offsetLeft + event.target.scrollLeft;
+    // var scrollRight = event.currentTarget.scrollRight;
+    console.log(horizontalPosition);
     this.setState({
       timer: setTimeout(this.displayMessage, 200),
-      top: position + 60
+      top: verticalPosition,
+      left: horizontalPosition
     });
   }
   displayMessage() {
@@ -53,7 +58,7 @@ class AdminShiftsHoverDetailsAndLabels extends React.Component {
         <div className="shiftOwnerLabel">
           ID# {this.props.userId}</div>
         <div className="hoverMessage"
-          style={{ display: this.state.showing ? 'flex' : 'none', top: this.state.top }}>
+          style={{ display: this.state.showing ? 'flex' : 'none', top: this.state.top, left: this.state.left }}>
           <i></i>
           <div>{this.props.userName.last}, {this.props.userName.first}</div>
           <div>{this.props.shiftTime}</div>

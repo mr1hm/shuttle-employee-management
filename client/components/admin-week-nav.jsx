@@ -50,8 +50,8 @@ export default class AdminWeekNav extends React.Component {
           onClick={this.handleClickDayOfWeek}
           className={`dayOfWeekContainer d-flex flex-column justify-content-center align-items-center border h-100 p-2 ${this.checkIfCurrentDay(dayObj.unix)}`}>
           <div className="dayOfWeek">{dayObj.day}</div>
-          <div className="currentMonth">{dayObj.month} {dayObj.date.getDate()}</div>
-          <div className="currentYear">{dayObj.date.getFullYear()}</div>
+          <div className="currentMonth">{dayObj.month} {dayObj.date.getUTCDate()}</div>
+          <div className="currentYear">{dayObj.date.getUTCFullYear()}</div>
         </div>
       );
     });
