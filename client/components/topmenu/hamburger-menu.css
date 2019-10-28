@@ -79,3 +79,9 @@
   height:100vh;
   background-color:rgba(0, 0, 0, .5);
 }
+
+.move-notification {
+    position: absolute;
+    top: 9px;
+    left: 8px;
+}
