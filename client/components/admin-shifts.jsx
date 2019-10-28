@@ -181,7 +181,9 @@ class AdminShiftsDay extends React.Component {
         return;
       }
     } else {
-      shiftsSelected = [];
+      shiftsSelected = [shift];
+      this.setState({ shiftsSelected: shiftsSelected });
+      return;
     }
     if (shift.shift_type === 'nonOperational');
     else {

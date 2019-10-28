@@ -44,12 +44,11 @@ class AdminShiftsCombinedRounds extends React.Component {
     return hoursToMinutes + minutesFromTime;
   }
   handleClick() {
-    if (!this.props.selecting) {
-      return;
+    if (this.props.selecting) {
+      this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
     }
     this.setState({ selected: !this.state.selected });
     console.log(this.props.shiftData, parseInt(this.props.roundId), this.props.userId);
-    this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
     this.props.onClickShifts({
       'user_name': this.props.userName,
       'user_id': this.props.userId,
