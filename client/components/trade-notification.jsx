@@ -1,6 +1,7 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
-import { convertMilitaryTime, calcShiftLenghtInHourMinFormat } from '../lib/time-functions';
+import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, createDateStringFromDateObject } from '../lib/time-functions';
+import TopMenuGeneral from './topmenu/topmenu-general';
 
 class TradeNotification extends React.Component {
   constructor(props) {
@@ -70,17 +71,20 @@ class TradeNotification extends React.Component {
     }
     return (
       <div className="container">
-        <div className="row justify-content-center">
-          <h1>Notifications</h1>
+        <div className="row justify-content-center mb-3">
+          <TopMenuGeneral userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
         </div>
         <div className="row text-center">
           <div className="col-2">
+            <h5>Date</h5>
+          </div>
+          <div className="col-2">
             <h5>Bus Line/Number</h5>
           </div>
-          <div className="col-3">
+          <div className="col-2">
             <h4>Shift Time</h4>
           </div>
-          <div className="col-3">
+          <div className="col-2">
             <h4>Shift Length</h4>
           </div>
         </div>
@@ -88,10 +92,13 @@ class TradeNotification extends React.Component {
           return (
             <div key={oneShift.id} className="row mb-3 text-center">
               <div className="col-2">
+                {createDateStringFromDateObject(parseInt(oneShift.shift_date) * 1000)}
+              </div>
+              <div className="col-2">
                 <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
               </div>
-              <div className="col-3">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
-              <div className="col-3">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>
+              <div className="col-2">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
+              <div className="col-2">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>
               <div className="col-2">
                 <button onClick={() => this.giveShifttoSelectedDriver(oneShift.round_id, oneShift.target_user_id)} type="button" className="btn btn-success">Take Shift</button>
               </div>
