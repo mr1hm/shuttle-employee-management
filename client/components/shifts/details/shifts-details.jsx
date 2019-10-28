@@ -76,7 +76,7 @@ class ShiftsDetails extends React.Component {
         <tr key={shift.roundID}>
           <td>
             <div className="form-check">
-              <input id={shift.roundID} className="form-check-input" type="checkbox" onChange={this.handleChange}/>
+              <input id={shift.roundID} className="form-check-input" type="checkbox" onChange={this.handleChange} />
             </div>
           </td>
           <td>{convertMilitaryTime(shift.start_time)}</td>
