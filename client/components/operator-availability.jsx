@@ -87,7 +87,6 @@ class OperatorAvailability extends React.Component {
       show: true,
       day: event.currentTarget.id
     });
-
   }
 
   hideModal() {
