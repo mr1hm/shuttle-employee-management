@@ -253,13 +253,13 @@ function returnWeekInfoArray(unixTimestamp) {
   unixTimestamp = unixTimestamp * 1000;
   const unixDayOffset = 86400000;
   const dateObj = new Date(unixTimestamp);
-  const day = dateObj.getDay();
+  const day = dateObj.getUTCDay();
   const weekArray = [];
   for (let weekIndex = 0; weekIndex < 7; weekIndex++) {
     const timestamp = unixTimestamp + (weekIndex - day) * unixDayOffset;
     const currentDateObj = new Date(timestamp);
     const weekArrayItem = {
-      month: month[currentDateObj.getMonth()],
+      month: month[currentDateObj.getUTCMonth()],
       day: dayOfWeek[weekIndex],
       date: currentDateObj,
       unix: timestamp / 1000
