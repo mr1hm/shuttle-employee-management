@@ -1,5 +1,5 @@
 import React from 'react';
-import TopMenuShift from './topmenu/topmenu-shift';
+import TopMenuAdminDay from './topmenu/topmenu-admin-day';
 import AdminWeekNav from './admin-week-nav';
 import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
@@ -373,8 +373,7 @@ class AdminShiftsDay extends React.Component {
   render() {
     return (
       <div>
-        <TopMenuShift userId={this.props.userId} title="Admin" page='day' date={this.state.date} />
-        <AdminWeekNav date={this.state.date} onClickDayOfWeek={this.handleClickGoToDay}/>
+        <TopMenuAdminDay userId={this.props.userId} title="Admin" page='day' date={this.state.date} onClickDayOfWeek={this.handleClickGoToDay}/>
         <div className="selectShiftsButtonContainer d-flex w-100 px-5">
           <button className="btn btn-primary m-2" onClick={this.autopopulateAndFetchData}> AUTO POPULATE </button>
           <button
@@ -404,7 +403,7 @@ class AdminShiftsDay extends React.Component {
                 </div>
                 {this.renderLineComponents()}
               </div>
-              <div className="hours-populated-shifts-container container d-flex flex-column border-right col-11 p-0">
+              <div className="hours-populated-shifts-container d-flex flex-column border-right col-11 p-0">
                 <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border">
                   <HoursOfOperation />
                 </div>

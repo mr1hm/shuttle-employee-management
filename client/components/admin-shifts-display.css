@@ -265,18 +265,9 @@
 .angleIconRotate{
     transform: rotate(90deg);
 }
-.adminShiftWeekContainer{
-    height: 100px;
-}
 .dayOfWeekContainer {
     width: 120px;
 }
-.dayOfWeekContainer:hover{
-    background-color: lightblue;
-}
 .dayOfWeekSelected {
     background-color: lightblue;
-}
-.nextWeekButton:hover, .prevWeekButton:hover{
-    background-color: lightgray;
 }

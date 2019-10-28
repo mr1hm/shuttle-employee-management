@@ -268,28 +268,26 @@ function operatorsUnderMaxConsecutiveHours(&$operators, $times){
     operatorCanTakeEarlyOrLateShift($operator_data['availability'], $operator_shifts);
     // go through the shifts and check for 5 hour blocks without a 30 min break
     // also check for a shift earlier than 8am and if there is one make sure no shift after 9pm gets added
-    if($operator_data['availability']['available']){
-      $previous_shift = $operator_shifts[0];
-      $consecutive_hours = calculateTotalHours([$previous_shift]);
-      for ($shift_index = 1; $shift_index < count($operator_shifts); $shift_index++) {
-        $current_shift = $operator_shifts[$shift_index];
-        $timeBetweenShifts = [
-          'start_time' => $previous_shift['stop_time'],
-          'stop_time' => $current_shift['start_time']
-        ];
-        $hours_between_shift = calculateTotalHours([$timeBetweenShifts]);
-        if ($hours_between_shift < .5) {
-          $consecutive_hours += calculateTotalHours([$current_shift]);
-        } else {
-          $consecutive_hours = calculateTotalHours([$current_shift]);
-        }
-        if ($consecutive_hours > 5) {
-          $operator_data['availability']['available'] = false;
-          $operator_data['availability']['reasons'][] = $not_available_reasons[3];
-          break;
-        }
-        $previous_shift = $current_shift;
+    $previous_shift = $operator_shifts[0];
+    $consecutive_hours = calculateTotalHours([$previous_shift]);
+    for ($shift_index = 1; $shift_index < count($operator_shifts); $shift_index++) {
+      $current_shift = $operator_shifts[$shift_index];
+      $timeBetweenShifts = [
+        'start_time' => $previous_shift['stop_time'],
+        'stop_time' => $current_shift['start_time']
+      ];
+      $hours_between_shift = calculateTotalHours([$timeBetweenShifts]);
+      if ($hours_between_shift < .5) {
+        $consecutive_hours += calculateTotalHours([$current_shift]);
+      } else {
+        $consecutive_hours = calculateTotalHours([$current_shift]);
       }
+      if ($consecutive_hours > 5) {
+        $operator_data['availability']['available'] = false;
+        $operator_data['availability']['reasons'][] = $not_available_reasons[3];
+        break;
+      }
+      $previous_shift = $current_shift;
     }
   }
 }

@@ -73,8 +73,8 @@ class AdminClickedShiftDetailsAside extends React.Component {
         </div>
         <div className="collapse" id={'round' + this.props.rounds[0].id}>
           <div className="card card-body border-0">
-            <div>Operator: {displayName}</div>
-            <div>ID#: {this.props.userId}</div>
+            <div>Operator: {this.props.userId === 1 ? 'unassigned' : displayName}</div>
+            <div>ID#: {this.props.userId === 1 ? 'unassigned' : this.props.userId}</div>
             <div>Status: {shiftStatus}</div>
             <div>Rounds: {this.props.rounds.length}</div>
             {this.checkIfAssignedShift()}
