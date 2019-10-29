@@ -2,7 +2,7 @@ import React from 'react';
 import '../../app.css';
 import './shift-month-legends.css';
 
-export default function Legends(){
+export default function Legends() {
   return (
     <div className="legend-container">
       <div className="row legendRow">
@@ -21,5 +21,5 @@ export default function Legends(){
         </div>
       </div>
     </div>
-  )
+  );
 }

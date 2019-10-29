@@ -130,17 +130,8 @@ function calculateShiftHours(startTime, endTime) { // takes two string military 
   let shiftLengthInMinutes = ((endHourDigits - startHourDigits) * 60) + (endMinuteDigits - startMinuteDigits);
   return Math.round(shiftLengthInMinutes);// Output: 80
 }
-// function createDateStringFromDateObject(timestamp) { // not working zeroPadNumber is not defined // This seems to be the same as convertUnixMonthDay
-//   if (typeof timestamp === 'number') {
-//     var dateObject = new Date(timestamp);
-//   }
-//   const stringDate = `${dateObject.getFullYear()}-${zeroPadNumber(dateObject.getMonth() + 1)}-${zeroPadNumber(dateObject.getDate())}`;
-//   return stringDate;
-// }
+
 function createDateStringFromDateObject(dateObject) { // not working zeroPadNumber is not defined // This seems to be the same as convertUnixMonthDay
-  // if (!dateObject){
-  //   return;
-  // }
   if (typeof dateObject === 'number') {
     dateObject = new Date(dateObject);
   }
@@ -180,27 +171,6 @@ function getTotalDayWorkingHours(props) {
   }
 }
 
-// calculates total shift duration and formats it in XXh YYmin
-// function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){// example input: calcShiftLenghtInHourMinFormat(1568670748829,1568676748829)
-
-//   function calcShiftHours(startTime, endTime){
-//     let startHourDigits = Math.trunc(startTime/100);
-//     let startMinuteDigits = startTime/100 - Math.floor(startTime/100);
-//     let endHourDigits = Math.trunc(endTime/100);
-//     let endMinuteDigits = endTime/100 - Math.floor(endTime/100);
-//     let startTimeInMinutes = startHourDigits*60 + startMinuteDigits;
-//     let endTimeInMinutes = endHourDigits*60 + endMinuteDigits;
-//     let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
-//     return Math.round(shiftLengthInMinutes);
-//   }
-
-//     let totalShiftLengthForWeek = 0
-//     let minutesForShift = calcShiftHours(startOfShift,endOfShift);
-//     totalShiftLengthForWeek += minutesForShift;
-//     let totalHours = Math.floor(totalShiftLengthForWeek/60);
-//     let totalMinutes = totalShiftLengthForWeek%60;
-//     return (totalHours + "h " + totalMinutes + "m");
-// }
 function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
 
   function calcShiftHours(startTime, endTime) { // 1220, 1240
@@ -253,13 +223,13 @@ function returnWeekInfoArray(unixTimestamp) {
   unixTimestamp = unixTimestamp * 1000;
   const unixDayOffset = 86400000;
   const dateObj = new Date(unixTimestamp);
-  const day = dateObj.getDay();
+  const day = dateObj.getUTCDay();
   const weekArray = [];
   for (let weekIndex = 0; weekIndex < 7; weekIndex++) {
     const timestamp = unixTimestamp + (weekIndex - day) * unixDayOffset;
     const currentDateObj = new Date(timestamp);
     const weekArrayItem = {
-      month: month[currentDateObj.getMonth()],
+      month: month[currentDateObj.getUTCMonth()],
       day: dayOfWeek[weekIndex],
       date: currentDateObj,
       unix: timestamp / 1000

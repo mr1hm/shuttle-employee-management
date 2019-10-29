@@ -15,11 +15,11 @@ if (!empty($_GET['id'])) {
     $ownerID = intval($_GET['id']);
 } else throw new Exception('need id for query');
 
-$query = "SELECT * 
-  FROM `round` 
-  WHERE `user_id`= {$ownerID} 
-  AND (`date` >= {$lowerDateRange} AND `date` <={$upperDateRange}) 
-  AND (`status` = 'scheduled' OR `status` = 'posted') 
+$query = "SELECT *
+  FROM `round`
+  WHERE `user_id`= {$ownerID}
+  AND (`date` >= {$lowerDateRange} AND `date` <={$upperDateRange})
+  AND (`status` = 'scheduled' OR `status` = 'posted')
   ORDER BY `date` ASC";
 
 $result = mysqli_query($conn, $query);

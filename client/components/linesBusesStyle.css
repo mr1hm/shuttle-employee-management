@@ -2,7 +2,6 @@
   font-size: 18px;
   font-weight: 600;
   font-style: italic;
-  /* margin-bottom: 2px; */
 }
 
 .lineID {
@@ -30,6 +29,20 @@
   color: green;
 }
 
+.lineActiveIcon {
+  width: 0.75em !important;
+  border-radius: 80%;
+  box-shadow: 0 0 5px 1px #aef4af;
+}
+
+.busActiveIcon {
+  box-shadow: 0 0 5px 1px #aef4af;
+}
+
+.lineInactiveIcon {
+  width: 0.75em !important;
+}
+
 .busInactiveIcon,
 .lineInactiveIcon {
   color: red;
@@ -53,6 +66,38 @@
   border-radius: 5px;
 }
 
+.editLineBtn {
+  width: 40px;
+  margin-bottom: 2px;
+}
+
+.specialDriverCheckbox {
+  margin-left: 40px;
+  margin-top: 12px;
+}
+
+.specialDriverIcon {
+  color: blue;
+}
+
+.cancelEditLineBtn {
+  width: 40px;
+  margin-bottom: 2px;
+}
+
+.editLineSubmitBtn {
+  width: 40px;
+  margin-top: 2px;
+}
+
+.busTableEditIconBtn {
+  width: 40px;
+}
+
+.busTableDeleteIconBtn {
+  width: 40px;
+}
+
 .addNewLineNameExists {
   font-weight: 700;
   color: red;
@@ -63,12 +108,12 @@
   color: green;
 }
 
+.editLineInputRow input {
+  width: 100%;
+}
+
 .newLine .lineCardHeader {
-  /* width: 200px;
-  height: 200px; */
-  /* border-radius: 100px; */
-  /* background-color: #ccc; */
-  animation: glow 1s 30 alternate;
+  animation: glow 1s 2 alternate-reverse;
 }
 
 @keyframes glow {
@@ -76,6 +121,6 @@
     box-shadow: inset 0 0 10px -10px #aef4af;
   }
   to {
-    box-shadow: inset 0 0 10px 10px #aef4af;
+    box-shadow: inset 0 0 10px 2px green;
   }
 }

@@ -29,6 +29,9 @@ class HamburgerMenu extends React.Component {
   }
   render() {
     const visibleClass = this.state.open ? 'visible' : 'hidden';
+    const menuNotification = (<div className="notification-badge move-notification">
+      <div className="notification-count">{this.state.notificationCount}</div>
+    </div>);
     const notification =
       (<div className="notification-badge">
         <div className="notification-count">{this.state.notificationCount}</div>
@@ -43,6 +46,7 @@ class HamburgerMenu extends React.Component {
           <div className="close-icon" onClick={this.toggleOpen}>
             <FontAwesomeIcon icon={faTimes} />
           </div>
+          {this.state.notificationCount > 0 && menuNotification}
           {this.props.children}
         </div>
         <div className={`shadow ${visibleClass}`}></div>

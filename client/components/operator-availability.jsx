@@ -87,7 +87,6 @@ class OperatorAvailability extends React.Component {
       show: true,
       day: event.currentTarget.id
     });
-
   }
 
   hideModal() {
@@ -208,7 +207,6 @@ class OperatorAvailability extends React.Component {
           <button className=" btn btn-primary mt-3" onClick={this.showSubmitModal}>Submit Availability</button>
           <div style={{ width: '5%' }}></div>
         </div>
-
 
         <div className="d-flex">
           <div style={{ width: '5%' }}></div>
