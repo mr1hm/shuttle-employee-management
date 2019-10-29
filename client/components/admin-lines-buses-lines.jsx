@@ -15,7 +15,6 @@ import EditLine from './admin-lines-buses-editLine';
 export default class Lines extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props.line.line_name, this.props.line.specialDriver);
     this.state = {
       busDetailsClicked: false,
       addBusClicked: false,
@@ -142,7 +141,7 @@ export default class Lines extends React.Component {
               </div>
             </div>
             <div className="row align-items-center">
-              <div className="col-2 ">
+              <div className="col-2">
                 <RouteBusDisplay route={line.line_name} />
               </div>
               <div className="col">

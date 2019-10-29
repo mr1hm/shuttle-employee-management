@@ -19,6 +19,7 @@ class AdminRoutes extends React.Component {
     this.ref = React.createRef();
     this.state = {
       sessions: [],
+      selectedSession: null,
       linesBusesInfo: [],
       addLineClicked: false,
       line_name: '',
@@ -45,9 +46,25 @@ class AdminRoutes extends React.Component {
     this.handleSpecialDriverClick = this.handleSpecialDriverClick.bind(this);
   }
 
-  componentWillMount() { // runs right before render runs.
+  componentWillMount() {
     this.getLinesBusesInfo();
     this.getSessions();
+  }
+
+  selectSession(sessionID, e) {
+    e.preventDefault();
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(sessionID)
+    };
+    fetch('api/admin-lines-buses.php', init)
+      .then(response => response.json())
+      .then(sessionData => {
+        this.setState({
+          selectedSession: sessionData
+        });
+      })
+      .catch(error => console.error(error));
   }
 
   scrollToNewLine() {
@@ -66,19 +83,16 @@ class AdminRoutes extends React.Component {
     fetch(`api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(lineInfo => {
-        console.log(lineInfo);
         this.setState({
           newLineAdded: true
         }, this.getUpdatedLines);
       })
       .catch(error => console.error(error));
     this.handleAddLineButton();
-    console.log('newLineAdded set to true');
     this.setNewLineAddedToFalse();
   }
 
   setNewLineAddedToFalse() {
-    console.log('newLineAdded set to false');
     setTimeout(() => {
       this.setState({
         newLineAdded: false
