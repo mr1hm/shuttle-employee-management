@@ -122,7 +122,11 @@ for ($group_index = 0; $group_index < count($grouped_data); $group_index++) {
             'user_id' => 'n/a',
             'line_bus_name' => $shifts[0]['line_bus_name'],
             'round_id' => 'n/a',
-            'rounds' => ['n/a'],
+            'rounds' => [
+                'id' => 'n/a',
+                'start' => 600,
+                'end' => $shifts[0]['start_time']
+            ],
             'start_time' => 600,
             'end_time' => $shifts[0]['start_time']
         ];
@@ -134,7 +138,11 @@ for ($group_index = 0; $group_index < count($grouped_data); $group_index++) {
             'user_id' => 'n/a',
             'line_bus_name' => $shifts[$last_index]['line_bus_name'],
             'round_id' => 'n/a',
-            'rounds' => ['n/a'],
+            'rounds' => [
+                'id' => 'n/a',
+                'start' => $shifts[$last_index]['end_time'],
+                'end' => 2400
+            ],
             'start_time' => $shifts[$last_index]['end_time'],
             'end_time' => 2400
         ];

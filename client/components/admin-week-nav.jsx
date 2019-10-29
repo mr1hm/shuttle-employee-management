@@ -44,14 +44,14 @@ export default class AdminWeekNav extends React.Component {
   renderDays() {
     const elements = this.state.weekArray.map((dayObj, index) => {
       return (
-        <button
+        <div
           key={dayObj.unix}
           id={dayObj.unix}
           onClick={this.handleClickDayOfWeek}
           className={`dayOfWeekContainer d-flex flex-column justify-content-center align-items-center p-2 ${this.checkIfCurrentDay(dayObj.unix)} list-group-item list-group-item-action`}>
           <div className="dayOfWeek">{dayObj.day}</div>
           <div className="currentMonth">{dayObj.month} {dayObj.date.getUTCDate()}</div>
-        </button>
+        </div>
       );
     });
     return elements;

@@ -16,9 +16,7 @@ class AdminShiftsHoverDetailsAndLabels extends React.Component {
   }
   startTimer(event) {
     var verticalPosition = event.currentTarget.offsetTop + 60;
-    var horizontalPosition = event.currentTarget.offsetLeft;
-    // var scrollRight = event.currentTarget.scrollRight;
-    console.log(horizontalPosition);
+    var horizontalPosition = event.currentTarget.getBoundingClientRect().left - 50;
     this.setState({
       timer: setTimeout(this.displayMessage, 200),
       top: verticalPosition,

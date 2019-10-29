@@ -57,14 +57,8 @@ class AdminClickedShiftDetailsAside extends React.Component {
     const firstName = this.props.userName.first;
     const displayName = lastName + ', ' + firstName;
     let shiftStatus = 'Unscheduled';
-    let assignedShiftClass = '';
-    let adminShiftExpandedClass = '';
     if (this.props.shiftType === 'active') {
       shiftStatus = 'Scheduled';
-      assignedShiftClass = 'assignedShift';
-    }
-    if (this.state.expanded) {
-      adminShiftExpandedClass = 'adminShiftDetailsExpanded';
     }
     return (
       <div className="card">

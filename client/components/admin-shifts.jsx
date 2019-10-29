@@ -150,13 +150,19 @@ class AdminShiftsDay extends React.Component {
     if (this.state.selectingUnassign) {
       return;
     }
-    this.setState({ selectingAssign: true });
+    this.setState({
+      selectingAssign: true,
+      shiftsSelected: []
+    });
   }
   handleClickUnassignShifts() {
     if (this.state.selectingAssign) {
       return;
     }
-    this.setState({ selectingUnassign: true });
+    this.setState({
+      selectingUnassign: true,
+      shiftsSelected: []
+    });
   }
   handleClickUnassignShift(event) {
     this.setState({ roundToUnassign: event.target.id });
@@ -172,21 +178,25 @@ class AdminShiftsDay extends React.Component {
     });
   }
   handleShiftClick(shift) {
-    var shiftsSelected = this.state.shiftsSelected;
-    if (this.state.selectingAssign) {
-      var shiftIndex = shiftsSelected.map(shiftItem => shiftItem.round_id).indexOf(shift.round_id);
-      if (shiftIndex > -1) {
-        shiftsSelected.splice(shiftIndex, 1);
-        this.setState({ shiftsSelected: shiftsSelected });
-        return;
-      }
-    } else {
-      shiftsSelected = [];
+    if (shift.shift_type === 'nonOperational') {
+      return;
     }
-    if (shift.shift_type === 'nonOperational');
-    else {
+    var shiftsSelected = this.state.shiftsSelected;
+    var shiftIndex = shiftsSelected.map(shiftItem => shiftItem.round_id).indexOf(shift.round_id);
+    if (shiftIndex > -1) {
+      shiftsSelected.splice(shiftIndex, 1);
+      this.setState({ shiftsSelected: shiftsSelected });
+      return;
+    }
+    if (this.state.selectingAssign) {
       shiftsSelected.push(shift);
       this.setState({ shiftsSelected: shiftsSelected });
+    } else if (this.state.selectingUnassign || (!this.state.selectingUnassign && !this.state.selectingAssign)) {
+      shiftsSelected = [shift];
+      this.setState({
+        shiftsSelected: shiftsSelected
+      });
+
     }
   }
   handleClickUnassignOperator() {
@@ -279,6 +289,7 @@ class AdminShiftsDay extends React.Component {
             range={{ min: 600, max: 2400 }}
             shiftData={{ start: element.start_time, end: element.end_time }}
             selecting={selectingType}
+            shiftSelected={this.state.shiftsSelected.length ? this.state.shiftsSelected[0].round_id : -1}
             onClickShifts={this.handleShiftClick}
           />
         );
