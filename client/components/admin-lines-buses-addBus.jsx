@@ -76,10 +76,18 @@ export default class AddBus extends React.Component {
       let newHour = startTimeArr.splice(0, 2);
       let newHourStr = newHour.join('');
       let newHourInt = Math.round(parseInt(newHourStr) + amountOfHours);
-      let addHourToArr = startTimeArr.splice(0, 0, newHourInt);
+      let newHourIntStr = newHourInt + '';
+      let splitNewHourStr = newHourIntStr.split('');
+      console.log('splitNewHourStr', splitNewHourStr);
+      if (splitNewHourStr[1]) {
+        let addHourToArr = startTimeArr.splice(0, 0, splitNewHourStr[0], splitNewHourStr[1]);
+      }
+      let addHourToArr = startTimeArr.splice(0, 0, splitNewHourStr[0]);
       console.log('startTimeArr', startTimeArr);
       if (startTimeArr.length === 3) {
         startTimeArr.unshift(0);
+      } else if (startTimeArr.length === 5) {
+        startTimeArr.shift();
       }
       endTime = startTimeArr.join('');
       console.log('endTime', endTime);
