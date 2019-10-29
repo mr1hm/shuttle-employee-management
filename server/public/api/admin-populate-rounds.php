@@ -274,7 +274,7 @@ function getRoundsForWeek ($conn, $sessionTimestamp) {
 
 // Returns an associative array of operators for the week
 function getOperatorsForWeek ($conn) {
-  $query = "SELECT `id` AS user_id, `last_name`, `first_name`, `special_route_ok`
+  $query = "SELECT `id` AS 'user_id', `last_name`, `first_name`, `special_route_ok`
             FROM `user`
             WHERE `role` = 'operator' AND `status` = 'active'";
 
