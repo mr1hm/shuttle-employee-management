@@ -2,7 +2,6 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown, faWindowClose, faEdit, faTrash, faBan, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-
 export default class EditLine extends React.Component {
   constructor(props) {
     super(props);
@@ -18,7 +17,7 @@ export default class EditLine extends React.Component {
         specialDriver: this.props.line.specialDriver === 'True' ? 1 : 0
       },
       editLineSent: false
-    }
+    };
     this.handleEditLineChange = this.handleEditLineChange.bind(this);
     this.handleSpecialDriverChange = this.handleSpecialDriverChange.bind(this);
   }
@@ -31,14 +30,14 @@ export default class EditLine extends React.Component {
           ...prevState.editLine,
           specialDriver: 1
         }
-      }))
+      }));
     } else {
       this.setState(prevState => ({
         editLine: {
           ...prevState.editLine,
           specialDriver: 0
         }
-      }))
+      }));
     }
   }
 
@@ -50,7 +49,7 @@ export default class EditLine extends React.Component {
         ...prevState.editLine,
         [name]: value
       }
-    }))
+    }));
   }
 
   editLine(line) {
@@ -65,9 +64,9 @@ export default class EditLine extends React.Component {
         this.setState({
           editLineSent: !this.state.editLineSent
         }, () => {
-            this.props.getLinesBusesInfo();
-            this.props.handleEditLineClicked();
-        })
+          this.props.getLinesBusesInfo();
+          this.props.handleEditLineClicked();
+        });
       })
       .catch(error => console.error(error));
   }
@@ -98,8 +97,8 @@ export default class EditLine extends React.Component {
                 <label className="form-check-label" htmlFor="specialDriverCheckbox">
                   Special Driver
                 </label>
-                {this.state.editLine.specialDriver === 1 ?
-                <input type="checkbox" onChange={this.handleSpecialDriverChange} name="specialDriver" className="editSpecialDriverCheckbox ml-1" id="specialDriverCheckbox" defaultChecked={true} />
+                {this.state.editLine.specialDriver === 1
+                  ? <input type="checkbox" onChange={this.handleSpecialDriverChange} name="specialDriver" className="editSpecialDriverCheckbox ml-1" id="specialDriverCheckbox" defaultChecked={true} />
                   : <input type="checkbox" onChange={this.handleSpecialDriverChange} name="specialDriver" className="editSpecialDriverCheckbox ml-1" id="specialDriverCheckbox" />}
               </div>
               <div className="col d-flex justify-content-center">
@@ -128,7 +127,7 @@ export default class EditLine extends React.Component {
                 <button className="btn btn-link" type="button" data-toggle="collapse"
                   name={`busDetailsClicked${line.route_id}`} href={'#collapse' + line.line_name} onClick={this.props.displayBusDetails} aria-expanded="true" aria-controls={'collapse' + line.line_name}>
                   Bus Details
-                    {this.props.busDetailsClicked ? <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretUp} /> : <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretDown} />}
+                  {this.props.busDetailsClicked ? <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretUp} /> : <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretDown} />}
                 </button>
               </div>
               <div className="col d-flex justify-content-center">

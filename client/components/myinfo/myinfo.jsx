@@ -41,11 +41,6 @@ class MyInfo extends React.Component {
     this.fetchCallMethod();
     this.fetchCellProvider();
   }
-  // updateUserID(){
-  //   this.setState({
-  //     userId:this.props.userId
-  //   })
-  // }
 
   fetchCallMethod() {
     fetch(`/api/my-info-page.php?id=` + this.state.userId, {
@@ -112,7 +107,7 @@ class MyInfo extends React.Component {
     const stateCellProvider = this.state.cellProvider;
     const stateUserInfo = this.state.userInfo;
     const stateEditButton = this.state.editButton;
-    if (!stateUserInfo.length) { return null ;}
+    if (!stateUserInfo.length) { return null; }
     if (stateEditButton === true) {
       return (
         <React.Fragment>

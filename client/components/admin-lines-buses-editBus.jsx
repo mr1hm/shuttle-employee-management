@@ -18,7 +18,7 @@ export default class EditBusModal extends React.Component {
         opening_duration: this.props.busInfo.openingDuration,
         closing_duration: this.props.busInfo.closingDuration
       }
-    }
+    };
     this.handleEditChange = this.handleEditChange.bind(this);
     this.editBus = this.editBus.bind(this);
   }
@@ -31,7 +31,7 @@ export default class EditBusModal extends React.Component {
         ...prevState.editBus,
         [name]: value
       }
-    }))
+    }));
   }
 
   editBus(bus) {
@@ -44,11 +44,11 @@ export default class EditBusModal extends React.Component {
       .then(busInfo => {
         console.log(busInfo);
         this.setState({
-        editBus: busInfo
+          editBus: busInfo
+        });
+        this.props.handleEditBusClicked();
+        this.props.getLinesBusesInfo();
       })
-      this.props.handleEditBusClicked();
-      this.props.getLinesBusesInfo();
-    })
       .catch(error => console.error(error));
   }
 

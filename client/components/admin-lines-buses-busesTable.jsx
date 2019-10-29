@@ -13,17 +13,18 @@ export default class BusesTable extends React.Component {
       editBusClicked: false,
       checkLinesBusesInfo: null,
       prevDeletedBus: null
-    }
+    };
     this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
     this.closeEditBus = this.closeEditBus.bind(this);
     this.deleteBus = this.deleteBus.bind(this);
   }
 
   checkForActiveBuses() {
-    if (line.buses.busNumber)
-    this.setState({
-      busExistsOnRoute: true
-    })
+    if (line.buses.busNumber) {
+      this.setState({
+        busExistsOnRoute: true
+      });
+    }
   }
 
   deleteBus(busID) {
@@ -39,7 +40,7 @@ export default class BusesTable extends React.Component {
       .then(busDeleted => {
         this.setState({
           prevDeletedBus: busDeleted
-        }, this.props.getLinesBusesInfo)
+        }, this.props.getLinesBusesInfo);
         console.log('deleted', busDeleted);
       })
       .catch(error => console.error(error));
@@ -48,13 +49,13 @@ export default class BusesTable extends React.Component {
   closeEditBus() {
     this.setState({
       editBusClicked: false
-    })
+    });
   }
 
   handleEditBusClicked() {
     this.setState({
       editBusClicked: !this.state.editBusClicked
-    })
+    });
   }
 
   render() {

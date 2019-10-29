@@ -5,7 +5,7 @@ export default class Session extends React.Component {
     super(props);
     this.state = {
       sessions: this.props.allSessions
-    }
+    };
   }
 
   render() {
