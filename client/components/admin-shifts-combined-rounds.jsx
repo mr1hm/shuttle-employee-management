@@ -11,8 +11,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     this.shiftTimeMeridian = this.shiftStartMeridian + ' - ' + this.shiftEndMeridian;
     this.handleClick = this.handleClick.bind(this);
     this.state = {
-      shiftTime: this.props.shiftData,
-      selected: this.props.selecting
+      selected: false
     };
   }
   convertMilitartyTimeToStringWithColon(time) {
@@ -48,7 +47,7 @@ class AdminShiftsCombinedRounds extends React.Component {
       this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
     }
     this.setState({ selected: !this.state.selected });
-    console.log(this.props.shiftData, parseInt(this.props.roundId), this.props.userId);
+    console.log('shift click: ', this.state.selected, this.props.shiftData, parseInt(this.props.roundId), this.props.userId);
     this.props.onClickShifts({
       'user_name': this.props.userName,
       'user_id': this.props.userId,
@@ -73,7 +72,15 @@ class AdminShiftsCombinedRounds extends React.Component {
   }
   componentDidUpdate(prevProps) {
     if (this.props.selecting !== prevProps.selecting) {
-      this.setState({ selected: this.props.selected });
+      this.setState({ selected: false });
+    }
+    if (!this.props.selecting && this.props.shiftSelected !== prevProps.shiftSelected) {
+      if (this.props.shiftSelected !== this.props.roundId) {
+        console.log('shiftclick: ', this.props.shiftSelected);
+        this.setState({ selected: false });
+      } // else {
+      //   this.setState({ selected: false });
+      // }
     }
   }
   render() {
