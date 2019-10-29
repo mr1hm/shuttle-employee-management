@@ -42,8 +42,6 @@ class TradeSwap extends React.Component {
     });
     const roundTimesString = JSON.stringify(roundTimes);
     const date = this.props.shiftDetails[0].date;
-    // const startTime = this.props.shiftDetails[0].start_time;
-    // const endTime = this.props.shiftDetails[this.props.shiftDetails.length - 1].end_time;
     fetch(`/api/admin-available-operators.php?date=${date}&sunday=${week[0]}&saturday=${week[6]}&round_time=${roundTimesString}`)
       .then(response => response.json())
       .then(details => {
