@@ -127,7 +127,7 @@ class ShiftsDetails extends React.Component {
                 ? <button className="btn btn-success" onClick={this.unselectAllRounds}>
                   Unselect All
                 </button>
-                :                <button className="btn btn-success" onClick={this.selectAllRounds}>
+                : <button className="btn btn-success" onClick={this.selectAllRounds}>
                   Select All
                 </button>
               }
@@ -140,11 +140,8 @@ class ShiftsDetails extends React.Component {
               <button className="btn btn-primary mr-3">
                 <Link to='/trade-swap'
                   onClick={this.passCheckedRoundIds}>
-                  Trade
+                  Trade/Swap
                 </Link>
-              </button>
-              <button className="btn btn-primary" onClick={this.toggleModal}>
-                Swap
               </button>
             </div>
           </div>

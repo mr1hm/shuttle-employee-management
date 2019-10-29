@@ -23,7 +23,6 @@ class Round extends React.Component {
   }
   render() {
     const className = this.state.clicked ? 'shift selected' : 'shift';
-    console.log(className);
     const { startTime, endTime } = this.props;
     return (
       <tr className={className} onClick={this.selectShift}>
