@@ -2,7 +2,7 @@ import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import TradeModal from './trade-modal';
 import SwapModal from './swap-modal';
-import { convertMilitaryTime, calcShiftLenghtInHourMinFormat } from '../lib/time-functions';
+import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, returnWeekInfoArray } from '../lib/time-functions';
 
 class TradeSwap extends React.Component {
   constructor(props) {
@@ -21,16 +21,30 @@ class TradeSwap extends React.Component {
 
   handleDriverClick(event) {
     const driverId = event.target.id;
-    const selectedDriver = this.state.availableDrivers.find(driver => driver.user_id === driverId);
+    const selectedDriver = this.state.availableDrivers.find(driver => driver.id === parseInt(driverId));
+    const selectedDriverObj = {
+      'first_name': selectedDriver.firstName,
+      'last_name': selectedDriver.lastName,
+      'user_id': selectedDriver.id
+    };
     this.setState({
-      selectedDriver: selectedDriver
+      selectedDriver: selectedDriverObj
     });
   }
   getAvailableDrivers() {
+    const week = returnWeekInfoArray(this.props.shiftDetails[0].date);
+    let roundTimes = [];
+    this.props.shiftDetails.map(oneShift => {
+      roundTimes.push({
+        'start_time': oneShift.start_time,
+        'stop_time': oneShift.end_time
+      });
+    });
+    const roundTimesString = JSON.stringify(roundTimes);
     const date = this.props.shiftDetails[0].date;
-    const startTime = this.props.shiftDetails[0].start_time;
-    const endTime = this.props.shiftDetails[this.props.shiftDetails.length - 1].end_time;
-    fetch(`/api/get-available-drivers.php?date=${date}&start_time=${startTime}&end_time=${endTime}`)
+    // const startTime = this.props.shiftDetails[0].start_time;
+    // const endTime = this.props.shiftDetails[this.props.shiftDetails.length - 1].end_time;
+    fetch(`/api/admin-available-operators.php?date=${date}&sunday=${week[0]}&saturday=${week[6]}&round_time=${roundTimesString}`)
       .then(response => response.json())
       .then(details => {
         this.setState({
@@ -66,7 +80,7 @@ class TradeSwap extends React.Component {
               </button>
               <div className="dropdown-menu w-100">
                 {this.state.availableDrivers.map(singleDriver => {
-                  return <button onClick={this.handleDriverClick} className="dropdown-item" type="button" id={singleDriver.user_id} key={singleDriver.user_id}>{singleDriver.first_name} {singleDriver.last_name}</button>;
+                  return <button onClick={this.handleDriverClick} className="dropdown-item" type="button" id={singleDriver.id} key={singleDriver.id}>{singleDriver.firstName} {singleDriver.lastName}</button>;
                 })}
               </div>
             </div>
