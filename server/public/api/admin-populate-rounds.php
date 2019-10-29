@@ -5,7 +5,7 @@ set_exception_handler('error_handler');
 require_once('db_connection.php');
 require_once('shift-restrictions.php');
 
-function populateSchedule(&$operators, $rounds, $conn) {
+function populateSchedule (&$operators, $rounds, $conn, $session) {
   // Traverse through all rounds
   while ( current($rounds) ) {
     $shift = getShift(current($rounds)['line_name'], $rounds);
@@ -28,7 +28,7 @@ function populateSchedule(&$operators, $rounds, $conn) {
     }
 
     if ( $madeAssignment ) {
-      updateDatabase($conn, $shift);
+      updateDatabase($conn, $shift, $session);
     }
     next($rounds);
   }
@@ -36,7 +36,7 @@ function populateSchedule(&$operators, $rounds, $conn) {
 
 /* Returns an associative array containing all of the rounds to be
  * assigned in a shift */
-function getShift($lineName, &$rounds) {
+function getShift ($lineName, &$rounds) {
   $lineRounds = [
     'C' => 3,
     'D' => 4,
@@ -54,14 +54,10 @@ function getShift($lineName, &$rounds) {
   return $shift;
 }
 
-function updateShiftFlags(&$operator, $shift) {
-  if ( intval($operator['minutes_without_30_minute_break']) === 300 ) {
-    $operator['shift_restrictions']['need_30_minute_break'] = true;
-  } else if ( intval($operator['minutes_without_30_minute_break']) > 300 ) {
+function updateShiftFlags (&$operator, $shift) {
+  if (intval($operator['minutes_without_30_minute_break']) >= 300) {
     $operator['minutes_without_30_minute_break'] -= 300;
-    $operator['shift_restrictions']['need_30_minute_break'] = false;
   }
-
   if ( intval(end($shift)['round_end']) > 2200 ) {
     $operator['shift_restrictions']['worked_passed_10']['current_day'] = true;
   }
@@ -74,7 +70,7 @@ function updateShiftFlags(&$operator, $shift) {
  * - All of the rounds in this shift are unassigned to start with
  * - All of the rounds in this shift are on the same line
  * - All of the rounds in this shift are on the same bus */
-function hasAdequateRounds($shift) {
+function hasAdequateRounds ($shift) {
   foreach ( $shift as $round ) {
     if (intval($round['user_id']) !== 1) return false;
   }
@@ -94,7 +90,7 @@ function hasAdequateRounds($shift) {
 /* Update operators times_assigned associative array with shift times
  * Update operators times_available associative array
  * Update operators daily & weekly minutes */
-function assignShiftToOperator(&$operator, $shift) {
+function assignShiftToOperator (&$operator, $shift) {
   updateOperatorAssignedTimes($operator, $shift);
   updateOperatorAvailableTimes($operator, $shift);
 
@@ -163,7 +159,7 @@ function updateOperatorAssignedTimes (&$operator, $shift) {
   }
 }
 
-function updateOperatorAvailableTimes(&$operator, $shift) {
+function updateOperatorAvailableTimes (&$operator, $shift) {
   // Remove availability if it is the same as the shift
   $key = array_search($shift, array_column($operator, 'available_times'));
   if ( $key !== false ) {
@@ -178,7 +174,7 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
       $timeBlock[0] = $shiftEnd;
       break;
     }
-    if ($shiftEnd === intval($timeBlock[1])) { // Push back end time
+    if ( $shiftEnd === intval($timeBlock[1]) ) { // Push back end time
       $timeBlock[1] = $shiftStart;
       break;
     }
@@ -193,7 +189,7 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
 }
 
 // Update each round in the shift with the operators information
-function assignOperatorToShift($operator, &$shift) {
+function assignOperatorToShift ($operator, &$shift) {
   foreach ( $shift as &$round ) {
     $round['user_id'] = $operator['user_id'];
     $round['last_name'] = $operator['last_name'];
@@ -203,16 +199,31 @@ function assignOperatorToShift($operator, &$shift) {
   unset($round);
 }
 
-// Update all of the rounds in this shift in the database
-function updateDatabase($conn, $shift) {
-  while (current($shift)) {
-    $user_id = current($shift)['user_id'];
-    $id = current($shift)['id'];
+function getSessionDays ($dayIndex, $sessionStartTimestamp, $sessionEndTimestamp) {
+  $day = strtotime("+{$dayIndex} days", $sessionStartTimestamp);
+  $session = $day . ',';
+  while ($day <= $sessionEndTimestamp) {
+    $day = strtotime('+1 week', $day);
+    $session .= $day . ',';
+  }
+  $session = substr($session, 0, -1);
+  return $session;
+}
 
+// Update all of the rounds in this shift in the database
+function updateDatabase ($conn, $shift, $session) {
+  while ( current($shift) ) {
+    $user_id = current($shift)['user_id'];
+    $bus_number = current($shift)['bus_number'];
+    $round = [ current($shift)['round_start'], current($shift)['round_end'] ];
     $query = "UPDATE `round`
               SET `user_id` = {$user_id},
                   `status` = 'scheduled'
-              WHERE `id` = {$id}";
+              WHERE `date` IN ({$session}) AND
+                    `bus_info_id` = {$bus_number} AND
+                    `start_time` = {$round[0]} AND
+                    `end_time` = {$round[1]} AND
+                    `status` = 'unscheduled'";
     $result = mysqli_query($conn, $query);
     if (!$result) {
       throw new Exception('MySQL error: ' . mysqli_error($conn));
@@ -222,7 +233,7 @@ function updateDatabase($conn, $shift) {
 }
 
 // Sort operators so that they are in order by the operator that has the least amount of weekly minutes
-function operatorSort($a, $b) {
+function operatorSort ($a, $b) {
   if (intval($a['total_weekly_minutes']) === intval($b['total_weekly_minutes'])) {
     return 0;
   } else {
@@ -258,7 +269,6 @@ function getRoundsForWeek ($conn, $sessionTimestamp) {
     $row['day'] = date('D', $row['date']);
     $rounds[] = $row;
   }
-
   return $rounds;
 }
 
@@ -277,7 +287,6 @@ function getOperatorsForWeek ($conn) {
     'available_times' => [],
     'assigned_times' => [],
     'shift_restrictions' => [
-      'need_30_minute_break' => false,
       'worked_passed_10' => ['prior_day' => false, 'current_day' => false],
       'shift_passed_15_hour_window' => ['shift_start' => 0]
     ],
@@ -301,13 +310,11 @@ function getOperatorsForWeek ($conn) {
     $operatorIds .= $row['user_id'] . ',';
     $operators[$row['user_id']] = $row;
   }
-  // Remove trailing comma
   $operatorIds = substr($operatorIds, 0, -1);
 
   $query = "SELECT `user_id`, `day_of_week`, CONCAT(`start_time`, ' , ', `end_time`) AS availability
             FROM `operator_availability`
             WHERE `session_id` = 1 AND `user_id` IN ({$operatorIds})";
-
   $result = mysqli_query($conn, $query);
   if ( !$result ) {
     throw new Exception('MySQL error: ' . mysqli_error($conn));
@@ -378,7 +385,7 @@ function getRoundsForDay ($rounds, $day) {
 }
 
 // Returns an associative array of operators for the day
-function getOperatorsForDay($operators, $day) {
+function getOperatorsForDay ($operators, $day) {
   $operatorsForDay = [];
   foreach ( $operators as $operator ) {
     if ( $operator['assignment_details'][$day]['available_times'] ) {
@@ -390,7 +397,6 @@ function getOperatorsForDay($operators, $day) {
       $op['available_times'] = $operator['assignment_details'][$day]['available_times'];
       $op['assigned_times'] = $operator['assignment_details'][$day]['assigned_times'];
       $op['minutes_without_30_minute_break'] = $operator['assignment_details'][$day]['minutes_without_30_minute_break'];
-      $op['shift_restrictions']['need_30_minute_break'] = $operator['assignment_details'][$day]['shift_restrictions']['need_30_minute_break'];
       $op['shift_restrictions']['worked_passed_10']['prior_day'] = $operator['assignment_details'][$day]['shift_restrictions']['worked_passed_10']['prior_day'];
       $op['shift_restrictions']['worked_passed_10']['current_day'] = $operator['assignment_details'][$day]['shift_restrictions']['worked_passed_10']['current_day'];
       $op['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = $operator['assignment_details'][$day]['shift_restrictions']['shift_passed_15_hour_window']['shift_start'];
@@ -403,12 +409,13 @@ function getOperatorsForDay($operators, $day) {
 }
 
 // Populate the week day by day
-function populateWeek ($conn, $rounds, $operators) {
+function populateWeeks ($conn, $rounds, $operators, $sessionStartTimestamp, $sessionEndTimestamp) {
   $week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  foreach ( $week as $day ) {
+  foreach ( $week as $index => $day ) {
     $roundsForDay = getRoundsForDay($rounds, $day);
     $operatorsForDay = getOperatorsForDay($operators, $day);
-    populateSchedule($operatorsForDay, $roundsForDay, $conn);
+    $session = getSessionDays($index, $sessionStartTimestamp, $sessionEndTimestamp);
+    populateSchedule($operatorsForDay, $roundsForDay, $conn, $session);
     foreach ( $operators as &$operator ) {
       $key = array_search(intval($operator['user_id']), array_column($operatorsForDay, 'user_id'));
       if ( $key !== false ) {
@@ -427,11 +434,8 @@ $sessionStartTimestamp = 1566100800;
 $sessionEndTimestamp = 1576904400;
 
 //populate the entire quarter week by week
-while ( $sessionStartTimestamp < $sessionEndTimestamp ) {
-  $rounds = getRoundsForWeek($conn, $sessionStartTimestamp);
-  $operators = getOperatorsForWeek($conn);
-  populateWeek($conn, $rounds, $operators);
-  $sessionStartTimestamp = strtotime('+7 days', $sessionStartTimestamp);
-}
+$rounds = getRoundsForWeek($conn, $sessionStartTimestamp);
+$operators = getOperatorsForWeek($conn);
+populateWeeks($conn, $rounds, $operators, $sessionStartTimestamp, $sessionEndTimestamp);
 
 ?>
