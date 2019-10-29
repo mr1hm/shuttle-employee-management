@@ -14,9 +14,6 @@ $startDate = intval($startDate);
 $endDate = $_GET['endDate'];
 $endDate = intval($endDate);
 
-// $query = "SELECT * FROM `shift` WHERE `ownerID`= {$id} AND (`round_date` >= {$startDate} AND `round_date` <={$endDate})
-//             ORDER BY `round_date` ASC";
-
 $query = "SELECT * FROM `round` WHERE `user_id`= {$id} AND (`date` >= {$startDate} AND `date` <= {$endDate})
 ORDER BY `date` ASC";
 

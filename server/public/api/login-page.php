@@ -15,10 +15,5 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 print(json_encode(array_values($data[0])));
-// return array_values($data[0]);
-// 2342754749586
-// SELECT user.id FROM `user` WHERE user.uci_net_id="2342754749586"
-
-
 
 ?>

@@ -35,7 +35,7 @@ export default class Lines extends React.Component {
     if (this.state.specialDriverRequired !== specialDriverRequired) {
       this.setState({
         specialDriverRequired
-      })
+      });
     }
   }
 
@@ -48,7 +48,7 @@ export default class Lines extends React.Component {
   handleEditLineClicked() {
     this.setState({
       editLineClicked: !this.state.editLineClicked
-    })
+    });
   }
 
   displayBusDetails() {
@@ -58,7 +58,7 @@ export default class Lines extends React.Component {
   deleteLine(lineID) {
     const body = {
       routeID: lineID
-    }
+    };
     const init = {
       method: 'DELETE',
       body: JSON.stringify(body)
@@ -68,7 +68,7 @@ export default class Lines extends React.Component {
       .then(deletedLine => {
         this.setState({
           deletedLine
-        })
+        });
         this.props.getLinesBusesInfo();
       })
       .catch(error => console.error(error));
@@ -85,7 +85,7 @@ export default class Lines extends React.Component {
         <div id="accordion">
           <EditLine busDetailsClicked={this.state.busDetailsClicked} displayBusDetails={this.displayBusDetails} getLinesBusesInfo={this.props.getLinesBusesInfo} handleEditLineClicked={this.handleEditLineClicked} editLineClicked={this.state.editLineClicked} line={line} />
 
-          <div id={'collapse' + line.line_name} className="collapse" aria-labelledby={'heading' + line.line_name}> {/* data-parent="#accordion" was making things weird*/}
+          <div id={'collapse' + line.line_name} className="collapse" aria-labelledby={'heading' + line.line_name}> {/* data-parent="#accordion" was making things weird */}
 
             <div className="row">
               <div className="col">
@@ -167,7 +167,7 @@ export default class Lines extends React.Component {
             </div>
           </div>
 
-          <div id={'collapse' + line.line_name} className="collapse" aria-labelledby={'heading' + line.line_name}> {/* data-parent="#accordion" was making things weird*/}
+          <div id={'collapse' + line.line_name} className="collapse" aria-labelledby={'heading' + line.line_name}> {/* data-parent="#accordion" was making things weird */}
 
             <div className="row">
               <div className="col">
@@ -195,7 +195,7 @@ export default class Lines extends React.Component {
                   </thead>
                   {activeBuses.map((bus, index) => {
                     return <BusesTable linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
-                    }
+                  }
                   )}
                 </table>
               </div>

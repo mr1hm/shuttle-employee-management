@@ -142,7 +142,6 @@ class ShiftsDetails extends React.Component {
                 onClick={this.passCheckedRoundIds}>
                 Trade/Swap
               </Link>
-              {/* <button className="btn btn-primary" onClick={this.props.history.goBack()}>My Shifts</button> */}
             </div>
           </div>
         </div>
