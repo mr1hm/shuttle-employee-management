@@ -20,7 +20,8 @@ class TradeModal extends React.Component {
     const selectedDriverToTradeWith = {
       user_id: this.props.allShifts[0].user_id,
       target_id: this.props.selectedDriver.user_id,
-      user_round: arrayOfRoundIds
+      user_round: arrayOfRoundIds,
+      type: 'trade'
     };
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
@@ -41,7 +42,7 @@ class TradeModal extends React.Component {
         <div className="modal-dialog modal-dialog-centered" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLongTitle">Confirm Shift Trade with {this.props.selectedDriver.first_name} {this.props.selectedDriver.last_name}</h5>
+              <h5 className="modal-title" id="exampleModalLongTitle">Confirm shift trade request with {this.props.selectedDriver.first_name} {this.props.selectedDriver.last_name}</h5>
               <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>

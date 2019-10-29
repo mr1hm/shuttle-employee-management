@@ -36,7 +36,7 @@ class PostModal extends React.Component {
       <>
       <div className="modal-shadow"></div>
       <div className="post-modal">
-        <div className="container h-100 d-flex flex-column justify-content-around">
+        <div className="container p-5 h-100 d-flex flex-column justify-content-around">
           <div className="row">
             <div className="col">
               <h3>Are you sure you want to post the selected shifts?</h3>
