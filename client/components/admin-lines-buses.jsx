@@ -6,6 +6,7 @@ import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
 import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
+import Sessions from './admin-lines-buses-sessions';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
@@ -16,22 +17,24 @@ class AdminRoutes extends React.Component {
   constructor(props) {
     super(props);
     this.ref = React.createRef();
-    this.lineAdded = null;
     this.state = {
-      session: null,
+      sessions: [],
+      // sessionSelected: 1,
       linesBusesInfo: [],
-      // busInfo: [],
       addLineClicked: false,
       line_name: '',
       lineExists: false,
       newLine: {
+        session_id: 5,
         line_name: null,
         status: null,
-        rounds: null,
         roundDuration: null,
-        public: null,
-        regularService: null
-      }
+        public: 'True',
+        regularService: 'True',
+        specialDriver: 0
+      },
+      newLineAdded: false,
+      mostRecentRouteID: null
     }
     this.getUpdatedLines = this.getUpdatedLines.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
@@ -39,10 +42,13 @@ class AdminRoutes extends React.Component {
     this.handleAddLineChange = this.handleAddLineChange.bind(this);
     this.checkIfLineExists = this.checkIfLineExists.bind(this);
     this.scrollToNewLine = this.scrollToNewLine.bind(this);
+    this.setNewLineAddedToFalse = this.setNewLineAddedToFalse.bind(this);
+    this.handleSpecialDriverClick = this.handleSpecialDriverClick.bind(this);
   }
 
   componentWillMount() { // runs right before render runs.
     this.getLinesBusesInfo();
+    this.getSessions();
   }
 
   scrollToNewLine() {
@@ -62,10 +68,21 @@ class AdminRoutes extends React.Component {
       .then(response => response.json())
       .then(lineInfo => {
         console.log(lineInfo);
-        this.getUpdatedLines();
+        this.setState({
+          newLineAdded: true
+        }, this.getUpdatedLines)
       })
       .catch(error => console.error(error));
       this.handleAddLineButton();
+      console.log('newLineAdded set to true');
+      this.setNewLineAddedToFalse();
+  }
+
+  setNewLineAddedToFalse() {
+    console.log('newLineAdded set to false');
+    setTimeout(() => {this.setState({
+      newLineAdded: false
+    })}, 1000);
   }
 
   handleAddLineButton() {
@@ -84,6 +101,37 @@ class AdminRoutes extends React.Component {
       }
     }));
     this.checkIfLineExists(value);
+    console.log(value);
+  }
+
+  handleSpecialDriverClick(e) {
+    const checked = e.target.checked;
+    if (checked) {
+      this.setState(prevState => ({
+        newLine: {
+          ...prevState.newLine,
+          specialDriver: 1
+        }
+      }));
+    } else {
+      this.setState(prevState => ({
+        newLine: {
+          ...prevState.newLine,
+          specialDriver: 0
+        }
+      }));
+    }
+  }
+
+  getSessions() {
+    fetch('api/admin-lines-buses-sessions.php')
+      .then(response => response.json())
+      .then(sessionsData => {
+        this.setState({
+          sessions: sessionsData
+        })
+      })
+      .catch(error => console.error(error));
   }
 
   getUpdatedLines() {
@@ -98,9 +146,13 @@ class AdminRoutes extends React.Component {
   getLinesBusesInfo() {
     fetch('api/admin-lines-buses.php')
       .then(response => response.json())
-      .then(linesBusesInfo => this.setState({
-        linesBusesInfo: linesBusesInfo
-      }))
+      .then(linesBusesInfo => {
+        console.log(this.state.linesBusesInfo);
+        console.log(linesBusesInfo)
+        this.setState({
+          linesBusesInfo: linesBusesInfo
+        })
+      })
       .catch(error => console.error(error));
   }
 
@@ -141,7 +193,6 @@ class AdminRoutes extends React.Component {
         largestID = routeIDNum;
       }
     }
-    console.log('largest route id:', largestID);
     if (largestID === 0) {
       return null;
     }
@@ -154,21 +205,15 @@ class AdminRoutes extends React.Component {
       return (
         <React.Fragment>
           <TopMenuGeneral title="ADMIN - Routes/Buses" />
-          {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
           <div className="container mt-2">
             <div className="row ">
-              <form onSubmit={this.handleSubmit}>
-                <label >
-                  Start Date:
-                  <input type="text" value={this.state.value} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
-                <label>
-                  End Date:
-                  <input type="text" value={this.state.value} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
-              </form>
+              <div className="col">
+                <select name="sessions">
+                    {this.state.sessions.map(sessionData => {
+                      <Sessions key={`sessions${sessionData.id}`} allSessions={this.state.sessions} sessionSelected={this.state.sessionSelected} sessionData={sessionData} />
+                    })}
+                </select>
+              </div>
             </div>
             <div className="row justify-content-end">
               {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
@@ -176,10 +221,7 @@ class AdminRoutes extends React.Component {
           </div>
           <div className="card" >
             <div className="card-header" >
-
-              <form method="POST" action="/api/admin-lines-buses.php">
                 <div className="row" >
-
                   <div className="col">
                     {this.state.lineExists ? <label>Line Name<br /><span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span></label> : <label>Line Name<br /><span className="addNewLineName"><i>Name Available</i></span></label>}
                     <input defaultValue={this.state.newLineName}
@@ -199,14 +241,6 @@ class AdminRoutes extends React.Component {
                   </div>
                   <div className="col">
                     <label>
-                      Rounds
-                      <br />
-                      <span className="addLineHeaderDescription"><i>Number of Rounds</i></span>
-                    </label>
-                    <input onChange={this.handleAddLineChange} type="text" className="col border border-primary" name="rounds" />
-                  </div>
-                  <div className="col">
-                    <label>
                       Round Duration
                       <br />
                       <span className="addLineHeaderDescription"><i>Number of Minutes</i></span>
@@ -219,7 +253,11 @@ class AdminRoutes extends React.Component {
                       <br />
                       <span className="addLineHeaderDescription"><i>True/False</i></span>
                     </label>
-                    <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="public" />
+                    <br />
+                    <select onChange={this.handleAddLineChange} className="col border border-primary" name="public">
+                      <option>True</option>
+                      <option>False</option>
+                    </select>
                   </div>
                   <div className="col">
                     <label>
@@ -227,16 +265,32 @@ class AdminRoutes extends React.Component {
                       <br />
                       <span className="addLineHeaderDescription"><i>True/False</i></span>
                     </label>
-                    <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="regularService" />
+                    <br />
+                    <select onChange={this.handleAddLineChange} className="col border border-primary" name="public">
+                      <option>True</option>
+                      <option>False</option>
+                    </select>
                   </div>
-                  {this.state.lineExists ? <button className="btn btn-danger" type="submit" name="submit">NOPE</button> : <button onClick={(e) => this.addNewLine(this.state.newLine, e)} className="btn btn-success" type="submit" name="submit">ADD</button>}
+                  <div className="col">
+                      <label className="form-check-label" htmlFor="specialDriverCheckbox">
+                        Special Driver
+                        <br />
+                        <span><i>True/False</i></span>
+                      </label>
+                      <br />
+                      <input type="checkbox" onChange={this.handleSpecialDriverClick} name="specialDriver" className="specialDriverCheckbox form-check-input" id="specialDriverCheckbox" />
+                  </div>
+                  <div className="col">
+                    <button onClick={this.handleAddLineButton} className="col btn btn-warning">CANCEL</button>
+                    <br />
+                    {this.state.lineExists ? <button className="col btn btn-danger mt-1" type="submit" name="submit">NOPE</button> : <button onClick={(e) => this.addNewLine(this.state.newLine, e)} className="col btn btn-success mt-1" type="submit" name="submit">ADD</button>}
+                  </div>
                 </div>
-              </form>
             </div>
           </div>
           <div className="accordion" id="accordionExample">
             {this.state.linesBusesInfo.map((line, index) => {
-              if (largestID == line.real_route_id) {
+              if (this.state.newLineAdded && (largestID == line.real_route_id)) {
                 return (
                   <div className="newLine" key={line.real_route_id} ref={this.ref}>
                     <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
@@ -257,21 +311,18 @@ class AdminRoutes extends React.Component {
   return (
     <React.Fragment>
     <TopMenuGeneral title="ADMIN - Routes/Buses" />
-      {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
     <div className="container mt-2">
       <div className="row">
-          <form onSubmit={this.handleSubmit}>
-            <label >
-              Start Date:
-      <input  type="text" value={this.state.value} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-            <label>
-              End Date:
-      <input type="text" value={this.state.value} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
+        <div className="col">
+          <label>Select Session</label>
+            <select name="sessions">
+              {this.state.sessions.map(sessionData => {
+                return (
+                  <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
+                );
+              })}
+            </select>
+        </div>
       </div>
       <div className="row justify-content-end">
           <div className="btn btn-outline-dark" onClick={() => this.handleAddLineButton()}> Add Line + </div>
@@ -279,7 +330,7 @@ class AdminRoutes extends React.Component {
     </div>
       <div className="accordion" id="accordionExample">
         {this.state.linesBusesInfo.map((line, index) => {
-          if (largestID == line.real_route_id) {
+          if (this.state.newLineAdded && (largestID == line.real_route_id)) {
             return (
               <div className="newLine" key={line.real_route_id} ref={this.ref}>
                 <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
@@ -288,7 +339,7 @@ class AdminRoutes extends React.Component {
           }
           return (
             <div key={line.real_route_id}>
-              <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+              <Lines line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
             </div>
           );
         }
