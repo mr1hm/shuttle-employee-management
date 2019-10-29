@@ -2,6 +2,7 @@ import React from 'react';
 import AdminShiftsHoverDetailsAndLabels from './admin-shifts-hover-details-and-labels';
 import { convertMilitaryTime } from '../lib/time-functions';
 import './admin-shifts-display.css';
+import { faRubleSign } from '@fortawesome/free-solid-svg-icons';
 
 class AdminShiftsCombinedRounds extends React.Component {
   constructor(props) {
@@ -29,7 +30,7 @@ class AdminShiftsCombinedRounds extends React.Component {
     let minutes = time[time.length - 2] + time[time.length - 1];
     return hours + ':' + minutes + amOrPm;
   }
-  convertRoundTimesToTimeMeridian(rounds) {
+  convertRoundTimesToTimeMeridiem(rounds) {
     for (let roundIndex = 0; roundIndex < rounds.length; roundIndex++) {
       let roundStartMeridian = convertMilitaryTime(rounds[roundIndex].start.toString());
       let roundEndMeridian = convertMilitaryTime(rounds[roundIndex].end.toString());
@@ -45,17 +46,17 @@ class AdminShiftsCombinedRounds extends React.Component {
   handleClick() {
     if (this.props.selecting) {
       this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
+      this.setState({ selected: !this.state.selected });
     }
-    this.setState({ selected: !this.state.selected });
     console.log('shift click: ', this.state.selected, this.props.shiftData, parseInt(this.props.roundId), this.props.userId);
     this.props.onClickShifts({
-      'user_name': this.props.userName,
-      'user_id': this.props.userId,
-      'shift_time': this.shiftTimeMeridian,
-      'rounds': this.convertRoundTimesToTimeMeridian(this.props.rounds),
-      'round_id': this.props.roundId,
-      'shift_type': this.props.type,
-      'line_bus': this.props.lineBus
+      userName: this.props.userName,
+      userId: this.props.userId,
+      shiftTime: this.shiftTimeMeridian,
+      rounds: this.convertRoundTimesToTimeMeridiem(this.props.rounds),
+      roundId: this.props.roundId,
+      shiftType: this.props.type,
+      lineBus: this.props.lineBus
     });
   }
   generateShiftHoverElement() {
@@ -73,10 +74,11 @@ class AdminShiftsCombinedRounds extends React.Component {
   componentDidUpdate(prevProps) {
     if (this.props.selecting !== prevProps.selecting) {
       this.setState({ selected: false });
-    }
-    if (!this.props.selecting && this.props.shiftSelected !== prevProps.shiftSelected) {
-      if (this.props.shiftSelected !== this.props.roundId) {
-        console.log('shiftclick: ', this.props.shiftSelected);
+    } else if (!this.props.selecting && this.props.shiftSelected !== prevProps.shiftSelected) {
+      console.log(this.props.shiftSelected, this.props.roundId);
+      if (this.props.shiftSelected === this.props.roundId) {
+        this.setState({ selected: true });
+      } else {
         this.setState({ selected: false });
       }
     }
@@ -92,7 +94,9 @@ class AdminShiftsCombinedRounds extends React.Component {
       <div
         onClick={this.handleClick}
         className={`operatorShift rounded border h-75 ${this.props.type} ${this.state.selected ? 'shiftSelected' : ''}`}
-        style={{ width: widthPercent * 1808 + 'px' }}>
+        style={{
+          width: widthPercent * 1808 + 'px'
+        }}>
         {this.generateShiftHoverElement()}
       </div>
     );

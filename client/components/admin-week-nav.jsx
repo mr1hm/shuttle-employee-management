@@ -48,7 +48,7 @@ export default class AdminWeekNav extends React.Component {
           key={dayObj.unix}
           id={dayObj.unix}
           onClick={this.handleClickDayOfWeek}
-          className={`dayOfWeekContainer d-flex flex-column justify-content-center align-items-center p-2 ${this.checkIfCurrentDay(dayObj.unix)} list-group-item list-group-item-action`}>
+          className={`dayOfWeekContainer d-flex flex-column justify-content-center align-items-center py-2 ${this.checkIfCurrentDay(dayObj.unix)} list-group-item list-group-item-action`}>
           <div className="dayOfWeek">{dayObj.day}</div>
           <div className="currentMonth">{dayObj.month} {dayObj.date.getUTCDate()}</div>
         </div>
@@ -59,20 +59,16 @@ export default class AdminWeekNav extends React.Component {
   render() {
     return (
       <div className="adminShiftWeekContainer d-flex justify-content-center list-group-horizontal">
-        <div className="prevWeekButtonContainer p-1">
-          <button
-            onClick={this.handleClickPrevWeek}
-            className="prevWeekButton btn btn-light d-flex justify-content-center align-items-center border rounded-pill h-100 px-1">
-            <FontAwesomeIcon icon={faAngleDoubleLeft} />
-          </button>
+        <div
+          onClick={this.handleClickPrevWeek}
+          className="prevWeekButton d-flex justify-content-center align-items-center list-group-item list-group-item-action rounded-left">
+          <FontAwesomeIcon icon={faAngleDoubleLeft} />
         </div>
         {this.renderDays()}
-        <div className="nextWeekButtonContainer p-1">
-          <button
-            onClick={this.handleClickNextWeek}
-            className="nextWeekButton btn btn-light d-flex justify-content-center align-items-center border rounded-pill h-100 px-1">
-            <FontAwesomeIcon icon={faAngleDoubleRight} />
-          </button>
+        <div
+          onClick={this.handleClickNextWeek}
+          className="nextWeekButton d-flex justify-content-center align-items-center list-group-item list-group-item-action rounded-right">
+          <FontAwesomeIcon icon={faAngleDoubleRight} />
         </div>
       </div>
     );

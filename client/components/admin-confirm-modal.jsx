@@ -28,15 +28,30 @@ export default class AdminConfirmModal extends React.Component {
     return this.handleClickConfirmUnassign;
   }
   renderShiftsSelected() {
-    var shifts = this.props.shifts;
     var elements = [];
-    for (var shiftIndex = 0; shiftIndex < shifts.length; shiftIndex++) {
-      elements.push(
-        <div key={shifts[shiftIndex].round_id} className="shiftTime">
-          {`${shifts[shiftIndex].line_bus}: ${shifts[shiftIndex].shift_time}`}
-        </div>
-      );
+    var shifts = [];
+    if (this.props.assign) {
+      shifts = this.props.shifts;
+      for (let shiftIndex = 0; shiftIndex < shifts.length; shiftIndex++) {
+        elements.push(
+          <div
+            key={shifts[shiftIndex].roundId} className="shiftTime">
+            {`${shifts[shiftIndex].lineBus}: ${shifts[shiftIndex].shiftTime}`}
+          </div>
+        );
+      }
+    } else if (this.props.unassign) {
+      shifts = this.props.shiftsToUnassign;
+      for (let shiftIndex = 0; shiftIndex < shifts.length; shiftIndex++) {
+        elements.push(
+          <div
+            key={shiftIndex} className="shiftTime">
+            {`${shifts[shiftIndex]}`}
+          </div>
+        );
+      }
     }
+
     return elements;
   }
   render() {
