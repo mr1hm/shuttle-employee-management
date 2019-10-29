@@ -78,9 +78,7 @@ class AdminShiftsCombinedRounds extends React.Component {
       if (this.props.shiftSelected !== this.props.roundId) {
         console.log('shiftclick: ', this.props.shiftSelected);
         this.setState({ selected: false });
-      } // else {
-      //   this.setState({ selected: false });
-      // }
+      }
     }
   }
   render() {
