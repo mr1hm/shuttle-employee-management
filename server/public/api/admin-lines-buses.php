@@ -9,83 +9,107 @@ $bodyData = getBodyData();
 if ($method === 'GET'){
 
 $query = "SELECT
-              bi.`id` AS 'busID',
-              bi.`bus_number`,
-              bi.`gapDuration`,
-              rt.`id` AS 'real_route_id',
-              rt.`rounds`,
-              rt.`roundDuration`,
-              bi.`start_time`,
-              bi.`end_time`,
-              bi.`daysActive`,
-              bi.`gap`,
-              rt.`line_name`,
-              rt.`status`,
-              bi.`opening_duration`,
-              bi.`closing_duration`,
-              rt.`public`,
-              rt.`regularService`
-              -- IF (rt.`public` = 1, 'True', 'False') as public,
-              -- IF (rt.`regularService` = 1, 'True', 'False') as regularService
-              FROM
-              `route` AS rt
-              LEFT JOIN
-              `bus_info` AS bi
-              ON
-              bi.`route_id` = rt.`id`
+            bi.`id` AS 'busID',
+            bi.`bus_number`,
+            bi.`gapDuration`,
+            rt.`id` AS 'real_route_id',
+            bi.`rounds`,
+            rt.`roundDuration`,
+            bi.`start_time`,
+            bi.`end_time`,
+            bi.`daysActive`,
+            bi.`gap`,
+            rt.`line_name`,
+            rt.`status`,
+            bi.`opening_duration`,
+            bi.`closing_duration`,
+            rt.`public`,
+            rt.`regularService`,
+            rt.`specialDriver`,
+            s.`id` AS sessionID,
+            -- IF (rt.`public` = 1, 'True', 'False') as public,
+            IF (rt.`specialDriver` = 1, 'True', 'False') as specialDriver
+            FROM `route` AS rt
+            LEFT JOIN `bus_info` AS bi ON bi.`route_id` = rt.`id`
+            JOIN `session` AS s ON s.`id` = rt.`session_id`
             -- WHERE  rt. `status` = 'inactive'
             ORDER BY line_name";
 
 
-} else if ($method === 'POST' && (isset($bodyData['line_name']))) { // change condition to better fit add bus method.
+} else if ($method === 'POST' && (isset($bodyData['lineID']))) { // edit a line
+
+    $lineID = $bodyData['lineID'];
+    $sessionID = $bodyData['session_id'];
     $line_name = $bodyData['line_name'];
     $status = $bodyData['status'];
-    $rounds = $bodyData['rounds'];
     $roundDuration = $bodyData['roundDuration'];
     $public = $bodyData['public'];
     $regularService = $bodyData['regularService'];
-    $query = "INSERT INTO `route` (`line_name`, `status`, `rounds`, `roundDuration`, `public`, `regularService`)
-              VALUES ('$line_name', '$status', '$rounds', '$roundDuration', '$public', '$regularService')";
+    $specialDriver = $bodyData['specialDriver'];
+    $query = "UPDATE `route`
+                SET `line_name` = '$line_name', `session_id` = '$sessionID', `status` = '$status', `roundDuration` = '$roundDuration', `public` = '$public',
+                    `regularService` = '$regularService', `specialDriver` = '$specialDriver'
+                WHERE `route`.`id` = '$lineID'";
+
+} else if ($method === 'POST' && (isset($bodyData['line_name']))) { // add a new line.
+
+    $line_name = $bodyData['line_name'];
+    $sessionID = $bodyData['session_id'];
+    $status = $bodyData['status'];
+    $roundDuration = $bodyData['roundDuration'];
+    $public = $bodyData['public'];
+    $regularService = $bodyData['regularService'];
+    $specialDriver = $bodyData['specialDriver'];
+    // if ($specialDriver = false) {
+    //   $specialDriver = FALSE;
+    // }
+    $query = "INSERT INTO `route` (`line_name`, `session_id`, `status`, `roundDuration`, `public`, `regularService`, `specialDriver`)
+              VALUES ('$line_name', '$sessionID', '$status', '$roundDuration', '$public', '$regularService', '$specialDriver')";
     //print('add a line' . $query);
 
 } else if ($method === 'POST' && ($bodyData['route_id'])) { // add new bus
-  $busNumber = $bodyData['bus_number'];
-  $startTime = $bodyData['start_time'];
-  $endTime = $bodyData['end_time'];
-  $daysActive = $bodyData['daysActive'];
-  $idRoute = $bodyData['route_id'];
-  $vehicleID = $bodyData['vehicle_id'];
-  $gap = $bodyData['gap'];
-  $gapDuration = $bodyData['gapDuration'];
-  $openingDuration = $bodyData['opening_duration'];
-  $closingDuration = $bodyData['closing_duration'];
-  $query = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `end_time`, `daysActive`, `route_id`, `vehicle_id`, `gap`, `gapDuration`, `opening_duration`, `closing_duration`)
-            VALUES ('$busNumber', '$startTime', '$endTime', '$daysActive', '$idRoute', '$vehicleID', '$gap', '$gapDuration', '$openingDuration', '$closingDuration')";
-  //print('add bus' . $query);
+    $busNumber = $bodyData['bus_number'];
+    $startTime = $bodyData['start_time'];
+    $rounds = $bodyData['rounds'];
+    $endTime = $bodyData['end_time'];
+    $daysActive = $bodyData['daysActive'];
+    $idRoute = $bodyData['route_id'];
+    $vehicleID = $bodyData['vehicle_id'];
+    $gap = $bodyData['gap'];
+    $gapDuration = $bodyData['gapDuration'];
+    $openingDuration = $bodyData['opening_duration'];
+    $closingDuration = $bodyData['closing_duration'];
+    $query = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `daysActive`, `route_id`, `vehicle_id`, `gap`, `gapDuration`, `opening_duration`, `closing_duration`)
+              VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$daysActive', '$idRoute', '$vehicleID', '$gap', '$gapDuration', '$openingDuration', '$closingDuration')";
+    //print('add bus' . $query);
 
-} else if ($method === 'POST' && (isset($bodyData['id']))) {
-  //echo 'this is a POST EDIT request';
-  // echo $_SESSION['busID'];
-  $busID = $bodyData['id'];
-  //echo $busID;
-  $busNumber = $bodyData['bus_number'];
-  $idRoute = $bodyData['route_id'];
-  $startTime = $bodyData['start_time'];
-  $endTime = $bodyData['end_time'];
-  $daysActive = $bodyData['daysActive'];
-  $gap = $bodyData['gap'];
-  $openingDuration = $bodyData['opening_duration'];
-  $closingDuration = $bodyData['closing_duration'];
-  $query = "UPDATE `bus_info`
-              SET `bus_number` = '$busNumber', `start_time` = '$startTime', `end_time` = '$endTime', `daysActive` = '$daysActive', `gap` = '$gap',
-                  `opening_duration` = '$openingDuration', `closing_duration` = '$closingDuration'
-              WHERE `bus_info`.`id` = '$busID'";
-  //print($query);
-} //else if ($method === 'DELETE' && (isset($bodyData['id']))) {
+} else if ($method === 'POST' && (isset($bodyData['id']))) { // edit a bus
 
-//   $busID = $bodyData['id'];
-// }
+    $busID = $bodyData['id'];
+    $busNumber = $bodyData['bus_number'];
+    $idRoute = $bodyData['route_id'];
+    $startTime = $bodyData['start_time'];
+    $rounds = $bodyData['rounds'];
+    $endTime = $bodyData['end_time'];
+    $daysActive = $bodyData['daysActive'];
+    $gap = $bodyData['gap'];
+    $openingDuration = $bodyData['opening_duration'];
+    $closingDuration = $bodyData['closing_duration'];
+    $query = "UPDATE `bus_info`
+                SET `bus_number` = '$busNumber', `start_time` = '$startTime', `rounds` = '$rounds', `end_time` = '$endTime', `daysActive` = '$daysActive', `gap` = '$gap',
+                    `opening_duration` = '$openingDuration', `closing_duration` = '$closingDuration'
+                WHERE `bus_info`.`id` = '$busID'";
 
+} else if ($method === 'DELETE' && (isset($bodyData['id']))) {
+
+    $busID = $bodyData['id'];
+    $query = "DELETE FROM `bus_info` WHERE `id` = $busID";
+
+} else if ($method === 'DELETE' && (isset($bodyData['routeID']))) {
+
+    $lineID = $bodyData['routeID'];
+    $query = "DELETE FROM `route` WHERE `id` = $lineID";
+}
 
 $result = mysqli_query($conn, $query);
 if (!$result) {
@@ -104,6 +128,7 @@ if($method === 'GET') {
       $busInfo['busID'] = $row['busID'];
       $busInfo['busNumber'] = $row['bus_number'];
       $busInfo['startTime'] = $row['start_time'];
+      $busInfo['rounds'] = $row['rounds'];
       $busInfo['endTime'] = $row['end_time'];
       $busInfo['daysActive'] = $row['daysActive'];
       $busInfo['gap'] = $row['gap'];
@@ -115,6 +140,7 @@ if($method === 'GET') {
     unset($row['busID']);
     unset($row['bus_number']); //so I don't need it here anymore
     unset($row['start_time']);
+    unset($row['rounds']);
     unset($row['end_time']);
     unset($row['daysActive']);
     unset($row['gap']);
@@ -153,8 +179,6 @@ if($method === 'GET') {
 
     print(json_encode($data));
 
-    // header("Location: http://localhost:3000/admin-routes");
-
 } else if ($method === 'POST' && ($bodyData['route_id'])) { // add a new bus
 
     $query = "SELECT * FROM `bus_info`";
@@ -171,7 +195,7 @@ if($method === 'GET') {
 
     print(json_encode($data));
 
-} else if ($method === 'POST' && ($bodyData['id'])) { // edit a bus
+} else if ($method === 'POST' && (isset($bodyData['id']))) { // edit a bus
 
     $new_id = $bodyData['id'];
     $query = "SELECT * FROM `bus_info` WHERE `id` = '$new_id'";
@@ -187,6 +211,38 @@ if($method === 'GET') {
 
     print(json_encode($data));
 
+} else if ($method === 'DELETE' && (isset($bodyData['id']))) { // delete bus
+
+    $deletedBus = $bodyData['id'];
+    $query = "SELECT * FROM `bus_info`";
+
+    $result = mysqli_query($conn, $query);
+    if (!$result) {
+      throw new Exception('mysql error' . mysqli_error($conn));
+    }
+
+    $data = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+      $data = $row;
+    }
+
+    print(json_encode($data));
+
+} else if ($method === 'DELETE' && (isset($bodyData['routeID']))) { // delete line
+
+    $query = "SELECT * FROM `route`";
+
+    $result = mysqli_query($conn, $query);
+    if (!$result) {
+      throw new Exception('mysql error' . mysqli_error($conn));
+    }
+
+    $data = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+      $data = $row;
+    }
+
+    print(json_encode($data));
 }
 
 
@@ -194,34 +250,6 @@ if($method === 'GET') {
 // if ($method === 'POST'){
 //   header("Location: http://localhost:3000/admin-routes");
 //   exit();
-// }
-
-// $row = [
-//   'route_id' => 1,
-//   'busNumber' => 1,
-//   'start' => '0600',
-//   'end' => '2300',
-//   'line_name' => 'C'
-// ];
-
-
-// $data = [];
-// while ($row = mysqli_fetch_assoc($result)) {
-//   $routeId = $row['route_id'];
-//   $busInfo = [
-//     'number' => $row['bus_number'],
-//     'start' => $row['start_time'],
-//     'end' => $row['end']
-//   ];
-//   unset($row['busNumber']);
-//   unset($row['start']);
-//   unset($row['end']);
-//   if (!isset($data[$routeId])) {
-//     $row['buses'] = [$busInfo];
-//     $data[$routeId] = $row;
-//   } else {
-//     $data[$routeId]['buses'][] = $busInfo;
-//   }
 // }
 
 ?>

@@ -1,7 +1,7 @@
 import React from 'react';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWindowClose } from '@fortawesome/free-solid-svg-icons';
+import { faWindowClose, faBan, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 export default class EditBusModal extends React.Component {
   constructor(props) {
@@ -69,12 +69,15 @@ export default class EditBusModal extends React.Component {
     if (this.props.editBusClicked) {
       return (
         <tbody>
-          <tr>
+          <tr className="editBusTableInfo">
             <td>
               <input defaultValue={busInfo.busNumber} name="bus_number" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
               <input defaultValue={busInfo.startTime} name="start_time" onChange={this.handleEditChange} type="text" />
+            </td>
+            <td>
+              <input defaultValue={busInfo.rounds} name="rounds" onChange={this.handleEditChange} type="text"/>
             </td>
             <td>
               <input defaultValue={busInfo.endTime} name="end_time" onChange={this.handleEditChange} type="text" />
@@ -87,18 +90,18 @@ export default class EditBusModal extends React.Component {
             </td>
             <td>
               <button onClick={this.props.handleEditBusClicked} className="w-40 closeModal btn btn-warning">
-                CANCEL
-                {/* <FontAwesomeIcon className="closeEditWindow" icon={faWindowClose} /> */}
+                <FontAwesomeIcon icon={faBan} />
               </button>
             </td>
           </tr>
-          <tr>
+          <tr className="editBusTableInfo">
             <td></td>
             <td>
               <label className="editOpeningDuration">Opening Duration</label>
               <br/>
               <input defaultValue={busInfo.openingDuration} name="opening_duration" onChange={this.handleEditChange} type="text" />
             </td>
+            <td></td>
             <td>
               <label className="editClosingDuration">Closing Duration</label>
               <br/>
@@ -111,7 +114,9 @@ export default class EditBusModal extends React.Component {
               <input defaultValue={busInfo.gapDuration} name="gapDuration" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
-              <button onClick={() => this.editBus(this.state.editBus)} type="submit" className="w-40 saveChangesBtn btn btn-success">UPDATE</button>
+              <button onClick={() => this.editBus(this.state.editBus)} type="submit" className="w-40 saveChangesBtn btn btn-success">
+                <FontAwesomeIcon icon={faPaperPlane} />
+              </button>
             </td>
           </tr>
         </tbody>

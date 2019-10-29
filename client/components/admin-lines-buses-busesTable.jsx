@@ -3,7 +3,7 @@ import RouteBusDisplay from './route-bus-display';
 import EditBusModal from './admin-lines-buses-editBus';
 import AdminRoutes from './admin-lines-buses';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 export default class BusesTable extends React.Component {
   constructor(props) {
@@ -11,17 +11,13 @@ export default class BusesTable extends React.Component {
     this.state = {
       busExistsOnRoute: false,
       editBusClicked: false,
-      checkLinesBusesInfo: null
+      checkLinesBusesInfo: null,
+      prevDeletedBus: null
     }
     this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
     this.closeEditBus = this.closeEditBus.bind(this);
+    this.deleteBus = this.deleteBus.bind(this);
   }
-
-  // componentDidMount() {
-  //   this.setState({
-  //     checkLinesBusesInfo: this.props.linesBusesInfo
-  //   })
-  // }
 
   checkForActiveBuses() { // check for already existing buses.
     if (line.buses.busNumber)
@@ -30,14 +26,22 @@ export default class BusesTable extends React.Component {
     })
   }
 
-  deleteBus(busID, e) { // delete a bus.
+  deleteBus(busID) { // delete a bus.
+    const body = {
+      id: busID
+    };
     const init = {
       method: 'DELETE',
-      body: JSON.stringify(busID)
+      body: JSON.stringify(body)
     };
     fetch(`api/admin-lines-buses.php`, init)
       .then(response => response.json())
-      .then(busDeleted => console.log(busDeleted))
+      .then(busDeleted => {
+        this.setState({
+          prevDeletedBus: busDeleted
+        }, this.props.getLinesBusesInfo)
+        console.log('deleted', busDeleted);
+      })
       .catch(error => console.error(error));
   }
 
@@ -81,25 +85,27 @@ export default class BusesTable extends React.Component {
     }
     return (
       <tbody>
-        <tr>
+        <tr className="busTableInfo">
           <td className="busNumber" rowSpan="3">
             <RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay>
           </td>
           <td>{busInfo.startTime}</td>
+          <td>{busInfo.rounds}</td>
           <td>{busInfo.endTime}</td>
           <td>{busInfo.daysActive}</td>
           <td>{busInfo.gap}</td>
-          <td>
-            <button onClick={this.handleEditBusClicked} className="btn btn-warning">EDIT <FontAwesomeIcon icon={faEdit} /></button>
+          <td className="d-flex justify-content-center">
+            <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
           </td>
         </tr>
-        <tr>
+        <tr className="busTableInfo">
           <td className="startTimeDuration">{`${busInfo.openingDuration}min`}</td>
+          <td></td>
           <td className="endTimeDuration">{`${busInfo.closingDuration}min`}</td>
           <td></td>
           <td>{busInfo.gapDuration}</td>
-          <td>
-            <button className="btn btn-danger">DELETE</button>
+          <td className="d-flex justify-content-center">
+            <button onClick={() => this.deleteBus(busInfo.busID)} className="busTableDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
           </td>
         </tr>
       </tbody>
