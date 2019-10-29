@@ -18,7 +18,7 @@ export default class AdminWeekNav extends React.Component {
   }
   checkIfCurrentDay(timestamp) {
     if (timestamp === this.props.date) {
-      return 'dayOfWeekSelected';
+      return 'list-group-item-primary';
     }
     return '';
   }
@@ -44,36 +44,35 @@ export default class AdminWeekNav extends React.Component {
   renderDays() {
     const elements = this.state.weekArray.map((dayObj, index) => {
       return (
-        <div
+        <button
           key={dayObj.unix}
           id={dayObj.unix}
           onClick={this.handleClickDayOfWeek}
-          className={`dayOfWeekContainer d-flex flex-column justify-content-center align-items-center border h-100 p-2 ${this.checkIfCurrentDay(dayObj.unix)}`}>
+          className={`dayOfWeekContainer d-flex flex-column justify-content-center align-items-center p-2 ${this.checkIfCurrentDay(dayObj.unix)} list-group-item list-group-item-action`}>
           <div className="dayOfWeek">{dayObj.day}</div>
-          <div className="currentMonth">{dayObj.month} {dayObj.date.getDate()}</div>
-          <div className="currentYear">{dayObj.date.getFullYear()}</div>
-        </div>
+          <div className="currentMonth">{dayObj.month} {dayObj.date.getUTCDate()}</div>
+        </button>
       );
     });
     return elements;
   }
   render() {
     return (
-      <div className="adminShiftWeekContainer d-flex justify-content-center px-5 mt-3">
+      <div className="adminShiftWeekContainer d-flex justify-content-center list-group-horizontal">
         <div className="prevWeekButtonContainer p-1">
-          <div
+          <button
             onClick={this.handleClickPrevWeek}
-            className="prevWeekButton d-flex justify-content-center align-items-center border rounded-pill h-100 px-1">
+            className="prevWeekButton btn btn-light d-flex justify-content-center align-items-center border rounded-pill h-100 px-1">
             <FontAwesomeIcon icon={faAngleDoubleLeft} />
-          </div>
+          </button>
         </div>
         {this.renderDays()}
         <div className="nextWeekButtonContainer p-1">
-          <div
+          <button
             onClick={this.handleClickNextWeek}
-            className="nextWeekButton d-flex justify-content-center align-items-center border rounded-pill h-100 px-1">
+            className="nextWeekButton btn btn-light d-flex justify-content-center align-items-center border rounded-pill h-100 px-1">
             <FontAwesomeIcon icon={faAngleDoubleRight} />
-          </div>
+          </button>
         </div>
       </div>
     );

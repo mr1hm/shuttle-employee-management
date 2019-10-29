@@ -1,11 +1,12 @@
 import React from 'react';
-import TopMenuShift from './topmenu/topmenu-shift';
+import TopMenuAdminDay from './topmenu/topmenu-admin-day';
 import AdminWeekNav from './admin-week-nav';
 import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
 import AdminClickedShiftDetailsAside from './admin-shifts-clicked-details-aside';
 import AdminShiftsCombinedRounds from './admin-shifts-combined-rounds';
-import AdminAvailableOperatorsDisplay from './admin-available-operators-display';
+import AdminAvailableOperator from './admin-available-operator';
+import AdminUnavailableOperator from './admin-unavailable-operator';
 import { returnWeekInfoArray } from '../lib/time-functions';
 import './admin-shifts-display.css';
 import AdminConfirmModal from './admin-confirm-modal';
@@ -299,6 +300,7 @@ class AdminShiftsDay extends React.Component {
           key={shift.round_id}
           userName={shift.user_name}
           userId={shift.user_id}
+          lineBus = {shift.line_bus}
           shiftTime={shift.shift_time}
           rounds={shift.rounds}
           roundId={shift.round_id}
@@ -308,10 +310,8 @@ class AdminShiftsDay extends React.Component {
       );
       return (
         <React.Fragment>
-          <div className="shiftDetailsHeader d-flex border justify-content-center align-items-end w-100">
-            <h5 className="m-0">Shift details</h5>
-          </div>
-          <div className="shiftDetailElements d-flex flex-column border w-100">
+          <h6 className="shiftDetailsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0">Shift Details</h6>
+          <div className="shiftDetailElements d-flex flex-column w-100">
             {shiftElements}
           </div>
         </React.Fragment>
@@ -319,24 +319,52 @@ class AdminShiftsDay extends React.Component {
     }
   }
   renderAvailableOperatorElements() {
-    const availableOperatorsElements = this.state.availableOperators.map(operator => {
-      return (
-        <AdminAvailableOperatorsDisplay
-          key={operator.id}
-          id={operator.id}
-          name={`${operator.lastName}, ${operator.firstName}`}
-          dailyHours={operator.totalHours}
-          weeklyHours={operator.weeklyHours}
-          onClickAssignShift={this.handleClickAssignShift}
-        />
-      );
-    });
-    if (availableOperatorsElements.length) {
+    const availableOperatorElements = [];
+    const availableOperators = this.state.availableOperators;
+    for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
+      if (availableOperators[operatorIndex]['availability']['available']) {
+        availableOperatorElements.push(
+          <AdminAvailableOperator
+            key={availableOperators[operatorIndex].id}
+            id={availableOperators[operatorIndex].id}
+            name={`${availableOperators[operatorIndex].lastName}, ${availableOperators[operatorIndex].firstName}`}
+            dailyHours={availableOperators[operatorIndex].totalHours}
+            weeklyHours={availableOperators[operatorIndex].weeklyHours}
+            onClickAssignShift={this.handleClickAssignShift} />
+        );
+      }
+    }
+    if (availableOperatorElements.length) {
       return (
         <React.Fragment>
-          <h5 className="availableOperatorsHeader d-flex justify-content-center align-items-end border m-0">Available Operators</h5>
+          <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Available Operators</h6>
           <div className="availableOperatorElements d-flex flex-column">
-            {availableOperatorsElements}
+            {availableOperatorElements}
+          </div>
+        </React.Fragment>
+      );
+    }
+  }
+  renderUnavailableOperatorElements() {
+    const unavailableOperatorElements = [];
+    const availableOperators = this.state.availableOperators;
+    for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
+      if (!availableOperators[operatorIndex]['availability']['available']) {
+        unavailableOperatorElements.push(
+          <AdminUnavailableOperator
+            key={availableOperators[operatorIndex].id}
+            id={availableOperators[operatorIndex].id}
+            name={`${availableOperators[operatorIndex].lastName}, ${availableOperators[operatorIndex].firstName}`}
+            unavailableReasons={availableOperators[operatorIndex]['availability']['reasons']} />
+        );
+      }
+    }
+    if (unavailableOperatorElements.length) {
+      return (
+        <React.Fragment>
+          <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Unavailable Operators</h6>
+          <div className="availableOperatorElements d-flex flex-column">
+            {unavailableOperatorElements}
           </div>
         </React.Fragment>
       );
@@ -345,17 +373,16 @@ class AdminShiftsDay extends React.Component {
   render() {
     return (
       <div>
-        <TopMenuShift userId={this.props.userId} title="Admin" page='day' date={this.state.dateToPass} />
-        <AdminWeekNav date={this.state.date} onClickDayOfWeek={this.handleClickGoToDay}/>
+        <TopMenuAdminDay userId={this.props.userId} title="Admin" page='day' date={this.state.date} onClickDayOfWeek={this.handleClickGoToDay}/>
         <div className="selectShiftsButtonContainer d-flex w-100 px-5">
           <button className="btn btn-primary m-2" onClick={this.autopopulateAndFetchData}> AUTO POPULATE </button>
           <button
-            className={`selectShiftsButton btn btn-${this.state.selectingAssign ? 'primary' : 'light'} border m-2`}
+            className={`selectShiftsButton btn btn-success border m-2`}
             onClick={this.handleClickAssignShifts}>
             Select Shifts to Assign
           </button>
           <button
-            className={`selectShiftsButton btn btn-${this.state.selectingUnassign ? 'primary' : 'light'} border m-2`}
+            className={`selectShiftsButton btn btn-danger border m-2`}
             onClick={this.handleClickUnassignShifts}>
             Select Shift to Unassign
           </button>
@@ -376,7 +403,7 @@ class AdminShiftsDay extends React.Component {
                 </div>
                 {this.renderLineComponents()}
               </div>
-              <div className="hours-populated-shifts-container container d-flex flex-column col-11 p-0">
+              <div className="hours-populated-shifts-container d-flex flex-column border-right col-11 p-0">
                 <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border">
                   <HoursOfOperation />
                 </div>
@@ -384,12 +411,15 @@ class AdminShiftsDay extends React.Component {
               </div>
             </div>
           </div>
-          <div className="shiftDetailsAndAvailableOperatorsContainer d-flex flex-column col-2 p-0">
+          <div className="shiftDetailsAndAvailableOperatorsContainer d-flex flex-column col-2 p-0 ml-1">
             <div className="ShiftDetailsContainer d-flex flex-column">
               {this.renderShiftDetailsComponent()}
             </div>
             <div className="availableOperatorsContainer d-flex flex-column">
               {this.renderAvailableOperatorElements()}
+            </div>
+            <div className="unavailableOperatorsContainer d-flex flex-column">
+              {this.renderUnavailableOperatorElements()}
             </div>
           </div>
         </div>

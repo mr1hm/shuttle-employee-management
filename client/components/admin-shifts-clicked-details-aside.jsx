@@ -36,7 +36,7 @@ class AdminClickedShiftDetailsAside extends React.Component {
   renderRoundDetails() {
     return (
       <div className="roundDetails">
-        Round details:
+        Round breakdown:
         {this.props.rounds.map(round =>
           <div key={round.id} className="roundDetailContainer">
             <div className="roundTime">{round.roundTime}</div>
@@ -67,13 +67,19 @@ class AdminClickedShiftDetailsAside extends React.Component {
       adminShiftExpandedClass = 'adminShiftDetailsExpanded';
     }
     return (
-      <div className={`adminShiftDetails d-flex flex-column border-bottom p-1 ${assignedShiftClass} ${adminShiftExpandedClass}`}>
-        <div className='adminShiftAngleTimeContainer' onClick={this.handleClickExpand}>{this.checkIfUnassignedShift()} {this.props.shiftTime}</div>
-        <div>Operator: {displayName}</div>
-        <div>ID#: {this.props.userId}</div>
-        <div>Status: {shiftStatus}</div>
-        <div>Rounds: {this.props.rounds.length}</div>
-        {this.checkIfAssignedShift()}
+      <div className="card">
+        <div className="card-header btn btn-light dropdown-toggle d-flex justify-content-center align-items-center border-0 px-0" type="button" data-toggle="collapse" data-target={'#round' + this.props.rounds[0].id} aria-expanded="false" aria-controls="collapseExample">
+          {`${this.props.lineBus}: ${this.props.shiftTime}`}
+        </div>
+        <div className="collapse" id={'round' + this.props.rounds[0].id}>
+          <div className="card card-body border-0">
+            <div>Operator: {this.props.userId === 1 ? 'unassigned' : displayName}</div>
+            <div>ID#: {this.props.userId === 1 ? 'unassigned' : this.props.userId}</div>
+            <div>Status: {shiftStatus}</div>
+            <div>Rounds: {this.props.rounds.length}</div>
+            {this.checkIfAssignedShift()}
+          </div>
+        </div>
       </div>
     );
   }
