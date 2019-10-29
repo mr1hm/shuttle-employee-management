@@ -1,4 +1,7 @@
 <?php
+require_once('functions.php');
+set_exception_handler('error_handler');
+require_once('db_connection.php');
 
 function canTakeShift ($operator, $shift) {
   if ( !shiftWithinAvailability($operator, $shift) ) return false;
@@ -19,9 +22,19 @@ function shiftWithinAvailability ($operator, $shift) {
 }
 
 function hasSpecialStatus ($operator, $shift) {
-  return (current($shift)['line_name'] === 'C')
-            ? intval($operator['special_route']) === 1
-            : true;
+  $query = "SELECT `line_name`
+            FROM `route`
+            WHERE `specialDriver` = 1 AND
+                  `status` = 'active'";
+  $result = mysqli_query($conn, $query);
+  $lines = [];
+  while ( $row = mysqli_fetch_assoc($result) ) {
+    $lines[] = $row;
+  }
+
+  return array_search(current($shift)['line_name'], $lines) !== null
+           ? intval($operator['special_route']) === 1
+           : true;
 }
 
 /* If the the driver worked past 10 pm the night before and the shift is before 8 am skip the operator
