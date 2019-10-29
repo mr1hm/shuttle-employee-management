@@ -78,7 +78,7 @@ class AdminRoutes extends React.Component {
       this.setNewLineAddedToFalse();
   }
 
-  setNewLineAddedToFalse() { // SET NEWLINEADDED TO TRUE IF NEW LINE HAS BEEN ADDED. SET TO FALSE WHEN FINISHED SO LAST LINE ADDED DOESN'T KEEP GLOWING.
+  setNewLineAddedToFalse() {
     console.log('newLineAdded set to false');
     setTimeout(() => {this.setState({
       newLineAdded: false
@@ -205,7 +205,6 @@ class AdminRoutes extends React.Component {
       return (
         <React.Fragment>
           <TopMenuGeneral title="ADMIN - Routes/Buses" />
-          {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
           <div className="container mt-2">
             <div className="row ">
               <div className="col">
@@ -215,18 +214,6 @@ class AdminRoutes extends React.Component {
                     })}
                 </select>
               </div>
-              {/* <form onSubmit={this.handleSubmit}>
-                <label >
-                  Start Date:
-                  <input type="text" value={this.state.value} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
-                <label>
-                  End Date:
-                  <input type="text" value={this.state.value} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
-              </form> */}
             </div>
             <div className="row justify-content-end">
               {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
@@ -299,7 +286,6 @@ class AdminRoutes extends React.Component {
                     {this.state.lineExists ? <button className="col btn btn-danger mt-1" type="submit" name="submit">NOPE</button> : <button onClick={(e) => this.addNewLine(this.state.newLine, e)} className="col btn btn-success mt-1" type="submit" name="submit">ADD</button>}
                   </div>
                 </div>
-              {/* </form> */}
             </div>
           </div>
           <div className="accordion" id="accordionExample">
@@ -325,7 +311,6 @@ class AdminRoutes extends React.Component {
   return (
     <React.Fragment>
     <TopMenuGeneral title="ADMIN - Routes/Buses" />
-      {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
     <div className="container mt-2">
       <div className="row">
         <div className="col">
@@ -338,18 +323,6 @@ class AdminRoutes extends React.Component {
               })}
             </select>
         </div>
-          {/* <form onSubmit={this.handleSubmit}>
-            <label >
-              Start Date:
-      <input type="text" value={this.state.value} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-            <label>
-              End Date:
-      <input type="text" value={this.state.value} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form> */}
       </div>
       <div className="row justify-content-end">
           <div className="btn btn-outline-dark" onClick={() => this.handleAddLineButton()}> Add Line + </div>

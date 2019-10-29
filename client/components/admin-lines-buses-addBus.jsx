@@ -10,7 +10,6 @@ export default class AddBus extends React.Component {
         vehicle_id: null,
         start_time: '',
         rounds: '',
-        // end_time: '',
         daysActive: '',
         gap: null,
         gapDuration: null,
@@ -56,7 +55,7 @@ export default class AddBus extends React.Component {
     this.calculateEndTime();
   }
 
-  calculateEndTime() { // bug with not updating until another input field is updated.
+  calculateEndTime() {
     const { line } = this.props;
     const { newBus } = this.state;
     let endTime = null;
@@ -71,7 +70,6 @@ export default class AddBus extends React.Component {
       return '';
     }
     if (startTimeLength === 4 && newBus.start_time[0] === '0') {
-      // debugger;
       totalRoundTime = rounds * roundDuration;
       amountOfHours = totalRoundTime / 60;
       let startTimeArr = startTime.split('');
@@ -88,7 +86,6 @@ export default class AddBus extends React.Component {
       console.log(endTime);
       return endTime;
     } else if (startTimeLength === 4 && newBus.start_time[0] !== '0') {
-      // debugger;
       totalRoundTime = rounds * roundDuration;
       amountOfHours = totalRoundTime / 60;
       let startTimeArr = startTime.split('');
@@ -96,74 +93,12 @@ export default class AddBus extends React.Component {
       let newHour = hour.join('');
       let newHour2 = parseInt(newHour) + amountOfHours;
       let joinHour = startTimeArr.splice(0, 0, newHour2);
-      // let newHour = parseInt(joinHour) + amountOfHours;
       console.log(startTimeArr);
       endTime = startTimeArr.join('');
       console.log(endTime);
       return endTime;
     }
-    // const rounds = parseInt(newBus.rounds);
-    // if (startTime && rounds) {
-    //   let totalRoundTime = rounds * roundDuration;
-    //   let hours = totalRoundTime / 60;
-    //   endTime = startTime + hours;
-    // }
-    // console.log(endTime);
-    // this.setState(prevState => ({
-    //   newBus: {
-    //     ...prevState.newBus,
-    //     end_time: endTime
-    //   }
-    // }))
   }
-
-  // calculateEndTime2(e) { // TRY TO RENDER THIS DIRECTLY LIKE ABOVE. DIRECTLY RETURN TO THE INPUT INSTEAD OF SETTING STATE.
-  //   const name = e.target.name;
-  //   const value = e.target.value;
-  //   const { line } = this.props;
-  //   const { newBus } = this.state;
-  //   let endTime = null;
-  //   let totalRoundTime = null;
-  //   let amountOfHours = null;
-  //   const roundDuration = parseInt(line.roundDuration);
-  //   // const startTime = newBus.start_time;
-  //   // const startTimeLength = newBus.start_time.length;
-  //   const rounds = parseInt(newBus.rounds);
-  //   // console.log(startTimeLength);
-  //   if (value.length !== 4 && !rounds) {
-  //     return null;
-  //   }
-  //   if (name === 'start_time' && value.length === 4 && value[0] === '0' || name === 'rounds' && value.length <= 2) {
-  //     debugger;
-  //     totalRoundTime = rounds * roundDuration;
-  //     amountOfHours = totalRoundTime / 60;
-  //     let startTimeArr = value.split('');
-  //     let newHour = parseInt(value[1]) + amountOfHours;
-  //     startTimeArr.splice(0, 2, newHour);
-  //     endTime = startTimeArr.join('');
-  //     console.log(endTime);
-  //   } else if (name === 'start_time' && value.length === 4 && value[0] !== '0' || name === 'rounds' && value.length <= 2) {
-  //     // debugger;
-  //     totalRoundTime = rounds * roundDuration;
-  //     amountOfHours = totalRoundTime / 60;
-  //     let startTimeArr = value.split('');
-  //     let hour = startTimeArr.splice(0, 2);
-  //     let newHour = hour.join('');
-  //     let newHour2 = parseInt(newHour) + amountOfHours;
-  //     let joinHour = startTimeArr.splice(0, 0, newHour2);
-  //     // let newHour = parseInt(joinHour) + amountOfHours;
-  //     console.log(startTimeArr);
-  //     endTime = startTimeArr.join('');
-  //     console.log(endTime);
-  //   }
-  //   // const rounds = parseInt(newBus.rounds);
-  //   // if (startTime && rounds) {
-  //   //   let totalRoundTime = rounds * roundDuration;
-  //   //   let hours = totalRoundTime / 60;
-  //   //   endTime = startTime + hours;
-  //   // }
-  //   console.log(endTime);
-  // }
 
   setRouteID() {
     this.setState({route_id: this.props.line.real_route_id});
@@ -183,12 +118,9 @@ export default class AddBus extends React.Component {
                   onClick={this.props.handleAddBusButtonClick}>+</button>}
             </div>
           </div>
-
         </div>
-
         <div id={`collapseAddBus${this.props.accordionID}`} className="collapse">
           <div className="card-body">
-            {/* <form method="POST" action="/api/admin-lines-buses.php"> */}
               <div className="row">
                 <div className="col-2">
                   <label>Bus Number</label>
@@ -197,7 +129,6 @@ export default class AddBus extends React.Component {
                 </div>
                 <div className="col">
                   <label>Start Time</label>
-                  {/* <input className="col border border-primary" type="text" name="active"></input> */}
                   <input className="col border border-primary" onChange={this.handleChange} type="text" name="start_time" />
                 </div>
                 <div className="col">
@@ -206,7 +137,6 @@ export default class AddBus extends React.Component {
                 </div>
                 <div className="col">
                   <label>End Time</label>
-                  {/* <input className="col border border-primary" type="text" name="public"></input> */}
                   <input value={this.calculateEndTime()} readOnly className="col border border-primary" type="text" name="end_time" />
                 </div>
                 <div className="col">
@@ -218,9 +148,6 @@ export default class AddBus extends React.Component {
                   <input className="col border border-primary" name="daysActive" type="text" onChange={this.handleChange} placeholder="Ex. Monday, Friday" />
                 </div>
               </div>
-
-                {/* <div className="col">{routeInfo.public.toString()}</div> */}
-                {/* <div className="col">{routeInfo.regular_service.toString()}</div> */}
               <div className="row align-items-center">
                 <div className="col-2">
                   <label>Vehicle ID</label>
@@ -252,7 +179,6 @@ export default class AddBus extends React.Component {
                   </button>
                 </div>
               </div>
-            {/* </form> */}
           </div>
         </div>
       </div>

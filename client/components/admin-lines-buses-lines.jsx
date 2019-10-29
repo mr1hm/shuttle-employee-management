@@ -77,7 +77,6 @@ export default class Lines extends React.Component {
   render() {
     const { line } = this.props;
     const { activeBuses } = this.props.line;
-    // const { busInfo } = this.props.line;
     if (!this.props.line.real_route_id) {
       return null;
     }
@@ -99,7 +98,6 @@ export default class Lines extends React.Component {
               <div className="card col-12">
                 <div className="card-header">
                   Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
-                  {/* making table main header clickable to collapse accordion */}
                 </div>
                 <table className="card-table table">
                   <thead>
@@ -182,7 +180,6 @@ export default class Lines extends React.Component {
               <div className="card col-12">
                 <div className="card-header">
                   Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
-                  {/* making table main header clickable to collapse accordion */}
                 </div>
                 <table className="card-table table">
                   <thead>
@@ -191,7 +188,6 @@ export default class Lines extends React.Component {
                       <th scope="col">Start Time</th>
                       <th scope="col">Rounds</th>
                       <th scope="col">End Time</th>
-                      {/* <th scope="col">Rounds</th> */}
                       <th scope="col">Days</th>
                       <th scope="col">Gap</th>
                       <th scope="col" className="text-center">Operations</th>

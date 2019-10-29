@@ -75,7 +75,6 @@ export default class EditLine extends React.Component {
   render() {
     const { line } = this.props;
     return (
-      // new bug: clicking edit icon when bus details is showing closes bus details and vice versa.
       <div id="accordion">
         <div className="card" id={line.real_route_id}>
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>

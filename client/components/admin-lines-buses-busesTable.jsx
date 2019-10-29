@@ -19,14 +19,14 @@ export default class BusesTable extends React.Component {
     this.deleteBus = this.deleteBus.bind(this);
   }
 
-  checkForActiveBuses() { // check for already existing buses.
+  checkForActiveBuses() {
     if (line.buses.busNumber)
     this.setState({
       busExistsOnRoute: true
     })
   }
 
-  deleteBus(busID) { // delete a bus.
+  deleteBus(busID) {
     const body = {
       id: busID
     };
