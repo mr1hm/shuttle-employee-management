@@ -7,8 +7,8 @@ class Modal extends React.Component{
 
     return (
       <div className="modalShadow" style={{ display: this.props.open ? 'block' : 'none' }}>
-        <div className="modalBody"  >
-          {this.props.children}
+        <div className="modalBody modalShiftDetails">
+          {this.props.open && this.props.children}
         </div>
       </div>
     );

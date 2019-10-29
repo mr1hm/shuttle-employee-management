@@ -3,10 +3,6 @@ require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
 
-if (!empty($_GET['id'])) {
-    $ownerID = intval($_GET['id']);
-} else throw new Exception('need id for query');
-
 if (!empty($_GET['unixstart'])) {
     $lowerDateRange = intval($_GET['unixstart']);
 } else throw new Exception('need lower limit date range for query');
@@ -15,8 +11,16 @@ if (!empty($_GET['unixend'])) {
     $upperDateRange = intval($_GET['unixend']);
 } else throw new Exception('need upper limit date range for query');
 
-$query = "SELECT * FROM `round` WHERE `driver_id`= {$ownerID} AND (`round_date` >= {$lowerDateRange} AND `round_date` <={$upperDateRange})
-            ORDER BY `round_date` ASC";
+if (!empty($_GET['id'])) {
+    $ownerID = intval($_GET['id']);
+} else throw new Exception('need id for query');
+
+$query = "SELECT * 
+  FROM `round` 
+  WHERE `user_id`= {$ownerID} 
+  AND (`date` >= {$lowerDateRange} AND `date` <={$upperDateRange}) 
+  AND (`status` = 'scheduled' OR `status` = 'posted') 
+  ORDER BY `date` ASC";
 
 $result = mysqli_query($conn, $query);
 if (!$result) {
