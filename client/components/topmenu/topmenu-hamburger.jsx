@@ -37,7 +37,6 @@ class TopMenuHamburger extends React.Component {
 
   }
 
-
 }
 
 export default TopMenuHamburger;
