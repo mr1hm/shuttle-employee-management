@@ -46,10 +46,8 @@ function totalShiftTimeRestriction ($operator, $shift) {
 function requireBreak ($operator, $shift) {
   $shiftLength = calculateShiftMinutes(intval(reset($shift)['round_start']), intval(end($shift)['round_end']));
   $gap = calculateShiftMinutes(intval(end($operator['assigned_times'])[1]), intval(reset($shift)['round_start']));
-
   return (
-    ($operator['shift_restrictions']['need_30_minute_break'] && $gap < 30) ||
-    intval($operator['minutes_without_30_minute_break']) + $shiftLength > 300
+    intval($operator['minutes_without_30_minute_break']) + $shiftLength >= 300 && $gap < 30
   );
 }
 

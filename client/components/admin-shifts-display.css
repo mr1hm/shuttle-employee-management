@@ -161,7 +161,6 @@
     background-color: rgb(0, 140, 0);
 }
 .alertShift {
-    /* background-color: lightpink; */
     background: repeating-linear-gradient(
         45deg,
         lightpink,
@@ -169,12 +168,15 @@
         lightgray 2px,
         lightgray 4px);
 }
-.nonOperational {
+.nonOperational.operatorShift {
     background-color: lightgray;
 }
 .adminShiftRow {
     height: 80px;
     margin: 5px 0;
+}
+.shiftSelected {
+    box-shadow: inset 0 0 10px #000000;
 }
 .hoverDetailContainer {
   display: flex;
@@ -189,15 +191,16 @@
   font-size: 0.6rem;
   color: white;
 }
-.hoverMessage {
+.hoverDetailContainer .hoverMessage {
   flex-direction: column;
   position: absolute;
   width: 200px;
   background-color: lightblue;
   padding: 5px;
   box-shadow:0 1px 8px rgba(0,0,0,0.5);
+  z-index: 10;
 }
-.hoverMessage i::after {
+.hoverDetailContainer .hoverMessage i::after {
   content:'';
   position:absolute;
   width:12px;
@@ -206,9 +209,6 @@
   top: -1px;
   transform:translate(-50%,-50%) rotate(45deg);
   background-color: lightblue;
-}
-.shiftSelected{
-    filter: contrast(.5);
 }
 .tableCell{
     height: 80px;
@@ -238,7 +238,7 @@
         transparent 1px,
         transparent 100px);
 }
-.adminHoursRow {
+.adminHoursRow, .shiftDetailsHeader, .availableOperatorsHeader{
     height: 30px;
 }
 .availableOperator, .adminShiftDetails{
@@ -246,17 +246,11 @@
     overflow: hidden;
     transition: max-height .5s linear;
 }
-.availableOperatorExpanded{
-    max-height: 150px;
-}
-.adminShiftDetailsExpanded{
-    max-height: 200px;
-}
 .adminShiftDetails.assignedShift{
     height: auto;
     max-height: fit-content;
 }
-.adminShiftAngleTimeContainer, .availableOperatorIconNameContainer{
+.adminShiftAngleTimeContainer, .availableOperatorIconNameContainer, .dayOfWeekContainer{
     cursor: pointer;
 }
 .angleIcon{
@@ -264,6 +258,9 @@
 }
 .angleIconRotate{
     transform: rotate(90deg);
+}
+.adminShiftWeekContainer{
+    height: 100px;
 }
 .dayOfWeekContainer {
     width: 120px;
