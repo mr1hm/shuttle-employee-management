@@ -22,7 +22,8 @@ $query = "SELECT rt.line, bi.bus_number, rd.status, us.last_name, us.first_name,
   JOIN bus_info AS bi ON bi.route_id = rt.id 
   JOIN round AS rd ON rd.bus_id = bi.id
   JOIN user AS us ON us.id = rd.user_id 
-  WHERE rd.round_date = 1566172886400";
+  WHERE rd.round_date = 1566172886400
+  AND rd.status = 'scheduled'";
 
 $result = mysqli_query($conn, $query);
 

@@ -19,15 +19,8 @@
   "line": "M",
   "startTime": 800,
   "endTime":1600,
-
   "shifts": [ 3 ],
-  "alert": [
-    {"start": 1900,
-      "end": 2330,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 1600
-    }]
+  "alert": [ ]
   },
   {
   "route": 3,
@@ -35,19 +28,7 @@
   "startTime": 1400,
   "endTime":2400,
   "shifts": [  6,7,8  ],
-  "alert": [
-    {"start": 800,
-      "end": 1200,
-      "type": "active",
-      "shiftStartTime": 1400,
-      "shiftEndTime": 2400
-    },
-    {"start": 1600,
-      "end": 1800,
-      "type": "alertShift",
-      "shiftStartTime": 1400,
-      "shiftEndTime": 2400
-    }]
+  "alert": []
   },
   {
   "route": 1,
@@ -78,7 +59,7 @@
   "startTime": 1300,
   "endTime": 2200,
   "shifts": [ 13 ],
-  "alert": []
+  "alert": [12]
   },
   {
   "route": 1,
@@ -116,51 +97,15 @@
   "startTime": 1000,
   "endTime": 1600,
   "shifts": [ 23 ],
-  "alert": []
+  "alert": [22]
   },
   {
   "route": 3,
   "line": "D",
   "startTime": 1115,
-  "endTime": 1715,
+  "endTime": 1700,
   "shifts": [  23  ],
-  "alert": [
-    {"start": 1115,
-      "end": 1215,
-      "type": "active",
-      "shiftStartTime": 1115,
-      "shiftEndTime": 1715
-    },
-    {"start": 1215,
-      "end": 1315,
-      "type": "active",
-      "shiftStartTime": 1115,
-      "shiftEndTime": 1715
-    },
-    {"start": 1315,
-      "end": 1415,
-      "type": "active",
-      "shiftStartTime": 1115,
-      "shiftEndTime": 1715
-    },
-    {"start": 1415,
-      "end": 1515,
-      "type": "active",
-      "shiftStartTime": 1115,
-      "shiftEndTime": 1715
-    },
-    {"start": 1515,
-      "end": 1615,
-      "type": "active",
-      "shiftStartTime": 1115,
-      "shiftEndTime": 1715
-    },
-    {"start": 1615,
-      "end": 1715,
-      "type": "active",
-      "shiftStartTime": 1115,
-      "shiftEndTime": 1715
-    }]
+  "alert": []
   },
   {
   "route": 4,
@@ -170,98 +115,14 @@
   "shifts": [ 24,25,26,27 ],
   "alert": [
     {"start": 1200,
-      "end": 1300,
-      "type": "alertShift",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1300,
       "end": 1400,
       "type": "alertShift",
       "shiftStartTime": 800,
       "shiftEndTime": 2400
     },
     {"start": 2000,
-      "end": 2100,
-      "type": "alertShift",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 2100,
       "end": 2200,
       "type": "alertShift",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 800,
-      "end": 900,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 900,
-      "end": 1000,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1000,
-      "end": 1100,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1100,
-      "end": 1200,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1400,
-      "end": 1500,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1500,
-      "end": 1600,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1600,
-      "end": 1700,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1700,
-      "end": 1800,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1800,
-      "end": 1900,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 1900,
-      "end": 2000,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 2200,
-      "end": 2300,
-      "type": "active",
-      "shiftStartTime": 800,
-      "shiftEndTime": 2400
-    },
-    {"start": 2300,
-      "end": 2400,
-      "type": "active",
       "shiftStartTime": 800,
       "shiftEndTime": 2400
     }]

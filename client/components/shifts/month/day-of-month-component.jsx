@@ -1,8 +1,8 @@
 import React from 'react';
 import './shifts-month.css'
-import {createDateObjFromDateString, adjustUTCSecondsToLocalTimestamp} from '../../../lib/time-functions';
+import {createDateObjFromDateString} from '../../../lib/time-functions';
 
-class DayOfMonth extends React.Component {
+class DayOfMonth extends React.Component {  
   renderDate(){
     if(this.props.shiftsArray.length !== 0){
       let dayTypeClasses = {
@@ -10,38 +10,36 @@ class DayOfMonth extends React.Component {
         scheduled: false
       }
       for(var shiftIndex=0; shiftIndex<this.props.shiftsArray.length; shiftIndex++){
-        const shiftDate = this.props.shiftsArray[shiftIndex].date;
-        const shiftDateFullTimestamp = adjustUTCSecondsToLocalTimestamp(shiftDate);
-        let baseDate = createDateObjFromDateString(parseInt(shiftDateFullTimestamp));// converts unix time to date/at midnight 09/17/2019
+        let baseDate = createDateObjFromDateString(parseInt(this.props.shiftsArray[shiftIndex].round_date));
         if( baseDate.getTime() === this.props.dayObj.getTime()){
           dayTypeClasses[this.props.shiftsArray[shiftIndex].status]=true;
         }
-      }
+      }   
       let postedClasses = 'calendarDay';
       for( let key in dayTypeClasses){
         postedClasses += dayTypeClasses[key] ? ` ${key}-shift-color` : ''
       }
       return (
-        <div className={ postedClasses}>
+        <div class={ postedClasses}>
           {this.props.dayIndex}
         </div>
-      )
+      )   
     }
     return (
       <div>
-        <div className="calendarDay">
+        <div class="calendarDay">
           {this.props.dayIndex}
         </div>
-      </div>
+      </div> 
       );
   }
   render() {
-      return (
+      return ( 
         <div>
           {this.renderDate()}
         </div>
       );
-    }
+    } 
   }
 
 export default DayOfMonth;
