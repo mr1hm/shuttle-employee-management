@@ -4,322 +4,405 @@ import TopMenuGeneral from './topmenu/topmenu-general';
 import TopMenuHamburger from './topmenu/topmenu-hamburger';
 import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
-import BusesTable from './admin-lines-buses-tableData';
+import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
+import Sessions from './admin-lines-buses-sessions';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCaretUp, faBus, faCaretDown, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import Lines from './admin-lines-buses-lines';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
     super(props);
+    this.ref = React.createRef();
     this.state = {
-      session: null,
+      sessions: [],
+      selectedSession: null,
       linesBusesInfo: [],
-      busInfo: [],
-      addBusClicked: false,
-      addLineClicked: false
-    }
-    this.addBus = this.addBus.bind(this);
-    this.handleAddBusButton = this.handleAddBusButton.bind(this);
+      addLineClicked: false,
+      line_name: '',
+      lineExists: false,
+      newLine: {
+        session_id: 6,
+        line_name: null,
+        status: null,
+        roundDuration: null,
+        public: 'True',
+        regularService: 'True',
+        specialDriver: 0
+      },
+      newLineAdded: false,
+      mostRecentRouteID: null
+    };
+    this.getUpdatedLines = this.getUpdatedLines.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
+    this.handleAddLineButton = this.handleAddLineButton.bind(this);
+    this.handleAddLineChange = this.handleAddLineChange.bind(this);
+    this.checkIfLineExists = this.checkIfLineExists.bind(this);
+    this.scrollToNewLine = this.scrollToNewLine.bind(this);
+    this.setNewLineAddedToFalse = this.setNewLineAddedToFalse.bind(this);
+    this.handleSpecialDriverClick = this.handleSpecialDriverClick.bind(this);
+    // this.selectSession = this.selectSession.bind(this);
+    this.handleSessionChange = this.handleSessionChange.bind(this);
+    this.getSession = this.getSession.bind(this);
   }
 
   componentDidMount() {
     this.getLinesBusesInfo();
+    this.getAllSessions();
   }
 
-  handleAddBusButton() {
-    this.setState({
-      addBusClicked: !this.state.addBusClicked
-    })
+  handleSessionChange(e) {
+    const value = e.target.value;
+    if (value === 'All Sessions') {
+      return this.getLinesBusesInfo();
+    }
+    let sessionInfo = this.state.sessions.find(session => session.name === value);
+    this.selectSession({ session_id: sessionInfo.id }, e);
+  }
+
+  getSession(e) {
+    fetch('api/admin-lines-buses.php')
+      .then(response => response.json())
+      .then(sessionLines => {
+        console.log(sessionLines);
+      })
+      .catch(error => console.error(error));
+  }
+
+  selectSession(sessionID, e) {
+    e.preventDefault();
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(sessionID)
+    };
+    fetch('api/admin-lines-buses.php', init)
+      .then(response => response.json())
+      .then(sessionData => {
+        this.setState({
+          linesBusesInfo: sessionData
+        });
+      })
+      .catch(error => console.error(error));
+  }
+
+  scrollToNewLine() {
+    this.ref.current.scrollIntoView({
+      behavior: 'auto',
+      block: 'start'
+    });
+  }
+
+  addNewLine(newLine, e) {
+    e.preventDefault();
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(newLine)
+    };
+    fetch(`api/admin-lines-buses.php`, init)
+      .then(response => response.json())
+      .then(lineInfo => {
+        this.setState({
+          newLineAdded: true
+        }, this.getUpdatedLines);
+      })
+      .catch(error => console.error(error));
+    this.handleAddLineButton();
+    this.setNewLineAddedToFalse();
+  }
+
+  setNewLineAddedToFalse() {
+    setTimeout(() => {
+      this.setState({
+        newLineAdded: false
+      });
+    }, 1000);
   }
 
   handleAddLineButton() {
     this.setState({
       addLineClicked: !this.state.addLineClicked
-    })
+    });
   }
 
-  getLinesBusesInfo() {
+  handleAddLineChange(e) {
+    const name = e.target.name;
+    const value = e.target.value;
+    this.setState(prevState => ({
+      newLine: {
+        ...prevState.newLine,
+        [name]: value
+      }
+    }));
+    this.checkIfLineExists(value);
+    console.log(value);
+  }
+
+  handleSpecialDriverClick(e) {
+    const checked = e.target.checked;
+    if (checked) {
+      this.setState(prevState => ({
+        newLine: {
+          ...prevState.newLine,
+          specialDriver: 1
+        }
+      }));
+    } else {
+      this.setState(prevState => ({
+        newLine: {
+          ...prevState.newLine,
+          specialDriver: 0
+        }
+      }));
+    }
+  }
+
+  getAllSessions() {
+    fetch('api/admin-lines-buses-sessions.php')
+      .then(response => response.json())
+      .then(sessionsData => {
+        this.setState({
+          sessions: sessionsData
+        });
+      })
+      .catch(error => console.error(error));
+  }
+
+  // getSession() {
+  //   const init = {};
+  // }
+
+  getUpdatedLines() {
     fetch('api/admin-lines-buses.php')
       .then(response => response.json())
       .then(linesBusesInfo => this.setState({
         linesBusesInfo: linesBusesInfo
-      }))
+      }, this.scrollToNewLine))
       .catch(error => console.error(error));
   }
 
-  // getBusId() {
-
-  // }
-
-  addBus(newBus) {
-   // fetch with post method, add new bus to database and line.
-   const myInit = {
-    method: 'POST',
-    body: JSON.stringify(newBus),
-    header: {
-      'Content-Type': 'application/json'
+  getLinesBusesInfo(sessionID, e) {
+    if (sessionID) {
+      const init = {
+        method: 'POST',
+        body: JSON.stringify(sessionID)
+      };
+      fetch('api/admin-lines-buses.php', init)
+        .then(response => response.json())
+        .then(sessionData => {
+          this.setState({
+            linesBusesInfo: sessionData
+          });
+        })
+        .catch(error => console.error(error));
     }
-   };
-   fetch('/api/admin-lines-buses.php', myInit)
-    .then(response => response.json())
-    .then(busToBeAdded => {
-      let newBusInfo = this.state.busInfo.slice();
-      newBusInfo.push(busToBeAdded);
-      this.setState({
-        busInfo: newBusInfo
+    fetch('api/admin-lines-buses.php')
+      .then(response => response.json())
+      .then(linesBusesInfo => {
+        console.log(this.state.linesBusesInfo);
+        console.log(linesBusesInfo);
+        this.setState({
+          linesBusesInfo: linesBusesInfo
+        });
       })
-    })
-    .catch(error => console.error(error));
- }
+      .catch(error => console.error(error));
+  }
 
-  // readRouteBusComponent(routeInfo){
-  //   if (!routeInfo){
-  //     return;
-  //   }
-  //   let prevLine = " "
-  //   {/** if the edit routes button is not clicked, we will render this**/}
-  //   return(
-  //     this.state.routeInfo.map((routeInfo, index) => {
-  //       let currentLine = routeInfo.line_name;
-  //       if (currentLine !== prevLine) {
-  //       prevLine = routeInfo.line_name;
-  //       //{/* returns the route/line name and bus # if the route has not been displayed already */ }
-  //       return (
-  //         <div className="card" key={routeInfo.line_name + routeInfo.bus_number}>
-  //           <div className="card-header lineCardHeader" id={"heading" + routeInfo.line_name}>
-  //             <div className="row lineHeaderFirstRow">
-  //               <div className="col-2 lineHeader">Line</div>
-  //               <div className="col">Status</div>
-  //               <div className="col">24 Rds</div>
-  //               <div className="col">Public</div>
-  //               <div className="col">Regular Service</div>
-  //               <div className="col">
-  //                 {routeInfo.bus_number ? <FontAwesomeIcon className="busActiveIcon" icon={faBus} /> : <FontAwesomeIcon className="busInactiveIcon" icon={faBus} />}
-  //               </div>
-  //             </div>
-  //             <div className="row align-items-center" id={index}>
-  //               <div className="col-2 ">
-  //                 <RouteBusDisplay route={routeInfo.line_name} />
-  //               </div>
-  //               <div className="col">
-  //                 <FontAwesomeIcon className="onlineIcon" icon={faCircle} />
-  //                 {routeInfo.status}
-  //               </div>
-  //               <div className="col">45min</div>
-  //               <div className="col">{routeInfo.public}</div>
-  //               <div className="col">{routeInfo.regularService}</div>
-  //               <div className="col">
-  //                 <button className="btn btn-link collapsed" type="button" data-toggle="collapse"
-  //                   name={`busDetailsClicked${routeInfo.route_id}`} data-target={"#collapse" + routeInfo.line_name} onClick={this.handleBusDetailsClick} aria-expanded="false" aria-controls={"collapse" + routeInfo.line_name}>
-  //                   Bus Details
-  //                   {this.state[`busDetailsClicked${routeInfo.route_id}`] ? <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretUp} /> : <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretDown} />}
-  //                 </button>
-  //               </div>
-  //             </div>
-  //           </div>
+  changeLineExistsState() {
+    this.setState(state => ({
+      lineExists: !this.state.lineExists
+    }));
+  }
 
-  //           <div id={"collapse" + routeInfo.line_name} className="collapse" aria-labelledby={"heading" + routeInfo.line_name}
-  //             data-parent="#accordion">
-
-  //           <div className="row">
-  //             <div className="col">
-  //               <div id="accordion">
-  //                 <AddBus addBusClicked={this.state.addBusClicked} addBusButton={this.handleAddBusButton} addBus={this.addBus}/>
-  //               </div>
-  //             </div>
-  //             </div>
-  //             <div className="row">
-  //               <div className="card col-12">
-  //                 <div className="card-header">
-  //                   Active Buses
-  //                     {/* making table main header clickable to collapse accordion */}
-  //                 </div>
-  //                 <table className="card-table table">
-  //                   <thead>
-  //                     <tr>
-  //                       <th scope="col">Bus Number</th>
-  //                       <th scope="col">Start Time</th>
-  //                       <th scope="col">End Time</th>
-  //                       {/* <th scope="col">Rounds</th> */}
-  //                       <th scope="col">Days</th>
-  //                       <th scope="col">Gap</th>
-  //                       <th scope="col">Edit</th>
-  //                     </tr>
-  //                   </thead>
-  //                   <BusesTable busInfo={this.state.busInfo} routeInfo={routeInfo} />
-  //                 </table>
-  //               </div>
-  //             </div>
-  //           </div>
-  //             </div>
-  //         );
-  //       }
-
-
-  //     {/* returns JUST the bus # if the # is already associated with a route/line name */}
-  //     return (
-  //       <div key={routeInfo.line_name + routeInfo.bus_number} id={"collapse" + routeInfo.line_name} className="collapse" aria-labelledby={"heading" + routeInfo.line_name}
-  //         data-parent="#accordionExample">
-  //         <div className="row">
-  //           <div className="card col-12">
-  //             <div id="collapseBusesActive"> {/* setting table to be a part of accordion component */}
-  //               <table className="card-table table">
-  //                 <thead>
-  //                   <tr>
-  //                     <th scope="col">Bus Number</th>
-  //                     <th scope="col">Start Time</th>
-  //                     <th scope="col">End Time</th>
-  //                     {/* <th scope="col">Rounds</th> */}
-  //                     <th scope="col">Days</th>
-  //                     <th scope="col">Gap</th>
-  //                     <th scope="col">Edit</th>
-  //                   </tr>
-  //                 </thead>
-  //                 <BusesTable busInfo={this.state.busInfo} routeInfo={routeInfo} />
-  //               </table>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //         );
-  //       }
-  //     )
-  //   );
-  // }
-
-  // handleRoutesInformation(url, method) {
-  //   fetch(url, { method: method })
-  //     .then(response => response.json())
-  //     .then(routeInfo => {
-  //     this.setState({
-  //       routeInfo: routeInfo
-  //     });
-  //     console.log(routeInfo);
-  //   });
-  // }
-
-  // handleBusesInformation(url, method) {
-  //   fetch(url, { method: method })
-  //     .then(response => { return response.json() })
-  //     .then(busInfo => {
-  //       this.setState({
-  //         busInfo: busInfo
-  //       })
-  //       console.log(busInfo);
-  //     })
-  // }
-
-    render() {
-      if (!this.state.linesBusesInfo) {
-        return (
-          <div>LOADING</div>
-        );
+  checkIfLineExists(value) {
+    let doesExist = false;
+    let line = this.state.linesBusesInfo;
+    let linesBusesInfoLength = this.state.linesBusesInfo.length;
+    for (let i = 0; i < linesBusesInfoLength; i++) {
+      if (value === line[i].line_name) {
+        doesExist = true;
+        break;
       }
-      if (this.state.addLineClicked) {
-        return (
-          <React.Fragment>
-            <TopMenuGeneral title="ADMIN - Routes/Buses" />
-            {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
-            <div className="container mt-2">
-              <div className="row ">
-                <form onSubmit={this.handleSubmit}>
-                  <label >
-                    Start Date:
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
-                  </label>
-                  <input type="submit" value="Submit" />
+    }
+    if (doesExist) {
+      this.setState({
+        lineExists: true
+      });
+    } else {
+      this.setState({
+        lineExists: false
+      });
+    }
+  }
+
+  render() {
+    const linesInfoLength = this.state.linesBusesInfo.length;
+    let linesInfo = this.state.linesBusesInfo;
+    let largestID = 0;
+    for (let i = 0; i < linesInfoLength; i++) {
+      let routeIDNum = parseInt(linesInfo[i].real_route_id);
+      if (routeIDNum > largestID) {
+        largestID = routeIDNum;
+      }
+    }
+    console.log(largestID);
+    // if (largestID === 0) {
+    //   return null;
+    // }
+    if (!this.state.linesBusesInfo) {
+      return (
+        <div>LOADING</div>
+      );
+    }
+    if (this.state.addLineClicked) {
+      return (
+        <React.Fragment>
+          <TopMenuGeneral title="ADMIN - Routes/Buses" />
+          <div className="container mt-2">
+            <div className="row">
+              <div className="col-2">
+                <label>Select Session</label>
+                <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
+                  <option>All Sessions</option>
+                  {this.state.sessions.map(sessionData => {
+                    return (
+                      <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+            <div className="row justify-content-end">
+              {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
+            </div>
+          </div>
+          <div className="card">
+            <div className="card-header">
+              <div className="row">
+                <div className="col-2">
+                  {this.state.lineExists ? <label>Line Name<br /><span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span></label> : <label>Line Name<br /><span className="addNewLineName"><i>Name Available</i></span></label>}
+                  <input defaultValue={this.state.newLineName}
+                    className="col border border-primary"
+                    type="text"
+                    name="line_name"
+                    onChange={this.handleAddLineChange}>
+                  </input>
+                </div>
+                <div className="col">
                   <label>
-                    End Date:
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
+                      Status
+                    <br />
+                    <span className="addLineHeaderDescription"><i>active/inactive</i></span>
                   </label>
-                  <input type="submit" value="Submit" />
-                </form>
-              </div>
-              <div className="row justify-content-end">
-                <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>
+                  <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" />
+                </div>
+                <div className="col">
+                  <label>
+                      Round Duration
+                    <br />
+                    <span className="addLineHeaderDescription"><i>Number of Minutes</i></span>
+                  </label>
+                  <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="roundDuration" />
+                </div>
+                <div className="col">
+                  <label>
+                      Public
+                    <br />
+                    <span className="addLineHeaderDescription"><i>True/False</i></span>
+                  </label>
+                  <br />
+                  <select onChange={this.handleAddLineChange} className="col border border-primary" name="public">
+                    <option>True</option>
+                    <option>False</option>
+                  </select>
+                </div>
+                <div className="col">
+                  <label>
+                      Regular Service
+                    <br />
+                    <span className="addLineHeaderDescription"><i>True/False</i></span>
+                  </label>
+                  <br />
+                  <select onChange={this.handleAddLineChange} className="col border border-primary" name="public">
+                    <option>True</option>
+                    <option>False</option>
+                  </select>
+                </div>
+                <div className="col">
+                  <label className="form-check-label" htmlFor="specialDriverCheckbox">
+                        Special Driver
+                    <br />
+                    <span><i>True/False</i></span>
+                  </label>
+                  <br />
+                  <input type="checkbox" onChange={this.handleSpecialDriverClick} name="specialDriver" className="specialDriverCheckbox form-check-input" id="specialDriverCheckbox" />
+                </div>
+                <div className="col">
+                  <button onClick={this.handleAddLineButton} className="col btn btn-warning">CANCEL</button>
+                  <br />
+                  {this.state.lineExists ? <button className="col btn btn-danger mt-1" type="submit" name="submit">NOPE</button> : <button onClick={e => this.addNewLine(this.state.newLine, e)} className="col btn btn-success mt-1" type="submit" name="submit">ADD</button>}
+                </div>
               </div>
             </div>
-            <div className="card" >
-              <div className="card-header" >
-
-                <form method="POST" action="/api/admin-lines-buses.php">
-                  <div className="row" >
-
-                    <div>
-                      <label>Line Name</label>
-                      <input className="col border border-primary" type="text" name="line_name"></input>
-                    </div>
-                    <div>
-                      <label>Active</label>
-                      <input className="col border border-primary" type="text" name="active"></input>
-                    </div>
-                    <div>
-                      <label>Public</label>
-                      <input className="col border border-primary" type="text" name="public"></input>
-                    </div>
-                    <div>
-                      <label>Regular Service</label>
-                      <input className="col border border-primary" type="text" name="regular_service"></input>
-                    </div>
-                    <button className="btn btn-primary" type="submit" name="submit" >
-                      Save
-                    </button>
-
+          </div>
+          <div className="accordion" id="accordionExample">
+            {this.state.linesBusesInfo.map((line, index) => {
+              if (this.state.newLineAdded && (largestID == line.real_route_id)) {
+                return (
+                  <div className="newLine" key={line.real_route_id} ref={this.ref}>
+                    <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                   </div>
-                </form>
-
-              </div>
-            </div>
-
-
-            <div className="accordion" id="accordionExample">
-              {this.state.linesBusesInfo.map((line, index) =>
-                <Lines key={line.line_name + index} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
-              )}
-              {/* {this.readRouteBusComponent(this.state.routeInfo)} */}
-
-
-            </div>
-
-          </React.Fragment>
-        );
-
-      }
-
+                );
+              }
+              return (
+                <div key={line.real_route_id}>
+                  <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                </div>
+              );
+            }
+            )}
+          </div>
+        </React.Fragment>
+      );
+    }
     return (
       <React.Fragment>
-      <TopMenuGeneral title="ADMIN - Routes/Buses" />
-        {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
-      <div className = "container mt-2">
-        <div className = "row ">
-            <form onSubmit={this.handleSubmit}>
-              <label >
-                Start Date:
-        <input  type="text" value={this.state.value} onChange={this.handleChange} />
-              </label>
-              <input type="submit" value="Submit" />
-              <label>
-                End Date:
-        <input type="text" value={this.state.value} onChange={this.handleChange} />
-              </label>
-              <input type="submit" value="Submit" />
-            </form>
+        <TopMenuGeneral title="ADMIN - Lines/Buses" />
+        <div className="container mt-2">
+          <div className="row">
+            <div className="col-2">
+              <label>Select Session</label>
+              <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
+                <option>All Sessions</option>
+                {this.state.sessions.map(sessionData => {
+                  return (
+                    <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
+                  );
+                })}
+              </select>
+            </div>
+          </div>
+          <div className="row justify-content-end">
+            <div className="btn btn-outline-dark" onClick={() => this.handleAddLineButton()}> Add Line + </div>
+          </div>
         </div>
-        <div className = "row justify-content-end">
-            <div className="btn btn-outline-dark "  onClick={() => this.handleAddLineButton()}> Add Line + </div>
-        </div>
-      </div>
         <div className="accordion" id="accordionExample">
-
-          {/* {this.readRouteBusComponent(this.state.routeInfo)} */}
-          {this.state.linesBusesInfo.map((line, index) =>
-            <Lines key={line.line_name + index} accordionID={line.real_route_id + index} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+          {this.state.linesBusesInfo.map((line, index) => {
+            if (this.state.newLineAdded && (largestID == line.real_route_id)) {
+              return (
+                <div className="newLine" key={`lineDiv${line.real_route_id}`} ref={this.ref}>
+                  <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                </div>
+              );
+            }
+            return (
+              <div key={`lineDiv${line.real_route_id}`}>
+                <Lines line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+              </div>
+            );
+          }
           )}
-
         </div>
       </React.Fragment>
     );

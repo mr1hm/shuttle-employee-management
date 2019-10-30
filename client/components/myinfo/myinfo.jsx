@@ -41,11 +41,6 @@ class MyInfo extends React.Component {
     this.fetchCallMethod();
     this.fetchCellProvider();
   }
-  // updateUserID(){
-  //   this.setState({
-  //     userId:this.props.userId
-  //   })
-  // }
 
   fetchCallMethod() {
     fetch(`/api/my-info-page.php?id=` + this.state.userId, {
@@ -112,11 +107,11 @@ class MyInfo extends React.Component {
     const stateCellProvider = this.state.cellProvider;
     const stateUserInfo = this.state.userInfo;
     const stateEditButton = this.state.editButton;
-    if (!stateUserInfo.length) { return null ;}
+    if (!stateUserInfo.length) { return null; }
     if (stateEditButton === true) {
       return (
         <React.Fragment>
-          <TopMenuGeneral title="MY INFO" />
+          <TopMenuGeneral userId={this.props.userId} title="MY INFO" />
           <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
           <div className="imageHolder">
             <img className="myInfoPic" src={stateUserInfo[0].url} />
@@ -172,7 +167,7 @@ class MyInfo extends React.Component {
 
     return (
       <React.Fragment>
-        <TopMenuGeneral title="MY INFO" />
+        <TopMenuGeneral userId={this.props.userId} title="MY INFO" />
         <div className="profileName">{stateUserInfo[0].first_name}{stateUserInfo[0].last_name}</div>
         <div className="imageHolder">
           <img className="myInfoPic" src={stateUserInfo[0].url}/>

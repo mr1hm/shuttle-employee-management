@@ -1,0 +1,11 @@
+.selected{
+        background: repeating-linear-gradient(
+        125deg,
+        #ffc827,
+        #ffc827 1px,
+        transparent 1px,
+        transparent 5px);
+}
+.shift{
+  cursor: pointer;
+}

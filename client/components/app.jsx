@@ -8,7 +8,6 @@ import ShiftsAvailable from './shifts/available/shifts-available';
 import ShiftsDetails from './shifts/details/shifts-details';
 import Login from './login/login';
 import Welcome from './welcome/welcome';
-import Modal from './post-modal';
 import OperatorAvailability from './operator-availability';
 import OperatorAvailability2 from './operator-availability2';
 import OperatorAvailability3 from './operator-availability3';
@@ -16,13 +15,12 @@ import OperatorAvailability4 from './operator-availability4';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
-import './post-modal.css';
 import TradeSwap from './trade-swap';
+import TradeNotification from './trade-notification';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    //console.log('app props', props.state);
     this.state = {
       userLogin: false,
       userId: [],
@@ -72,6 +70,7 @@ class App extends React.Component {
             <Route path="/operator-availability4/" render={props => <OperatorAvailability4 userId={this.state.userId ? this.state.userId : 17} />} />
 
             <Route path="/trade-swap/" render={props => <TradeSwap {...props} shiftDetails={this.state.shiftDetails} />} />
+            <Route path="/trade-notification/" render={props => <TradeNotification {...props} userId={this.state.userId ? this.state.userId : 17} shiftDetails={this.state.shiftDetails} />} />
           </Switch>
         </React.Fragment>
       );

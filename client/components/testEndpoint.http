@@ -1,1 +1,7 @@
-GET http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+
+{"session_id": "6"}
+
+
+
+# GET http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php

@@ -56,7 +56,7 @@ class ShiftsDay extends React.Component {
     if (!this.state.shifts.length) {
       return (
         <>
-          <TopMenuShift title="DAY" page='day' date={dateToPass} />
+          <TopMenuShift title="DAY" page='day' userId={this.props.userId} date={dateToPass} />
           <div className="container mt-5">
             <div className="row">
               <div className="col text-center">
@@ -70,7 +70,7 @@ class ShiftsDay extends React.Component {
     return (
         <>
           <Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link>
-          <TopMenuShift title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} />
+          <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} />
             <table className='table table-striped text-center'>
               <thead>
                 <tr>

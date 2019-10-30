@@ -1,12 +1,12 @@
 .calendarContainer{
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     padding: 1rem;
     box-sizing: border-box
 }
 .calendarBox{
   display: flex;
-  justify-content: center; 
+  justify-content: center;
 }
 .wrapper {
     border: 1.5em solid rgba(white, .2);
@@ -23,7 +23,7 @@
     width: 16vh;
     border: 0.5px solid lightgray;
     border-radius: 5px;
-    background-color: white;  
+    background-color: white;
     justify-content: center;
     align-items: center;
     color: black;
@@ -39,7 +39,7 @@
     height: 6vh;
     width: 15vh;
     border-radius: 5px;
-    background-color: lightgrey;  
+    background-color: lightgrey;
     justify-content: center;
     align-items: center;
     font-size: 5vh;
@@ -60,7 +60,7 @@
     height: 6vh;
     width: 20vh;
     border-radius: 5px;
-    background-color: lightgrey;  
+    background-color: lightgrey;
     justify-content: center;
     align-items: center;
     color: black;

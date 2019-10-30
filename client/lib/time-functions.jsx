@@ -130,16 +130,15 @@ function calculateShiftHours(startTime, endTime) { // takes two string military 
   let shiftLengthInMinutes = ((endHourDigits - startHourDigits) * 60) + (endMinuteDigits - startMinuteDigits);
   return Math.round(shiftLengthInMinutes);// Output: 80
 }
+
 function createDateStringFromDateObject(dateObject) { // not working zeroPadNumber is not defined // This seems to be the same as convertUnixMonthDay
-  // if (!dateObject){
-  //   return;
-  // }
   if (typeof dateObject === 'number') {
     dateObject = new Date(dateObject);
   }
   const stringDate = `${dateObject.getFullYear()}-${zeroPadNumber(dateObject.getMonth() + 1)}-${zeroPadNumber(dateObject.getDate())}`;
   return stringDate;
 }
+
 function createDateObjFromDateString(dateString, setToMidnight = true) { // converts unix time to date/at midnight example: input: createDateObjFromDateString(1568670748829)
   let date = new Date();
   if (typeof dateString === 'number') { // the dateString is actually a timestamp
@@ -172,27 +171,6 @@ function getTotalDayWorkingHours(props) {
   }
 }
 
-// calculates total shift duration and formats it in XXh YYmin
-// function calcShiftLenghtInHourMinFormat(startOfShift,endOfShift){// example input: calcShiftLenghtInHourMinFormat(1568670748829,1568676748829)
-
-//   function calcShiftHours(startTime, endTime){
-//     let startHourDigits = Math.trunc(startTime/100);
-//     let startMinuteDigits = startTime/100 - Math.floor(startTime/100);
-//     let endHourDigits = Math.trunc(endTime/100);
-//     let endMinuteDigits = endTime/100 - Math.floor(endTime/100);
-//     let startTimeInMinutes = startHourDigits*60 + startMinuteDigits;
-//     let endTimeInMinutes = endHourDigits*60 + endMinuteDigits;
-//     let shiftLengthInMinutes = endTimeInMinutes-startTimeInMinutes;
-//     return Math.round(shiftLengthInMinutes);
-//   }
-
-//     let totalShiftLengthForWeek = 0
-//     let minutesForShift = calcShiftHours(startOfShift,endOfShift);
-//     totalShiftLengthForWeek += minutesForShift;
-//     let totalHours = Math.floor(totalShiftLengthForWeek/60);
-//     let totalMinutes = totalShiftLengthForWeek%60;
-//     return (totalHours + "h " + totalMinutes + "m");
-// }
 function calcShiftLenghtInHourMinFormat(startOfShift, endOfShift) {
 
   function calcShiftHours(startTime, endTime) { // 1220, 1240
@@ -234,8 +212,34 @@ function createDateObject(unix) {
     weekday
   };
 }
+/**
+ * takes one param unixTimestamp that can be any day of the week
+ * returns an array of 7 objects, one per day of week (sun - sat)
+ * each object includes day, date object and unix timestamps of one day
+ */
+const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+function returnWeekInfoArray(unixTimestamp) {
+  unixTimestamp = unixTimestamp * 1000;
+  const unixDayOffset = 86400000;
+  const dateObj = new Date(unixTimestamp);
+  const day = dateObj.getUTCDay();
+  const weekArray = [];
+  for (let weekIndex = 0; weekIndex < 7; weekIndex++) {
+    const timestamp = unixTimestamp + (weekIndex - day) * unixDayOffset;
+    const currentDateObj = new Date(timestamp);
+    const weekArrayItem = {
+      month: month[currentDateObj.getUTCMonth()],
+      day: dayOfWeek[weekIndex],
+      date: currentDateObj,
+      unix: timestamp / 1000
+    };
+    weekArray.push(weekArrayItem);
+  }
+  return weekArray;
+}
 
-export { createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
   createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };

@@ -6,8 +6,6 @@ require_once 'db_connection.php';
 $data = getBodyData();
 $user_id = $data['user_id'];
 $rounds = $data['rounds'];
-
-//UPDATE round SET user_id = 1, status = 'unscheduled'
 $rounds_string = "(";
 for ($rounds_index = 0; $rounds_index < count($rounds); $rounds_index++){
   $current_round = (int)$rounds[$rounds_index];

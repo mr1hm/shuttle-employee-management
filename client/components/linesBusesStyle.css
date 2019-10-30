@@ -2,7 +2,10 @@
   font-size: 18px;
   font-weight: 600;
   font-style: italic;
-  /* margin-bottom: 2px; */
+}
+
+.lineID {
+  font-style: italic;
 }
 
 .lineCardHeader {
@@ -22,11 +25,104 @@
 }
 
 .busActiveIcon,
-.activeIcon {
+.lineActiveIcon {
   color: green;
 }
 
+.lineActiveIcon {
+  border-radius: 50%;
+  font-size: 11px;
+  /* border: 1px solid black; */
+  box-shadow: 0 0 5px 2px #aef4af;
+}
+
+.busActiveIcon {
+  border-radius: 30%;
+  box-shadow: 0 0 5px 1px #aef4af;
+}
+
+.lineInactiveIcon {
+  font-size: 11px;
+}
+
 .busInactiveIcon,
-.inactiveIcon {
+.lineInactiveIcon {
   color: red;
+}
+
+.editOpeningDuration,
+.editClosingDuration,
+.editGapDuration {
+  font-weight: 700;
+}
+
+.editBusModal {
+  position: fixed;
+  width: 75%;
+  height: 300px;
+  z-index: 1;
+  left: 12%;
+  bottom: 25%;
+  border: 2px solid black;
+  background-color: rgba(182, 182, 182, 0.6);
+  border-radius: 5px;
+}
+
+.editLineBtn {
+  width: 40px;
+  margin-bottom: 2px;
+}
+
+.specialDriverCheckbox {
+  margin-left: 40px;
+  margin-top: 12px;
+}
+
+.specialDriverIcon {
+  color: blue;
+}
+
+.cancelEditLineBtn {
+  width: 40px;
+  margin-bottom: 2px;
+}
+
+.editLineSubmitBtn {
+  width: 40px;
+  margin-top: 2px;
+}
+
+.busTableEditIconBtn {
+  width: 40px;
+}
+
+.busTableDeleteIconBtn {
+  width: 40px;
+}
+
+.addNewLineNameExists {
+  font-weight: 700;
+  color: red;
+}
+
+.addNewLineName {
+  font-weight: 700;
+  color: green;
+}
+
+.editLineInputRow input {
+  width: 100%;
+}
+
+.newLine .lineCardHeader {
+  animation: glow 1s 2 alternate-reverse;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: inset 0 0 10px -10px #aef4af;
+  }
+  to {
+    box-shadow: inset 0 0 10px 2px green;
+  }
 }

@@ -10,7 +10,7 @@
     background-color: wheat;
     width: 60vw;
     margin-left: 2%;
-    height: 80vh;
+    height: 76vh;
 }
 .commentFlow{
     text-align: center;
@@ -20,8 +20,14 @@
 .fill1{
     float: right;
     display: inline-flex;
-    margin-right: 15%;
+    margin-right: 13%;
     margin-top: -35%;
+}
+.fill2{
+    float: right;
+    display: inline-flex;
+    margin-right: 15%;
+    margin-top: -28%;
 }
 .headtable{
     color: aliceblue;
