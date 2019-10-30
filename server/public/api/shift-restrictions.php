@@ -19,9 +19,10 @@ function shiftWithinAvailability ($operator, $shift) {
 }
 
 function hasSpecialStatus ($operator, $shift) {
-  return (current($shift)['line_name'] === 'C')
-            ? intval($operator['special_route']) === 1
-            : true;
+  // return (current($shift)['line_name'] === 'C')
+  //           ? intval($operator['special_route']) === 1
+  //           : true;
+  return true;
 }
 
 /* If the the driver worked past 10 pm the night before and the shift is before 8 am skip the operator
