@@ -2,6 +2,7 @@ import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, createDateStringFromDateObject } from '../lib/time-functions';
 import TopMenuGeneral from './topmenu/topmenu-general';
+import { Link } from 'react-router-dom';
 
 class TradeNotification extends React.Component {
   constructor(props) {
@@ -108,6 +109,17 @@ class TradeNotification extends React.Component {
             </div>
           );
         })}
+        <div className="row justify-content-center mt-5">
+          <div className="col-3">
+            <Link to={{
+              pathname: '/shifts/month/shifts-month/',
+              state: {
+                swapFlag: true
+              }
+            }}
+            className="btn btn-dark">Swap</Link>
+          </div>
+        </div>
       </div>
     );
   }

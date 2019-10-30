@@ -11,7 +11,8 @@ class ShiftsDetails extends React.Component {
       postModalOpen: false,
       shiftOverview: null,
       shiftDetails: null,
-      checkedRounds: []
+      checkedRounds: [],
+      swapFlag: false
     };
     this.passCheckedRoundIds = this.passCheckedRoundIds.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -40,7 +41,11 @@ class ShiftsDetails extends React.Component {
   }
 
   componentDidMount() {
+    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : false;
     this.getShifts();
+    this.setState({
+      swapFlag: swapFlag
+    });
   }
   handleChange(e) {
     const { checkedRounds } = this.state;
