@@ -6,8 +6,16 @@ import RouteBusDisplay from '../../route-bus-display';
 class SingleShift extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      swapFlag: false
+    };
     this.openDetails = this.openDetails.bind(this);
+  }
+  componentDidMount() {
+    const swapFlag = this.props.swapFlag ? this.props.swapFlag : false;
+    this.setState({
+      swapFlag: swapFlag
+    });
   }
   openDetails() {
     const { openRouteDetails, shifts } = this.props;
@@ -33,8 +41,14 @@ class SingleShift extends React.Component {
         <td> {shiftHours} </td>
         <td style={{ display: this.props.modalStatus ? 'none' : 'block' }}> {statusIndicator} </td>
         <td>
-          <Link to="/shifts/details/" className="btn btn-dark"
-            onClick={this.openDetails}>
+          <Link to={{
+            pathname: '/shifts/details/',
+            state: {
+              swapFlag: this.state.swapFlag
+            }
+          }}
+          className="btn btn-dark"
+          onClick={this.openDetails}>
             Details
           </Link>
         </td>

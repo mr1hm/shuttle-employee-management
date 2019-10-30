@@ -18,7 +18,8 @@ class ShiftsMonth extends React.Component {
     super(props);
     this.id = '&id=' + this.props.userId;
     this.state = {
-      scheduledHoursForCurrentMonth: []
+      scheduledHoursForCurrentMonth: [],
+      swapFlag: false
     };
   }
   getData(url, methodToUse) {
@@ -32,8 +33,12 @@ class ShiftsMonth extends React.Component {
       .catch(error => { throw (error); });
   }
   componentDidMount() {
+    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : false;
     const initialQuery = this.calculateQueryRange(this.props.defaultDate);
     this.getData('/api/shifts-month.php' + initialQuery + this.id, 'GET');
+    this.setState({
+      swapFlag: swapFlag
+    });
   }
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.date !== this.props.match.params.date) {
@@ -104,7 +109,12 @@ class ShiftsMonth extends React.Component {
           '-' + calendarPage[dayOfCalendar].getDate() === new Date(this.props.defaultDate).getFullYear() +
           '-' + new Date(this.props.defaultDate).getMonth() +
           '-' + new Date(this.props.defaultDate).getDate() ? 'today-mark link-style ' : 'link-style'}
-          to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
+          to={{
+            pathname: `/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`,
+            state: {
+              swapFlag: this.state.swapFlag
+            }
+          }}>
           <DayOfMonth
             key={calendarPage[dayOfCalendar].getTime()}
             dayObj={ calendarPage[dayOfCalendar]}
@@ -196,7 +206,12 @@ class ShiftsMonth extends React.Component {
     }
     return (
       <div className ="calenderContainer">
-        <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass}/>
+        {this.state.swapFlag ? (
+          <TopMenuShift userId={this.props.userId} title="SWAP" page='month' date={dateToPass} />
+        ) : (
+          <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass} />
+        )}
+        {/* <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass}/> */}
         <div className="row calendarBox">
           <div className="monthCalendar">
             <div className="dayOfMonth Title">
