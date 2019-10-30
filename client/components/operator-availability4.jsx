@@ -259,12 +259,62 @@ class OperatorAvailability extends React.Component {
   }
 
   setStartTime(event) {
+    const timeIndex = { '6:00 am': 0, '6:15 am': 1, '6:30 am': 2, '6:45 am': 3, '7:00 am': 4, '7:15 am': 5, '7:30 am': 6, '7:45 am': 7, '8:00 am': 8, '8:15 am': 9, '8:30 am': 10, '8:45 am': 11, '9:00 am': 12, '9:15 am': 13, '9:30 am': 14, '9:45 am': 15, '10:00 am': 16, '10:15 am': 17, '10:30 am': 18, '10:45 am': 19, '11:00 am': 20, '11:15 am': 21, '11:30 am': 22, '11:45 am': 23, '12:00 pm': 24, '12:15 pm': 25, '12:30 pm': 26, '12:45 pm': 27, '1:00 pm': 28, '1:15 pm': 29, '1:30 pm': 30, '1:45 pm': 31, '2:00 pm': 32, '2:15 pm': 33, '2:30 pm': 34, '2:45 pm': 35, '3:00 pm': 36, '3:15 pm': 37, '3:30 pm': 38, '3:45 pm': 39, '4:00 pm': 40, '4:15 pm': 41, '4:30 pm': 42, '4:45 pm': 43, '5:00 pm': 44, '5:15 pm': 45, '5:30 pm': 46, '5:45 pm': 47, '6:00 pm': 48, '6:15 pm': 49, '6:30 pm': 50, '6:45 pm': 51, '7:00 pm': 52, '7:15 pm': 53, '7:30 pm': 54, '7:45 pm': 55, '8:00 pm': 56, '8:15 pm': 57, '8:30 pm': 58, '8:45 pm': 59, '9:00 pm': 60, '9:15 pm': 61, '9:30 pm': 62, '9:45 pm': 63, '10:00 pm': 64, '10:15 pm': 65, '10:30 pm': 66, '10:45 pm': 67, '11:00 pm': 68, '11:15 pm': 69, '11:30 pm': 70, '11:45 pm': 71, '12:00 am': 72 };
+
+    var storedStartTimeIndex = timeIndex[this.state.selectedStartTime];
+    var incomingStartTimeIndex = timeIndex[event.currentTarget.textContent];
+    var availabilityObject = Object.assign({}, this.state.availability);
+
+    if (storedStartTimeIndex) {
+      if (storedStartTimeIndex < incomingStartTimeIndex) {
+        var availabilityDay = availabilityObject[this.state.day].map((cell, index) => {
+          if (index >= storedStartTimeIndex && index < incomingStartTimeIndex) {
+            return 0;
+          } if (cell === 1) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+        availabilityObject[this.state.day] = availabilityDay;
+
+        this.setState({
+          availability: availabilityObject,
+          selectedStartTime: event.currentTarget.textContent
+        });
+      }
+    }
     this.setState({
       selectedStartTime: event.currentTarget.textContent
     });
   }
 
   setEndTime(event) {
+    const timeIndex = { '6:00 am': 0, '6:15 am': 1, '6:30 am': 2, '6:45 am': 3, '7:00 am': 4, '7:15 am': 5, '7:30 am': 6, '7:45 am': 7, '8:00 am': 8, '8:15 am': 9, '8:30 am': 10, '8:45 am': 11, '9:00 am': 12, '9:15 am': 13, '9:30 am': 14, '9:45 am': 15, '10:00 am': 16, '10:15 am': 17, '10:30 am': 18, '10:45 am': 19, '11:00 am': 20, '11:15 am': 21, '11:30 am': 22, '11:45 am': 23, '12:00 pm': 24, '12:15 pm': 25, '12:30 pm': 26, '12:45 pm': 27, '1:00 pm': 28, '1:15 pm': 29, '1:30 pm': 30, '1:45 pm': 31, '2:00 pm': 32, '2:15 pm': 33, '2:30 pm': 34, '2:45 pm': 35, '3:00 pm': 36, '3:15 pm': 37, '3:30 pm': 38, '3:45 pm': 39, '4:00 pm': 40, '4:15 pm': 41, '4:30 pm': 42, '4:45 pm': 43, '5:00 pm': 44, '5:15 pm': 45, '5:30 pm': 46, '5:45 pm': 47, '6:00 pm': 48, '6:15 pm': 49, '6:30 pm': 50, '6:45 pm': 51, '7:00 pm': 52, '7:15 pm': 53, '7:30 pm': 54, '7:45 pm': 55, '8:00 pm': 56, '8:15 pm': 57, '8:30 pm': 58, '8:45 pm': 59, '9:00 pm': 60, '9:15 pm': 61, '9:30 pm': 62, '9:45 pm': 63, '10:00 pm': 64, '10:15 pm': 65, '10:30 pm': 66, '10:45 pm': 67, '11:00 pm': 68, '11:15 pm': 69, '11:30 pm': 70, '11:45 pm': 71, '12:00 am': 72 };
+
+    var storedEndTimeIndex = timeIndex[this.state.selectedEndTime];
+    var incomingEndTimeIndex = timeIndex[event.currentTarget.textContent];
+    var availabilityObject = Object.assign({}, this.state.availability);
+
+    if (storedEndTimeIndex) {
+      if (storedEndTimeIndex > incomingEndTimeIndex) {
+        var availabilityDay = availabilityObject[this.state.day].map((cell, index) => {
+          if (index <= storedEndTimeIndex && index >= incomingEndTimeIndex) {
+            return 0;
+          } if (cell === 1) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+        availabilityObject[this.state.day] = availabilityDay;
+
+        this.setState({
+          availability: availabilityObject,
+          selectedEndTime: event.currentTarget.textContent
+        });
+      }
+    }
     this.setState({
       selectedEndTime: event.currentTarget.textContent
     });
