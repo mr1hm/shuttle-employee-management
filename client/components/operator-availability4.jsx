@@ -24,8 +24,8 @@ class OperatorAvailability extends React.Component {
       submit: false,
       day: null,
       error: false,
-      selectedStartTime: 0,
-      selectedEndTime: 0,
+      selectedStartTime: null,
+      selectedEndTime: null,
       // eventually this needs to be passed by props
       userId: 45,
       sessionId: 1
@@ -52,7 +52,7 @@ class OperatorAvailability extends React.Component {
   buildDayCell(day) {
     let defaultStyles = {
       width: '1.35%',
-      height: '10vh',
+      height: '9vh',
       borderBottom: '1px solid black'
     };
 
@@ -63,7 +63,7 @@ class OperatorAvailability extends React.Component {
             return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'green', borderRight: '1px solid black' }}></td>;
           } else if (index !== 0 && index % 4 === 0) {
             return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'green', borderLeft: '1px solid black' }}></td>;
-          }  else {
+          } else {
             return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'green' }}></td>;
           }
         } else {
@@ -128,8 +128,8 @@ class OperatorAvailability extends React.Component {
     this.setState({
       availability: availabilityObject,
       show: false,
-      selectedStartTime: 0,
-      selectedEndTime: 0
+      selectedStartTime: null,
+      selectedEndTime: null
     });
   }
 
@@ -221,8 +221,8 @@ class OperatorAvailability extends React.Component {
       availabilityObject[this.state.day] = availabilityDay;
       this.setState({
         availability: availabilityObject,
-        selectedStartTime: 0,
-        selectedEndTime: 0
+        selectedStartTime: null,
+        selectedEndTime: null
       });
 
     }
@@ -344,7 +344,7 @@ class OperatorAvailability extends React.Component {
                 weekdays.map(day => {
                   return (
                     <tr key={day} className="row d-flex justify-content-end">
-                      <td className="d-flex align-items-center justify-content-center" style={{ backgroundColor: 'initial', width: '2.8%', heigth: '10vh', borderLeft: '1px solid black', borderRight: '1px solid black', borderBottom: '1px solid black', fontWeight: 'bold' }}>
+                      <td className="d-flex align-items-center justify-content-center" style={{ backgroundColor: 'initial', width: '2.8%', heigth: '9vh', borderLeft: '1px solid black', borderRight: '1px solid black', borderBottom: '1px solid black', fontWeight: 'bold' }}>
                         {day.slice(0, 1)}
                       </td>
                       {this.buildDayCell(day)}
@@ -359,7 +359,7 @@ class OperatorAvailability extends React.Component {
         <SelectAvailabilityModal day={this.state.day} show={this.state.show} close={this.hideModal} deleteShift={this.deleteShift}>
           <div className="d-flex">
             <div className="mr-2">
-              <div className="m-2 border" id="startTime">{this.state.selectedStartTime}</div>
+              <div className="number m-2 border" id="startTime">{this.state.selectedStartTime}</div>
               <div className="dropdown mb-2">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 StartTime
@@ -377,7 +377,7 @@ class OperatorAvailability extends React.Component {
             </div>
 
             <div className="ml-2">
-              <div className="m-2 border" id="endTime">{this.state.selectedEndTime}</div>
+              <div className="number m-2 border" id="endTime">{this.state.selectedEndTime}</div>
               <div className="dropdown mb-2">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 End Time
