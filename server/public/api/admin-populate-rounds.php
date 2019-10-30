@@ -214,13 +214,13 @@ function getSessionDays ($dayIndex, $sessionStartTimestamp, $sessionEndTimestamp
 function updateDatabase ($conn, $shift, $session) {
   while ( current($shift) ) {
     $user_id = current($shift)['user_id'];
-    $bus_number = current($shift)['bus_number'];
+    $bus_info_id = current($shift)['bus_info_id'];
     $round = [ current($shift)['round_start'], current($shift)['round_end'] ];
     $query = "UPDATE `round`
               SET `user_id` = {$user_id},
                   `status` = 'scheduled'
               WHERE `date` IN ({$session}) AND
-                    `bus_info_id` = {$bus_number} AND
+                    `bus_info_id` = {$bus_info_id} AND
                     `start_time` = {$round[0]} AND
                     `end_time` = {$round[1]} AND
                     `status` = 'unscheduled'";
@@ -252,7 +252,7 @@ function getRoundsForWeek ($conn, $sessionTimestamp) {
   }
 
   $query = "SELECT `rd`.`id`, `rt`.`line_name`, `bi`.`bus_number`, `rd`.`start_time` AS 'round_start', `rd`.`end_time` AS 'round_end',
-                   `us`.`id` AS 'user_id', `us`.`last_name`, `us`.`first_name`, `rd`.`date`, `rd`.`status`
+                   `us`.`id` AS 'user_id', `us`.`last_name`, `us`.`first_name`, `rd`.`date`, `rd`.`status`, `rd`.`bus_info_id`
             FROM `route` AS `rt`
             JOIN `bus_info` AS bi ON `bi`.`route_id` = `rt`.`id`
             JOIN `round` AS rd ON `rd`.`bus_info_id` = `bi`.`id`
