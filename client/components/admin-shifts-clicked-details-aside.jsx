@@ -7,14 +7,34 @@ class AdminClickedShiftDetailsAside extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: false
+      roundIdsChecked: [],
+      roundTimesChecked: []
     };
-    this.handleClickExpand = this.handleClickExpand.bind(this);
+    this.handleClickUnassignSubmit = this.handleClickUnassignSubmit.bind(this);
+    this.onRoundCheckboxChange = this.onRoundCheckboxChange.bind(this);
   }
-  handleClickExpand() {
+  onRoundCheckboxChange(e) {
+    let roundIds = this.state.roundIdsChecked;
+    let roundTimes = this.state.roundTimesChecked;
+    if (e.target.checked) {
+      roundIds.push(e.target.id);
+      roundTimes.push(e.target.value);
+    } else {
+      let roundIndex = roundIds.indexOf(e.target.id);
+      roundIds.splice(roundIndex, 1);
+      roundTimes.splice(roundIndex, 1);
+    }
     this.setState({
-      expanded: !this.state.expanded
+      roundIdsChecked: roundIds,
+      roundTimesChecked: roundTimes
     });
+    console.log('roundIdsChecked: ', roundIds, 'roundTimesChecked: ', roundTimes);
+  }
+  handleClickUnassignSubmit(e) {
+    e.preventDefault();
+    const userName = `${this.props.userName.last}, ${this.props.userName.first}`;
+    this.props.operatorSelected(userName, this.props.userId);
+    this.props.onClickUnassignOperator(this.state.roundIdsChecked, this.state.roundTimesChecked);
   }
   checkIfUnassignedShift() {
     if (this.props.shiftType === 'active') {
@@ -35,21 +55,26 @@ class AdminClickedShiftDetailsAside extends React.Component {
   }
   renderRoundDetails() {
     return (
-      <div className="roundDetails">
+      <form className="roundDetails form-group form-check" onSubmit={this.handleClickUnassignSubmit}>
         Round breakdown:
         {this.props.rounds.map(round =>
           <div key={round.id} className="roundDetailContainer">
-            <div className="roundTime">{round.roundTime}</div>
-            <button
+            <input
               id={round.id}
-              className="btn btn-danger"
-              data-toggle="modal"
-              data-target="#confirmModal"
-              onClick={this.props.onClickUnassignOperator}>
-              Unassign Operator
-            </button>
+              type="checkbox"
+              className="form-check-input"
+              value={`${this.props.lineBus}: ${round.roundTime}`}
+              onChange={this.onRoundCheckboxChange}/>
+            <label className="roundTime form-check-label" htmlFor={round.id}>{round.roundTime}</label>
           </div>)}
-      </div>
+        <button
+          type="submit"
+          className="btn btn-danger"
+          data-toggle="modal"
+          data-target="#confirmModal" >
+          Unassign Shifts
+        </button>
+      </form>
     );
   }
   render() {

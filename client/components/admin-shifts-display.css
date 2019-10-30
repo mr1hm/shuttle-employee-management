@@ -158,15 +158,15 @@
     background-color: rgb(238, 204, 13);
 }
 .active {
-    background-color: rgb(0, 140, 0);
+    background-color: rgb(71, 193, 190);
 }
 .alertShift {
     background: repeating-linear-gradient(
         45deg,
         lightpink,
-        lightpink 2px,
-        lightgray 2px,
-        lightgray 4px);
+        lightpink 3px,
+        lightgray 3px,
+        lightgray 6px);
 }
 .nonOperational.operatorShift {
     background-color: lightgray;
@@ -250,7 +250,11 @@
     height: auto;
     max-height: fit-content;
 }
-.adminShiftAngleTimeContainer, .availableOperatorIconNameContainer, .dayOfWeekContainer{
+.adminShiftAngleTimeContainer,
+.availableOperatorIconNameContainer,
+.dayOfWeekContainer,
+.prevWeekButton,
+.nextWeekButton {
     cursor: pointer;
 }
 .angleIcon{
@@ -259,11 +263,11 @@
 .angleIconRotate{
     transform: rotate(90deg);
 }
-.adminShiftWeekContainer{
-    height: 100px;
-}
 .dayOfWeekContainer {
     width: 120px;
+}
+.prevWeekButton, .nextWeekButton{
+    width: 50px;
 }
 .dayOfWeekSelected {
     background-color: lightblue;

@@ -6,7 +6,7 @@ class AdminUnavailableOperator extends React.Component {
     let reasons = this.props.unavailableReasons;
     for (let reasonIndex = 0; reasonIndex < reasons.length; reasonIndex++) {
       unavailableReasonElements.push(
-        <li className="text-danger">{reasons[reasonIndex]}</li>
+        <li key={reasonIndex} className="text-danger">{reasons[reasonIndex]}</li>
       );
     }
     return unavailableReasonElements;
