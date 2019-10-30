@@ -239,6 +239,7 @@
     $query = "INSERT INTO `quarter_operator_schedule` (`user_id`, `date`, `operator`)
               VALUES\n";
 
+    $ops = [];
     reset($operators);
     while ( current($operators) ) {
       $operator = current($operators);
@@ -257,20 +258,25 @@
           'total_daily_minutes' => $operatorDetails['total_daily_minutes']
         ]);
         foreach ( $operatorDetails['dates'] as $date ) {
+          $ops[] = [
+            'date' => $date,
+            'operator' => json_decode($jsonOperator, true)
+          ];
           $query .= "({$user_id}, {$date}, '{$jsonOperator}'),\n";
         }
         unset($date);
         next($operator['assignment_details']);
       }
-      unset($operator['assignment_details']);
+      reset($operator['assignment_details']);
       next($operators);
     }
-    unset($operators);
+    reset($operators);
 
     $query = substr($query, 0, -2);
     if (!mysqli_query($conn, $query)) {
       throw new Exception('MySQL error: ' . mysqli_error($conn));
     }
+    return $ops;
   }
 
   // Sort operators so that they are in order by the operator that has the least amount of weekly minutes
@@ -468,6 +474,7 @@
           }
           $operator['assignment_details'][$day]['available_times'] = $operatorsForDay[$key]['available_times'];
           $operator['assignment_details'][$day]['assigned_times'] = $operatorsForDay[$key]['assigned_times'];
+          $operator['assignment_details'][$day]['total_daily_minutes'] = $operatorsForDay[$key]['total_daily_minutes'];
         }
         $operator['assignment_details'][$day]['dates'] = explode(',', $session);
       }
@@ -482,5 +489,6 @@
   $rounds = getRoundsForWeek($conn, $sessionStartTimestamp);
   $operators = getOperatorsForWeek($conn);
   populateWeeks($conn, $rounds, $operators, $sessionStartTimestamp, $sessionEndTimestamp);
-  updateDatabaseOperators($conn, $operators);
+  $ops = updateDatabaseOperators($conn, $operators);
+
 ?>
