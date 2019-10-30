@@ -54,7 +54,6 @@ class AdminShiftsDay extends React.Component {
   }
   // get assigned/unassigned rounds from database
   getTodaysShiftData(timestamp) {
-    console.log('todays date: ', timestamp);
     fetch(`/api/admin-day-shifts.php?date=${timestamp}`)
       .then(response => response.json())
       .then(data => {
@@ -88,7 +87,6 @@ class AdminShiftsDay extends React.Component {
         'stop_time': endTime
       });
     }
-    console.log(roundTimes, roundsSelected, roundIndex);
     if (roundTimes.length === 0) {
       this.setState({
         roundsSelected: [],
@@ -124,7 +122,6 @@ class AdminShiftsDay extends React.Component {
     });
   }
   handleClickAssignShiftConfirm(id) {
-    console.log(id, this.state.roundsSelected);
     const data = {
       method: 'POST',
       body: JSON.stringify({
