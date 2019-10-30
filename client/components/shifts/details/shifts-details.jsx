@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { convertMilitaryTime, createDateObject } from '../../../lib/time-functions';
+import TopMenuHamburger from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
 import PostModal from './post-modal';
+import Round from './round';
+
+import './shifts-details.css';
 
 class ShiftsDetails extends React.Component {
   constructor(props) {
@@ -15,8 +19,10 @@ class ShiftsDetails extends React.Component {
       swapFlag: false
     };
     this.passCheckedRoundIds = this.passCheckedRoundIds.bind(this);
-    this.handleChange = this.handleChange.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
+    this.selectShift = this.selectShift.bind(this);
+    this.selectAllRounds = this.selectAllRounds.bind(this);
+    this.unselectAllRounds = this.unselectAllRounds.bind(this);
   }
   getShifts(query) {
     const { date, userId } = this.props;
@@ -39,7 +45,6 @@ class ShiftsDetails extends React.Component {
       .then(json => this.setState({ shiftDetails: json }))
       .catch(error => console.error(error));
   }
-
   componentDidMount() {
     const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : false;
     this.getShifts();
@@ -47,16 +52,20 @@ class ShiftsDetails extends React.Component {
       swapFlag: swapFlag
     });
   }
-  handleChange(e) {
+  selectShift(id) {
     const { checkedRounds } = this.state;
-    const { id } = e.currentTarget;
     if (checkedRounds.includes(id)) {
       checkedRounds.splice(checkedRounds.indexOf(id), 1);
     } else {
       checkedRounds.push(id);
     }
     this.setState({ checkedRounds: checkedRounds });
-
+  }
+  selectAllRounds() {
+    this.setState({ selectAll: true });
+  }
+  unselectAllRounds() {
+    this.setState({ selectAll: false });
   }
   passCheckedRoundIds() { // callback method for post/trade/swap
     const shiftDetails = this.state.shiftDetails.filter(shift => this.state.checkedRounds.includes(shift.roundID));
@@ -73,32 +82,22 @@ class ShiftsDetails extends React.Component {
             <div className="col">
               <h1>No Shift Details Available</h1>
             </div>
+            <div className="col">
+              <TopMenuHamburger/>
+            </div>
           </div>
         </div>);
     }
-    const rounds = this.state.shiftDetails.map((shift, index) => {
-      return (
-        <tr key={shift.roundID}>
-          <td>
-            <div className="form-check">
-              <input id={shift.roundID} className="form-check-input" type="checkbox" onChange={this.handleChange} />
-            </div>
-          </td>
-          <td>{convertMilitaryTime(shift.start_time)}</td>
-          <td>{convertMilitaryTime(shift.end_time)}</td>
-        </tr>
-      );
-    });
     const { start_time, end_time, date } = this.state.shiftOverview;
     const dateObj = createDateObject(date);
     const timeDisplay = (
       <>
-      <div>
-        {`${convertMilitaryTime(start_time)} - ${convertMilitaryTime(end_time)}`}
-      </div>
-      <div>
-        {`${dateObj.weekday}, ${dateObj.month} ${dateObj.day}, ${dateObj.year}`}
-      </div>
+        <div>
+          {`${convertMilitaryTime(start_time)} - ${convertMilitaryTime(end_time)}`}
+        </div>
+        <div>
+          {`${dateObj.weekday}, ${dateObj.month} ${dateObj.day}, ${dateObj.year}`}
+        </div>
       </>
     );
     const { checkedRounds } = this.state;
@@ -111,43 +110,69 @@ class ShiftsDetails extends React.Component {
             <div className="col">
               <h1>Shift Details</h1>
             </div>
+            <div className="col">
+              <TopMenuHamburger/>
+            </div>
           </div>
           <div className="row align-items-center mb-2">
-            <div className="col-1">
+            <div className="col-2 col-md-1">
               <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.bus_info_id}/>
             </div>
-            <div className="col-4">
+            <div className="col text-left col-md-4">
               {timeDisplay}
             </div>
           </div>
-          <div className="row">
-            <div className="col text-left"><h5>Select the shifts you want to change</h5></div>
+          <div className="row my-4 flex-wrap justify-content-space-between">
+            <div className="col text-left"><h5>Tap or click the shifts you want to change</h5></div>
+          </div>
+          <div className="row mb-3">
+            <div className="col">
+              {this.state.selectAll
+                ? <button className="btn btn-success" onClick={this.unselectAllRounds}>
+                  Unselect All
+                </button>
+                : <button className="btn btn-success" onClick={this.selectAllRounds}>
+                  Select All
+                </button>
+              }
+
+            </div>
+            <div className="col d-flex justify-content-end">
+              <button className="btn btn-primary mr-3" onClick={this.toggleModal}>
+                Post
+              </button>
+              <button className="btn btn-primary mr-3">
+                <Link to='/trade-swap'
+                  onClick={this.passCheckedRoundIds}>
+                  Trade/Swap
+                </Link>
+              </button>
+            </div>
           </div>
           <div className="row">
             <div className="col">
               <table className="table table-bordered text-center">
                 <thead>
                   <tr>
-                    <th scope="col"></th>
                     <th scope="col">Start</th>
                     <th scope="col">End</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rounds}
+                  {this.state.shiftDetails.map((shift, index) => {
+                    return (
+                      <Round
+                        id={shift.roundID}
+                        selectShift={this.selectShift}
+                        key={shift.roundID}
+                        startTime={shift.start_time}
+                        endTime={shift.end_time}
+                        selected={this.state.selectAll}
+                      />
+                    );
+                  })}
                 </tbody>
               </table>
-            </div>
-            <div className="col-2 d-flex flex-column justify-content-space-between">
-              <button className="btn btn-primary mb-2" onClick={this.toggleModal}>
-                Post
-              </button>
-              <Link to='/trade-swap'
-                className="btn btn-primary mb-2"
-                onClick={this.passCheckedRoundIds}>
-                Trade/Swap
-              </Link>
-              {/* <button className="btn btn-primary" onClick={this.props.history.goBack()}>My Shifts</button> */}
             </div>
           </div>
         </div>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// import IndividualShift from './individual-shift';
 import ShiftDisplayComponent from './shift-display-component';
 import { convertMilitaryTimeStringToMilitaryTimeFloat, convertUnixDateDay, convertUnixDateNumber } from '../../../lib/time-functions';
 
@@ -22,7 +21,7 @@ class ShiftsWeekDay extends React.Component {
     let shiftHoursPerDay;
     if (!startTime) {
       return;
-    } else if (startTime.start_time.length < 4 ) {
+    } else if (startTime.start_time.length < 4) {
       startTime = '0' + startTime.start_time;
       parseInt(startTime);
       startHour = startTime.slice(0, 2);
@@ -57,13 +56,11 @@ class ShiftsWeekDay extends React.Component {
     }
   }
   render() {
-    // console.log('day data: ', this.props.dayData);
-    // console.log('shift data: ', this.props.shifts);
     const range = { min: 6, max: 24 };
     const startAndEndTimes = { start: 6, end: 24 };
     const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));// converts unix time to date/time
     const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));// converts unix time to specific day of the month
-    const dayHours = this.props.dayData.shifts.reduce((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum, 0);
+    const dayHours = this.props.dayData.shifts.reduce((sum, current) => this.calculateDailyWorkingTotalHours(current, current) + sum, 0);
     const dayHoursRounded = dayHours.toFixed(2);
     const currentUnixDate = this.props.dayData.round_date;
     let currentDayHighlightClass = 'dayDataContainer';
@@ -111,21 +108,3 @@ class ShiftsWeekDay extends React.Component {
 }
 
 export default ShiftsWeekDay;
-
-/*
-inside
-children: []
-range: {min: 6, max: 24}
-shiftData: {start: 8, end: 11.5}
-test: "undefined-0"
-type: "posted"
-__proto__: Object
-
-outside
-children: []
-range: {min: 600, max: 2400}
-shiftData: {start: 600, end: 2400}
-test: "1"
-type: "active"
-__proto__: Object
-*/

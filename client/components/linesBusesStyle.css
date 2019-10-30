@@ -2,7 +2,6 @@
   font-size: 18px;
   font-weight: 600;
   font-style: italic;
-  /* margin-bottom: 2px; */
 }
 
 .lineID {
@@ -31,17 +30,19 @@
 }
 
 .lineActiveIcon {
-  width: 0.75em !important;
-  border-radius: 80%;
-  box-shadow: 0 0 5px 1px #aef4af;
+  border-radius: 50%;
+  font-size: 11px;
+  /* border: 1px solid black; */
+  box-shadow: 0 0 5px 2px #aef4af;
 }
 
 .busActiveIcon {
+  border-radius: 30%;
   box-shadow: 0 0 5px 1px #aef4af;
 }
 
 .lineInactiveIcon {
-  width: 0.75em !important;
+  font-size: 11px;
 }
 
 .busInactiveIcon,
@@ -114,10 +115,6 @@
 }
 
 .newLine .lineCardHeader {
-  /* width: 200px;
-  height: 200px; */
-  /* border-radius: 100px; */
-  /* background-color: #ccc; */
   animation: glow 1s 2 alternate-reverse;
 }
 

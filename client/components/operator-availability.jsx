@@ -208,7 +208,6 @@ class OperatorAvailability extends React.Component {
           <div style={{ width: '5%' }}></div>
         </div>
 
-
         <div className="d-flex">
           <div style={{ width: '5%' }}></div>
           <table className="mt-4 mr-0" style={{ width: '90%' }}>

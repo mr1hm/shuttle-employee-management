@@ -5,8 +5,6 @@ require_once 'db_connection.php';
 
 $date= $_GET['date'];
 $start_time = $_GET['start_time'] ?? false;
-// $day_of_week = $_GET['day_of_week'];
-// $start_time= $_GET['start_time'];
 $start_time_filter = $start_time ? "AND rd.`start_time` != {$start_time}" : "";
 $query = "SELECT
             us.`first_name`,
@@ -26,9 +24,9 @@ $query = "SELECT
           ON
             us.`id` = rd.`user_id`
           WHERE
-            us.`status` = 'active' 
-            AND us.`role` = 'operator' 
-            AND rd.`date` = {$date} 
+            us.`status` = 'active'
+            AND us.`role` = 'operator'
+            AND rd.`date` = {$date}
             $start_time_filter
           ORDER BY
             us.`id` ASC";
