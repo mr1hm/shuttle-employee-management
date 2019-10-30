@@ -9,23 +9,21 @@ class Round extends React.Component {
       clicked: false,
       id: this.props.id
     };
-    this.selectShift = this.selectShift.bind(this);
+    this.toggleSelectShift = this.toggleSelectShift.bind(this);
   }
-  selectShift() {
-    const { id } = this.state;
+  toggleSelectShift() {
+
     this.setState({ clicked: !this.state.clicked });
+    const { id } = this.state;
     this.props.selectShift(id);
   }
-  componentDidUpdate(prevProps) {
-    if (prevProps.selected !== this.props.selected) {
-      this.selectShift();
-    }
+  componentDidUpdate(prevProps, prevState) {
   }
   render() {
     const className = this.state.clicked ? 'shift selected' : 'shift';
     const { startTime, endTime } = this.props;
     return (
-      <tr className={className} onClick={this.selectShift}>
+      <tr className={className} onClick={this.toggleSelectShift}>
         <td>{convertMilitaryTime(startTime)}</td>
         <td>{convertMilitaryTime(endTime)}</td>
       </tr>
