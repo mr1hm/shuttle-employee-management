@@ -75,6 +75,7 @@ class ShiftsDetails extends React.Component {
     this.setState({ postModalOpen: !this.state.postModalOpen });
   }
   render() {
+    console.log(this.state.swapFlag);
     if (!this.state.shiftDetails) {
       return (
         <div className="container mt-2">
@@ -137,17 +138,28 @@ class ShiftsDetails extends React.Component {
               }
 
             </div>
-            <div className="col d-flex justify-content-end">
-              <button className="btn btn-primary mr-3" onClick={this.toggleModal}>
-                Post
-              </button>
-              <button className="btn btn-primary mr-3">
-                <Link to='/trade-swap'
-                  onClick={this.passCheckedRoundIds}>
-                  Trade/Swap
-                </Link>
-              </button>
-            </div>
+            {this.state.swapFlag ? (
+              <div className="col d-flex justify-content-end">
+                <button className="btn btn-primary mr-3">
+                  <Link to='/trade-notification'
+                    onClick={this.passCheckedRoundIds}>
+                    Select Swap Shift
+                  </Link>
+                </button>
+              </div>
+            ) : (
+              <div className="col d-flex justify-content-end">
+                <button className="btn btn-primary mr-3" onClick={this.toggleModal}>
+                    Post
+                </button>
+                <button className="btn btn-primary mr-3">
+                  <Link to='/trade-swap'
+                    onClick={this.passCheckedRoundIds}>
+                      Trade/Swap
+                  </Link>
+                </button>
+              </div>
+            )}
           </div>
           <div className="row">
             <div className="col">
