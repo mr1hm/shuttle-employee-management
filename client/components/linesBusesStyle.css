@@ -30,17 +30,19 @@
 }
 
 .lineActiveIcon {
-  width: 0.75em !important;
-  border-radius: 80%;
-  box-shadow: 0 0 5px 1px #aef4af;
+  border-radius: 50%;
+  font-size: 11px;
+  /* border: 1px solid black; */
+  box-shadow: 0 0 5px 2px #aef4af;
 }
 
 .busActiveIcon {
+  border-radius: 30%;
   box-shadow: 0 0 5px 1px #aef4af;
 }
 
 .lineInactiveIcon {
-  width: 0.75em !important;
+  font-size: 11px;
 }
 
 .busInactiveIcon,
