@@ -17,6 +17,10 @@
   transform: translate(-50%,-50%);
 }
 
+.number {
+  min-height: 30px;
+}
+
 .scrollable-menu {
   height: auto;
   max-height: 200px;
