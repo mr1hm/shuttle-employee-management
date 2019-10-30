@@ -1,6 +1,6 @@
 import React from 'react';
-import TableDragSelect from 'react-table-drag-select';
-import 'react-table-drag-select/style.css';
+// import TableDragSelect from 'react-table-drag-select';
+// import 'react-table-drag-select/style.css';
 // import TableDragSelect from './table-drag-select';
 // import 'react-table-drag-select/style.css';
 
