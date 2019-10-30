@@ -4,7 +4,7 @@ export default class Session extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sessions: this.props.allSessions
+      sessionID: this.props.sessionData.id
     };
   }
 
