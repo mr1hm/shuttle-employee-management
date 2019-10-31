@@ -19,7 +19,7 @@ class ShiftsMonth extends React.Component {
     this.id = '&id=' + this.props.userId;
     this.state = {
       scheduledHoursForCurrentMonth: [],
-      swapFlag: false
+      swapFlag: 0
     };
   }
   getData(url, methodToUse) {
@@ -33,7 +33,7 @@ class ShiftsMonth extends React.Component {
       .catch(error => { throw (error); });
   }
   componentDidMount() {
-    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : false;
+    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
     const initialQuery = this.calculateQueryRange(this.props.defaultDate);
     this.getData('/api/shifts-month.php' + initialQuery + this.id, 'GET');
     this.setState({

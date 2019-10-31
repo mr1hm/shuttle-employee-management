@@ -1,26 +1,32 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
-
 import TopMenuGeneral from './topmenu/topmenu-general';
 import { Link } from 'react-router-dom';
 import NotificationShift from './trade-notification-shift';
+import SwapConfirmation from './swap-confirmation-modal';
 
 class TradeNotification extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       newShifts: [],
-      selectedDriver: {}
+      selectedDriver: {},
+      swapShifts: [],
+      selectedRoundId: 0
     };
     this.removeShift = this.removeShift.bind(this);
     this.giveShifttoSelectedDriver = this.giveShifttoSelectedDriver.bind(this);
   }
   componentDidMount() {
+    const selectedRoundId = this.props.location.state.swapFlag ? this.props.location.state.swapFlag : 0;
+    const swapShift = this.props.shiftDetails;
     fetch(`/api/get-notifications.php?id=${this.props.userId}`)
       .then(response => response.json())
       .then(shiftsArrayOfObjects => {
         this.setState({
-          newShifts: shiftsArrayOfObjects
+          newShifts: shiftsArrayOfObjects,
+          swapShifts: swapShift,
+          selectedRoundId: selectedRoundId
         });
       })
       .catch(error => console.error('Fetch failed', error));
@@ -61,6 +67,11 @@ class TradeNotification extends React.Component {
     });
   }
   render() {
+    if (this.state.selectedRoundId) {
+      return (
+        <SwapConfirmation selectedRoundId={this.state.selectedRoundId} allShifts={this.state.newShifts} ownShiftsToSwap={this.state.swapShifts} />
+      );
+    }
     if (!this.state.newShifts) {
       return (
         <div className="container mt-2">

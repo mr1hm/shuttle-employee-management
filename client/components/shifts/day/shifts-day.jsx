@@ -20,7 +20,7 @@ class ShiftsDay extends React.Component {
       queryString: `?date=${adjustLocalTimestampToUTCSeconds(defaultDate)}&userID=${defaultId}&type=myShifts`,
       dateToPass: defaultDate,
       userId: this.props.userId,
-      swapFlag: false
+      swapFlag: 0
     };
   }
   getShifts(query) {
@@ -34,7 +34,7 @@ class ShiftsDay extends React.Component {
       .catch(error => { console.error(error); });
   }
   componentDidMount() {
-    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : false;
+    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
     this.getShifts(this.state.queryString);
     this.setState({
       swapFlag: swapFlag
