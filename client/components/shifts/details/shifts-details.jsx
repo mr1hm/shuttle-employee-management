@@ -75,7 +75,6 @@ class ShiftsDetails extends React.Component {
     this.setState({ postModalOpen: !this.state.postModalOpen });
   }
   render() {
-    console.log(this.state.swapFlag);
     if (!this.state.shiftDetails) {
       return (
         <div className="container mt-2">
