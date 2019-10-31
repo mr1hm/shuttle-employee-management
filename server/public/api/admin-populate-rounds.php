@@ -8,6 +8,7 @@ require_once('shift-restrictions.php');
 function populateSchedule (&$operators, $rounds, $conn, $session) {
   // Traverse through all rounds
   while ( current($rounds) ) {
+    print(current($rounds)['line_name']);
     $shift = getShift(current($rounds)['line_name'], $rounds);
     $madeAssignment = false;
 
@@ -41,7 +42,11 @@ function getShift ($lineName, &$rounds) {
     'C' => 3,
     'D' => 4,
     'Hs' => 5,
-    'S' => 5
+    'S' => 5,
+    'A' => 3,
+    'M' => 3,
+    'N' => 3,
+    'V' => 3
   ];
   $minimumRoundsInShift = $lineRounds[$lineName];
 
@@ -50,7 +55,6 @@ function getShift ($lineName, &$rounds) {
     $shift[] = current($rounds);
     if ($i !== $minimumRoundsInShift - 1) next($rounds);
   }
-
   return $shift;
 }
 
@@ -212,6 +216,8 @@ function getSessionDays ($dayIndex, $sessionStartTimestamp, $sessionEndTimestamp
 
 // Update all of the rounds in this shift in the database
 function updateDatabase ($conn, $shift, $session) {
+  print('<pre>');
+  print_r($shift);
   while ( current($shift) ) {
     $user_id = current($shift)['user_id'];
     $bus_info_id = current($shift)['bus_info_id'];
@@ -339,7 +345,6 @@ function getOperatorsForWeek ($conn) {
     reset($operatorAvailability);
   }
   unset($operatorsAvailability);
-
   return array_values($operators);
 }
 
