@@ -2,6 +2,7 @@ import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import TradeModal from './trade-modal';
 import SwapModal from './swap-modal';
+import Switch from './switch';
 import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, returnWeekInfoArray } from '../lib/time-functions';
 
 class TradeSwap extends React.Component {
@@ -9,9 +10,11 @@ class TradeSwap extends React.Component {
     super(props);
     this.state = {
       availableDrivers: [],
-      selectedDriver: {}
+      selectedDriver: {},
+      toggleButtonisOn: false
     };
     this.handleDriverClick = this.handleDriverClick.bind(this);
+    this.handleToggle = this.handleToggle.bind(this);
   }
   componentDidMount() {
     if (this.props.shiftDetails.length > 0) {
@@ -51,11 +54,25 @@ class TradeSwap extends React.Component {
       })
       .catch(error => { throw (error); });
   }
+  handleToggle() {
+    this.setState({
+      toggleButtonisOn: !this.state.toggleButtonisOn
+    });
+  }
 
   render() {
 
     const rounds = this.props.shiftDetails;
-    const confirmationText = (Object.keys(this.state.selectedDriver).length !== 0) ? `Trade or Swap with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name}?` : 'Select Coworker';
+    let confirmationText = '';
+    if (Object.keys(this.state.selectedDriver).length !== 0) {
+      if (this.state.toggleButtonisOn) {
+        confirmationText = `Swap with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name}?`;
+      } else {
+        confirmationText = `Trade with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name}?`;
+      }
+    } else {
+      confirmationText = 'Select Coworker';
+    }
     if (this.props.shiftDetails.length === 0) {
       return (
         <div className="container mt-2">
@@ -69,7 +86,16 @@ class TradeSwap extends React.Component {
       return (
         <div className="container d-flex flex-column justify-content-around h-100">
           <div className="row">
-            <h1> Trade/Swap </h1>
+            <div className="col-5 mt-3 d-flex justify-content-end">
+              <Switch isOn={this.state.toggleButtonisOn} handleToggle={this.handleToggle} />
+            </div>
+            <div className="col-6 ml-5 mt-3">
+              {this.state.toggleButtonisOn ? (
+                <h1> Swap </h1>
+              ) : (
+                <h1> Trade </h1>
+              )}
+            </div>
           </div>
           <div className="row justify-content-center">
             <div className="btn-group w-50">
@@ -98,18 +124,21 @@ class TradeSwap extends React.Component {
             <div className="col h-50 d-flex justify-content-center">
               <button type="button" onClick={this.props.history.goBack} className="btn btn-lg btn-light w-75">Cancel</button>
             </div>
-            <div className="col h-50 d-flex justify-content-center">
-              <button type="button" data-toggle="modal" data-target="#tradeModal" className="btn btn-lg btn-success w-75">Trade</button>
+            {this.state.toggleButtonisOn ? (
+              <div className="col h-50 d-flex justify-content-center">
+                <button type="button" data-toggle="modal" data-target="#swapModal" className="btn btn-lg btn-primary w-75">Swap</button>
                 <>
-                  <TradeModal selectedDriver={this.state.selectedDriver} allShifts={rounds}/>
+                  <SwapModal selectedDriver={this.state.selectedDriver} allShifts={rounds} />
                 </>
-            </div>
-            <div className="col h-50 d-flex justify-content-center">
-              <button type="button" data-toggle="modal" data-target="#swapModal" className="btn btn-lg btn-primary w-75">Swap</button>
-                <>
-                <SwapModal selectedDriver={this.state.selectedDriver} allShifts={rounds} />
-                </>
-            </div>
+              </div>
+            ) : (
+              <div className="col h-50 d-flex justify-content-center">
+                <button type="button" data-toggle="modal" data-target="#tradeModal" className="btn btn-lg btn-success w-75">Trade</button>
+                  <>
+                    <TradeModal selectedDriver={this.state.selectedDriver} allShifts={rounds} />
+                  </>
+              </div>
+            )}
           </div>
         </div>
       );
