@@ -255,7 +255,8 @@
           'assigned_times' => $operatorDetails['assigned_times'],
           'shift_restrictions' => $operatorDetails['shift_restrictions'],
           'minutes_without_30_minute_break' => $operatorDetails['minutes_without_30_minute_break'],
-          'total_daily_minutes' => $operatorDetails['total_daily_minutes']
+          'total_daily_minutes' => $operatorDetails['total_daily_minutes'],
+          'total_weekly_minutes' => $operator['total_weekly_minutes']
         ]);
         foreach ( $operatorDetails['dates'] as $date ) {
           $ops[] = [

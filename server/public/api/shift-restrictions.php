@@ -4,6 +4,8 @@ set_exception_handler('error_handler');
 require_once('db_connection.php');
 
 function canTakeShift ($operator, $shift, $conn, int $format = null) {
+  /* IF $format is omitted, it is being accessed by auto-populate
+   * IF $format is 1, it is being accessed by admin-available/unavailable operators */
   if ( !$format ) {
     if ( !shiftWithinAvailability($operator, $shift) ) return false;
     if ( !hasSpecialStatus($operator, $shift, $conn) ) return false;
@@ -14,7 +16,7 @@ function canTakeShift ($operator, $shift, $conn, int $format = null) {
   }
   if ( $format === 1 ) {
     $unavailableMessages = [];
-    // $unavailableMessages[] = shiftWithinAvailability($operator, $shift, $format);
+    $unavailableMessages[] = shiftWithinAvailability($operator, $shift, $format);
     $unavailableMessages[] = hasSpecialStatus($operator, $shift, $conn, $format);
     $unavailableMessages[] = shiftTimeRestriction($operator, $shift, $format);
     $unavailableMessages[] = totalShiftTimeRestriction($operator, $shift, $format);

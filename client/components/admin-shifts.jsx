@@ -340,7 +340,7 @@ class AdminShiftsDay extends React.Component {
             id={availableOperators[op]['details'].user_id}
             name={`${availableOperators[op]['details'].last_name}, ${availableOperators[op]['details'].first_name}`}
             dailyHours={availableOperators[op]['details'].total_daily_minutes / 60}
-            weeklyHours={availableOperators[op].weeklyHours}
+            weeklyHours={availableOperators[op]['details'].total_weekly_minutes / 60}
             onClickAssignShift={this.handleClickAssignShift} />
         );
       }
