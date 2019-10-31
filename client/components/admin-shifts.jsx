@@ -1,6 +1,5 @@
 import React from 'react';
 import TopMenuAdminDay from './topmenu/topmenu-admin-day';
-import AdminWeekNav from './admin-week-nav';
 import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
 import AdminClickedShiftDetailsAside from './admin-shifts-clicked-details-aside';
@@ -21,7 +20,6 @@ class AdminShiftsDay extends React.Component {
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
     this.handleClickAssignShifts = this.handleClickAssignShifts.bind(this);
     this.handleClickAssignShiftConfirm = this.handleClickAssignShiftConfirm.bind(this);
-    this.handleClickUnassignShifts = this.handleClickUnassignShifts.bind(this);
     this.handleClickUnassignShift = this.handleClickUnassignShift.bind(this);
     this.handleClickCancel = this.handleClickCancel.bind(this);
     this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
@@ -38,7 +36,6 @@ class AdminShiftsDay extends React.Component {
       roundsToUnassign: [],
       shiftsToUnassign: [],
       selectingAssign: false,
-      selectingUnassign: false,
       groupedShifts: []
     };
   }
@@ -110,6 +107,7 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
+  // when admin clicks on a day of the week in the nav get new shift data for that day
   handleClickGoToDay(timestamp) {
     this.getTodaysShiftData(timestamp);
   }
@@ -121,6 +119,7 @@ class AdminShiftsDay extends React.Component {
       }
     });
   }
+  // click handler for the confirm modal to assign shift
   handleClickAssignShiftConfirm(id) {
     const data = {
       method: 'POST',
@@ -144,62 +143,7 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
-  handleClickAssignShifts() {
-    if (this.state.selectingUnassign) {
-      return;
-    }
-    this.setState({
-      selectingAssign: true,
-      shiftsSelected: []
-    });
-  }
-  handleClickUnassignShifts() {
-    if (this.state.selectingAssign) {
-      return;
-    }
-    this.setState({
-      selectingUnassign: true,
-      shiftsSelected: []
-    });
-  }
-  handleClickUnassignShift(rounds, shifts) {
-    this.setState({
-      selectingUnassign: true,
-      roundsToUnassign: rounds,
-      shiftsToUnassign: shifts
-    });
-  }
-  handleClickCancel() {
-    this.setState({
-      selectingAssign: false,
-      selectingUnassign: false,
-      availableOperators: [],
-      roundsSelected: [],
-      roundTimes: [],
-      shiftsSelected: []
-    });
-  }
-  handleShiftClick(shift) {
-    if (shift.shiftType === 'nonOperational') {
-      return;
-    }
-    var shiftsSelected = this.state.shiftsSelected;
-    var shiftIndex = shiftsSelected.map(shiftItem => shiftItem.roundId).indexOf(shift.roundId);
-    if (shiftIndex > -1) {
-      shiftsSelected.splice(shiftIndex, 1);
-      this.setState({ shiftsSelected: shiftsSelected });
-      return;
-    }
-    if (this.state.selectingAssign) {
-      shiftsSelected.push(shift);
-      this.setState({ shiftsSelected: shiftsSelected });
-    } else if (this.state.selectingUnassign || (!this.state.selectingUnassign && !this.state.selectingAssign)) {
-      shiftsSelected = [shift];
-      this.setState({
-        shiftsSelected: shiftsSelected
-      });
-    }
-  }
+  // click handler for the confirm modal to unassign shift
   handleClickUnassignOperator() {
     let rounds = this.state.roundsToUnassign;
     const data = {
@@ -224,14 +168,64 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
+  // switches to assign shift mode so admin can select multiple shifts to assign
+  handleClickAssignShifts() {
+    if (this.state.selectingAssign) {
+      return;
+    }
+    this.setState({
+      selectingAssign: true,
+      shiftsSelected: []
+    });
+  }
+  // sets which rounds(an array of round ids) and shifts(an array of shift times)
+  // to unassign before confirming with modal
+  handleClickUnassignShift(rounds, shifts) {
+    this.setState({
+      selectingUnassign: true,
+      roundsToUnassign: rounds,
+      shiftsToUnassign: shifts
+    });
+  }
+  // resets all assign/unassign data to empty
+  handleClickCancel() {
+    this.setState({
+      selectingAssign: false,
+      availableOperators: [],
+      roundsSelected: [],
+      roundTimes: [],
+      shiftsSelected: []
+    });
+  }
+  // sets which shift is selected to display on side of schedule
+  handleShiftClick(shift) {
+    if (shift.shiftType === 'nonOperational') {
+      return;
+    }
+    var shiftsSelected = this.state.shiftsSelected;
+    var shiftIndex = shiftsSelected.map(shiftItem => shiftItem.roundId).indexOf(shift.roundId);
+    if (shiftIndex > -1) {
+      shiftsSelected.splice(shiftIndex, 1);
+      this.setState({ shiftsSelected: shiftsSelected });
+      return;
+    }
+    if (this.state.selectingAssign) {
+      shiftsSelected.push(shift);
+      this.setState({ shiftsSelected: shiftsSelected });
+    } else if (this.state.selectingUnassign || (!this.state.selectingUnassign && !this.state.selectingAssign)) {
+      shiftsSelected = [shift];
+      this.setState({
+        shiftsSelected: shiftsSelected
+      });
+    }
+  }
   componentDidMount() {
     this.getTodaysShiftData(this.state.date);
   }
+  // renders a header when 'select shifts to assign' button is clicked
   renderSelectModeHeader() {
     if (this.state.selectingAssign) {
       return <h5 className="selectingAssignHeader m-0">Select shifts to assign</h5>;
-    } else if (this.state.selectingUnassign) {
-      return <h5 className="selectingUnassignHeader m-0">Select shift to unassign</h5>;
     }
   }
   renderAssignCancelButton() {
@@ -239,11 +233,7 @@ class AdminShiftsDay extends React.Component {
       return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
     }
   }
-  renderUnAssignCancelButton() {
-    if (this.state.selectingUnassign) {
-      return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
-    }
-  }
+  // renders the route line and bus number inside a colored div (first column in schedule)
   renderLineComponents() {
     const shiftsGroupedByLine = this.state.groupedShifts;
     const elements = [];
@@ -258,6 +248,7 @@ class AdminShiftsDay extends React.Component {
     });
     return elements;
   }
+  // renders colored divs as rounded rectangles on schedule for each row
   renderShiftComponents() {
     const shiftsGroupedByLine = this.state.groupedShifts;
     if (shiftsGroupedByLine.length === 0) {
@@ -275,7 +266,7 @@ class AdminShiftsDay extends React.Component {
           selectingType = this.state.selectingAssign;
         } else {
           roundType = 'active';
-          selectingType = this.state.selectingUnassign;
+          selectingType = this.state.selectingAssign;
         }
         return (
           < AdminShiftsCombinedRounds
@@ -395,17 +386,11 @@ class AdminShiftsDay extends React.Component {
             onClick={this.handleClickAssignShifts}>
             Select Shifts to Assign
           </button>
-          {/* <button
-            className={`selectShiftsButton btn btn-danger border m-2`}
-            onClick={this.handleClickUnassignShifts}>
-            Select Shift to Unassign
-          </button> */}
           <div className="selectModeContainer d-flex flex-fill justify-content-center align-items-center">
             {this.renderSelectModeHeader()}
           </div>
           <div className="cancelButtonContainer d-flex ml-auto">
             {this.renderAssignCancelButton()}
-            {this.renderUnAssignCancelButton()}
           </div>
         </div>
         <div className="main-container d-flex px-5 h-100">

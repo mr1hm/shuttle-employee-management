@@ -36,23 +36,6 @@ class AdminClickedShiftDetailsAside extends React.Component {
     this.props.operatorSelected(userName, this.props.userId);
     this.props.onClickUnassignOperator(this.state.roundIdsChecked, this.state.roundTimesChecked);
   }
-  checkIfUnassignedShift() {
-    if (this.props.shiftType === 'active') {
-      return null;
-    }
-    return <FontAwesomeIcon icon={faAngleRight} className={`angleIcon ${this.checkIfExpanded()}`} />;
-  }
-  checkIfExpanded() {
-    if (this.state.expanded) {
-      return 'angleIconRotate';
-    }
-    return '';
-  }
-  checkIfAssignedShift() {
-    if (this.props.shiftType === 'active') {
-      return this.renderRoundDetails();
-    }
-  }
   renderRoundDetails() {
     return (
       <form className="roundDetails form-group form-check" onSubmit={this.handleClickUnassignSubmit}>
@@ -96,7 +79,7 @@ class AdminClickedShiftDetailsAside extends React.Component {
             <div>ID#: {this.props.userId === 1 ? 'unassigned' : this.props.userId}</div>
             <div>Status: {shiftStatus}</div>
             <div>Rounds: {this.props.rounds.length}</div>
-            {this.checkIfAssignedShift()}
+            {this.renderRoundDetails()}
           </div>
         </div>
       </div>
