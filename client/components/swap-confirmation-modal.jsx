@@ -9,12 +9,31 @@ class SwapConfirmation extends React.Component {
     this.state = {
       selectedRoundsToSwap: []
     };
+    this.swapShift = this.swapShift.bind(this);
   }
   componentDidMount() {
     const selectedShift = this.props.allShifts.filter(oneShift => this.props.selectedRoundId === oneShift.round_id);
     this.setState({
       selectedRoundsToSwap: selectedShift
     });
+  }
+  swapShift() {
+    const { selectedRoundsToSwap } = this.state;
+    const body = {
+      target_id: selectedRoundsToSwap[0].target_user_id,
+      user_id: selectedRoundsToSwap[0].user_id,
+      original_rounds: selectedRoundsToSwap,
+      target_rounds: this.props.ownShiftsToSwap
+    };
+    fetch('/api/swap-shift.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    })
+      .catch(err => console.error(err.message));
+
   }
   render() {
     return (
@@ -77,7 +96,7 @@ class SwapConfirmation extends React.Component {
               })}
             </div>
             <div className="modal-footer justify-content-center">
-              <Link to='/welcome/' className="btn btn-primary">Yes</Link>
+              <Link to='/welcome/' className="btn btn-primary" onClick={this.swapShift}>Yes</Link>
               <Link to='/welcome/'className="btn btn-secondary" data-dismiss="modal">No</Link>
             </div>
           </div>
