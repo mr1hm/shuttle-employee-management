@@ -14,7 +14,7 @@ function canTakeShift ($operator, $shift, $conn, int $format = null) {
   }
   if ( $format === 1 ) {
     $unavailableMessages = [];
-    $unavailableMessages[] = shiftWithinAvailability($operator, $shift, $format);
+    // $unavailableMessages[] = shiftWithinAvailability($operator, $shift, $format);
     $unavailableMessages[] = hasSpecialStatus($operator, $shift, $conn, $format);
     $unavailableMessages[] = shiftTimeRestriction($operator, $shift, $format);
     $unavailableMessages[] = totalShiftTimeRestriction($operator, $shift, $format);
@@ -60,9 +60,8 @@ function hasSpecialStatus ($operator, $shift, $conn, int $format = null) {
   }
   if ( $format === 1 ) {
     return array_search($shift['line_name'], $lines) !== null
-      ? intval($operator['special_route']) === 1
-        ? ''
-        : 'Operator not authorized for special route'
+      ? $operator['special_route_ok']
+        ? '' : 'Operator not authorized for special route'
       : '';
   }
 }

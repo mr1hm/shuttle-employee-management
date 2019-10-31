@@ -70,7 +70,7 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
-  getAvailableDrivers(startTime, endTime, roundId, userId) {
+  getAvailableDrivers(startTime, endTime, roundId, userId, lineBus) {
     if (!this.state.selectingAssign || userId !== 1) {
       return;
     }
@@ -97,7 +97,7 @@ class AdminShiftsDay extends React.Component {
       return;
     }
     var roundTimesString = JSON.stringify(this.state.roundTimes);
-    fetch(`/api/admin-available-operators.php?date=${this.state.date}&sunday=${this.state.week[0].unix}&saturday=${this.state.week[6].unix}&round_time=${roundTimesString}`, {
+    fetch(`/api/admin-available-operators.php?date=${this.state.date}&sunday=${this.state.week[0].unix}&saturday=${this.state.week[6].unix}&round_time=${roundTimesString}&line_bus=${lineBus}`, {
       method: 'GET'
     })
       .then(response => response.json())
@@ -332,15 +332,15 @@ class AdminShiftsDay extends React.Component {
   renderAvailableOperatorElements() {
     const availableOperatorElements = [];
     const availableOperators = this.state.availableOperators;
-    for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
-      if (availableOperators[operatorIndex]['availability']['available']) {
+    for (let op in availableOperators) {
+      if (availableOperators[op]['available']) {
         availableOperatorElements.push(
           <AdminAvailableOperator
-            key={availableOperators[operatorIndex].id}
-            id={availableOperators[operatorIndex].id}
-            name={`${availableOperators[operatorIndex].lastName}, ${availableOperators[operatorIndex].firstName}`}
-            dailyHours={availableOperators[operatorIndex].totalHours}
-            weeklyHours={availableOperators[operatorIndex].weeklyHours}
+            key={availableOperators[op]['details'].user_id}
+            id={availableOperators[op]['details'].user_id}
+            name={`${availableOperators[op]['details'].last_name}, ${availableOperators[op]['details'].first_name}`}
+            dailyHours={availableOperators[op]['details'].total_daily_minutes / 60}
+            weeklyHours={availableOperators[op].weeklyHours}
             onClickAssignShift={this.handleClickAssignShift} />
         );
       }
@@ -359,14 +359,14 @@ class AdminShiftsDay extends React.Component {
   renderUnavailableOperatorElements() {
     const unavailableOperatorElements = [];
     const availableOperators = this.state.availableOperators;
-    for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
-      if (!availableOperators[operatorIndex]['availability']['available']) {
+    for (let op in availableOperators) {
+      if (!availableOperators[op]['available']) {
         unavailableOperatorElements.push(
           <AdminUnavailableOperator
-            key={availableOperators[operatorIndex].id}
-            id={availableOperators[operatorIndex].id}
-            name={`${availableOperators[operatorIndex].lastName}, ${availableOperators[operatorIndex].firstName}`}
-            unavailableReasons={availableOperators[operatorIndex]['availability']['reasons']} />
+            key={availableOperators[op]['details'].user_id}
+            id={availableOperators[op]['details'].user_id}
+            name={`${availableOperators[op]['details'].last_name}, ${availableOperators[op]['details'].first_name}`}
+            unavailableReasons={availableOperators[op]['unavailable_reasons']} />
         );
       }
     }

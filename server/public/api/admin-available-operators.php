@@ -46,32 +46,35 @@ $day = 'Wed';
 $week = [1566100800, 1566619200];
 $shift = [
   0 => [
-    'start_time' => 900,
-    'stop_time' => 930
+    'start_time' => 1220,
+    'stop_time' => 1240,
+    'line_name' => 'C'
   ],
   1 => [
-    'start_time' => 930,
-    'stop_time' => 1000
+    'start_time' => 1240,
+    'stop_time' => 1300,
+    'line_name' => 'C'
   ]
 ];
-$operators = buildOperatorsForDay($week, $day, $conn);
 
-foreach ($operators as &$operator) {
-  $unavailable = canTakeShift($operator, $shift, $conn, 1);
-  $operator['available'] =  !$unavailable;
-  $operator['unavailable_reasons'] = $unavailable ?? null;
+
+// print('<pre>');
+// print_r($operators);
+
+if ( validParameters() ) {
+  $day = date('D', $_GET['date']);
+  $week = [ $_GET['sunday'], $_GET['saturday'] ];
+  $shift = $_GET['round_time'];
+
+  $operators = buildOperatorsForDay($week, $day, $conn);
+  foreach ($operators as &$operator) {
+    $unavailable = canTakeShift($operator['details'], $shift, $conn, 1);
+    $operator['available'] = !$unavailable;
+    $operator['unavailable_reasons'] = $unavailable ?? null;
+  }
+  unset($operator);
+  print( json_encode($operators) );
 }
-unset($operator);
-
-print('<pre>');
-print_r($operators);
-
-// if ( validParameters() ) {
-//   $day = date('D', $_GET['date']);
-//   $week = [ $_GET['sunday'], $_GET['saturday'] ];
-//   $shift = $_GET['round_time'];
-//   buildOperators($shift, $week, $day, $conn);
-// }
 
 // print($_GET['round_time']);
 // start_time, stop_time
