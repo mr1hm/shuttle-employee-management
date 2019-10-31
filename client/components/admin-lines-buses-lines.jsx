@@ -21,7 +21,8 @@ export default class Lines extends React.Component {
       busAdded: false,
       deletedLine: null,
       editLineClicked: false,
-      specialDriverRequired: this.props.line.specialDriver === 'True'
+      specialDriverRequired: this.props.line.specialDriver === 'True',
+      sessionName: ''
     };
     this.displayBusDetails = this.displayBusDetails.bind(this);
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
@@ -36,6 +37,20 @@ export default class Lines extends React.Component {
         specialDriverRequired
       });
     }
+  }
+
+  componentDidMount() {
+    setTimeout(() => this.getSessionName(), 0);
+  }
+
+  getSessionName() {
+    let currentSession = this.props.sessions.find(session => {
+      return this.props.line.sessionID === session.id;
+    });
+    // return currentSession.name;
+    this.setState({
+      sessionName: currentSession.name
+    });
   }
 
   handleAddBusButtonClick() {
@@ -54,9 +69,15 @@ export default class Lines extends React.Component {
     this.setState({ busDetailsClicked: !this.state.busDetailsClicked });
   }
 
-  deleteLine(lineID) {
+  deleteLine(lineID, sessionID, busID) {
+    let busIDArr = [];
+    let busIDs = this.props.line.activeBuses.forEach(buses => {
+      busIDArr.push(buses.busID); // IT WORKS!!
+    });
+    console.log(busIDArr);
     const body = {
-      routeID: lineID
+      routeID: lineID,
+      buses: busIDArr
     };
     const init = {
       method: 'DELETE',
@@ -68,7 +89,7 @@ export default class Lines extends React.Component {
         this.setState({
           deletedLine
         });
-        this.props.getLinesBusesInfo();
+        this.props.getLinesBusesInfo({ session_id: sessionID });
       })
       .catch(error => console.error(error));
   }
@@ -125,14 +146,15 @@ export default class Lines extends React.Component {
       <div id="accordion">
         <div className="card" id={line.real_route_id}>
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
-            <div className="row align-items-center lineHeaderFirstRow">
-              <div className={`col-2 ${line.line_name}`}>
+            <div className="row w-100 align-items-center lineHeaderFirstRow">
+              <div className={`col-2 lineName ${line.line_name}`}>
                 Line {this.state.specialDriverRequired ? <FontAwesomeIcon className="specialDriverIcon ml-3" icon={faUserTie} /> : null}
               </div>
               <div className="col">Status</div>
               <div className="col">Round Duration</div>
               <div className="col">Public</div>
               <div className="col">Regular Service</div>
+              <div className="col d-flex justify-content-center">Session</div>
               <div className="col d-flex justify-content-center">
                 {activeBuses.length === 0 ? <FontAwesomeIcon className="busInactiveIcon" icon={faBus} /> : <FontAwesomeIcon className="busActiveIcon" icon={faBus} />}
               </div>
@@ -140,7 +162,7 @@ export default class Lines extends React.Component {
                 <button onClick={this.handleEditLineClicked} className="editLineBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
               </div>
             </div>
-            <div className="row align-items-center">
+            <div className="row w-100 align-items-center">
               <div className="col-2">
                 <RouteBusDisplay route={line.line_name} />
               </div>
@@ -151,6 +173,7 @@ export default class Lines extends React.Component {
               <div className="col">{`${line.roundDuration}min`}</div>
               <div className="col">{line.public}</div>
               <div className="col">{line.regularService}</div>
+              <div className="col d-flex justify-content-center">{this.state.sessionName}</div>
               <div className="col">
                 <button className="btn btn-link" type="button" data-toggle="collapse"
                   name={`busDetailsClicked${line.route_id}`} href={'#collapse' + line.line_name} onClick={this.displayBusDetails} aria-expanded="true" aria-controls={'collapse' + line.line_name}>
@@ -159,7 +182,7 @@ export default class Lines extends React.Component {
                 </button>
               </div>
               <div className="col d-flex justify-content-center">
-                <button onClick={() => this.deleteLine(line.real_route_id)} className="deleteLineBtn btn btn-danger">
+                <button onClick={() => this.deleteLine(line.real_route_id, line.sessionID, line.activeBuses.busID)} className="deleteLineBtn btn btn-danger">
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>

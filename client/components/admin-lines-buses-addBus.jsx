@@ -65,7 +65,7 @@ export default class AddBus extends React.Component {
     const startTime = newBus.start_time;
     const startTimeLength = newBus.start_time.length;
     const rounds = parseInt(newBus.rounds);
-    console.log(startTimeLength);
+    // console.log(startTimeLength);
     if (startTime.length !== 4 && !rounds) {
       return '';
     }
@@ -78,7 +78,7 @@ export default class AddBus extends React.Component {
       let newHourInt = Math.round(parseInt(newHourStr) + amountOfHours);
       let newHourIntStr = newHourInt + '';
       let splitNewHourStr = newHourIntStr.split('');
-      console.log('splitNewHourStr', splitNewHourStr);
+      // console.log('splitNewHourStr', splitNewHourStr);
       if (splitNewHourStr[1]) {
         let addHourToArr = startTimeArr.splice(0, 0, splitNewHourStr[0], splitNewHourStr[1]);
       }
@@ -101,9 +101,9 @@ export default class AddBus extends React.Component {
       let newHour = hour.join('');
       let newHour2 = parseInt(newHour) + amountOfHours;
       let joinHour = startTimeArr.splice(0, 0, newHour2);
-      console.log(startTimeArr);
+      // console.log(startTimeArr);
       endTime = startTimeArr.join('');
-      console.log(endTime);
+      // console.log(endTime);
       return endTime;
     }
   }
