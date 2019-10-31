@@ -18,8 +18,8 @@ class AdminRoutes extends React.Component {
     this.ref = React.createRef();
     this.state = {
       copiedSession: null,
+      currentSession: '',
       sessions: [],
-      sessionName: '',
       sessionSelected: false,
       selectedSessionID: null,
       linesBusesInfo: [],
@@ -50,7 +50,6 @@ class AdminRoutes extends React.Component {
     this.handleSessionChange = this.handleSessionChange.bind(this);
     this.handlePasteSession = this.handlePasteSession.bind(this);
     this.handleCopySession = this.handleCopySession.bind(this);
-    // this.getSessionName = this.getSessionName.bind(this);
   }
 
   componentDidMount() {
@@ -75,7 +74,14 @@ class AdminRoutes extends React.Component {
   handleSessionChange(e, sessionID) {
     const value = e.target.value;
     if (value === 'All Sessions') {
+      this.setState({
+        currentSession: value
+      });
       return this.getLinesBusesInfo();
+    } else if (value !== 'All Sessions') {
+      this.setState({
+        currentSession: value
+      });
     }
     let sessionInfo = this.state.sessions.find(session => session.name === value);
     this.selectSession({ session_id: sessionInfo.id }, e);
@@ -145,6 +151,9 @@ class AdminRoutes extends React.Component {
 
   addNewLine(newLine, e) {
     e.preventDefault();
+    if (this.state.sessionSelected) {
+      // needs to add line and get lines/buses info from whichever session is currently selected.
+    }
     const init = {
       method: 'POST',
       body: JSON.stringify(newLine)
@@ -322,7 +331,7 @@ class AdminRoutes extends React.Component {
             <div className="row">
               <div className="col-2">
                 <label>Select Session</label>
-                <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
+                <select onChange={this.handleSessionChange} className="col border border-primary" name="currentSession">
                   <option>All Sessions</option>
                   {this.state.sessions.map(sessionData => {
                     return (

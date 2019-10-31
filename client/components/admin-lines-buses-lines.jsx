@@ -40,14 +40,13 @@ export default class Lines extends React.Component {
   }
 
   componentDidMount() {
-    setTimeout(() => this.getSessionName(), 0);
+    setTimeout(() => this.getSessionName(), 0); // yes i'm ridiculous
   }
 
   getSessionName() {
     let currentSession = this.props.sessions.find(session => {
       return this.props.line.sessionID === session.id;
     });
-    // return currentSession.name;
     this.setState({
       sessionName: currentSession.name
     });
@@ -69,10 +68,10 @@ export default class Lines extends React.Component {
     this.setState({ busDetailsClicked: !this.state.busDetailsClicked });
   }
 
-  deleteLine(lineID, sessionID, busID) {
+  deleteLine(lineID, sessionID) { // works, but gets all lines from all sessions instead of just staying on the current session
     let busIDArr = [];
-    let busIDs = this.props.line.activeBuses.forEach(buses => {
-      busIDArr.push(buses.busID); // IT WORKS!!
+    let busIDs = this.props.line.activeBuses.forEach(buses => { // another bug. if deleting line from All Sessions tab, it will not get/render all the lines after sending delete method.
+      busIDArr.push(buses.busID); // DELETES BUS AS WELL - IT WORKS!!
     });
     console.log(busIDArr);
     const body = {
@@ -182,7 +181,7 @@ export default class Lines extends React.Component {
                 </button>
               </div>
               <div className="col d-flex justify-content-center">
-                <button onClick={() => this.deleteLine(line.real_route_id, line.sessionID, line.activeBuses.busID)} className="deleteLineBtn btn btn-danger">
+                <button onClick={() => this.deleteLine(line.real_route_id, line.sessionID)} className="deleteLineBtn btn btn-danger">
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
