@@ -16,7 +16,7 @@ class ShiftsDetails extends React.Component {
       shiftOverview: null,
       shiftDetails: null,
       checkedRounds: [],
-      swapFlag: false
+      swapFlag: 0
     };
     this.passCheckedRoundIds = this.passCheckedRoundIds.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
@@ -46,7 +46,7 @@ class ShiftsDetails extends React.Component {
       .catch(error => console.error(error));
   }
   componentDidMount() {
-    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : false;
+    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
     this.getShifts();
     this.setState({
       swapFlag: swapFlag
@@ -141,8 +141,13 @@ class ShiftsDetails extends React.Component {
             {this.state.swapFlag ? (
               <div className="col d-flex justify-content-end">
                 <button className="btn btn-primary mr-3">
-                  <Link to='/trade-notification'
-                    onClick={this.passCheckedRoundIds}>
+                  <Link to={{
+                    pathname: '/trade-notification',
+                    state: {
+                      swapFlag: this.state.swapFlag
+                    }
+                  }}
+                  onClick={this.passCheckedRoundIds}>
                     Select Swap Shift
                   </Link>
                 </button>

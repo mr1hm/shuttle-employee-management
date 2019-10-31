@@ -7,12 +7,12 @@ class SingleShift extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      swapFlag: false
+      swapFlag: 0
     };
     this.openDetails = this.openDetails.bind(this);
   }
   componentDidMount() {
-    const swapFlag = this.props.swapFlag ? this.props.swapFlag : false;
+    const swapFlag = this.props.swapFlag ? this.props.swapFlag : 0;
     this.setState({
       swapFlag: swapFlag
     });

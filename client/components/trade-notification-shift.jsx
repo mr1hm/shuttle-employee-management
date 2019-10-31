@@ -27,7 +27,7 @@ class NotificationShift extends React.Component {
         <Link to={{
           pathname: '/shifts/month/shifts-month/',
           state: {
-            swapFlag: true
+            swapFlag: round_id
           }
         }}
         className="btn btn-dark">
