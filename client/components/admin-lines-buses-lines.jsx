@@ -30,17 +30,20 @@ export default class Lines extends React.Component {
     this.handleEditLineClicked = this.handleEditLineClicked.bind(this);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     let specialDriverRequired = this.props.line.specialDriver === 'True';
     if (this.state.specialDriverRequired !== specialDriverRequired) {
       this.setState({
         specialDriverRequired
       });
     }
+    // if (prevProps.sessions.length !== this.props.sessions.length || prevProps.linesBusesInfo.length !== this.props.linesBusesInfo.length) {
+    //   this.getSessionName();
+    // }
   }
 
   componentDidMount() {
-    setTimeout(() => this.getSessionName(), 0); // yes i'm ridiculous
+    this.getSessionName(); // yes i'm ridiculous
   }
 
   getSessionName() {
@@ -68,9 +71,9 @@ export default class Lines extends React.Component {
     this.setState({ busDetailsClicked: !this.state.busDetailsClicked });
   }
 
-  deleteLine(lineID, sessionID) { // works, but gets all lines from all sessions instead of just staying on the current session
+  deleteLine(lineID, sessionID) {
     let busIDArr = [];
-    let busIDs = this.props.line.activeBuses.forEach(buses => { // another bug. if deleting line from All Sessions tab, it will not get/render all the lines after sending delete method.
+    let busIDs = this.props.line.activeBuses.forEach(buses => { // another bug. if deleting line from All Sessions tab, it will get/render all the lines from only that session.
       busIDArr.push(buses.busID); // DELETES BUS AS WELL - IT WORKS!!
     });
     console.log(busIDArr);
@@ -88,7 +91,11 @@ export default class Lines extends React.Component {
         this.setState({
           deletedLine
         });
-        this.props.getLinesBusesInfo({ session_id: sessionID });
+        if (this.props.currentSession === 'All Sessions') {
+          this.props.getLinesBusesInfo();
+        } else {
+          this.props.getLinesBusesInfo({ session_id: sessionID });
+        }
       })
       .catch(error => console.error(error));
   }
