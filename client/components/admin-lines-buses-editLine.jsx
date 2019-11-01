@@ -64,7 +64,11 @@ export default class EditLine extends React.Component {
         this.setState({
           editLineSent: !this.state.editLineSent
         }, () => {
-          this.props.getLinesBusesInfo({ session_id: line.session_id });
+          if (this.props.currentSession === 'All Sessions') {
+            this.props.getLinesBusesInfo();
+          } else {
+            this.props.getLinesBusesInfo({ session_id: line.session_id });
+          }
           this.props.handleEditLineClicked();
         });
       })

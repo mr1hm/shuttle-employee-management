@@ -109,7 +109,7 @@ export default class Lines extends React.Component {
     if (this.state.editLineClicked) {
       return (
         <div id="accordion">
-          <EditLine busDetailsClicked={this.state.busDetailsClicked} displayBusDetails={this.displayBusDetails} getLinesBusesInfo={this.props.getLinesBusesInfo} handleEditLineClicked={this.handleEditLineClicked} editLineClicked={this.state.editLineClicked} line={line} />
+          <EditLine currentSession={this.props.currentSession} busDetailsClicked={this.state.busDetailsClicked} displayBusDetails={this.displayBusDetails} getLinesBusesInfo={this.props.getLinesBusesInfo} handleEditLineClicked={this.handleEditLineClicked} editLineClicked={this.state.editLineClicked} line={line} />
 
           <div id={'collapse' + line.line_name} className="collapse" aria-labelledby={'heading' + line.line_name}> {/* data-parent="#accordion" was making things weird */}
 
