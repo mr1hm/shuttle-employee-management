@@ -12,9 +12,11 @@ export default class EditBusModal extends React.Component {
         id: this.props.busInfo.busID,
         bus_number: this.props.busInfo.busNumber,
         start_time: this.props.busInfo.startTime,
+        rounds: this.props.busInfo.rounds,
         end_time: this.props.busInfo.endTime,
         daysActive: this.props.busInfo.daysActive,
         gap: this.props.busInfo.gap,
+        gapDuration: this.props.busInfo.gapDuration,
         opening_duration: this.props.busInfo.openingDuration,
         closing_duration: this.props.busInfo.closingDuration
       }

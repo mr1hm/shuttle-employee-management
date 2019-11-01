@@ -161,7 +161,14 @@ class AdminRoutes extends React.Component {
       .then(lineInfo => {
         this.setState({
           newLineAdded: true
-        }, () => this.getUpdatedLines({ session_id: newLine.session_id }));
+        }, () => {
+          this.scrollToNewLine();
+          if (this.state.currentSession === 'All Sessions') {
+            this.getUpdatedLines();
+          } else {
+            this.getUpdatedLines({ session_id: newLine.session_id });
+          }
+        });
       })
       .catch(error => console.error(error));
     this.handleAddLineButton();
@@ -251,12 +258,10 @@ class AdminRoutes extends React.Component {
         .then(updatedLines => {
           this.setState({
             linesBusesInfo: updatedLines
-          }, () => {
-            this.scrollToNewLine();
-            if (this.state.currentSession === 'All Sessions') {
-              this.getLinesBusesInfo();
-            }
           });
+          if (this.state.currentSession === 'All Sessions') {
+            this.getLinesBusesInfo();
+          }
         })
         .catch(error => console.error(error));
     } else {
