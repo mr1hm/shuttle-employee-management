@@ -5,7 +5,6 @@ import SelectAvailabilityModal from './operator-availability-modal';
 import ErrorModal from './operator-error-modal';
 import SubmitModal from './operator-submit-modal';
 
-// dummy data only right now (not connected to endpoint)
 class OperatorAvailability extends React.Component {
   constructor(props) {
     super(props);
@@ -50,56 +49,58 @@ class OperatorAvailability extends React.Component {
   }
 
   buildDayCell(day) {
-    let defaultStyles = {
+    const defaultStyles = {
       width: '1.35%',
       height: '9vh',
       borderBottom: '1px solid black'
     };
 
+    // cleanup the remaining lines to match what was done on line 62
     return (
-      this.state.availability[day].map((element, index) => {
-        if (element) {
-          if (index === 71) {
-            return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'green', borderRight: '1px solid black' }}></td>;
-          } else if (index !== 0 && index % 4 === 0) {
-            return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'green', borderLeft: '1px solid black' }}></td>;
-          } else {
-            return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'green' }}></td>;
-          }
-        } else {
-          if (index === 71) {
-            return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'lightGrey', borderRight: '1px solid black' }}></td>;
-          } else if (index !== 0 && index % 4 === 0 && index < 24) {
-            return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, borderLeft: '1px solid black' }}></td>;
-          } else if (index !== 0 && index % 4 === 0 && index >= 24) {
-            return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'lightGrey', borderLeft: '1px solid black' }}></td>;
-          } else if (index < 24) {
-            return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles }}></td>;
-          } else {
-            return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, backgroundColor: 'lightGrey' }}></td>;
-          }
-        }
+      this.state.availability[day].map((isSelected, index) => {
+        const isPM = index >= 24;
+        const isFirst15Minutes = index % 4 === 0;
+        const isFinal15Minutes = index === 71;
+        const style = {
+          backgroundColor: undefined,
+          borderRight: undefined,
+          borderLeft: undefined
+        };
+        if (isPM) style.backgroundColor = 'lightGrey';
+        if (isSelected) style.backgroundColor = 'green';
+        if (isFirst15Minutes) style.borderLeft = '1px solid black';
+        if (isFinal15Minutes) style.borderRight = '1px solid black';
+        return <td key={index} id={index} className={day} onClick={this.getShiftInfo} style={{ ...defaultStyles, ...style }} />;
       })
     );
   }
 
   buildHeaderTimes() {
     let defaultStyles = {
-      width: '5.4%',
+      width: '1.35%',
       height: '8vh',
       borderTop: '1px solid black',
-      borderRight: '1px solid black',
       borderBottom: '1px solid black'
     };
 
-    const headerTimes = ['6', '7', '8', '9', '10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+    const headerTimes = ['6', '', '', '', '7', '', '', '', '8', '', '', '', '9', '', '', '', '10', '', '', '', '11', '', '', '', '12', '', '', '', '1', '', '', '', '2', '', '', '', '3', '', '', '', '4', '', '', '', '5', '', '', '', '6', '', '', '', '7', '', '', '', '8', '', '', '', '9', '', '', '', '10', '', '', '', '11', '', '', ''];
 
     return (
       headerTimes.map((element, index) => {
-        if (index < 6) {
-          return <th key={index} style={{ ...defaultStyles }} className="d-flex align-items-center pb-2">{element}</th>;
+        if (index < 24) {
+          if (index % 4 === 0) {
+            return <th key={index} style={{ ...defaultStyles, borderLeft: '1px solid black' }} className="d-flex align-items-center pb-2">{element}</th>;
+          } else {
+            return <th key={index} style={{ ...defaultStyles }} className="d-flex align-items-center pb-2">{element}</th>;
+          }
         } else {
-          return <th key={index} style={{ ...defaultStyles, backgroundColor: 'lightGrey' }} className="d-flex align-items-center pb-2">{element}</th>;
+          if (index === 71) {
+            return <th key={index} style={{ ...defaultStyles, borderRight: '1px solid black' }} className="d-flex align-items-center pb-2">{element}</th>;
+          } if (index % 4 === 0) {
+            return <th key={index} style={{ ...defaultStyles, borderLeft: '1px solid black' }} className="d-flex align-items-center pb-2">{element}</th>;
+          } else {
+            return <th key={index} style={{ ...defaultStyles }} className="d-flex align-items-center pb-2">{element}</th>;
+          }
         }
       })
     );
@@ -335,7 +336,7 @@ class OperatorAvailability extends React.Component {
           <table className="mt-2 mr-0" style={{ width: '90%' }}>
             <thead className="container">
               <tr className="row d-flex justify-content-end">
-                <th style={{ width: '2.8%', height: '8vh', border: '1px solid black' }}></th>
+                <th style={{ width: '2.8%', height: '8vh', borderLeft: '1px solid black', borderBottom: '1px solid black', borderTop: '1px solid black' }}></th>
                 {this.buildHeaderTimes()}
               </tr>
             </thead>
@@ -344,7 +345,7 @@ class OperatorAvailability extends React.Component {
                 weekdays.map(day => {
                   return (
                     <tr key={day} className="row d-flex justify-content-end">
-                      <td className="d-flex align-items-center justify-content-center" style={{ backgroundColor: 'initial', width: '2.8%', heigth: '9vh', borderLeft: '1px solid black', borderRight: '1px solid black', borderBottom: '1px solid black', fontWeight: 'bold' }}>
+                      <td className="d-flex align-items-center justify-content-center" style={{ backgroundColor: 'initial', width: '2.8%', heigth: '9vh', borderLeft: '1px solid black', borderBottom: '1px solid black', fontWeight: 'bold' }}>
                         {day.slice(0, 1)}
                       </td>
                       {this.buildDayCell(day)}
