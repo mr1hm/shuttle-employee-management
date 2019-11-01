@@ -111,7 +111,7 @@ class ShiftsDetails extends React.Component {
               <h1>Shift Details</h1>
             </div>
             <div className="col">
-              <TopMenuHamburger/>
+              <TopMenuHamburger userId={userId}/>
             </div>
           </div>
           <div className="row align-items-center mb-2">
