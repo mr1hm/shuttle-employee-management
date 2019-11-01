@@ -208,7 +208,6 @@ $query = "SELECT
 
     $busID = $bodyData['id'];
     $busNumber = $bodyData['bus_number'];
-    $idRoute = $bodyData['route_id'];
     $startTime = $bodyData['start_time'];
     $rounds = $bodyData['rounds'];
     $endTime = $bodyData['end_time'];

@@ -64,7 +64,7 @@ export default class BusesTable extends React.Component {
     if (this.state.showModal) {
       return (
         <div className="container editBusModal">
-          <EditBusModal busInfo={busInfo} editBusClicked={this.props.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} lineID={line.real_route_id} line={line} onClose={this.handleEditBusClick} showModal={this.state.showModal} />
+          <EditBusModal closeEditBus={this.closeEditBus} busInfo={busInfo} editBusClicked={this.props.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} lineID={line.real_route_id} line={line} onClose={this.handleEditBusClick} showModal={this.state.showModal} />
         </div>
       );
     } else if (!line.line_name) {
@@ -81,7 +81,7 @@ export default class BusesTable extends React.Component {
     }
     if (this.state.editBusClicked) {
       return (
-        <EditBusModal getLinesBusesInfo={this.props.getLinesBusesInfo} busInfo={busInfo} editBusClicked={this.state.editBusClicked} closeEditBus={this.closeEditBus} handleEditBusClicked={this.handleEditBusClicked} lineID={line.real_route_id} line={line} onClose={this.handleEditBusClick} showModal={this.state.showModal} />
+        <EditBusModal currentSession={this.props.currentSession} getLinesBusesInfo={this.props.getLinesBusesInfo} busInfo={busInfo} editBusClicked={this.state.editBusClicked} closeEditBus={this.closeEditBus} handleEditBusClicked={this.handleEditBusClicked} lineID={line.real_route_id} line={line} onClose={this.handleEditBusClick} showModal={this.state.showModal} />
       );
     }
     return (
