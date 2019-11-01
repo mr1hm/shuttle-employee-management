@@ -213,11 +213,12 @@ $query = "SELECT
     $endTime = $bodyData['end_time'];
     $daysActive = $bodyData['daysActive'];
     $gap = $bodyData['gap'];
+    $gapDuration = $bodyData['gapDuration'];
     $openingDuration = $bodyData['opening_duration'];
     $closingDuration = $bodyData['closing_duration'];
     $query = "UPDATE `bus_info`
                 SET `bus_number` = '$busNumber', `start_time` = '$startTime', `rounds` = '$rounds', `end_time` = '$endTime', `daysActive` = '$daysActive', `gap` = '$gap',
-                    `opening_duration` = '$openingDuration', `closing_duration` = '$closingDuration'
+                    `gapDuration` = $gapDuration, `opening_duration` = '$openingDuration', `closing_duration` = '$closingDuration'
                 WHERE `bus_info`.`id` = '$busID'";
 
 } else if ($method === 'DELETE' && (isset($bodyData['id']))) {
