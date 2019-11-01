@@ -214,7 +214,10 @@
     height: 80px;
     width: 100px;
 }
-.hours-populated-shifts-container{
+.busLineContainer{
+    width: 120px;
+}
+.hoursPopulatedShiftsContainer{
     position: static;
     overflow-x: scroll;
 }
@@ -226,7 +229,7 @@
 }
 .adminShiftHour{
     width: 100px;
-    margin-right: 1px;
+    font-size: .9rem;
 }
 .adminShiftRows, .adminHoursRow {
     height: 80px;
@@ -250,21 +253,24 @@
     height: auto;
     max-height: fit-content;
 }
-.adminShiftAngleTimeContainer,
-.availableOperatorIconNameContainer,
+.adminShiftsWeekNav {
+    min-width: 1000px;
+}
+.mainContainer {
+    min-width: 1200px;
+}
 .dayOfWeekContainer,
 .prevWeekButton,
 .nextWeekButton {
     cursor: pointer;
 }
-.angleIcon{
-    transition: transform .4s linear;
-}
-.angleIconRotate{
-    transform: rotate(90deg);
+.prevWeekButton,
+.nextWeekButton {
+    width: 30px;
 }
 .dayOfWeekContainer {
-    width: 120px;
+    width: 125px;
+    font-size: .80rem;
 }
 .prevWeekButton, .nextWeekButton{
     width: 50px;

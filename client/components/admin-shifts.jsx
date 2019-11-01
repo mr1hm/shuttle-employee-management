@@ -27,7 +27,6 @@ class AdminShiftsDay extends React.Component {
     this.state = {
       date: defaultDate,
       week: null,
-      rounds: null,
       availableOperators: [],
       operatorSelected: { name: 'n/a', id: 'n/a' },
       shiftsSelected: [],
@@ -223,14 +222,18 @@ class AdminShiftsDay extends React.Component {
     this.getTodaysShiftData(this.state.date);
   }
   // renders a header when 'select shifts to assign' button is clicked
-  renderSelectModeHeader() {
+  renderAssignCancelButtonAndHeader() {
     if (this.state.selectingAssign) {
-      return <h5 className="selectingAssignHeader m-0">Select shifts to assign</h5>;
-    }
-  }
-  renderAssignCancelButton() {
-    if (this.state.selectingAssign) {
-      return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
+      return (
+        <React.Fragment>
+          <div className="cancelButtonContainer d-flex">
+            <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>
+          </div>
+          <div className="selectModeContainer d-flex justify-content-center align-items-center ml-5">
+            <h3 className="selectingAssignHeader m-0">Select shifts to assign</h3>
+          </div>
+        </React.Fragment>
+      );
     }
   }
   // renders the route line and bus number inside a colored div (first column in schedule)
@@ -296,6 +299,9 @@ class AdminShiftsDay extends React.Component {
     }
     return elements;
   }
+  // when a shift is clicked, render an AdminClickedShiftDetailsAside component to the right of the schedule
+  // when 'select shifts to assign' button is clicked multiple unassigned shifts can be clicked and all clicked shifts
+  // will be rendered in the order they were clicked
   renderShiftDetailsComponent() {
     if (this.state.shiftsSelected.length) {
       var shiftElements = this.state.shiftsSelected.map(shift =>
@@ -323,8 +329,13 @@ class AdminShiftsDay extends React.Component {
       );
     }
   }
-  renderAvailableOperatorElements() {
+  // when an unassigned shift is clicked, render an AdminAvailabeOperator component to the right of the schedule
+  // this component will be rendered below the AdminClickedShiftDetailsAside component
+  // when an unassigned shift is clicked, render an AdminUnavailableOperator component to the right of the schedule
+  // this component will be rendered below the AdminAvailableOperator components
+  renderAvailableAndUnavailableOperatorElements() {
     const availableOperatorElements = [];
+    const unavailableOperatorElements = [];
     const availableOperators = this.state.availableOperators;
     for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
       if (availableOperators[operatorIndex]['availability']['available']) {
@@ -337,24 +348,7 @@ class AdminShiftsDay extends React.Component {
             weeklyHours={availableOperators[operatorIndex].weeklyHours}
             onClickAssignShift={this.handleClickAssignShift} />
         );
-      }
-    }
-    if (availableOperatorElements.length) {
-      return (
-        <React.Fragment>
-          <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Available Operators</h6>
-          <div className="availableOperatorElements d-flex flex-column">
-            {availableOperatorElements}
-          </div>
-        </React.Fragment>
-      );
-    }
-  }
-  renderUnavailableOperatorElements() {
-    const unavailableOperatorElements = [];
-    const availableOperators = this.state.availableOperators;
-    for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
-      if (!availableOperators[operatorIndex]['availability']['available']) {
+      } else if (!availableOperators[operatorIndex]['availability']['available']) {
         unavailableOperatorElements.push(
           <AdminUnavailableOperator
             key={availableOperators[operatorIndex].id}
@@ -364,12 +358,20 @@ class AdminShiftsDay extends React.Component {
         );
       }
     }
-    if (unavailableOperatorElements.length) {
+    if (availableOperatorElements.length) {
       return (
         <React.Fragment>
-          <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Unavailable Operators</h6>
-          <div className="availableOperatorElements d-flex flex-column">
-            {unavailableOperatorElements}
+          <div className="availableOperatorsContainer d-flex flex-column">
+            <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Available Operators</h6>
+            <div className="availableOperatorElements d-flex flex-column">
+              {availableOperatorElements}
+            </div>
+          </div>
+          <div className="unavailableOperatorsContainer d-flex flex-column">
+            <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Unavailable Operators</h6>
+            <div className="availableOperatorElements d-flex flex-column">
+              {unavailableOperatorElements}
+            </div>
           </div>
         </React.Fragment>
       );
@@ -386,43 +388,31 @@ class AdminShiftsDay extends React.Component {
             onClick={this.handleClickAssignShifts}>
             Select Shifts to Assign
           </button>
-          <div className="selectModeContainer d-flex flex-fill justify-content-center align-items-center">
-            {this.renderSelectModeHeader()}
-          </div>
-          <div className="cancelButtonContainer d-flex ml-auto">
-            {this.renderAssignCancelButton()}
-          </div>
+          {this.renderAssignCancelButtonAndHeader()}
         </div>
-        <div className="main-container d-flex px-5 h-100">
-          <div className="busHoursShiftsAvailableOperatorsContainer d-flex flex-column col-10 p-0">
-            <div className="shiftAndBusLineContainer d-flex">
-              <div className="bus-line-container container d-flex flex-column align-items-center p-0">
-                <div className="adminLineHeader lineHeaderContainer d-flex justify-content-center align-items-end border w-100">
-                  <h5 className="m-0">Lines</h5>
-                </div>
-                {this.renderLineComponents()}
+        <div className="mainContainer d-flex px-5 h-100">
+          <div className="shiftAndBusLineContainer d-flex col-10 p-0">
+            <div className="busLineContainer container d-flex flex-column align-items-center p-0">
+              <div className="adminLineHeader lineHeaderContainer d-flex justify-content-center align-items-end border w-100">
+                <h5 className="m-0">Lines</h5>
               </div>
-              <div className="hours-populated-shifts-container d-flex flex-column border-right col-11 p-0">
-                <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border">
-                  <HoursOfOperation />
-                </div>
-                {this.renderShiftComponents()}
+              {this.renderLineComponents()}
+            </div>
+            <div className="hoursPopulatedShiftsContainer d-flex flex-column flex-grow-1 border-right p-0">
+              <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border">
+                <HoursOfOperation />
               </div>
+              {this.renderShiftComponents()}
             </div>
           </div>
           <div className="shiftDetailsAndAvailableOperatorsContainer d-flex flex-column col-2 p-0 ml-1">
             <div className="ShiftDetailsContainer d-flex flex-column">
               {this.renderShiftDetailsComponent()}
             </div>
-            <div className="availableOperatorsContainer d-flex flex-column">
-              {this.renderAvailableOperatorElements()}
-            </div>
-            <div className="unavailableOperatorsContainer d-flex flex-column">
-              {this.renderUnavailableOperatorElements()}
-            </div>
+            {this.renderAvailableAndUnavailableOperatorElements()}
           </div>
         </div>
-        <AdminConfirmModal
+        <AdminConfirmModal // modal to confirm assign/unassign
           assign={this.state.selectingAssign}
           unassign={this.state.selectingUnassign}
           rounds={this.state.roundsToUnassign}

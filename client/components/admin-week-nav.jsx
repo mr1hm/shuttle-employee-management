@@ -58,7 +58,7 @@ export default class AdminWeekNav extends React.Component {
   }
   render() {
     return (
-      <div className="adminShiftWeekContainer d-flex justify-content-center list-group-horizontal">
+      <div className="adminShiftsWeekNav adminShiftWeekContainer d-flex justify-content-center list-group-horizontal">
         <div
           onClick={this.handleClickPrevWeek}
           className="prevWeekButton d-flex justify-content-center align-items-center list-group-item list-group-item-action rounded-left">
