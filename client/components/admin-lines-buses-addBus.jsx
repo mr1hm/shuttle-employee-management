@@ -24,7 +24,7 @@ export default class AddBus extends React.Component {
     this.calculateEndTime = this.calculateEndTime.bind(this);
   }
 
-  addNewBus(newBus, e) {
+  addNewBus(newBus, sessionID, e) {
     e.preventDefault();
     newBus = { ...newBus, end_time: this.calculateEndTime() };
     const init = {
@@ -36,7 +36,7 @@ export default class AddBus extends React.Component {
       .then(newBusInfo => {
         this.setState({
           newBusAdded: true
-        }, this.props.getLinesBusesInfo);
+        }, () => this.props.getLinesBusesInfo({ session_id: sessionID }));
         console.log('BUS ADDED', newBusInfo);
       })
       .catch(error => console.error(error));
@@ -181,7 +181,7 @@ export default class AddBus extends React.Component {
                 <input onChange={this.handleChange} name="gapDuration" type="text" className="col border border-primary"></input>
               </div>
               <div className="col d-flex align-self-end">
-                <button onClick={e => this.addNewBus(this.state.newBus, e)} className="w-100 addNewBusBtn btn btn-primary" type="submit" name="submit" data-toggle="collapse" style={{ 'fontSize': 20 }}
+                <button onClick={e => this.addNewBus(this.state.newBus, this.props.line.sessionID, e)} className="w-100 addNewBusBtn btn btn-primary" type="submit" name="submit" data-toggle="collapse" style={{ 'fontSize': 20 }}
                   data-target={`#collapseAddBus${this.props.accordionID}`} aria-expanded="false" aria-controls={`#collapseAddBus${this.props.accordionID}`}>
                     Save & Add
                 </button>
