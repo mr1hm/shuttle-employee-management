@@ -17,14 +17,18 @@ class AdminRoutes extends React.Component {
     super(props);
     this.ref = React.createRef();
     this.state = {
+      allSessionsView: true,
+      copiedSession: null,
+      currentSession: 'All Sessions',
       sessions: [],
-      selectedSession: null,
+      sessionSelected: false,
+      selectedSessionID: null,
       linesBusesInfo: [],
       addLineClicked: false,
       line_name: '',
       lineExists: false,
       newLine: {
-        session_id: 6,
+        session_id: 5,
         line_name: null,
         status: null,
         roundDuration: null,
@@ -45,30 +49,80 @@ class AdminRoutes extends React.Component {
     this.handleSpecialDriverClick = this.handleSpecialDriverClick.bind(this);
     // this.selectSession = this.selectSession.bind(this);
     this.handleSessionChange = this.handleSessionChange.bind(this);
-    this.getSession = this.getSession.bind(this);
+    this.handlePasteSession = this.handlePasteSession.bind(this);
+    this.handleCopySession = this.handleCopySession.bind(this);
   }
 
   componentDidMount() {
-    this.getLinesBusesInfo();
     this.getAllSessions();
+    // this.getLinesBusesInfo();
   }
 
-  handleSessionChange(e) {
+  getUpdatedSessions(sessionID) {
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(sessionID)
+    };
+    fetch('api/admin-lines-buses.php', init)
+      .then(response => response.json())
+      .then(updatedSessionInfo => {
+        this.setState({
+          linesBusesInfo: updatedSessionInfo
+        });
+      });
+  }
+
+  handleSessionChange(e, sessionID) {
     const value = e.target.value;
     if (value === 'All Sessions') {
+      this.setState({
+        currentSession: value
+      });
       return this.getLinesBusesInfo();
+    } else if (value !== 'All Sessions') {
+      this.setState({
+        currentSession: value
+      });
     }
     let sessionInfo = this.state.sessions.find(session => session.name === value);
     this.selectSession({ session_id: sessionInfo.id }, e);
   }
 
-  getSession(e) {
-    fetch('api/admin-lines-buses.php')
+  handleCopySession(sessionID) {
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(sessionID)
+    };
+    fetch('api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(sessionLines => {
         console.log(sessionLines);
+        this.setState({
+          copiedSession: sessionLines
+        });
       })
       .catch(error => console.error(error));
+  }
+
+  handlePasteSession(e) {
+    let copiedSessionArr = this.state.copiedSession.slice();
+    console.log(copiedSessionArr);
+    copiedSessionArr.forEach(line => {
+      line.sessionID = this.state.selectedSessionID;
+    });
+    console.log(copiedSessionArr);
+    const body = { copiedSessionArr, paste: 1 };
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(body)
+    };
+    fetch('api/admin-lines-buses.php', init)
+      .then(response => response.json())
+      .then(updatedSessionInfo => {
+        this.setState({
+          linesBusesInfo: updatedSessionInfo
+        }, this.getUpdatedSessions({ session_id: this.state.selectedSessionID }));
+      });
   }
 
   selectSession(sessionID, e) {
@@ -81,7 +135,9 @@ class AdminRoutes extends React.Component {
       .then(response => response.json())
       .then(sessionData => {
         this.setState({
-          linesBusesInfo: sessionData
+          linesBusesInfo: sessionData,
+          sessionSelected: true,
+          selectedSessionID: sessionID.session_id
         });
       })
       .catch(error => console.error(error));
@@ -105,7 +161,7 @@ class AdminRoutes extends React.Component {
       .then(lineInfo => {
         this.setState({
           newLineAdded: true
-        }, this.getUpdatedLines);
+        }, () => this.getUpdatedLines({ session_id: newLine.session_id }));
       })
       .catch(error => console.error(error));
     this.handleAddLineButton();
@@ -134,7 +190,18 @@ class AdminRoutes extends React.Component {
         ...prevState.newLine,
         [name]: value
       }
-    }));
+    }), () => {
+      this.state.sessions.map(session => {
+        if (this.state.newLine.session_id === session.name) {
+          this.setState(prevState => ({
+            newLine: {
+              ...prevState.newLine,
+              session_id: session.id
+            }
+          }));
+        }
+      });
+    });
     this.checkIfLineExists(value);
     console.log(value);
   }
@@ -165,21 +232,41 @@ class AdminRoutes extends React.Component {
         this.setState({
           sessions: sessionsData
         });
+        this.getLinesBusesInfo();
       })
       .catch(error => console.error(error));
   }
 
-  // getSession() {
-  //   const init = {};
-  // }
-
-  getUpdatedLines() {
-    fetch('api/admin-lines-buses.php')
-      .then(response => response.json())
-      .then(linesBusesInfo => this.setState({
-        linesBusesInfo: linesBusesInfo
-      }, this.scrollToNewLine))
-      .catch(error => console.error(error));
+  getUpdatedLines(sessionID) {
+    // if (this.state.sessionSelected) {
+    //   // needs to add line and get lines/buses info from whichever session is currently selected.
+    // }
+    if (sessionID) {
+      const init = {
+        method: 'POST',
+        body: JSON.stringify(sessionID)
+      };
+      fetch('api/admin-lines-buses.php', init)
+        .then(response => response.json())
+        .then(updatedLines => {
+          this.setState({
+            linesBusesInfo: updatedLines
+          }, () => {
+            this.scrollToNewLine();
+            if (this.state.currentSession === 'All Sessions') {
+              this.getLinesBusesInfo();
+            }
+          });
+        })
+        .catch(error => console.error(error));
+    } else {
+      fetch('api/admin-lines-buses.php')
+        .then(response => response.json())
+        .then(linesBusesInfo => this.setState({
+          linesBusesInfo: linesBusesInfo
+        }, this.scrollToNewLine))
+        .catch(error => console.error(error));
+    }
   }
 
   getLinesBusesInfo(sessionID, e) {
@@ -196,17 +283,18 @@ class AdminRoutes extends React.Component {
           });
         })
         .catch(error => console.error(error));
+    } else {
+      fetch('api/admin-lines-buses.php')
+        .then(response => response.json())
+        .then(linesBusesInfo => {
+          // console.log(this.state.linesBusesInfo);
+          // console.log(linesBusesInfo);
+          this.setState({
+            linesBusesInfo: linesBusesInfo
+          });
+        })
+        .catch(error => console.error(error));
     }
-    fetch('api/admin-lines-buses.php')
-      .then(response => response.json())
-      .then(linesBusesInfo => {
-        console.log(this.state.linesBusesInfo);
-        console.log(linesBusesInfo);
-        this.setState({
-          linesBusesInfo: linesBusesInfo
-        });
-      })
-      .catch(error => console.error(error));
   }
 
   changeLineExistsState() {
@@ -235,7 +323,9 @@ class AdminRoutes extends React.Component {
       });
     }
   }
-
+  // componentDidUpdate(prevProps, prevState){
+  //   if(prevState.linesBusesInfo.length !== this.state.linesBusesInfo.length)
+  // }
   render() {
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
@@ -246,10 +336,6 @@ class AdminRoutes extends React.Component {
         largestID = routeIDNum;
       }
     }
-    console.log(largestID);
-    // if (largestID === 0) {
-    //   return null;
-    // }
     if (!this.state.linesBusesInfo) {
       return (
         <div>LOADING</div>
@@ -258,12 +344,12 @@ class AdminRoutes extends React.Component {
     if (this.state.addLineClicked) {
       return (
         <React.Fragment>
-          <TopMenuGeneral title="ADMIN - Routes/Buses" />
-          <div className="container mt-2">
+          <TopMenuGeneral userId={this.props.userId} title="ADMIN - Routes/Buses" />
+          <div className="container-fluid mt-2">
             <div className="row">
               <div className="col-2">
                 <label>Select Session</label>
-                <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
+                <select onChange={this.handleSessionChange} className="col border border-primary" name="currentSession">
                   <option>All Sessions</option>
                   {this.state.sessions.map(sessionData => {
                     return (
@@ -272,6 +358,12 @@ class AdminRoutes extends React.Component {
                   })}
                 </select>
               </div>
+            </div>
+            <div className="row">
+              {this.state.sessionSelected
+                ? <div className="col-2"><button className="btn btn-primary" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session</button></div> : null}
+              {this.state.copiedSession
+                ? <div className="col-2"><button className="btn btn-info" onClick={this.handlePasteSession}>Paste Session</button></div> : null}
             </div>
             <div className="row justify-content-end">
               {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
@@ -291,6 +383,20 @@ class AdminRoutes extends React.Component {
                 </div>
                 <div className="col">
                   <label>
+                    Session
+                    <br />
+                    <span className="addLineHeaderDescription"><i>active/inactive</i></span>
+                  </label>
+                  <select onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="session_id">
+                    {this.state.sessions.map(session => {
+                      return (
+                        <option key={session.id}>{session.name}</option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="col">
+                  <label>
                       Status
                     <br />
                     <span className="addLineHeaderDescription"><i>active/inactive</i></span>
@@ -299,9 +405,9 @@ class AdminRoutes extends React.Component {
                 </div>
                 <div className="col">
                   <label>
-                      Round Duration
+                    Round Duration
                     <br />
-                    <span className="addLineHeaderDescription"><i>Number of Minutes</i></span>
+                    <span className="addLineHeaderDescription"><i>Number of Min</i></span>
                   </label>
                   <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="roundDuration" />
                 </div>
@@ -331,7 +437,7 @@ class AdminRoutes extends React.Component {
                 </div>
                 <div className="col">
                   <label className="form-check-label" htmlFor="specialDriverCheckbox">
-                        Special Driver
+                      Special Driver
                     <br />
                     <span><i>True/False</i></span>
                   </label>
@@ -351,13 +457,13 @@ class AdminRoutes extends React.Component {
               if (this.state.newLineAdded && (largestID == line.real_route_id)) {
                 return (
                   <div className="newLine" key={line.real_route_id} ref={this.ref}>
-                    <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                    <Lines currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                   </div>
                 );
               }
               return (
                 <div key={line.real_route_id}>
-                  <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                  <Lines currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                 </div>
               );
             }
@@ -369,7 +475,7 @@ class AdminRoutes extends React.Component {
     return (
       <React.Fragment>
         <TopMenuGeneral title="ADMIN - Lines/Buses" />
-        <div className="container mt-2">
+        <div className="container-fluid mt-2">
           <div className="row">
             <div className="col-2">
               <label>Select Session</label>
@@ -383,6 +489,12 @@ class AdminRoutes extends React.Component {
               </select>
             </div>
           </div>
+          <div className="row">
+            {this.state.sessionSelected
+              ? <div className="col-2"><button className="btn btn-primary" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session</button></div> : null}
+            {this.state.copiedSession
+              ? <div className="col-2"><button className="btn btn-info" onClick={this.handlePasteSession}>Paste Session</button></div> : null}
+          </div>
           <div className="row justify-content-end">
             <div className="btn btn-outline-dark" onClick={() => this.handleAddLineButton()}> Add Line + </div>
           </div>
@@ -392,13 +504,13 @@ class AdminRoutes extends React.Component {
             if (this.state.newLineAdded && (largestID == line.real_route_id)) {
               return (
                 <div className="newLine" key={`lineDiv${line.real_route_id}`} ref={this.ref}>
-                  <Lines linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                  <Lines currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                 </div>
               );
             }
             return (
               <div key={`lineDiv${line.real_route_id}`}>
-                <Lines line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                <Lines currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
               </div>
             );
           }
