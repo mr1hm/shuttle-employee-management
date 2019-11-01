@@ -38,22 +38,27 @@ function populateSchedule (&$operators, $rounds, $conn, $session) {
 /* Returns an associative array containing all of the rounds to be
  * assigned in a shift */
 function getShift ($lineName, &$rounds) {
-  $lineRounds = [
-    'C' => 3,
-    'D' => 4,
-    'Hs' => 5,
-    'S' => 5,
-    'A' => 3,
-    'M' => 3,
-    'N' => 3,
-    'V' => 3
-  ];
-  $minimumRoundsInShift = $lineRounds[$lineName];
+  // $lineRounds = [
+  //   'C' => 3,
+  //   'D' => 4,
+  //   'Hs' => 5,
+  //   'S' => 5,
+  //   'A' => 3,
+  //   'M' => 3,
+  //   'N' => 3,
+  //   'V' => 3
+  // ];
+  // $minimumRoundsInShift = $lineRounds[$lineName];
 
+  // $shift = [];
+  // for ($i = 0; $i < $minimumRoundsInShift; ++$i) {
+  //   $shift[] = current($rounds);
+  //   if ($i !== $minimumRoundsInShift - 1) next($rounds);
+  // }
   $shift = [];
-  for ($i = 0; $i < $minimumRoundsInShift; ++$i) {
+  for ($i = 0; $i < 3; ++$i) {
     $shift[] = current($rounds);
-    if ($i !== $minimumRoundsInShift - 1) next($rounds);
+    if ($i !== 2) next($rounds);
   }
   return $shift;
 }
