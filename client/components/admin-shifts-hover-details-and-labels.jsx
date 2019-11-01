@@ -50,11 +50,10 @@ class AdminShiftsHoverDetailsAndLabels extends React.Component {
         onMouseEnter={this.startTimer}
         onMouseLeave={this.handleMouseOut}
         className="hoverDetailContainer">
-        <div className="shiftOwnerLabel">
-          {this.props.userName.last}
+        <div className="shiftOwnerLabel d-flex flex-column h-50 px-2">
+          <span className='shiftLabel' >{`${this.props.userName.last}, ${this.props.userName.first} ID# ${this.props.userId}`}</span>
+          <span className='shiftLabel' >{`${this.props.lineBus}: ${this.props.shiftTime}`}</span>
         </div>
-        <div className="shiftOwnerLabel">
-          ID# {this.props.userId}</div>
         <div className="hoverMessage"
           style={{ display: this.state.showing ? 'flex' : 'none', top: this.state.top, left: this.state.left }}>
           <i></i>

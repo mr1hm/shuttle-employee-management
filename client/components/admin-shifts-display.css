@@ -186,10 +186,13 @@
   height: 100%;
 }
 .shiftOwnerLabel {
-  display: flex;
-  justify-content: center;
   font-size: 0.6rem;
   color: white;
+}
+.shiftLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .hoverDetailContainer .hoverMessage {
   flex-direction: column;
