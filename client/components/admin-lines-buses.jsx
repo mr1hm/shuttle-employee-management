@@ -344,7 +344,7 @@ class AdminRoutes extends React.Component {
     if (this.state.addLineClicked) {
       return (
         <React.Fragment>
-          <TopMenuGeneral title="ADMIN - Routes/Buses" />
+          <TopMenuGeneral userId={this.props.userId} title="ADMIN - Routes/Buses" />
           <div className="container-fluid mt-2">
             <div className="row">
               <div className="col-2">
@@ -361,9 +361,9 @@ class AdminRoutes extends React.Component {
             </div>
             <div className="row">
               {this.state.sessionSelected
-                ? <div className="col-2"><button onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Existing Lines/Buses</button></div> : null}
+                ? <div className="col-2"><button className="btn btn-primary" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session</button></div> : null}
               {this.state.copiedSession
-                ? <div className="offset-2 col-2"><button onClick={this.handlePasteSession}>Paste Session</button></div> : null}
+                ? <div className="col-2"><button className="btn btn-info" onClick={this.handlePasteSession}>Paste Session</button></div> : null}
             </div>
             <div className="row justify-content-end">
               {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
@@ -491,9 +491,9 @@ class AdminRoutes extends React.Component {
           </div>
           <div className="row">
             {this.state.sessionSelected
-              ? <div className="col-2"><button onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session</button></div> : null}
+              ? <div className="col-2"><button className="btn btn-primary" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session</button></div> : null}
             {this.state.copiedSession
-              ? <div className="col-2"><button onClick={this.handlePasteSession}>Paste Session</button></div> : null}
+              ? <div className="col-2"><button className="btn btn-info" onClick={this.handlePasteSession}>Paste Session</button></div> : null}
           </div>
           <div className="row justify-content-end">
             <div className="btn btn-outline-dark" onClick={() => this.handleAddLineButton()}> Add Line + </div>

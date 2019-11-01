@@ -47,7 +47,7 @@ export default class EditBusModal extends React.Component {
         console.log(busInfo);
         this.setState({
           editBus: busInfo
-        }, this.props.closeEditBus);
+        }, this.props.handleEditBusClicked);
         if (this.props.currentSession === 'All Sessions') {
           this.props.getLinesBusesInfo();
         }

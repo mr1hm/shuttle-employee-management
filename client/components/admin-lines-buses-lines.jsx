@@ -43,7 +43,7 @@ export default class Lines extends React.Component {
   }
 
   componentDidMount() {
-    this.getSessionName(); // yes i'm ridiculous
+    this.getSessionName();
   }
 
   getSessionName() {
