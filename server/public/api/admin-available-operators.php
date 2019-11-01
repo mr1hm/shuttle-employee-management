@@ -11,7 +11,7 @@ $not_available_reasons = [
   'already scheduled during shift',
   'cannot work more than 5 hours without a 30 minute break',
   'cannot work before 8am if shift ended after 10pm night before',
-  'cannot work before 8am and after 10pm on the same day',
+  'cannot work before 8am and after 9pm on the same day',
   'hours will exceed daily maximum',
   'hours will exceed weekly maximum',
   'not authorized for special route'
@@ -264,7 +264,7 @@ function operatorsUnderMaxConsecutiveHours(&$operators, $times){
       ];
       $operator_shifts = insertTimeInOrder($operator_shifts, $time);
     }
-    // check if shift added is to early or too late for same day compared to assigned shifts
+    // check if shift added is too early or too late for same day compared to assigned shifts
     operatorCanTakeEarlyOrLateShift($operator_data['availability'], $operator_shifts);
     // go through the shifts and check for 5 hour blocks without a 30 min break
     // also check for a shift earlier than 8am and if there is one make sure no shift after 9pm gets added
@@ -363,11 +363,6 @@ function operatorsAvailableForShift(&$operators, $times){
             ($times[$times_index]['start_time'] == (int)$rounds[$round_index]['start_time']) || ($times[$times_index]['stop_time'] == (int) $rounds[$round_index]['stop_time'])){
           $operator_data['availability']['available'] = false;
           $operator_data['availability']['reasons'][] = $not_available_reasons[2];
-          break;
-        }
-        if (($times[$times_index]['stop_time']) > 2100 && (int)$rounds[$round_index]['start_time'] < 800){
-          $operator_data['availability']['available'] = false;
-          $operator_data['availability']['reasons'][] = $not_available_reasons[5];
           break;
         }
       }

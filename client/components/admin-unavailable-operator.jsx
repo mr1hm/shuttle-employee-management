@@ -13,8 +13,8 @@ class AdminUnavailableOperator extends React.Component {
   }
   render() {
     return (
-      <div className="card">
-        <div className="card-header btn btn-light dropdown-toggle d-flex justify-content-center align-items-center border-0 px-0" type="button" data-toggle="collapse" data-target={'#operator' + this.props.id} aria-expanded="false" aria-controls="collapseExample">
+      <div className="card rounded-0">
+        <div className="card-header btn btn-light dropdown-toggle d-flex justify-content-center align-items-center border-0 px-0 rounded-0" type="button" data-toggle="collapse" data-target={'#operator' + this.props.id} aria-expanded="false" aria-controls="collapseExample">
           {this.props.name}
         </div>
         <div className="collapse" id={'operator' + this.props.id}>
