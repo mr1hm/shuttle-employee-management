@@ -116,7 +116,7 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="col">
                 <div id="accordion">
-                  <AddBus getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
+                  <AddBus currentSession={this.props.currentSession} getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
                 </div>
               </div>
             </div>
@@ -200,7 +200,7 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="col">
                 <div id="accordion">
-                  <AddBus getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
+                  <AddBus currentSession={this.props.currentSession} getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
                 </div>
               </div>
             </div>

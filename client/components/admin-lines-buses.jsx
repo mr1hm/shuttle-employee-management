@@ -9,7 +9,7 @@ import AddBus from './admin-lines-buses-addBus';
 import Sessions from './admin-lines-buses-sessions';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCaretUp, faBus, faCaretDown, faThumbsDown, faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
 import Lines from './admin-lines-buses-lines';
 
 class AdminRoutes extends React.Component {
@@ -328,9 +328,7 @@ class AdminRoutes extends React.Component {
       });
     }
   }
-  // componentDidUpdate(prevProps, prevState){
-  //   if(prevState.linesBusesInfo.length !== this.state.linesBusesInfo.length)
-  // }
+
   render() {
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
@@ -366,9 +364,9 @@ class AdminRoutes extends React.Component {
             </div>
             <div className="row">
               {this.state.sessionSelected
-                ? <div className="col-2"><button className="btn btn-primary" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session</button></div> : null}
+                ? <div className="col-1 mt-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy<FontAwesomeIcon icon={faCopy} /></button></div> : null}
               {this.state.copiedSession
-                ? <div className="col-2"><button className="btn btn-info" onClick={this.handlePasteSession}>Paste Session</button></div> : null}
+                ? <div className="col-1 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste<FontAwesomeIcon icon={faPaste} /></button></div> : null}
             </div>
             <div className="row justify-content-end">
               {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
@@ -452,7 +450,7 @@ class AdminRoutes extends React.Component {
                 <div className="col">
                   <button onClick={this.handleAddLineButton} className="col btn btn-warning">CANCEL</button>
                   <br />
-                  {this.state.lineExists ? <button className="col btn btn-danger mt-1" type="submit" name="submit">NOPE</button> : <button onClick={e => this.addNewLine(this.state.newLine, e)} className="col btn btn-success mt-1" type="submit" name="submit">ADD</button>}
+                  {this.state.lineExists ? <button className="col btn btn-danger mt-1" type="submit" name="submit">NAME TAKEN</button> : <button onClick={e => this.addNewLine(this.state.newLine, e)} className="col btn btn-success mt-1" type="submit" name="submit">ADD</button>}
                 </div>
               </div>
             </div>
@@ -496,9 +494,9 @@ class AdminRoutes extends React.Component {
           </div>
           <div className="row">
             {this.state.sessionSelected
-              ? <div className="col-2"><button className="btn btn-primary" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session</button></div> : null}
+              ? <div className="col-1 mt-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy<FontAwesomeIcon className="ml-1" icon={faCopy} /></button></div> : null}
             {this.state.copiedSession
-              ? <div className="col-2"><button className="btn btn-info" onClick={this.handlePasteSession}>Paste Session</button></div> : null}
+              ? <div className="col-1 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
           </div>
           <div className="row justify-content-end">
             <div className="btn btn-outline-dark" onClick={() => this.handleAddLineButton()}> Add Line + </div>

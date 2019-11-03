@@ -36,7 +36,13 @@ export default class AddBus extends React.Component {
       .then(newBusInfo => {
         this.setState({
           newBusAdded: true
-        }, () => this.props.getLinesBusesInfo({ session_id: sessionID }));
+        }, () => {
+          if (this.props.currentSession === 'All Sessions') {
+            this.props.getLinesBusesInfo();
+          } else {
+            this.props.getLinesBusesInfo({ session_id: sessionID });
+          }
+        });
         console.log('BUS ADDED', newBusInfo);
       })
       .catch(error => console.error(error));
