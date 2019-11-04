@@ -22,7 +22,7 @@ function canTakeShift ($operator, $shift, $conn, int $format = null) {
     $unavailableMessages[] = totalShiftTimeRestriction($operator, $shift, $format);
     $unavailableMessages[] = requireBreak($operator, $shift, $format);
 
-    return array_filter($unavailableMessages);
+    return array_values(array_filter($unavailableMessages));
   }
 }
 

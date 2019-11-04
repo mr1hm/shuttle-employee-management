@@ -34,7 +34,6 @@
     }
     next($rounds);
   }
-}
 
 /* Returns an associative array containing all of the rounds to be
  * assigned in a shift */
@@ -63,9 +62,6 @@ function getShift ($lineName, &$rounds) {
   }
   return $shift;
 }
-
-    return $shift;
-  }
 
   function updateShiftFlags (&$operator, $shift) {
     if (intval($operator['minutes_without_30_minute_break']) >= 300) {

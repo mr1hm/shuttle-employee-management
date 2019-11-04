@@ -39,32 +39,33 @@ function validParameters () {
   if ( empty($_GET['round_time']) ) {
     throw new Exception('No date supplied');
   }
+  if ( empty($_GET['line_bus']) ) {
+    throw new Exception('No line/bus supplied');
+  }
   return true;
 }
 
-$day = 'Wed';
-$week = [1566100800, 1566619200];
-$shift = [
-  0 => [
-    'start_time' => 1220,
-    'stop_time' => 1240,
-    'line_name' => 'C'
-  ],
-  1 => [
-    'start_time' => 1240,
-    'stop_time' => 1300,
-    'line_name' => 'C'
-  ]
-];
-
-
-// print('<pre>');
-// print_r($operators);
+// $day = 'Wed';
+// $week = [1566100800, 1566619200];
+// $shift = [
+//   0 => [
+//     'start_time' => 1220,
+//     'stop_time' => 1240,
+//     'line_name' => 'C'
+//   ],
+//   1 => [
+//     'start_time' => 1240,
+//     'stop_time' => 1300,
+//     'line_name' => 'C'
+//   ]
+// ];
 
 if ( validParameters() ) {
   $day = date('D', $_GET['date']);
   $week = [ $_GET['sunday'], $_GET['saturday'] ];
-  $shift = $_GET['round_time'];
+  $shift = json_decode($_GET['round_time'], true);
+  $line_bus = $_GET['line_bus'];
+  $shift[0]['line_name'] = substr($line_bus, 0, 1);
 
   $operators = buildOperatorsForDay($week, $day, $conn);
   foreach ($operators as &$operator) {
@@ -76,6 +77,4 @@ if ( validParameters() ) {
   print( json_encode($operators) );
 }
 
-// print($_GET['round_time']);
-// start_time, stop_time
 ?>

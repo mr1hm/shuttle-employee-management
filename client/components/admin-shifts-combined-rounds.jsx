@@ -46,15 +46,11 @@ class AdminShiftsCombinedRounds extends React.Component {
   }
   handleClick() {
     if (this.props.selecting) {
-<<<<<<< HEAD
-      this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId), this.props.lineBus);
-=======
       if (this.props.userId !== 1) {
         return;
       }
-      this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId));
+      this.props.onClickAvailableDrivers(parseInt(this.props.shiftData.start), parseInt(this.props.shiftData.end), parseInt(this.props.roundId), parseInt(this.props.userId), this.props.lineBus);
       this.setState({ selected: !this.state.selected });
->>>>>>> rc20191014
     }
     this.props.onClickShifts({
       userName: this.props.userName,
