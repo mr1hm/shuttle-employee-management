@@ -45,28 +45,13 @@ function validParameters () {
   return true;
 }
 
-// $day = 'Wed';
-// $week = [1566100800, 1566619200];
-// $shift = [
-//   0 => [
-//     'start_time' => 1220,
-//     'stop_time' => 1240,
-//     'line_name' => 'C'
-//   ],
-//   1 => [
-//     'start_time' => 1240,
-//     'stop_time' => 1300,
-//     'line_name' => 'C'
-//   ]
-// ];
-
 if ( validParameters() ) {
   $day = date('D', $_GET['date']);
   $week = [ $_GET['sunday'], $_GET['saturday'] ];
   $shift = json_decode($_GET['round_time'], true);
   $line_bus = $_GET['line_bus'];
-  $shift[0]['line_name'] = substr($line_bus, 0, 1);
-
+  $shift[0]['line_name'] = preg_filter('/\d/', '', $line_bus);
+  print(json_encode($shift));
   $operators = buildOperatorsForDay($week, $day, $conn);
   foreach ($operators as &$operator) {
     $unavailable = canTakeShift($operator['details'], $shift, $conn, 1);
