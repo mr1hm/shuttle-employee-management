@@ -9,7 +9,6 @@ import ShiftsDetails from './shifts/details/shifts-details';
 import Login from './login/login';
 import Welcome from './welcome/welcome';
 import OperatorAvailability from './operator-availability';
-import OperatorAvailability2 from './operator-availability2';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
@@ -59,10 +58,9 @@ class App extends React.Component {
             <Route path="/shifts/day/shifts-day/:date?" render={props => <ShiftsDay openRouteDetails={this.openRouteDetails} {...props} userId={this.state.userId ? this.state.userId : 17} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/month/shifts-month/:date?" render={props => <ShiftsMonth userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/available/:date?" render={props => <ShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/details/" render={props => <ShiftsDetails userId={this.state.userId} date={this.state.date} shiftId={this.state.shiftId} queryString={this.state.queryString} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
+            <Route path="/shifts/details/" render={props => <ShiftsDetails {...props} userId={this.state.userId} date={this.state.date} shiftId={this.state.shiftId} queryString={this.state.queryString} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
             <Route path="/admin-day/" render={props => <AdminShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/operator-availability/" render={props => <OperatorAvailability userId={this.state.userId ? this.state.userId : 17} />} />
-            <Route path="/operator-availability2/" render={props => <OperatorAvailability2 userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/trade-swap/" render={props => <TradeSwap {...props} shiftDetails={this.state.shiftDetails} />} />
             <Route path="/trade-notification/" render={props => <TradeNotification {...props} userId={this.state.userId ? this.state.userId : 17} shiftDetails={this.state.shiftDetails} />} />
           </Switch>
@@ -84,7 +82,6 @@ class App extends React.Component {
             <Route path = "/admin-day/" render={props => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
             <Route path="/admin-routes/" render={props => <AdminRoutes {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/operator-availability/" render={props => <OperatorAvailability {...props}/>}/>
-            <Route path="/operator-availability2/" render={props => <OperatorAvailability2 {...props}/>}/>
             <Route path="/trade-swap/" render={props => <TradeSwap {...props}/>} />
           </Switch>
         </React.Fragment>

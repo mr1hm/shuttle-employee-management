@@ -12,6 +12,14 @@
   border: 1px solid black;
 }
 
+.lineCardHeader > div:first-child {
+  font-weight: 700;
+}
+
+.lineName {
+  font-size: 1rem;
+}
+
 .lineHeaderFirstRow {
   border-bottom: 1px dotted black;
 }
@@ -30,17 +38,19 @@
 }
 
 .lineActiveIcon {
-  width: 0.75em !important;
-  border-radius: 80%;
-  box-shadow: 0 0 5px 1px #aef4af;
+  border-radius: 50%;
+  font-size: 11px;
+  /* border: 1px solid black; */
+  box-shadow: 0 0 5px 2px #aef4af;
 }
 
 .busActiveIcon {
+  border-radius: 30%;
   box-shadow: 0 0 5px 1px #aef4af;
 }
 
 .lineInactiveIcon {
-  width: 0.75em !important;
+  font-size: 11px;
 }
 
 .busInactiveIcon,
@@ -78,6 +88,7 @@
 
 .specialDriverIcon {
   color: blue;
+  font-size: 1rem;
 }
 
 .cancelEditLineBtn {

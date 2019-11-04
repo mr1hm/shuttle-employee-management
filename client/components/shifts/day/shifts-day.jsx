@@ -19,7 +19,8 @@ class ShiftsDay extends React.Component {
       shifts: [],
       queryString: `?date=${adjustLocalTimestampToUTCSeconds(defaultDate)}&userID=${defaultId}&type=myShifts`,
       dateToPass: defaultDate,
-      userId: this.props.userId
+      userId: this.props.userId,
+      swapFlag: 0
     };
   }
   getShifts(query) {
@@ -33,7 +34,11 @@ class ShiftsDay extends React.Component {
       .catch(error => { console.error(error); });
   }
   componentDidMount() {
+    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
     this.getShifts(this.state.queryString);
+    this.setState({
+      swapFlag: swapFlag
+    });
   }
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.match.params.date !== this.props.match.params.date || this.props.view !== prevProps.view) {
@@ -56,7 +61,12 @@ class ShiftsDay extends React.Component {
     if (!this.state.shifts.length) {
       return (
         <>
+        {this.state.swapFlag ? (
+          <TopMenuShift title="SWAP" page='day' userId={this.props.userId} date={dateToPass} />
+        ) : (
           <TopMenuShift title="DAY" page='day' userId={this.props.userId} date={dateToPass} />
+        )}
+          {/* <TopMenuShift title="DAY" page='day' userId={this.props.userId} date={dateToPass} /> */}
           <div className="container mt-5">
             <div className="row">
               <div className="col text-center">
@@ -70,7 +80,12 @@ class ShiftsDay extends React.Component {
     return (
         <>
           <Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link>
-          <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} />
+          {this.state.swapFlag ? (
+            <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'SWAP' : 'AVAILABLE'} page='day' date={(dateToPass)} />
+          ) : (
+            <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} />
+          )}
+          {/* <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} /> */}
             <table className='table table-striped text-center'>
               <thead>
                 <tr>
@@ -92,6 +107,7 @@ class ShiftsDay extends React.Component {
                         view={this.props.view}
                         queryString={this.state.queryString}
                         openRouteDetails={this.props.openRouteDetails}
+                        swapFlag={this.state.swapFlag}
                       />
                     );
                   })

@@ -32,34 +32,37 @@
       }
       next($rounds);
     }
+    next($rounds);
   }
+}
 
-  /* Returns an associative array containing all of the rounds to be
-   * assigned in a shift */
-  function getShift ($lineName, &$rounds) {
-    // $lineRounds = [
-    //   'C' => 3,
-    //   'D' => 4,
-    //   'Hs' => 5,
-    //   'S' => 2,
-    //   'A' => 2,
-    //   'M' => 4,
-    //   'N' => 2,
-    //   'S' => 2,
-    //   'V' => 2
-    // ];
-    // $minimumRoundsInShift = $lineRounds[$lineName];
+/* Returns an associative array containing all of the rounds to be
+ * assigned in a shift */
+function getShift ($lineName, &$rounds) {
+  // $lineRounds = [
+  //   'C' => 3,
+  //   'D' => 4,
+  //   'Hs' => 5,
+  //   'S' => 5,
+  //   'A' => 3,
+  //   'M' => 3,
+  //   'N' => 3,
+  //   'V' => 3
+  // ];
+  // $minimumRoundsInShift = $lineRounds[$lineName];
 
-    // $shift = [];
-    // for ($i = 0; $i < $minimumRoundsInShift; ++$i) {
-    //   $shift[] = current($rounds);
-    //   if ($i !== $minimumRoundsInShift - 1) next($rounds);
-    // }
-    $shift = [];
-    for ($i = 0; $i < 3; ++$i) {
-      $shift[] = current($rounds);
-      if ($i !== 2) next($rounds);
-    }
+  // $shift = [];
+  // for ($i = 0; $i < $minimumRoundsInShift; ++$i) {
+  //   $shift[] = current($rounds);
+  //   if ($i !== $minimumRoundsInShift - 1) next($rounds);
+  // }
+  $shift = [];
+  for ($i = 0; $i < 3; ++$i) {
+    $shift[] = current($rounds);
+    if ($i !== 2) next($rounds);
+  }
+  return $shift;
+}
 
     return $shift;
   }

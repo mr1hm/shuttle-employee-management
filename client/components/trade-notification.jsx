@@ -1,24 +1,32 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
-import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, createDateStringFromDateObject } from '../lib/time-functions';
 import TopMenuGeneral from './topmenu/topmenu-general';
+import { Link } from 'react-router-dom';
+import NotificationShift from './trade-notification-shift';
+import SwapConfirmation from './swap-confirmation-modal';
 
 class TradeNotification extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       newShifts: [],
-      selectedDriver: {}
+      selectedDriver: {},
+      swapShifts: [],
+      selectedRoundId: 0
     };
     this.removeShift = this.removeShift.bind(this);
     this.giveShifttoSelectedDriver = this.giveShifttoSelectedDriver.bind(this);
   }
   componentDidMount() {
+    const selectedRoundId = this.props.location.state.swapFlag ? this.props.location.state.swapFlag : 0;
+    const swapShift = this.props.shiftDetails;
     fetch(`/api/get-notifications.php?id=${this.props.userId}`)
       .then(response => response.json())
       .then(shiftsArrayOfObjects => {
         this.setState({
-          newShifts: shiftsArrayOfObjects
+          newShifts: shiftsArrayOfObjects,
+          swapShifts: swapShift,
+          selectedRoundId: selectedRoundId
         });
       })
       .catch(error => console.error('Fetch failed', error));
@@ -59,6 +67,11 @@ class TradeNotification extends React.Component {
     });
   }
   render() {
+    if (this.state.selectedRoundId) {
+      return (
+        <SwapConfirmation selectedRoundId={this.state.selectedRoundId} allShifts={this.state.newShifts} ownShiftsToSwap={this.state.swapShifts} />
+      );
+    }
     if (!this.state.newShifts) {
       return (
         <div className="container mt-2">
@@ -90,22 +103,19 @@ class TradeNotification extends React.Component {
         </div>
         {this.state.newShifts.map(oneShift => {
           return (
-            <div key={oneShift.id} className="row mb-3 text-center">
-              <div className="col-2">
-                {createDateStringFromDateObject(parseInt(oneShift.shift_date) * 1000)}
-              </div>
-              <div className="col-2">
-                <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
-              </div>
-              <div className="col-2">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
-              <div className="col-2">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>
-              <div className="col-2">
-                <button onClick={() => this.giveShifttoSelectedDriver(oneShift.round_id, oneShift.target_user_id)} type="button" className="btn btn-success">Take Shift</button>
-              </div>
-              <div className="col-2">
-                <button onClick={() => this.removeShift(oneShift.round_id)} type="button" className="btn btn-danger">Remove Shift</button>
-              </div>
-            </div>
+            <NotificationShift
+              key={oneShift.id}
+              shift_date={oneShift.shift_date}
+              line_name={oneShift.line_name}
+              bus_info_id={oneShift.bus_info_id}
+              start_time={oneShift.start_time}
+              end_time={oneShift.end_time}
+              target_user_id={oneShift.target_user_id}
+              round_id ={oneShift.round_id}
+              removeShift={this.removeShift}
+              giveShifttoSelectedDriver={this.giveShifttoSelectedDriver}
+              type={oneShift.type}
+            />
           );
         })}
       </div>

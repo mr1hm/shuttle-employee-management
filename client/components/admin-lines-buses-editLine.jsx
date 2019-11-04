@@ -60,11 +60,15 @@ export default class EditLine extends React.Component {
     fetch(`api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(lineInfo => {
-        console.log(lineInfo);
+        console.log(line.session_id);
         this.setState({
           editLineSent: !this.state.editLineSent
         }, () => {
-          this.props.getLinesBusesInfo();
+          if (this.props.currentSession === 'All Sessions') {
+            this.props.getLinesBusesInfo();
+          } else {
+            this.props.getLinesBusesInfo({ session_id: line.session_id });
+          }
           this.props.handleEditLineClicked();
         });
       })
@@ -112,16 +116,25 @@ export default class EditLine extends React.Component {
                 <input name="line_name" defaultValue={line.line_name} type="text" onChange={this.handleEditLineChange} />
               </div>
               <div className="col">
-                <input name="status" defaultValue={line.status} type="text" onChange={this.handleEditLineChange} />
+                <select name="status" defaultValue={line.status} type="text" onChange={this.handleEditLineChange}>
+                  <option>active</option>
+                  <option>inactive</option>
+                </select>
               </div>
               <div className="col">
                 <input name="roundDuration" type="text" defaultValue={line.roundDuration} onChange={this.handleEditLineChange} />
               </div>
               <div className="col">
-                <input name="public" type="text" defaultValue={line.public} onChange={this.handleEditLineChange} />
+                <select name="public" type="text" defaultValue={line.public} onChange={this.handleEditLineChange}>
+                  <option>True</option>
+                  <option>False</option>
+                </select>
               </div>
               <div className="col">
-                <input name="regularService" type="text" defaultValue={line.regularService} onChange={this.handleEditLineChange} />
+                <select name="regularService" type="text" defaultValue={line.regularService} onChange={this.handleEditLineChange}>
+                  <option>True</option>
+                  <option>False</option>
+                </select>
               </div>
               <div className="col">
                 <button className="btn btn-link" type="button" data-toggle="collapse"
