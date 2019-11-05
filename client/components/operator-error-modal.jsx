@@ -8,7 +8,7 @@ class ErrorModal extends React.Component {
         <section className='modal-main'>
           <div className="d-flex justify-content-around">{this.props.children}</div>
           <div className="d-flex justify-content-center">
-            <button className="btn btn-primary center-block mb-3" onClick={this.props.closeError}>Exit</button>
+            <button className="btn btn-primary center-block mb-3" onClick={this.props.closeError}>Try again!</button>
           </div>
         </section>
       </div>
