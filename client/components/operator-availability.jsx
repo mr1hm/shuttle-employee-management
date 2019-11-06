@@ -113,9 +113,9 @@ class OperatorAvailability extends React.Component {
     });
   }
 
-  // componentDidMount() {
-  //   this.getEnteredAvailability();
-  // }
+  componentDidMount() {
+    this.getEnteredAvailability();
+  }
 
   deleteShift() {
     var day = this.state.day;
@@ -333,7 +333,6 @@ class OperatorAvailability extends React.Component {
         <TopMenuGeneral title="MY AVAILABILITY"/>
         <div className="d-flex justify-content-between">
           <div className='mb-0 ml-3'>Click day and approximate time to add, change, or delete.</div>
-          <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.getEnteredAvailability}>Get Entered Availability</button>
           <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>Submit Availability</button>
         </div>
         <div className="d-flex">
