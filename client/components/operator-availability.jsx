@@ -25,7 +25,7 @@ class OperatorAvailability extends React.Component {
       error: false,
       selectedStartTime: null,
       selectedEndTime: null,
-      userId: 14,
+      userId: 45,
       sessionId: 1
     };
 
