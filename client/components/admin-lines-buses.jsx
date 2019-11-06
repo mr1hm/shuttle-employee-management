@@ -384,20 +384,21 @@ class AdminRoutes extends React.Component {
                     onChange={this.handleAddLineChange}>
                   </input>
                 </div>
-                <div className="col">
-                  <label>
+                {this.state.currentSession === 'All Sessions'
+                  ? <div className="col">
+                    <label>
                     Session
-                    <br />
-                    <span className="addLineHeaderDescription"><i>active/inactive</i></span>
-                  </label>
-                  <select onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="session_id">
-                    {this.state.sessions.map(session => {
-                      return (
-                        <option key={session.id}>{session.name}</option>
-                      );
-                    })}
-                  </select>
-                </div>
+                      <br />
+                      <span className="addLineHeaderDescription"><i>active/inactive</i></span>
+                    </label>
+                    <select onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="session_id">
+                      {this.state.sessions.map(session => {
+                        return (
+                          <option key={session.id}>{session.name}</option>
+                        );
+                      })}
+                    </select>
+                  </div> : null}
                 <div className="col">
                   <label>
                       Status
