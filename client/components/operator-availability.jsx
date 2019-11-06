@@ -25,7 +25,7 @@ class OperatorAvailability extends React.Component {
       error: false,
       selectedStartTime: null,
       selectedEndTime: null,
-      userId: this.props.userId,
+      userId: 14,
       sessionId: 1
     };
 
@@ -42,6 +42,8 @@ class OperatorAvailability extends React.Component {
     this.cancelSubmitModal = this.cancelSubmitModal.bind(this);
     this.handleSubmitModal = this.handleSubmitModal.bind(this);
     this.showSubmitModal = this.showSubmitModal.bind(this);
+
+    this.getEnteredAvailability = this.getEnteredAvailability.bind(this);
 
     this.setStartTime = this.setStartTime.bind(this);
     this.setEndTime = this.setEndTime.bind(this);
@@ -111,6 +113,10 @@ class OperatorAvailability extends React.Component {
     });
   }
 
+  // componentDidMount() {
+  //   this.getEnteredAvailability();
+  // }
+
   deleteShift() {
     var day = this.state.day;
     var selStartTime = this.state.selectedStartTime;
@@ -171,6 +177,25 @@ class OperatorAvailability extends React.Component {
         selectedStartTime: this.times[clickedIndex]
       });
     }
+  }
+
+  getEnteredAvailability() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'user_id': this.state.userId,
+        'session_id': this.state.sessionId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/operator-entered-availability.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          availability: data
+        });
+      })
+      .catch(error => { throw (error); });
   }
 
   getShiftInfo(event) {
@@ -308,6 +333,7 @@ class OperatorAvailability extends React.Component {
         <TopMenuGeneral title="MY AVAILABILITY"/>
         <div className="d-flex justify-content-between">
           <div className='mb-0 ml-3'>Click day and approximate time to add, change, or delete.</div>
+          <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.getEnteredAvailability}>Get Entered Availability</button>
           <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>Submit Availability</button>
         </div>
         <div className="d-flex">
