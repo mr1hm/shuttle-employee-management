@@ -28,16 +28,8 @@ class HamburgerMenu extends React.Component {
       .catch(error => console.error('Fetch failed', error));
   }
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.notificationCount !== this.state.notificationCount) {
-      const ID = this.props.userId ? this.props.userId : 17;
-      fetch(`/api/get-notifications.php?id=${ID}`)
-        .then(response => response.json())
-        .then(shiftsArrayOfObjects => {
-          this.setState({
-            notificationCount: parseInt(shiftsArrayOfObjects.length)
-          });
-        })
-        .catch(error => console.error('Fetch failed', error));
+    if (prevProps.notificationCount !== this.props.notificationCount) {
+      this.setState({ notificationCount: this.props.notificationCount });
     }
   }
   render() {
