@@ -1,4 +1,11 @@
+.nav {
+  margin: 0 auto;
+  width: 80%;
+}
 table {
   margin: 0 auto;
   width: 80%;
+}
+th, td {
+  text-align: center;
 }

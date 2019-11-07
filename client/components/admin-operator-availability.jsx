@@ -34,7 +34,7 @@ class AdminOperatorAvailability extends React.Component {
       .catch(error => { throw (error); });
   }
 
-  submittedStatus(index) {
+  submittedStatus(operator) {
     const defaultStyles = {
       width: '15px',
       height: '15px',
@@ -42,14 +42,14 @@ class AdminOperatorAvailability extends React.Component {
       margin: '0 auto'
     };
 
-    const style = {
+    const colorStyle = {
       backgroundColor: undefined
     };
 
-    (index['submitted']) ? style.backgroundColor = 'green' : style.backgroundColor = 'red';
+    (operator['submitted']) ? colorStyle.backgroundColor = 'green' : colorStyle.backgroundColor = 'red';
 
     return (
-      <div style={{ ...defaultStyles, ...style }}></div>
+      <div style={{ ...defaultStyles, ...colorStyle }}></div>
     );
   }
 
@@ -59,31 +59,33 @@ class AdminOperatorAvailability extends React.Component {
     }
     return (
       <React.Fragment>
-        <TopMenuGeneral title="ADMIN-OPERATOR AVAILABILITY" />
-        <table>
+        <div className='nav'>
+          <TopMenuGeneral title="ADMIN-OPERATOR AVAILABILITY" />
+        </div>
+        <table className= 'mt-4'>
           <thead>
             <tr>
-              <th style={{ textAlign: 'center' }}>User Id</th>
+              <th>User Id</th>
               <th></th>
-              <th style={{ textAlign: 'center' }}>Last Name</th>
+              <th >Last Name</th>
               <th></th>
-              <th style={{ textAlign: 'center' }}>First Name</th>
+              <th>First Name</th>
               <th></th>
-              <th style={{ textAlign: 'center' }}>Submitted</th>
+              <th>Submitted</th>
             </tr>
           </thead>
           <tbody>
             {
-              this.state.operatorDetails.map(index => {
+              this.state.operatorDetails.map((operator, index) => {
                 return (
                   <tr key={index}>
-                    <td style={{ textAlign: 'center' }}>{index['id']}</td>
+                    <td>{operator['id']}</td>
                     <td></td>
-                    <td style={{ textAlign: 'center' }}>{index['last_name']}</td>
+                    <td>{operator['last_name']}</td>
                     <td></td>
-                    <td style={{ textAlign: 'center' }}>{index['first_name']}</td>
+                    <td>{operator['first_name']}</td>
                     <td></td>
-                    <td>{this.submittedStatus(index)}</td>
+                    <td>{this.submittedStatus(operator)}</td>
                   </tr>
                 );
               })
