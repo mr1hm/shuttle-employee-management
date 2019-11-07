@@ -4,10 +4,9 @@ set_exception_handler('error_handler');
 require_once 'db_connection.php';
 
 $data = getBodyData();
-//eventually this will be added to the id
-$sessionId = $data['session_id'];
+$session = $data['session_id'];
 
-function getOperatorsWithSubmittedAvailability($conn) {
+function getOperatorsWithSubmittedAvailability($conn, $session) {
   $operatorsWithAvailabilityQuery = "SELECT 
                                      us.id, 
                                      us.first_name, 
@@ -15,7 +14,7 @@ function getOperatorsWithSubmittedAvailability($conn) {
                                      FROM operator_availability AS oa 
                                      INNER JOIN user AS us 
                                      ON us.id = oa.user_id 
-                                     WHERE us.status = 'active' AND us.role = 'operator' AND oa.session_id = 1 ORDER BY us.id ASC";
+                                     WHERE us.status = 'active' AND us.role = 'operator' AND oa.session_id = $session";
 
   $opsAvailabilityResult = mysqli_query($conn, $operatorsWithAvailabilityQuery);
   if (!$opsAvailabilityResult) {
@@ -27,10 +26,7 @@ function getOperatorsWithSubmittedAvailability($conn) {
   }
 
   return $opsAvailabilityData;
-  // print(json_encode($opsAvailabilityData));
 }
-
-
 
 function getAllActiveOperators($conn) {
   $allActiveOperatorsQuery = "SELECT 
@@ -51,9 +47,7 @@ function getAllActiveOperators($conn) {
   }
 
   return $allActiveData;
-  // print(json_encode($allActiveData));
 }
-
 
 function combineInformation($allActiveData, $opsAvailabilityData) {
   for ($index = 0; $index < count($allActiveData); $index++) {
@@ -61,6 +55,7 @@ function combineInformation($allActiveData, $opsAvailabilityData) {
     for ($avIndex = 0; $avIndex  < count($opsAvailabilityData); $avIndex++) {
       if ($allActiveData[$index]['id'] === $opsAvailabilityData[$avIndex]['id']){
         $flag = true;
+        break;
       }
     }
     if ($flag) {
@@ -71,7 +66,7 @@ function combineInformation($allActiveData, $opsAvailabilityData) {
 }
 
 $allActiveData = getAllActiveOperators($conn);
-$opsAvailabilityData = getOperatorsWithSubmittedAvailability($conn);
+$opsAvailabilityData = getOperatorsWithSubmittedAvailability($conn, $session);
 combineInformation($allActiveData, $opsAvailabilityData);
 
 ?>

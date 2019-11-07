@@ -18,6 +18,10 @@ class OperatorAvailability extends React.Component {
         'Friday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
+      // cutoff after current date
+      cutoffTimestamp: 1573187212000,
+      // cutoff before current date
+      // cutoffTimestamp: 1573167329000,
       show: false,
       clear: false,
       submit: false,
@@ -312,6 +316,20 @@ class OperatorAvailability extends React.Component {
     });
   }
 
+  submitOrMessage() {
+    var todaysDate = new Date();
+    var currentTimestamp = Date.parse(todaysDate);
+    if (currentTimestamp < this.state.cutoffTimestamp) {
+      return (
+        <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>Submit Availability</button>
+      );
+    } else {
+      return (
+        <button type="button" className="btn btn-dark btn-sm mr-4">Too late to Submit</button>
+      );
+    }
+  }
+
   updateDatabase() {
     fetch('/api/operator-availability.php', {
       method: 'POST',
@@ -333,7 +351,8 @@ class OperatorAvailability extends React.Component {
         <TopMenuGeneral title="MY AVAILABILITY"/>
         <div className="d-flex justify-content-between">
           <div className='mb-0 ml-3'>Click day and approximate time to add, change, or delete.</div>
-          <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>Submit Availability</button>
+          {this.submitOrMessage()}
+
         </div>
         <div className="d-flex">
           <div style={{ width: '5%' }}></div>
