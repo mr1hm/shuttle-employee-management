@@ -1,22 +1,43 @@
 import React from 'react';
 import TopMenuGeneral from '../topmenu/topmenu-general';
-
+import StrictNotification from '../strict-notification-modal';
 import './welcome.css';
 
 class Welcome extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      newShiftsandSelectedDriver: ''
+      newShiftsandSelectedDriver: '',
+      availableShiftsSubmitted: 0,
+      sessionId: 1
     };
   }
   componentDidMount() {
-    const newShiftsandSelectedDriver = this.props.location.state;
-    this.setState({
-      newShiftsandSelectedDriver: newShiftsandSelectedDriver
-    });
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'session_id': this.state.sessionId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/admin-operator-availability.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        const newShiftsandSelectedDriver = this.props.location.state;
+        const operator = data.filter(operator => operator.id === this.props.userId);
+        this.setState({
+          availableShiftsSubmitted: operator[0].submitted,
+          newShiftsandSelectedDriver: newShiftsandSelectedDriver
+        });
+      })
+      .catch(error => { throw (error); });
   }
   render() {
+    if (this.state.availableShiftsSubmitted !== 1) {
+      return (
+        <StrictNotification />
+      );
+    }
     return (
       <div className="container-fluid d-flex flex-column h-100 justify-content-around yellow">
         <div className="row">
