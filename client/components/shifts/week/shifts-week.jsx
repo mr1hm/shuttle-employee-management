@@ -65,8 +65,8 @@ class ShiftsWeek extends React.Component {
       let thisShift = this.state.data[shiftI];
       let fullTimestampFromShift = parseInt(adjustUTCSecondsToLocalTimestamp(thisShift.date));
       let shiftTimestamp = createDateObjFromDateString(fullTimestampFromShift).getTime();
-      if (weekData[ shiftTimestamp] !== undefined) {
-        weekData[ shiftTimestamp].shifts.push(thisShift);
+      if (weekData[shiftTimestamp] !== undefined) {
+        weekData[shiftTimestamp].shifts.push(thisShift);
       }
     }
     let weekDataArray = Object.values(weekData);

@@ -4,7 +4,7 @@ require_once('shift-restrictions.php');
 
 function buildOperatorsForDay ($week, $day, $conn) {
   $query = "SELECT `date`, `operator`
-            FROM `quarter_operator_schedule`
+            FROM `operators`
             WHERE `date` >= {$week[0]} AND
                   `date` <= {$week[1]}";
   $result = mysqli_query($conn, $query);
@@ -51,7 +51,7 @@ if ( validParameters() ) {
   $shift = json_decode($_GET['round_time'], true);
   $line_bus = $_GET['line_bus'];
   $shift[0]['line_name'] = preg_filter('/\d/', '', $line_bus);
-  print(json_encode($shift));
+
   $operators = buildOperatorsForDay($week, $day, $conn);
   foreach ($operators as &$operator) {
     $unavailable = canTakeShift($operator['details'], $shift, $conn, 1);
