@@ -242,7 +242,7 @@ class AdminRoutes extends React.Component {
       .catch(error => console.error(error));
   }
 
-  getUpdatedLines(sessionID) { // bug with not scrolling to new line.
+  getUpdatedLines(sessionID) {
     if (sessionID) {
       const init = {
         method: 'POST',
