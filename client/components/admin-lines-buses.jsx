@@ -150,7 +150,7 @@ class AdminRoutes extends React.Component {
     });
   }
 
-  addNewLine(newLine, e) {
+  addNewLine(newLine, e) { // bug here or in getUpdatedLines method with scrollToNewLine. adding new line to winter works fine, but adding new line to fall doesn't.
     e.preventDefault();
     const init = {
       method: 'POST',
@@ -198,16 +198,14 @@ class AdminRoutes extends React.Component {
         [name]: value
       }
     }), () => {
-      this.state.sessions.map(session => {
-        if (this.state.newLine.session_id === session.name) {
-          this.setState(prevState => ({
-            newLine: {
-              ...prevState.newLine,
-              session_id: session.id
-            }
-          }));
-        }
-      });
+      if (this.state.currentSession !== 'All Sessions') {
+        this.setState(prevState => ({
+          newLine: {
+            ...prevState.newLine,
+            session_id: this.state.selectedSessionID
+          }
+        }));
+      }
     });
     this.checkIfLineExists(value);
     console.log(value);
@@ -245,9 +243,6 @@ class AdminRoutes extends React.Component {
   }
 
   getUpdatedLines(sessionID) {
-    // if (this.state.sessionSelected) {
-    //   // needs to add line and get lines/buses info from whichever session is currently selected.
-    // }
     if (sessionID) {
       const init = {
         method: 'POST',
@@ -258,7 +253,7 @@ class AdminRoutes extends React.Component {
         .then(updatedLines => {
           this.setState({
             linesBusesInfo: updatedLines
-          });
+          }, this.scrollToNewLine);
           if (this.state.currentSession === 'All Sessions') {
             this.getLinesBusesInfo();
           }
