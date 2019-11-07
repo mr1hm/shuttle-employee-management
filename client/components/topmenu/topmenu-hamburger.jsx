@@ -23,7 +23,7 @@ class TopMenuHamburger extends React.Component {
   render() {
     const currentDateString = this.props.date ? createDateStringFromDateObject(this.props.date) : '';// converts unix time to date/at midnight
     return (
-      <HamburgerMenu userId={this.props.userId} count={this.state.numberOfShifts}>
+      <HamburgerMenu notificationCount={this.props.notificationCount} userId={this.props.userId} count={this.state.numberOfShifts}>
         <Link to={{ pathname: '/trade-notification/', state: { newShiftsAndSelectedDriver: this.props.tradeNotification } }}>Notifications</Link>
         <Link to="/myinfo/">My Info</Link>
         <Link to={`/shifts/day/shifts-day/${currentDateString}`}>Day</Link>
