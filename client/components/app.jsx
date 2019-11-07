@@ -9,6 +9,7 @@ import ShiftsDetails from './shifts/details/shifts-details';
 import Login from './login/login';
 import Welcome from './welcome/welcome';
 import OperatorAvailability from './operator-availability';
+import AdminOperatorAvailability from './admin-operator-availability';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
@@ -61,6 +62,7 @@ class App extends React.Component {
             <Route path="/shifts/details/" render={props => <ShiftsDetails {...props} userId={this.state.userId} date={this.state.date} shiftId={this.state.shiftId} queryString={this.state.queryString} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
             <Route path="/admin-day/" render={props => <AdminShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/operator-availability/" render={props => <OperatorAvailability userId={this.state.userId ? this.state.userId : 17} />} />
+            <Route path="/admin-operator-availability/" render={props => <AdminOperatorAvailability userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/trade-swap/" render={props => <TradeSwap {...props} shiftDetails={this.state.shiftDetails} />} />
             <Route path="/trade-notification/" render={props => <TradeNotification {...props} userId={this.state.userId ? this.state.userId : 17} shiftDetails={this.state.shiftDetails} />} />
           </Switch>
@@ -82,6 +84,7 @@ class App extends React.Component {
             <Route path = "/admin-day/" render={props => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
             <Route path="/admin-routes/" render={props => <AdminRoutes {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/operator-availability/" render={props => <OperatorAvailability {...props}/>}/>
+            <Route path="/admin-operator-availability/" render={props => <AdminOperatorAvailability {...props}/>}/>
             <Route path="/trade-swap/" render={props => <TradeSwap {...props}/>} />
           </Switch>
         </React.Fragment>
