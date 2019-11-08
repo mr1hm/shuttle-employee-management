@@ -41,7 +41,7 @@ export default class BusesTable extends React.Component {
         this.setState({
           prevDeletedBus: busDeleted
         }, () => {
-          if (this.props.selectedSessionID !== null) {
+          if (this.props.selectedSessionID !== null && this.props.currentSession !== 'All Sessions') {
             this.props.getLinesBusesInfo({ session_id: this.props.selectedSessionID });
           } else {
             this.props.getLinesBusesInfo();
