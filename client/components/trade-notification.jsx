@@ -46,14 +46,17 @@ class TradeNotification extends React.Component {
       body: JSON.stringify(selectedDriverToTradeWith),
       headers: headers
     })
+      .then(response => {
+        this.setState({
+          newShifts: newShifts,
+          notificationCount: this.state.notificationCount - 1
+        });
+      })
       .catch(error => console.error('Fetch failed', error));
     const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
-    this.setState({
-      newShifts: newShifts
-    });
   }
   removeShift(roundID) {
-    const response = fetch('/api/decline-shift-trade.php', {
+    fetch('/api/decline-shift-trade.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -61,13 +64,15 @@ class TradeNotification extends React.Component {
       body: JSON.stringify({
         id: roundID
       })
-    });
-    response.catch(err => console.error(err));
+    })
+      .then(response => {
+        this.setState({
+          newShifts: newShifts,
+          notificationCount: this.state.notificationCount - 1
+        });
+      })
+      .catch(err => console.error(err));
     const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
-    this.setState({
-      notificationCount: this.state.notificationCount - 1,
-      newShifts: newShifts
-    });
   }
   render() {
     if (this.state.selectedRoundId) {
