@@ -205,6 +205,14 @@ class AdminRoutes extends React.Component {
             session_id: this.state.selectedSessionID
           }
         }));
+      } else if (this.state.newLine.session_id === 'Fall 2019' || this.state.newLine.session_id === 'Winter 2020') {
+        let sessionInfo = this.state.sessions.find(session => session.name === value);
+        this.setState(prevState => ({
+          newLine: {
+            ...prevState.newLine,
+            session_id: sessionInfo.id
+          }
+        }));
       }
     });
     this.checkIfLineExists(value);
