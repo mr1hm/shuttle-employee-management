@@ -408,7 +408,11 @@ class AdminRoutes extends React.Component {
                     <br />
                     <span className="addLineHeaderDescription"><i>active/inactive</i></span>
                   </label>
-                  <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" />
+                  <select name="status" className="col border border-primary" onChange={this.handleAddLineChange}>
+                    <option>active</option>
+                    <option>inactive</option>
+                  </select>
+                  {/* <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" /> */}
                 </div>
                 <div className="col">
                   <label>
