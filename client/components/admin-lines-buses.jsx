@@ -150,7 +150,7 @@ class AdminRoutes extends React.Component {
     });
   }
 
-  addNewLine(newLine, e) { // bug here or in getUpdatedLines method with scrollToNewLine. adding new line to winter works fine, but adding new line to fall doesn't.
+  addNewLine(newLine, e) { // bug in Winter 2020 session. Special Driver is automatically set to true no matter if the box is checked or not when adding a new line.
     e.preventDefault();
     const init = {
       method: 'POST',
