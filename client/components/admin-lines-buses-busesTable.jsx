@@ -19,15 +19,15 @@ export default class BusesTable extends React.Component {
     this.deleteBus = this.deleteBus.bind(this);
   }
 
-  checkForActiveBuses() {
-    if (line.buses.busNumber) {
-      this.setState({
-        busExistsOnRoute: true
-      });
-    }
-  }
+  // checkForActiveBuses() {
+  //   if (line.buses.busNumber) {
+  //     this.setState({
+  //       busExistsOnRoute: true
+  //     });
+  //   }
+  // }
 
-  deleteBus(busID) {
+  deleteBus(busID, sessionID) {
     const body = {
       id: busID
     };
@@ -40,7 +40,13 @@ export default class BusesTable extends React.Component {
       .then(busDeleted => {
         this.setState({
           prevDeletedBus: busDeleted
-        }, this.props.getLinesBusesInfo);
+        }, () => {
+          if (this.props.selectedSessionID !== null) {
+            this.props.getLinesBusesInfo({ session_id: this.props.selectedSessionID });
+          } else {
+            this.props.getLinesBusesInfo();
+          }
+        });
         console.log('deleted', busDeleted);
       })
       .catch(error => console.error(error));
