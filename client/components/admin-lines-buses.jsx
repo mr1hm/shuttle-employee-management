@@ -150,7 +150,7 @@ class AdminRoutes extends React.Component {
     });
   }
 
-  addNewLine(newLine, e) { // bug here or in getUpdatedLines method with scrollToNewLine. adding new line to winter works fine, but adding new line to fall doesn't.
+  addNewLine(newLine, e) { // bug in Winter 2020 session. Special Driver is automatically set to true no matter if the box is checked or not when adding a new line.
     e.preventDefault();
     const init = {
       method: 'POST',
@@ -464,13 +464,13 @@ class AdminRoutes extends React.Component {
               if (this.state.newLineAdded && (largestID == line.real_route_id)) {
                 return (
                   <div className="newLine" key={line.real_route_id} ref={this.ref}>
-                    <Lines currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                    <Lines selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                   </div>
                 );
               }
               return (
                 <div key={line.real_route_id}>
-                  <Lines currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                  <Lines selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                 </div>
               );
             }
@@ -511,13 +511,13 @@ class AdminRoutes extends React.Component {
             if (this.state.newLineAdded && (largestID == line.real_route_id)) {
               return (
                 <div className="newLine" key={`lineDiv${line.real_route_id}`} ref={this.ref}>
-                  <Lines currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                  <Lines selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                 </div>
               );
             }
             return (
               <div key={`lineDiv${line.real_route_id}`}>
-                <Lines currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                <Lines selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
               </div>
             );
           }
