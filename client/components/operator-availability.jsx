@@ -18,10 +18,11 @@ class OperatorAvailability extends React.Component {
         'Friday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
-      // cutoff after current date
-      cutoffTimestamp: 1573187212000,
+      // // cutoff after current date
+      // cutoffTimestamp: 1583187212000,
       // cutoff before current date
       // cutoffTimestamp: 1573167329000,
+      minimumAvailability: 1620,
       show: false,
       clear: false,
       submit: false,
@@ -319,15 +320,33 @@ class OperatorAvailability extends React.Component {
   submitOrMessage() {
     var todaysDate = new Date();
     var currentTimestamp = Date.parse(todaysDate);
-    if (currentTimestamp < this.state.cutoffTimestamp) {
+    var totalAvailability = this.totalEnteredAvailability();
+
+    if (currentTimestamp < this.state.cutoffTimestamp && totalAvailability >= this.state.minimumAvailability) {
       return (
         <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>Submit Availability</button>
+      );
+    } if (currentTimestamp < this.state.cutoffTimestamp && totalAvailability < this.state.minimumAvailability) {
+      return (
+        <button type="button" className="btn btn-dark btn-sm mr-4">Enter more hours</button>
       );
     } else {
       return (
         <button type="button" className="btn btn-dark btn-sm mr-4">Too late to Submit</button>
       );
     }
+  }
+
+  totalEnteredAvailability() {
+    var number15MinuteBlocks = 0;
+    for (var key in this.state.availability) {
+      for (var index = 0; index < this.state.availability[key].length; index++) {
+        if (this.state.availability[key][index]) {
+          number15MinuteBlocks++;
+        }
+      }
+    }
+    return number15MinuteBlocks * 15;
   }
 
   updateDatabase() {
