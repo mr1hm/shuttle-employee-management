@@ -30,7 +30,7 @@ class AdminRoutes extends React.Component {
       newLine: {
         session_id: 5,
         line_name: null,
-        status: null,
+        status: 'active',
         roundDuration: null,
         public: 'True',
         regularService: 'True',
