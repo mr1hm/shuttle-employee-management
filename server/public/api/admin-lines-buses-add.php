@@ -17,6 +17,12 @@ if (isset($bodyData['line_name'])) {
   $query = "INSERT INTO `route` (`line_name`, `session_id`, `status`, `roundDuration`, `public`, `regularService`, `specialDriver`)
               VALUES ('$line_name', '$sessionID', '$status', '$roundDuration', '$public', '$regularService', '$specialDriver')";
 
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('mysql error' . mysqli_error($conn));
+  }
+
 } else if (isset($bodyData['route_id'])) {
 
   $busNumber = $bodyData['bus_number'];
@@ -30,16 +36,40 @@ if (isset($bodyData['line_name'])) {
   $gapDuration = $bodyData['gapDuration'];
   $openingDuration = $bodyData['opening_duration'];
   $closingDuration = $bodyData['closing_duration'];
+  $sessionID = $bodyData['session_id'];
+  $userID = $bodyData['userID'];
+  $date = $bodyData['date'];
+  // $scheduleStatus = $bodyData['status'];
 
-  $query = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `daysActive`, `route_id`, `vehicle_id`, `gap`, `gapDuration`, `opening_duration`, `closing_duration`)
+  $transactionResult = mysqli_query($conn, 'START TRANSACTION');
+
+  if (!$transactionResult) {
+    throw new Exception('could not start transaction' . mysqli_error($conn));
+  }
+
+  $busInsertQuery = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `daysActive`, `route_id`, `vehicle_id`, `gap`, `gapDuration`, `opening_duration`, `closing_duration`)
               VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$daysActive', '$idRoute', '$vehicleID', '$gap', '$gapDuration', '$openingDuration', '$closingDuration')";
+  $result = mysqli_query($conn, $busInsertQuery);
 
-}
+  if (!$result) {
+    throw new Exception('mysql error' . mysqli_error($conn));
+  }
 
-$result = mysqli_query($conn, $query);
+  $roundInsertQuery = "INSERT INTO `round` (`bus_info_id`, `session_id`, `user_id`, `date`, `start_time`, `end_time`)
+                VALUES (LAST_INSERT_ID(), $sessionID, $userID, $date, $startTime, $endTime)";
+  $result = mysqli_query($conn, $roundInsertQuery);
 
-if (!$result) {
-  throw new Exception('mysql error' . mysqli_error($conn));
+  if (!$result) {
+    throw new Exception('mysql error' . mysqli_error($conn));
+  }
+
+  if (mysqli_affected_rows($conn) === 0) {
+    mysqli_query($conn, 'ROLLBACK');
+    throw new Exception('unable to insert/update bus and round info');
+  }
+
+  $transactionResult = mysqli_query($conn, 'COMMIT');
+
 }
 
 if (isset($bodyData['line_name'])) {
@@ -60,7 +90,9 @@ if (isset($bodyData['line_name'])) {
 
 } else if (isset($bodyData['route_id'])) {
 
-  $query = "SELECT * FROM `bus_info`";
+  $query = "SELECT bi.`id`, bi.`bus_number`, bi.`start_time`, bi.`end_time`, r.`session_id`, r.`user_id`, r.`bus_info_id`, r.`start_time`, r.`end_time`
+            FROM `bus_info` AS bi, `round` AS r
+            WHERE bi.`id` = r.`bus_info_id`";
   $result = mysqli_query($conn, $query);
 
   if (!$result) {

@@ -98,6 +98,7 @@ export default class Lines extends React.Component {
         }
       })
       .catch(error => console.error(error));
+    console.log('LINE DELETED');
   }
 
   render() {

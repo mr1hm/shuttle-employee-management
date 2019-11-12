@@ -14,7 +14,11 @@ export default class AddBus extends React.Component {
         gap: null,
         gapDuration: null,
         opening_duration: null,
-        closing_duration: null
+        closing_duration: null,
+        session_id: this.props.line.sessionID,
+        userID: 62,
+        date: 1566100800,
+        status: 'scheduled'
       },
       newBusAdded: false
     };
@@ -22,6 +26,7 @@ export default class AddBus extends React.Component {
     this.setRouteID = this.setRouteID.bind(this);
     this.addNewBus = this.addNewBus.bind(this);
     this.calculateEndTime = this.calculateEndTime.bind(this);
+    // this.calculateEndTime2 = this.calculateEndTime2.bind(this);
   }
 
   addNewBus(newBus, sessionID, e) {
@@ -61,6 +66,35 @@ export default class AddBus extends React.Component {
     this.calculateEndTime();
   }
 
+  // calculateEndTime2() {
+  //   const { line } = this.props;
+  //   const { newBus } = this.state;
+  //   // let totalTime = null;
+  //   const roundDuration = parseInt(line.roundDuration);
+  //   const startTime = newBus.start_time;
+  //   const rounds = parseInt(newBus.rounds);
+  //   console.log(rounds);
+
+  //   let totalRoundTime = (rounds * roundDuration) / 60;
+  //   totalRoundTime = totalRoundTime.toString();
+  //   console.log(totalRoundTime);
+
+  //   if (totalRoundTime.includes('.')) {
+  //     totalRoundTime = totalRoundTime.split('.');
+  //   }
+
+  //   let totalHours = ('.' + totalRoundTime[1]) * 60;
+
+  //   totalRoundTime = parseInt(totalRoundTime[0] + totalHours);
+  //   totalRoundTime = startTime + totalRoundTime;
+
+  //   let endTime = startTime + totalRoundTime;
+
+  //   console.log('Total Time:', endTime);
+
+  //   return totalRoundTime;
+  // }
+
   calculateEndTime() {
     const { line } = this.props;
     const { newBus } = this.state;
@@ -81,10 +115,10 @@ export default class AddBus extends React.Component {
       let startTimeArr = startTime.split('');
       let newHour = startTimeArr.splice(0, 2);
       let newHourStr = newHour.join('');
-      let newHourInt = Math.round(parseInt(newHourStr) + amountOfHours);
+      let newHourInt = parseInt(newHourStr) + amountOfHours;
       let newHourIntStr = newHourInt + '';
       let splitNewHourStr = newHourIntStr.split('');
-      // console.log('splitNewHourStr', splitNewHourStr);
+      console.log(splitNewHourStr);
       if (splitNewHourStr[1]) {
         let addHourToArr = startTimeArr.splice(0, 0, splitNewHourStr[0], splitNewHourStr[1]);
       }
