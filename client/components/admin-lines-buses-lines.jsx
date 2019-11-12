@@ -74,7 +74,7 @@ export default class Lines extends React.Component {
   deleteLine(lineID, sessionID) {
     let busIDArr = [];
     let busIDs = this.props.line.activeBuses.forEach(buses => { // another bug. if deleting line from All Sessions tab, it will get/render all the lines from only that session.
-      busIDArr.push(buses.busID); // DELETES BUS AS WELL - IT WORKS!!
+      busIDArr.push(buses.busID); // DELETES BUS AS WELL - IT WORKS!!d
     });
     console.log(busIDArr);
     const body = {

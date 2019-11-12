@@ -352,24 +352,26 @@ class AdminRoutes extends React.Component {
         <React.Fragment>
           <TopMenuGeneral userId={this.props.userId} title="ADMIN - Routes/Buses" />
           <div className="container-fluid mt-2">
-            <div className="row">
-              <div className="col-2">
-                <label>Select Session</label>
-                <select onChange={this.handleSessionChange} className="col border border-primary" name="currentSession">
-                  <option>All Sessions</option>
-                  {this.state.sessions.map(sessionData => {
-                    return (
-                      <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
-                    );
-                  })}
-                </select>
+            <div className="container sessionContainer">
+              <div className="row">
+                <div className="col-2">
+                  <label>Select Session</label>
+                  <select onChange={this.handleSessionChange} className="col border border-primary" name="currentSession">
+                    <option>All Sessions</option>
+                    {this.state.sessions.map(sessionData => {
+                      return (
+                        <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
+                      );
+                    })}
+                  </select>
+                </div>
               </div>
-            </div>
-            <div className="row">
-              {this.state.sessionSelected
-                ? <div className="col-1 mt-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy<FontAwesomeIcon icon={faCopy} /></button></div> : null}
-              {this.state.copiedSession
-                ? <div className="col-1 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste<FontAwesomeIcon icon={faPaste} /></button></div> : null}
+              <div className="row">
+                {this.state.sessionSelected
+                  ? <div className="col-1 mt-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy<FontAwesomeIcon icon={faCopy} /></button></div> : null}
+                {this.state.copiedSession
+                  ? <div className="col-1 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste<FontAwesomeIcon icon={faPaste} /></button></div> : null}
+              </div>
             </div>
             <div className="row justify-content-end">
               {this.state.addLineClicked ? <div className="btn btn-outline-dark " onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
@@ -487,24 +489,26 @@ class AdminRoutes extends React.Component {
       <React.Fragment>
         <TopMenuGeneral title="ADMIN - Lines/Buses" />
         <div className="container-fluid mt-2">
-          <div className="row">
-            <div className="col-2">
-              <label>Select Session</label>
-              <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
-                <option>All Sessions</option>
-                {this.state.sessions.map(sessionData => {
-                  return (
-                    <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
-                  );
-                })}
-              </select>
+          <div className="container sessionContainer">
+            <div className="row">
+              <div className="col-2">
+                <label>Select Session</label>
+                <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
+                  <option>All Sessions</option>
+                  {this.state.sessions.map(sessionData => {
+                    return (
+                      <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
+                    );
+                  })}
+                </select>
+              </div>
             </div>
-          </div>
-          <div className="row">
-            {this.state.sessionSelected
-              ? <div className="col-1 mt-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy<FontAwesomeIcon className="ml-1" icon={faCopy} /></button></div> : null}
-            {this.state.copiedSession
-              ? <div className="col-1 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
+            <div className="row">
+              {this.state.sessionSelected
+                ? <div className="col-1 mt-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy<FontAwesomeIcon className="ml-1" icon={faCopy} /></button></div> : null}
+              {this.state.copiedSession
+                ? <div className="col-1 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
+            </div>
           </div>
           <div className="row justify-content-end">
             <div className="btn btn-outline-dark" onClick={() => this.handleAddLineButton()}> Add Line + </div>

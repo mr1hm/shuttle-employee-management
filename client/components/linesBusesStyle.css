@@ -24,6 +24,11 @@
   border-bottom: 1px dotted black;
 }
 
+.sessionContainer {
+  border: 1px solid black;
+  height: 250px;
+}
+
 .addNewBusCard {
   border: 1px solid black;
 }
