@@ -159,7 +159,7 @@ class AdminOperatorAvailability extends React.Component {
               this.state.operatorDetails.map((operator, index) => {
                 return (
                   <tr key={index}>
-                    <td>{operator['id']}</td>
+                    <td>{operator['uci_net_id']}</td>
                     <td></td>
                     <td>{operator['last_name']}</td>
                     <td></td>

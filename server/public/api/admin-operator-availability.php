@@ -8,7 +8,7 @@ $session = $data['session_id'];
 
 function getOperatorsWithSubmittedAvailability($conn, $session) {
   $operatorsWithAvailabilityQuery = "SELECT 
-                                     us.id, 
+                                     us.uci_net_id, 
                                      us.first_name, 
                                      us.last_name
                                      FROM operator_availability AS oa 
@@ -30,7 +30,7 @@ function getOperatorsWithSubmittedAvailability($conn, $session) {
 
 function getAllActiveOperators($conn) {
   $allActiveOperatorsQuery = "SELECT 
-                              id,
+                              uci_net_id,
                               first_name, 
                               last_name
                               FROM user
@@ -53,7 +53,7 @@ function combineInformation($allActiveData, $opsAvailabilityData) {
   for ($index = 0; $index < count($allActiveData); $index++) {
     $flag = 0;
     for ($avIndex = 0; $avIndex  < count($opsAvailabilityData); $avIndex++) {
-      if ($allActiveData[$index]['id'] === $opsAvailabilityData[$avIndex]['id']){
+      if ($allActiveData[$index]['uci_net_id'] === $opsAvailabilityData[$avIndex]['uci_net_id']){
         $flag = true;
         break;
       }
