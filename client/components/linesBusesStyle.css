@@ -26,8 +26,32 @@
 
 .sessionContainer {
   border: 1px solid black;
+  border-radius: 10px;
   height: 250px;
+  /* max-width: 1140px; */
+  max-width: 95%;
+  margin-bottom: 26px;
 }
+
+.addLineBtn {
+  color: #FFA804;
+  background-color: rgb(23, 2, 61);
+  border: 1px solid #FFA804;
+}
+
+.lineNameInput,
+.roundDurationInput,
+.editLineNameInput,
+.editRoundDurationInput,
+.addBusInputs,
+.editBusInputs {
+  border-radius: .25rem;
+  height: 23px;
+}
+
+/* .copyPaste-session-buttons {
+  height: 50px;
+} */
 
 .addNewBusCard {
   border: 1px solid black;

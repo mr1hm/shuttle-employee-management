@@ -113,7 +113,7 @@ export default class EditLine extends React.Component {
             </div>
             <div className="row editLineInputRow align-items-center">
               <div className="col">
-                <input name="line_name" className="col border border-primary" defaultValue={line.line_name} type="text" onChange={this.handleEditLineChange} />
+                <input name="line_name" className="col border border-primary editLineNameInput" defaultValue={line.line_name} type="text" onChange={this.handleEditLineChange} />
               </div>
               <div className="col">
                 <select name="status" className="col border border-primary" defaultValue={line.status} type="text" onChange={this.handleEditLineChange}>
@@ -122,7 +122,7 @@ export default class EditLine extends React.Component {
                 </select>
               </div>
               <div className="col">
-                <input name="roundDuration" className="col border border-primary" type="text" defaultValue={line.roundDuration} onChange={this.handleEditLineChange} />
+                <input name="roundDuration" className="col border border-primary editRoundDurationInput" type="text" defaultValue={line.roundDuration} onChange={this.handleEditLineChange} />
               </div>
               <div className="col">
                 <select name="public" className="col border border-primary" type="text" defaultValue={line.public} onChange={this.handleEditLineChange}>
