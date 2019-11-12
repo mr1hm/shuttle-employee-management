@@ -259,7 +259,7 @@ function getShift ($lineName, &$rounds) {
           'user_id' => $user_id,
           'last_name' => $operator['last_name'],
           'first_name' => $operator['first_name'],
-          'special_route_ok' => $operator['special_route_ok'],
+          'special_route' => $operator['special_route'],
           'available_times' => $operatorDetails['available_times'],
           'assigned_times' => $operatorDetails['assigned_times'],
           'shift_restrictions' => $operatorDetails['shift_restrictions'],
@@ -330,7 +330,7 @@ function getShift ($lineName, &$rounds) {
 
   // Returns an associative array of operators for the week
   function getOperatorsForWeek ($conn) {
-    $query = "SELECT `id` AS 'user_id', `last_name`, `first_name`, `special_route_ok`
+    $query = "SELECT `id` AS 'user_id', `last_name`, `first_name`, `special_route_ok` AS 'special_route'
               FROM `user`
               WHERE `role` = 'operator' AND `status` = 'active'";
 
@@ -449,7 +449,7 @@ function getShift ($lineName, &$rounds) {
         $op['user_id'] = $operator['user_id'];
         $op['last_name'] = $operator['last_name'];
         $op['first_name'] = $operator['first_name'];
-        $op['special_route'] = $operator['special_route_ok'];
+        $op['special_route'] = $operator['special_route'];
         $op['total_weekly_minutes'] = $operator['total_weekly_minutes'];
         $op['available_times'] = $operator['assignment_details'][$day]['available_times'];
         $op['assigned_times'] = $operator['assignment_details'][$day]['assigned_times'];
