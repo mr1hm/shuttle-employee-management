@@ -1,6 +1,7 @@
 <?php
 
 require_once('shift-restrictions.php');
+require_once('operator-functions.php');
 
 function buildOperatorsForDay ($week, $day, $conn) {
   $query = "SELECT `date`, `operator`
