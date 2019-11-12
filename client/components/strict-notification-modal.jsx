@@ -18,7 +18,13 @@ class StrictNotification extends React.Component {
                 </div>
               </div>
               <div className="modal-footer justify-content-center">
-                <Link to='/operator-availability/' className="btn btn-primary" >Go to My Availability</Link>
+                <Link to= {{
+                  pathname: '/operator-availability/',
+                  state: {
+                    operatorFlag: 1
+                  }
+                }}
+                className="btn btn-primary" >Go to My Availability</Link>
               </div>
             </div>
           </div>
