@@ -242,10 +242,10 @@ function getShift ($lineName, &$rounds) {
   }
 
   function updateDatabaseOperators ($conn, $operators) {
-    if (!mysqli_query($conn, "TRUNCATE TABLE `quarter_operator_schedule`")) {
+    if (!mysqli_query($conn, "TRUNCATE TABLE `operators`")) {
       throw new Exception('MySQL error: ' . mysqli_error($conn));
     }
-    $query = "INSERT INTO `quarter_operator_schedule` (`user_id`, `date`, `operator`)
+    $query = "INSERT INTO `operators` (`user_id`, `date`, `operator`)
               VALUES\n";
 
     $ops = [];
