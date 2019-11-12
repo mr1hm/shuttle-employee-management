@@ -129,16 +129,18 @@ class AdminShiftsDay extends React.Component {
       headers: { 'Content-Type': 'application/json' }
     };
     fetch(`/api/admin-update-shifts.php`, data)
-      .then(response => { })
+      // .then(response => { })
+      .then(response => response.json())
       .then(data => {
-        this.getTodaysShiftData(this.state.date);
-        this.setState({
-          availableOperators: [],
-          roundsSelected: [],
-          selectingAssign: false,
-          shiftsSelected: [],
-          roundTimes: []
-        });
+        console.log(data);
+        // this.getTodaysShiftData(this.state.date);
+        // this.setState({
+        //   availableOperators: [],
+        //   roundsSelected: [],
+        //   selectingAssign: false,
+        //   shiftsSelected: [],
+        //   roundTimes: []
+        // });
       })
       .catch(error => { throw (error); });
   }
