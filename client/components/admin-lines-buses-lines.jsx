@@ -6,6 +6,7 @@ import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
 import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
+import GapsModal from './admin-lines-buses-viewGaps';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown, faWindowClose, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
@@ -139,7 +140,7 @@ export default class Lines extends React.Component {
                     </tr>
                   </thead>
                   {activeBuses.map((bus, index) => {
-                    return <BusesTable selectedSessionID={this.props.selectedSessionID} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                    return <BusesTable handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} selectedSessionID={this.props.selectedSessionID} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
                   }
                   )}
                 </table>
@@ -155,7 +156,7 @@ export default class Lines extends React.Component {
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
             <div className="row w-100 align-items-center lineHeaderFirstRow">
               <div className={`col-2 lineName ${line.line_name}`}>
-                Line {this.state.specialDriverRequired ? <FontAwesomeIcon className="specialDriverIcon ml-3" icon={faUserTie} /> : null}
+                  Line {this.state.specialDriverRequired ? <FontAwesomeIcon className="specialDriverIcon ml-3" icon={faUserTie} /> : null}
               </div>
               <div className="col">Status</div>
               <div className="col">Round Duration</div>
@@ -184,7 +185,7 @@ export default class Lines extends React.Component {
               <div className="col">
                 <button className="btn btn-link" type="button" data-toggle="collapse"
                   name={`busDetailsClicked${line.route_id}`} href={'#collapse' + line.line_name} onClick={this.displayBusDetails} aria-expanded="true" aria-controls={'collapse' + line.line_name}>
-                    Bus Details
+                      Bus Details
                   {this.state.busDetailsClicked ? <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretUp} /> : <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretDown} />}
                 </button>
               </div>
@@ -208,7 +209,7 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="card col-12">
                 <div className="card-header">
-                  Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
+                    Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
                 </div>
                 <table className="card-table table">
                   <thead>
@@ -223,7 +224,7 @@ export default class Lines extends React.Component {
                     </tr>
                   </thead>
                   {activeBuses.map((bus, index) => {
-                    return <BusesTable selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                    return <BusesTable handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
                   }
                   )}
                 </table>
