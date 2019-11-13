@@ -4,21 +4,18 @@ import './shift-month-legends.css';
 
 export default function Legends() {
   return (
-    <div className="legend-container">
-      <div className="row legendRow">
-        <div className="col-md-4">
-          Scheduled <br></br>
-          <div className="scheduled-shift-color circle"></div>
-        </div>
-        <div className="col-md-4">
-          Posted <br></br>
-          <div className="posted-shift-color circle"></div>
-        </div>
-        <div className="col-md-4">
-          Scheduled & Posted <br></br>
-          <div className="scheduled-shift-color posted-shift-color circle">
-          </div>
-        </div>
+    <div className="legendContainer w-100 d-flex align-items-center px-3 my-3">
+      <div className="d-flex align-items-center mr-4">
+        <div className="scheduled-shift-color circle mx-2"></div>
+        Scheduled
+      </div>
+      <div className="d-flex align-items-center mr-4">
+        <div className="posted-shift-color circle mx-2"></div>
+        Posted
+      </div>
+      <div className="d-flex align-items-center mr-4">
+        <div className="scheduled-shift-color posted-shift-color circle mx-2"> </div>
+        Scheduled & Posted
       </div>
     </div>
   );
