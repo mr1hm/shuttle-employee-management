@@ -110,7 +110,7 @@ export default class BusesTable extends React.Component {
           <td></td>
           <td className="endTimeDuration">{`${busInfo.closingDuration}min`}</td>
           <td></td>
-          <td>{busInfo.gapDuration}</td>
+          <td>{`${busInfo.gapDuration}min`}</td>
           <td className="d-flex justify-content-center">
             <button onClick={() => this.deleteBus(busInfo.busID)} className="busTableDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
           </td>

@@ -372,9 +372,9 @@ class AdminRoutes extends React.Component {
               </div>
               <div className="row">
                 {this.state.sessionSelected && this.state.currentSession !== 'All Sessions'
-                  ? <div className="col-2 mt-1 mb-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy<FontAwesomeIcon icon={faCopy} /></button></div> : null}
+                  ? <div className="col-2 mt-1 mb-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session<FontAwesomeIcon className="ml-1" icon={faCopy} /></button></div> : null}
                 {this.state.copiedSession && this.state.currentSession !== 'All Sessions'
-                  ? <div className="col-2 mt-1 mb-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste<FontAwesomeIcon icon={faPaste} /></button></div> : null}
+                  ? <div className="col-2 mt-1 mb-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste Session<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
               </div>
               <div className="row">
                 <div className="card mt-1">
@@ -512,9 +512,9 @@ class AdminRoutes extends React.Component {
             </div>
             <div className="row">
               {this.state.sessionSelected && this.state.currentSession !== 'All Sessions'
-                ? <div className="col-2 mt-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy<FontAwesomeIcon className="ml-1" icon={faCopy} /></button></div> : null}
+                ? <div className="col-2 mt-1"><button className="btn btn-primary w-100" onClick={() => this.handleCopySession({ session_id: this.state.selectedSessionID })}>Copy Session<FontAwesomeIcon className="ml-1" icon={faCopy} /></button></div> : null}
               {this.state.copiedSession && this.state.currentSession !== 'All Sessions'
-                ? <div className="col-2 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
+                ? <div className="col-2 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste Session<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
             </div>
           </div>
         </div>
