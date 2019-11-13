@@ -24,19 +24,34 @@
   border-bottom: 1px dotted black;
 }
 
-.sessionContainer {
+.operationsContainer {
+  background-color: gray;
   border: 1px solid black;
   border-radius: 10px;
-  height: 250px;
+  height: 300px;
   /* max-width: 1140px; */
   max-width: 95%;
   margin-bottom: 26px;
 }
 
-.addLineBtn {
+.operationsHeader {
+  color: rgba(255, 255, 255, .95);
+}
+
+.newSessionBtn {
+  height: 23px;
+  line-height: 0;
+}
+
+.addLineBtn,
+.liveFieldStatusBtn,
+.masterFieldStatusBtn,
+.newSessionBtn {
   color: #FFA804;
   background-color: rgb(23, 2, 61);
   border: 1px solid #FFA804;
+  height: 23px;
+  line-height: 0;
 }
 
 .lineNameInput,
@@ -91,6 +106,10 @@
 .editClosingDuration,
 .editGapDuration {
   font-weight: 700;
+}
+
+.liveFieldStatus {
+  border: 1px solid black;
 }
 
 .gapsModal {

@@ -18,6 +18,7 @@ class AdminRoutes extends React.Component {
     super(props);
     this.ref = React.createRef();
     this.state = {
+      addNewSessionClicked: false,
       showGapsModal: false,
       allSessionsView: true,
       copiedSession: null,
@@ -54,11 +55,18 @@ class AdminRoutes extends React.Component {
     this.handlePasteSession = this.handlePasteSession.bind(this);
     this.handleCopySession = this.handleCopySession.bind(this);
     this.handleGapsModal = this.handleGapsModal.bind(this);
+    this.handleAddNewSessionClick = this.handleAddNewSessionClick.bind(this);
   }
 
   componentDidMount() {
     this.getAllSessions();
     // this.getLinesBusesInfo();
+  }
+
+  handleAddNewSessionClick() {
+    this.setState({
+      addNewSessionClicked: !this.state.addNewSessionClicked
+    });
   }
 
   handleGapsModal() {
@@ -362,10 +370,12 @@ class AdminRoutes extends React.Component {
           <TopMenuGeneral userId={this.props.userId} title="ADMIN - Lines/Buses" />
           {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
           <div className="container-fluid mt-2">
-            <div className="container sessionContainer">
+            <div className="container operationsContainer">
+              <h4 className="operationsHeader mt-1">Operations</h4>
               <div className="row">
                 <div className="col-4">
                   <label>Select Session</label>
+                  <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark offset-2 newSessionBtn">Add New Session</button>
                   <select onChange={this.handleSessionChange} className="col border border-primary" name="currentSession">
                     <option>All Sessions</option>
                     {this.state.sessions.map(sessionData => {
@@ -375,9 +385,19 @@ class AdminRoutes extends React.Component {
                     })}
                   </select>
                 </div>
-                <div className="col offset-6">
-                  <br/>
-                  {this.state.addLineClicked ? <div className="btn btn-outline-dark w-100" onClick={this.handleAddLineButton}> Add Line - </div> : <div className="btn btn-outline-dark " onClick={() => this.handleAddLineButton()}> Add Line + </div>}
+                <div className="col d-flex align-items-end">
+                  {/* <label>View</label> */}
+                  <br />
+                  <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+                </div>
+                <div className="col d-flex align-items-end">
+                  {/* <label>View</label> */}
+                  <br />
+                  <button className="btn btn-outline-dark w-100 masterFieldStatusBtn">Master Field View</button>
+                </div>
+                <div className="col d-flex align-items-end">
+                  <br />
+                  <button className="btn btn-outline-dark w-100 addLineBtn" onClick={() => this.handleAddLineButton()}>Add New Line</button>
                 </div>
               </div>
               <div className="row">
@@ -503,10 +523,12 @@ class AdminRoutes extends React.Component {
         <TopMenuGeneral title="ADMIN - Lines/Buses" />
         {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
         <div className="container-fluid mt-2">
-          <div className="container sessionContainer">
+          <div className="container operationsContainer">
+            <h4 className="operationsHeader mt-1">Operations</h4>
             <div className="row">
               <div className="col-4">
                 <label>Select Session</label>
+                <button onClick={this.handleAddNewSessionClick} className="offset-2 w-50 btn btn-outline-dark newSessionBtn">Add New Session</button>
                 <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
                   <option>All Sessions</option>
                   {this.state.sessions.map(sessionData => {
@@ -516,9 +538,19 @@ class AdminRoutes extends React.Component {
                   })}
                 </select>
               </div>
-              <div className="col offset-6">
+              <div className="col d-flex align-items-end">
+                {/* <label>View</label> */}
                 <br />
-                <div className="btn btn-outline-dark w-100 addLineBtn" onClick={() => this.handleAddLineButton()}> Add Line + </div>
+                <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+              </div>
+              <div className="col d-flex align-items-end">
+                {/* <label>View</label> */}
+                <br />
+                <button className="btn btn-outline-dark w-100 masterFieldStatusBtn">Master Field View</button>
+              </div>
+              <div className="col d-flex align-items-end">
+                <br />
+                <button className="btn btn-outline-dark w-100 addLineBtn" onClick={() => this.handleAddLineButton()}>Add New Line</button>
               </div>
             </div>
             <div className="row">
