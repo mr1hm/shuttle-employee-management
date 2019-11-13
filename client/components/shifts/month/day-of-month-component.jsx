@@ -11,13 +11,13 @@ class DayOfMonth extends React.Component {
       };
       for (var shiftIndex = 0; shiftIndex < this.props.shiftsArray.length; shiftIndex++) {
         const shiftDate = this.props.shiftsArray[shiftIndex].date;
-        const shiftDateFullTimestamp = adjustUTCSecondsToLocalTimestamp(shiftDate);
-        let baseDate = createDateObjFromDateString(parseInt(shiftDateFullTimestamp));// converts unix time to date/at midnight 09/17/2019
+        // const shiftDateFullTimestamp = adjustUTCSecondsToLocalTimestamp(shiftDate);
+        let baseDate = createDateObjFromDateString(parseInt(shiftDate) * 1000);// converts unix time to date/at midnight 09/17/2019
         if (baseDate.getTime() === this.props.dayObj.getTime()) {
           dayTypeClasses[this.props.shiftsArray[shiftIndex].status] = true;
         }
       }
-      let postedClasses = 'calendarDay';
+      let postedClasses = 'monthDay rounded-circle mx-auto p-1';
       for (let key in dayTypeClasses) {
         postedClasses += dayTypeClasses[key] ? ` ${key}-shift-color` : '';
       }
@@ -28,19 +28,13 @@ class DayOfMonth extends React.Component {
       );
     }
     return (
-      <div>
-        <div className="calendarDay">
-          {this.props.dayIndex}
-        </div>
+      <div className="monthDay rounded-circle mx-auto p-1">
+        {this.props.dayIndex}
       </div>
     );
   }
   render() {
-    return (
-      <div>
-        {this.renderDate()}
-      </div>
-    );
+    return this.renderDate();
   }
 }
 

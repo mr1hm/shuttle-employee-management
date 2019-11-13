@@ -18,13 +18,14 @@ class ShiftsMonth extends React.Component {
     super(props);
     this.id = '&id=' + this.props.userId;
     this.state = {
+      date: new Date(),
       scheduledHoursForCurrentMonth: [],
       swapFlag: 0
     };
   }
   getData(url, methodToUse) {
     fetch(url, { method: methodToUse })
-      .then(response => { return response.json(); })
+      .then(response => response.json())
       .then(monthShiftInfo => {
         this.setState({
           scheduledHoursForCurrentMonth: monthShiftInfo
@@ -99,29 +100,40 @@ class ShiftsMonth extends React.Component {
   displayCalendarPage(dateProp) {
     var monthDivArray = [];
     var calendarPage = this.generateCalendarPage(dateProp);
-    for (var dayOfCalendar = 0; dayOfCalendar < calendarPage.length; dayOfCalendar++) {
-      var targetUnixDate = calendarPage[dayOfCalendar].getTime();
-      monthDivArray.push(
-        <Link
-          key={calendarPage[dayOfCalendar].getTime()}
-          className={calendarPage[dayOfCalendar].getFullYear() +
-          '-' + calendarPage[dayOfCalendar].getMonth() +
-          '-' + calendarPage[dayOfCalendar].getDate() === new Date(this.props.defaultDate).getFullYear() +
-          '-' + new Date(this.props.defaultDate).getMonth() +
-          '-' + new Date(this.props.defaultDate).getDate() ? 'today-mark link-style ' : 'link-style'}
-          to={{
-            pathname: `/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`,
-            state: {
-              swapFlag: this.state.swapFlag
-            }
-          }}>
-          <DayOfMonth
+    for (var dayOfCalendar = 0; dayOfCalendar < calendarPage.length;) {
+      const monthWeekArray = [];
+      for (let dayOfWeekIndex = 0; dayOfWeekIndex < 7; dayOfWeekIndex++, dayOfCalendar++) {
+        var targetUnixDate = calendarPage[dayOfCalendar].getTime();
+        monthWeekArray.push(
+          <td
             key={calendarPage[dayOfCalendar].getTime()}
-            dayObj={ calendarPage[dayOfCalendar]}
-            dayIndex={calendarPage[dayOfCalendar].getDate()}
-            shiftsArray={this.state.scheduledHoursForCurrentMonth}
-          />
-        </Link>
+            className="align-middle p-0">
+            <Link
+              className={calendarPage[dayOfCalendar].getFullYear() +
+                '-' + calendarPage[dayOfCalendar].getMonth() +
+                '-' + calendarPage[dayOfCalendar].getDate() === new Date(this.props.defaultDate).getFullYear() +
+              '-' + new Date(this.props.defaultDate).getMonth() +
+              '-' + new Date(this.props.defaultDate).getDate() ? 'today-mark link-style ' : 'link-style'}
+              to={{
+                pathname: `/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`,
+                state: {
+                  swapFlag: this.state.swapFlag
+                }
+              }}>
+              <DayOfMonth
+                key={calendarPage[dayOfCalendar].getTime()}
+                dayObj={calendarPage[dayOfCalendar]}
+                dayIndex={calendarPage[dayOfCalendar].getDate()}
+                shiftsArray={this.state.scheduledHoursForCurrentMonth}
+              />
+            </Link>
+          </td>
+        );
+      }
+      monthDivArray.push(
+        <tr key={dayOfCalendar}>
+          {monthWeekArray}
+        </tr>
       );
     }
     return monthDivArray;
@@ -160,22 +172,27 @@ class ShiftsMonth extends React.Component {
             arrayOfRoundsForWeek.push(shiftsArray[roundIndex]);
             // console.log("array of rounds per week: ",arrayOfRoundsForWeek);
           }
-          weekHourTotal = <div>{this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek)}</div>;
+          weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
         }
       }
       if (!weekHourTotal) {
-        weekHourTotal = <div style={{ 'color': 'lightgrey' }}>No Shifts</div>;
+        weekHourTotal = 'No Shifts';
       }
       var targetUnixDate = bundledWeeksArray[weekIndex][0].getTime();
       arrayOfRoundsForWeek = [];
       weekTotalHoursArrayToBeDisplayed.push(
-        <Link key={bundledWeeksArray[weekIndex][0].getTime()}
-          className="link-style"
-          to={`/shifts/week/shifts-week/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
-          <div className = "totalHoursForWeek">
-            {weekHourTotal}
-          </div>
-        </Link>
+        <tr key={weekIndex}>
+          <td className="align-middle p-0">
+            <Link key={bundledWeeksArray[weekIndex][0].getTime()}
+              className="link-style"
+              to={`/shifts/week/shifts-week/${this.getDateStringFromTimestamp(targetUnixDate)}`}>
+              <div className="weekHours d-flex justify-content-center align-items-center">
+                {weekHourTotal}
+              </div>
+            </Link>
+          </td>
+        </tr>
+
       );
     }
     // console.log("array of rounds per week: ",arrayOfRoundsForWeek)
@@ -192,7 +209,7 @@ class ShiftsMonth extends React.Component {
       let totalHours = Math.floor(totalShiftLengthForWeek / 60);
       let totalMinutes = totalShiftLengthForWeek % 60;
       return (totalHours + 'h ' + totalMinutes + 'm');
-    } else return <div style={{ 'color': 'lightgrey' }}>No Shifts</div>;
+    } else return 'No Shifts';
   }
   render() {
     if (this.props.match.params.date === undefined) {
@@ -205,38 +222,37 @@ class ShiftsMonth extends React.Component {
       return <div>No Shifts Available</div>;
     }
     return (
-      <div className ="calenderContainer">
-        {this.state.swapFlag ? (
-          <TopMenuShift userId={this.props.userId} title="SWAP" page='month' date={dateToPass} />
-        ) : (
-          <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass} />
-        )}
-        {/* <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass}/> */}
-        <div className="row calendarBox">
-          <div className="monthCalendar">
-            <div className="dayOfMonth Title">
-              <div>SUN</div>
-              <div>MON</div>
-              <div>TUE</div>
-              <div>WED</div>
-              <div>THU</div>
-              <div>FRI</div>
-              <div>SAT</div>
-            </div>
-            <div className="wrapper">
+      <div className="mainCalendarContainer">
+        <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass} />
+        <div className="calendarContainer d-flex mx-4">
+          <table className="monthTable table h-100 m-0 border-bottom">
+            <thead>
+              <tr className="monthDays">
+                <th scope="col">SUN</th>
+                <th scope="col">MON</th>
+                <th scope="col">TUE</th>
+                <th scope="col">WED</th>
+                <th scope="col">THU</th>
+                <th scope="col">FRI</th>
+                <th scope="col">SAT</th>
+              </tr>
+            </thead>
+            <tbody className="monthDates">
               {this.displayCalendarPage(dateToPass)}
-            </div>
-          </div>
-          <div className="weekTotalCol">
-            <div className="weekTotal">TOTAL</div>
-            <div className="totalHoursColumn">
-              <div className="weekTotalWrapper">
-                {this.displayWeeklyHours(this.generateCalendarPage(dateToPass), this.state.scheduledHoursForCurrentMonth)}
-              </div>
-            </div>
-          </div>
+            </tbody>
+          </table>
+          <table className="weekTotal table h-100 m-0 border-bottom">
+            <thead>
+              <tr>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.displayWeeklyHours(this.generateCalendarPage(dateToPass), this.state.scheduledHoursForCurrentMonth)}
+            </tbody>
+          </table>
         </div>
-        <div><Legend/></div>
+        <div><Legend /></div>
       </div>
     );
   }
