@@ -188,21 +188,21 @@ $query = "SELECT
   print(json_encode($data));
 
 } else if ($method === 'POST' && (isset($bodyData['route_id']))) {
-    // require_once 'admin-lines-buses-add.php';
+    require_once 'admin-lines-buses-add.php';
 
-    $busNumber = $bodyData['bus_number'];
-    $startTime = $bodyData['start_time'];
-    $rounds = $bodyData['rounds'];
-    $endTime = $bodyData['end_time'];
-    $daysActive = $bodyData['daysActive'];
-    $idRoute = $bodyData['route_id'];
-    $vehicleID = $bodyData['vehicle_id'];
-    $gap = $bodyData['gap'];
-    $gapDuration = $bodyData['gapDuration'];
-    $openingDuration = $bodyData['opening_duration'];
-    $closingDuration = $bodyData['closing_duration'];
-    $query = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `daysActive`, `route_id`, `vehicle_id`, `gap`, `gapDuration`, `opening_duration`, `closing_duration`)
-              VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$daysActive', '$idRoute', '$vehicleID', '$gap', '$gapDuration', '$openingDuration', '$closingDuration')";
+    // $busNumber = $bodyData['bus_number'];
+    // $startTime = $bodyData['start_time'];
+    // $rounds = $bodyData['rounds'];
+    // $endTime = $bodyData['end_time'];
+    // $daysActive = $bodyData['daysActive'];
+    // $idRoute = $bodyData['route_id'];
+    // $vehicleID = $bodyData['vehicle_id'];
+    // $gap = $bodyData['gap'];
+    // $gapDuration = $bodyData['gapDuration'];
+    // $openingDuration = $bodyData['opening_duration'];
+    // $closingDuration = $bodyData['closing_duration'];
+    // $query = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `daysActive`, `route_id`, `vehicle_id`, `gap`, `gapDuration`, `opening_duration`, `closing_duration`)
+    //           VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$daysActive', '$idRoute', '$vehicleID', '$gap', '$gapDuration', '$openingDuration', '$closingDuration')";
 
 } else if ($method === 'POST' && (isset($bodyData['id']))) {
 
@@ -397,19 +397,19 @@ if ($method === 'POST' && (isset($bodyData['line_name']))) {
 
 } else if ($method === 'POST' && (isset($bodyData['route_id']))) {
 
-    $query = "SELECT * FROM `bus_info`";
-    $result = mysqli_query($conn, $query);
+    // $query = "SELECT * FROM `bus_info`";
+    // $result = mysqli_query($conn, $query);
 
-    if (!$result) {
-      throw new Exception('mysql error ' . mysqli_error($conn));
-    }
+    // if (!$result) {
+    //   throw new Exception('mysql error ' . mysqli_error($conn));
+    // }
 
-    $data = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-      $data = $row;
-    }
+    // $data = [];
+    // while ($row = mysqli_fetch_assoc($result)) {
+    //   $data = $row;
+    // }
 
-    print(json_encode($data));
+    // print(json_encode($data));
 
 } else if ($method === 'POST' && (isset($bodyData['id']))) {
 
