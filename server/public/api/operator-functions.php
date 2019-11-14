@@ -85,6 +85,14 @@ function updateOperatorAssignedTimes(&$operator, $shift) {
 }
 
 function updateOperatorAvailableTimes(&$operator, $shift) {
+
+  // if ($operator['user_id'] == 10) {
+  //   print('<pre>');
+  //   print('before');
+  //   print_r($operator);
+  //   // print_r($shift);
+  // }
+
   // Remove availability if it is the same as the shift
   $key = array_search($shift, array_column($operator, 'available_times'));
   if ($key !== false) {
@@ -111,6 +119,14 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
       break;
     }
   }
+
+  // if ($operator['user_id'] == 10) {
+  //   print('<pre>');
+  //   print('after');
+  //   print_r($operator);
+  //   // print_r($shift);
+  // }
+
 }
 
 // Takes a start and end time, calculates the difference and returns it

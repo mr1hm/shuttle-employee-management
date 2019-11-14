@@ -246,50 +246,58 @@ function getShift ($lineName, &$rounds) {
     if (!mysqli_query($conn, "TRUNCATE TABLE `operators`")) {
       throw new Exception('MySQL error: ' . mysqli_error($conn));
     }
-    // $query = "INSERT INTO `operators` (`user_id`, `date`, `operator`)
-    //           VALUES\n";
+    $query = "INSERT INTO `operators` (`user_id`, `date`, `operator`)
+              VALUES\n";
 
-    // $ops = [];
-    // reset($operators);
-    // while ( current($operators) ) {
-    //   $operator = current($operators);
-    //   $user_id = $operator['user_id'];
-    //   while ( current($operator['assignment_details']) ) {
-    //     $operatorDetails = current($operator['assignment_details']);
-    //     $jsonOperator = json_encode([
-    //       'user_id' => $user_id,
-    //       'last_name' => $operator['last_name'],
-    //       'first_name' => $operator['first_name'],
-    //       'special_route' => $operator['special_route'],
-    //       'available_times' => $operatorDetails['available_times'],
-    //       'assigned_times' => $operatorDetails['assigned_times'],
-    //       'shift_restrictions' => $operatorDetails['shift_restrictions'],
-    //       'minutes_without_30_minute_break' => $operatorDetails['minutes_without_30_minute_break'],
-    //       'total_daily_minutes' => $operatorDetails['total_daily_minutes'],
-    //       'total_weekly_minutes' => $operator['total_weekly_minutes']
-    //     ]);
-    //     foreach ( $operatorDetails['dates'] as $date ) {
-    //       $ops[] = [
-    //         'date' => $date,
-    //         'operator' => json_decode($jsonOperator, true)
-    //       ];
-    //       $query .= "({$user_id}, {$date}, '{$jsonOperator}'),\n";
-    //     }
-    //     unset($date);
-    //     next($operator['assignment_details']);
-    //   }
-    //   reset($operator['assignment_details']);
-    //   next($operators);
-    // }
-    // reset($operators);
+    $ops = [];
+    reset($operators);
+    while ( current($operators) ) {
+      $operator = current($operators);
+      $user_id = $operator['user_id'];
+      while ( current($operator['assignment_details']) ) {
+        $operatorDetails = current($operator['assignment_details']);
+        $jsonOperator = json_encode([
+          'user_id' => $user_id,
+          'last_name' => $operator['last_name'],
+          'first_name' => $operator['first_name'],
+          'special_route' => $operator['special_route'],
+          'available_times' => $operatorDetails['available_times'],
+          'assigned_times' => $operatorDetails['assigned_times'],
+          'shift_restrictions' => $operatorDetails['shift_restrictions'],
+          'minutes_without_30_minute_break' => $operatorDetails['minutes_without_30_minute_break'],
+          'total_daily_minutes' => $operatorDetails['total_daily_minutes'],
+          'total_weekly_minutes' => $operator['total_weekly_minutes']
+        ]);
 
-    // $query = substr($query, 0, -2);
-    // if (!mysqli_query($conn, $query)) {
-    //   throw new Exception('MySQL error: ' . mysqli_error($conn));
-    // }
-    // return $ops;
 
-    return $operators;
+        // if ($user_id == 10) {
+        //   print('<pre>');
+        //   print('before');
+        //   print_r($operator);
+        //   print('after');
+        //   print_r(json_decode($jsonOperator, true));
+        // }
+
+        foreach ( $operatorDetails['dates'] as $date ) {
+          $ops[] = [
+            'date' => $date,
+            'operator' => json_decode($jsonOperator, true)
+          ];
+          $query .= "({$user_id}, {$date}, '{$jsonOperator}'),\n";
+        }
+        unset($date);
+        next($operator['assignment_details']);
+      }
+      reset($operator['assignment_details']);
+      next($operators);
+    }
+    reset($operators);
+
+    $query = substr($query, 0, -2);
+    if (!mysqli_query($conn, $query)) {
+      throw new Exception('MySQL error: ' . mysqli_error($conn));
+    }
+    return $ops;
   }
 
   // Sort operators so that they are in order by the operator that has the least amount of weekly minutes
@@ -484,6 +492,17 @@ function getShift ($lineName, &$rounds) {
             $operator['assignment_details'][next($week)]['shift_restrictions']['worked_passed_10']['prior_day'] = true;
             prev($week);
           }
+
+        if ($operator['user_id'] == 10) {
+          print('<pre>');
+          print('before');
+          print_r($operator['assignment_details'][$day]);
+          print('after');
+          print_r($operatorsForDay[$key]);
+        }
+
+        // $operator['assignment_details'][$day]['available_times'] = array_slice($operatorsForDay[$key]['available_times'], 0);
+        // $operator['assignment_details'][$day]['assigned_times'] = array_slice($operatorsForDay[$key]['assigned_times'], 0);
           $operator['assignment_details'][$day]['available_times'] = $operatorsForDay[$key]['available_times'];
           $operator['assignment_details'][$day]['assigned_times'] = $operatorsForDay[$key]['assigned_times'];
           $operator['assignment_details'][$day]['total_daily_minutes'] = $operatorsForDay[$key]['total_daily_minutes'];
@@ -502,6 +521,5 @@ function getShift ($lineName, &$rounds) {
   $operators = getOperatorsForWeek($conn);
   populateWeeks($conn, $rounds, $operators, $sessionStartTimestamp, $sessionEndTimestamp);
   $ops = updateDatabaseOperators($conn, $operators);
-  print('<pre>');
-  print_r($ops);
+
 ?>
