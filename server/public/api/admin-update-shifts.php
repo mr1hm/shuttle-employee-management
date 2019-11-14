@@ -25,7 +25,8 @@ if(!$result){
 }
 
 // Get shift info from round id's
-$query = "SELECT `date`, `start_time` AS 'round_start', `end_time` AS 'round_end' FROM `round`
+$query = "SELECT `date`, `start_time` AS 'round_start', `end_time` AS 'round_end'
+          FROM `round`
           WHERE `id` IN ($rounds_string)";
 
 $result = mysqli_query($conn, $query);
@@ -39,25 +40,28 @@ while ($row = mysqli_fetch_assoc($result)) {
 $date = current($shifts)['date'];
 
 // Get operator info from operator id
-$query = "SELECT `operator` FROM `operators`
+$query = "SELECT `operator`
+          FROM `operators`
           WHERE `user_id` = $user_id AND `date` = $date";
 $result = mysqli_query($conn, $query);
 if (!$result) {
   throw new Exception('mysql error: ' . mysqli_error($conn));
 }
-$operator = mysqli_fetch_assoc($result);
+$operator = json_decode(mysqli_fetch_assoc($result)['operator'], true);
 
 if ( $user_id === 1 ) { // Unassign shift(s) from operator in operators table
   // while (current($shifts)) {
   //   unassignShiftFromOperator($operator, current($shifts));
-  //   next($shift);
+  //   next($shifts);
   // }
 } else {  // Assign shift(s) to operator in operators table
-  print( json_encode($operator) );
+  // print( json_encode($operator) );
   // while ( current($shifts) ) {
-  //   assignShiftToOperator($operator, current($shifts));
-  //   next($shift);
+    // assignShiftToOperator($operator, current($shifts));
+    // updateShiftFlags($operator, current($shift));
+    // next($shifts);
   // }
+  print( json_encode($operator) );
 }
 
 ?>

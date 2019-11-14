@@ -37,8 +37,8 @@ function shiftWithinAvailability ($operator, $shift, int $option = null) {
   }
   if ( $option === 1 ) {
     foreach ($operator['available_times'] as $timeBlock) {
-      if ( intval($timeBlock[0]) <= intval(reset($shift)['start_time']) &&
-           intval($timeBlock[1]) >= intval(end($shift)['stop_time']) ) return '';
+      if ( intval($timeBlock[0]) <= intval(reset($shift)['round_start']) &&
+           intval($timeBlock[1]) >= intval(end($shift)['round_end']) ) return '';
     }
     unset($timeBlock);
     return 'Shift is outside operators availability';

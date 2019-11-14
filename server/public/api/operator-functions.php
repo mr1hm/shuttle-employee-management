@@ -96,18 +96,18 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
   $shiftEnd = intval(end($shift)['round_end']);
   foreach ($operator['available_times'] as $key => &$timeBlock) {
     if ($shiftStart === intval($timeBlock[0])) { // Push back start time
-      $timeBlock[0] = $shiftEnd;
+      $timeBlock[0] = intval($shiftEnd);
       break;
     }
     if ($shiftEnd === intval($timeBlock[1])) { // Push back end time
-      $timeBlock[1] = $shiftStart;
+      $timeBlock[1] = intval($shiftStart);
       break;
     }
     // If shift is inside of a time block - Break the time block into 2 blocks
     if ($shiftStart > intval($timeBlock[0]) && $shiftEnd < intval($timeBlock[1])) {
       $newBlockEnd = intval($timeBlock[1]);
-      $timeBlock[1] = $shiftStart;
-      array_splice($operator['available_times'], $key + 1, 1, [$key + 1 => [$shiftEnd, $newBlockEnd]]);
+      $timeBlock[1] = intval($shiftStart);
+      array_splice($operator['available_times'], $key + 1, 1, [$key + 1 => [intval($shiftEnd), $newBlockEnd]]);
       break;
     }
   }

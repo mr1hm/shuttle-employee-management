@@ -79,8 +79,8 @@ class AdminShiftsDay extends React.Component {
     } else {
       roundsSelected.push(roundId);
       roundTimes.push({
-        'start_time': startTime,
-        'stop_time': endTime
+        'round_start': startTime,
+        'round_end': endTime
       });
     }
     if (roundTimes.length === 0) {
