@@ -58,9 +58,6 @@ function updateOperatorAssignedTimes(&$operator, $shift) {
     }
     return;
   }
-
-  print_r($operator['assigned_times']);
-
   // Insert in between
   $prevTimeBlock = null;
   $insertIndex = 0;
@@ -76,8 +73,6 @@ function updateOperatorAssignedTimes(&$operator, $shift) {
   }
   unset($timeBlock);
 
-  print_r($operator['assigned_times']);
-
   /* If inserted shift has start/end times that are equivalent to neighboring
       * shifts - trunctate the shift(s) into a single shift */
   if (intval($operator['assigned_times'][$insertIndex - 1][1]) === intval($operator['assigned_times'][$insertIndex][0])) {
@@ -91,9 +86,6 @@ function updateOperatorAssignedTimes(&$operator, $shift) {
       array_splice($operator['assigned_times'], $insertIndex, 1);
     }
   }
-
-  print_r($operator['assigned_times']);
-
 }
 
 function updateOperatorAvailableTimes(&$operator, $shift) {
@@ -104,8 +96,8 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
     return;
   }
 
-  $shiftStart = intval(reset($shift)['round_start']);
-  $shiftEnd = intval(end($shift)['round_end']);
+  $shiftStart = intval(reset($shift)['round_start']) ? intval(reset($shift)['round_start']) : intval($shift['round_start']);
+  $shiftEnd = intval(end($shift)['round_end']) ? intval(reset($shift)['round_start']) : intval($shift['round_end']);
   foreach ($operator['available_times'] as $key => &$timeBlock) {
     if ($shiftStart === intval($timeBlock[0])) { // Push back start time
       $timeBlock[0] = intval($shiftEnd);
