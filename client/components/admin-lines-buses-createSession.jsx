@@ -71,8 +71,8 @@ export default class CreateSession extends React.Component {
       .then(sessionInfo => {
         this.setState({
           newSessionAdded: true
-        }, this.getAllUpdatedSessions());
-        this.props.handleAddNewSessionClick();
+        }, this.props.handleAddNewSessionClick());
+        this.getAllUpdatedSessions();
       })
       .catch(error => console.error(error));
 
@@ -109,6 +109,9 @@ export default class CreateSession extends React.Component {
                 <label>Start Date</label>
                 <br />
                 <input onChange={this.handleNewSessionChange} className="col border border-primary sessionStartDateInput" name="startDate" type="text" />
+                <span>
+                  <i className="sessionStartDateFormat">DD MMM YYYY<br />Include spaces (i.e. "12 Aug 2020")</i>
+                </span>
               </div>
               <div className="col-2">
                 <label>End Date</label>
