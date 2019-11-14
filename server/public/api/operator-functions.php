@@ -16,8 +16,11 @@ function updateShiftFlags(&$operator, $shift) {
    * Update operators times_available associative array
    * Update operators daily & weekly minutes */
 function assignShiftToOperator(&$operator, $shift) {
+  // print( json_encode($operator) );
   updateOperatorAssignedTimes($operator, $shift);
+  // print( json_encode($operator) );
   updateOperatorAvailableTimes($operator, $shift);
+  // print( json_encode($operator) );
 
   $shiftTime = calculateShiftMinutes(intval(reset($shift)['round_start']), intval(end($shift)['round_end']));
   $operator['minutes_without_30_minute_break'] += $shiftTime;
@@ -26,8 +29,8 @@ function assignShiftToOperator(&$operator, $shift) {
 }
 
 function updateOperatorAssignedTimes(&$operator, $shift) {
-  $shiftStart = intval(reset($shift)['round_start']);
-  $shiftEnd = intval(end($shift)['round_end']);
+  $shiftStart = intval(reset($shift)['round_start']) ? intval(reset($shift)['round_start']) : intval($shift['round_start']);
+  $shiftEnd = intval(end($shift)['round_end']) ? intval(reset($shift)['round_start']) : intval($shift['round_end']);
   $lastIndex = count($operator['assigned_times']) - 1;
 
   // Empty assigned times
@@ -56,18 +59,24 @@ function updateOperatorAssignedTimes(&$operator, $shift) {
     return;
   }
 
+  print_r($operator['assigned_times']);
+
   // Insert in between
   $prevTimeBlock = null;
   $insertIndex = 0;
   foreach ($operator['assigned_times'] as $key => &$timeBlock) {
     if ($prevTimeBlock && ($shiftStart >= $prevTimeBlock[1] && $shiftEnd <= $timeBlock[0])) {
+      $temp = $operator['assigned_times'][$key];
       array_splice($operator['assigned_times'], $key, 1, [[$shiftStart, $shiftEnd]]);
+      array_splice($operator['assigned_times'], $key+1, 1, [$key+1 => $temp]);
       $insertIndex = $key;
       break;
     }
     $prevTimeBlock = $timeBlock;
   }
   unset($timeBlock);
+
+  print_r($operator['assigned_times']);
 
   /* If inserted shift has start/end times that are equivalent to neighboring
       * shifts - trunctate the shift(s) into a single shift */
@@ -82,17 +91,12 @@ function updateOperatorAssignedTimes(&$operator, $shift) {
       array_splice($operator['assigned_times'], $insertIndex, 1);
     }
   }
+
+  print_r($operator['assigned_times']);
+
 }
 
 function updateOperatorAvailableTimes(&$operator, $shift) {
-
-  // if ($operator['user_id'] == 10) {
-  //   print('<pre>');
-  //   print('before');
-  //   print_r($operator);
-  //   // print_r($shift);
-  // }
-
   // Remove availability if it is the same as the shift
   $key = array_search($shift, array_column($operator, 'available_times'));
   if ($key !== false) {
@@ -119,14 +123,6 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
       break;
     }
   }
-
-  // if ($operator['user_id'] == 10) {
-  //   print('<pre>');
-  //   print('after');
-  //   print_r($operator);
-  //   // print_r($shift);
-  // }
-
 }
 
 // Takes a start and end time, calculates the difference and returns it

@@ -25,7 +25,7 @@ if(!$result){
 }
 
 // Get shift info from round id's
-$query = "SELECT `date`, `start_time` AS 'round_start', `end_time` AS 'round_end'
+$query = "SELECT `date`, CONCAT(`start_time`, ',', `end_time`) AS round
           FROM `round`
           WHERE `id` IN ($rounds_string)";
 
@@ -35,6 +35,8 @@ if (!$result) {
 }
 $shifts = [];
 while ($row = mysqli_fetch_assoc($result)) {
+  $times = explode(',', $row['round']);
+  $row['round'] = array('round_start' => intval($times[0]), 'round_end' => intval($times[1]));
   $shifts[] = $row;
 }
 $date = current($shifts)['date'];
@@ -55,13 +57,12 @@ if ( $user_id === 1 ) { // Unassign shift(s) from operator in operators table
   //   next($shifts);
   // }
 } else {  // Assign shift(s) to operator in operators table
+  while ( current($shifts) ) {
+    assignShiftToOperator($operator, current($shifts)['round']);
+    updateShiftFlags($operator, current($shifts)['round']);
+    next($shifts);
+  }
   // print( json_encode($operator) );
-  // while ( current($shifts) ) {
-    // assignShiftToOperator($operator, current($shifts));
-    // updateShiftFlags($operator, current($shift));
-    // next($shifts);
-  // }
-  print( json_encode($operator) );
 }
 
 ?>
