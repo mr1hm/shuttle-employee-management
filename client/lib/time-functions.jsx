@@ -16,7 +16,7 @@ function convertMilitaryTime(militaryTime) { // takes a string military time (eg
   return hour + ':' + minute + ' ' + meridiem;
 }
 function adjustLocalTimestampToUTCSeconds(localMillisecondsTimeStamp) { // adjusts local timestamp (msec) [number or string] to UTC then converts to 10-digit timestamp (sec) [number]
-  const timestampUTCmilliseconds = parseInt(localMillisecondsTimeStamp) - 10800000;
+  const timestampUTCmilliseconds = parseInt(localMillisecondsTimeStamp) + 75600000;
   return timestampUTCmilliseconds / 1000;
   // NOTE: this function combines the convertMillisecondsToSeconds function
   // should be used when needing to convert front-end generated 13-digit timestamps to a 10-digit UTC timestamp (since front-end generated timestamps are not in UTC)
