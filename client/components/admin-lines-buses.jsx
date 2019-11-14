@@ -8,10 +8,11 @@ import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
 import Sessions from './admin-lines-buses-sessions';
 import GapsModal from './admin-lines-buses-viewGaps';
+import Lines from './admin-lines-buses-lines';
+import CreateSession from './admin-lines-buses-createSession';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown, faThumbsDown, faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
-import Lines from './admin-lines-buses-lines';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
@@ -56,6 +57,7 @@ class AdminRoutes extends React.Component {
     this.handleCopySession = this.handleCopySession.bind(this);
     this.handleGapsModal = this.handleGapsModal.bind(this);
     this.handleAddNewSessionClick = this.handleAddNewSessionClick.bind(this);
+    this.getAllSessions = this.getAllSessions.bind(this);
   }
 
   componentDidMount() {
@@ -371,11 +373,12 @@ class AdminRoutes extends React.Component {
           {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
           <div className="container-fluid mt-2">
             <div className="container operationsContainer">
-              <h4 className="operationsHeader mt-1">Operations</h4>
+              <h4 className="operationsHeader mt-2">Operations</h4>
               <div className="row">
                 <div className="col-4">
-                  <label>Select Session</label>
-                  <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark offset-2 newSessionBtn">Add New Session</button>
+                  <label className="selectSessionLabel">Select Session</label>
+                  {this.state.addNewSessionClicked ? <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark offset-2 newSessionBtn w-50">Cancel</button>
+                    : <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark offset-2 newSessionBtn w-50">Add New Session</button>}
                   <select onChange={this.handleSessionChange} className="col border border-primary" name="currentSession">
                     <option>All Sessions</option>
                     {this.state.sessions.map(sessionData => {
@@ -397,7 +400,7 @@ class AdminRoutes extends React.Component {
                 </div>
                 <div className="col d-flex align-items-end">
                   <br />
-                  <button className="btn btn-outline-dark w-100 addLineBtn" onClick={() => this.handleAddLineButton()}>Add New Line</button>
+                  <button className="btn btn-outline-dark w-100 addLineBtn" onClick={() => this.handleAddLineButton()}>Cancel</button>
                 </div>
               </div>
               <div className="row">
@@ -496,6 +499,7 @@ class AdminRoutes extends React.Component {
                   </div>
                 </div>
               </div>
+              {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
             </div>
           </div>
           <div className="accordion" id="accordionExample">
@@ -524,11 +528,12 @@ class AdminRoutes extends React.Component {
         {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
         <div className="container-fluid mt-2">
           <div className="container operationsContainer">
-            <h4 className="operationsHeader mt-1">Operations</h4>
+            <h4 className="operationsHeader mt-2">Operations</h4>
             <div className="row">
               <div className="col-4">
-                <label>Select Session</label>
-                <button onClick={this.handleAddNewSessionClick} className="offset-2 w-50 btn btn-outline-dark newSessionBtn">Add New Session</button>
+                <label className="selectSessionLabel">Select Session</label>
+                {this.state.addNewSessionClicked ? <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark offset-2 newSessionBtn w-50">Cancel</button>
+                  : <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark offset-2 newSessionBtn w-50">Add New Session</button>}
                 <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
                   <option>All Sessions</option>
                   {this.state.sessions.map(sessionData => {
@@ -559,6 +564,7 @@ class AdminRoutes extends React.Component {
               {this.state.copiedSession && this.state.currentSession !== 'All Sessions'
                 ? <div className="col-2 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste Session<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
             </div>
+            {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
           </div>
         </div>
         <div className="accordion" id="accordionExample">

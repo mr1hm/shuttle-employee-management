@@ -25,17 +25,22 @@
 }
 
 .operationsContainer {
-  background-color: gray;
+  background-color: rgb(150, 149, 149);
   border: 1px solid black;
   border-radius: 10px;
-  height: 300px;
+  height: 400px;
   /* max-width: 1140px; */
   max-width: 95%;
   margin-bottom: 26px;
 }
 
 .operationsHeader {
-  color: rgba(255, 255, 255, .95);
+  color: rgba(255, 255, 255, .9);
+  border-bottom: 1px solid #FFA804;
+}
+
+.selectSessionLabel {
+  color: rgba(255, 255, 255, .9);
 }
 
 .newSessionBtn {
@@ -62,6 +67,31 @@
 .editBusInputs {
   border-radius: .25rem;
   height: 23px;
+}
+
+.sessionNameInput,
+.sessionStartDateInput,
+.sessionEndDateInput,
+.sessionNotesInput {
+  border-radius: .25rem;
+  height: 23px;
+}
+
+.sessionNameExists {
+  color: red;
+}
+
+.sessionNameAvailable {
+  color: green;
+}
+
+.sessionNameExists,
+.sessionNameAvailable {
+  font-size: 10px;
+}
+
+.sessionNameSpan {
+  margin: 0;
 }
 
 /* .copyPaste-session-buttons {

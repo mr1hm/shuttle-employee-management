@@ -5,20 +5,54 @@ set_exception_handler('error_handler');
 require_once 'db_connection.php';
 $method = $_SERVER['REQUEST_METHOD'];
 
+$bodyData = getBodyData();
+
 if ($method === 'GET') {
+
   $query = "SELECT * FROM `session`";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('mysql error ' . mysqli_error($conn));
+  }
+
+  $data = [];
+  while ($row = mysqli_fetch_assoc($result)) {
+    $data[] = $row;
+  }
+
+  print(json_encode($data));
+
 }
 
-$result = mysqli_query($conn, $query);
-if (!$result) {
-  throw new Exception('mysql error ' . mysqli_error($conn));
-}
+if ($method === 'POST' && (isset($bodyData['name']))) {
 
-$data = [];
-while ($row = mysqli_fetch_assoc($result)) {
-  $data[] = $row;
-}
+  $name = $bodyData['name'];
+  $startDate = $bodyData['startDate'];
+  $endDate = $bodyData['endDate'];
+  $notes = $bodyData['notes'];
 
-print(json_encode($data));
+  $query = "INSERT INTO `session` (`name`, `startDate`, `endDate`, `notes`)
+          VALUES ('$name', '$startDate', '$endDate', '$notes')";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('mysql error ' . mysqli_error($conn));
+  }
+
+  $query = "SELECT * FROM `session`";
+  $result = mysqli_query($conn, $query);
+  if (!$result) {
+    throw new Exception('mysql error ' . mysqli_error($conn));
+  }
+
+  $data = [];
+  while ($row = mysqli_fetch_assoc($result)) {
+    $data[] = $row;
+  }
+
+  print(json_encode($data));
+
+}
 
 ?>

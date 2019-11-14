@@ -2,8 +2,11 @@ import React from 'react';
 
 export default class CreateSession extends React.Component {
   constructor(props) {
+    super(props);
     this.state = {
+      newSessionAdded: false,
       sessionExists: false,
+      sessions: this.props.allSessions,
       newSession: {
         name: '',
         startDate: '',
@@ -11,111 +14,122 @@ export default class CreateSession extends React.Component {
         notes: ''
       }
     };
+    this.handleNewSessionChange = this.handleNewSessionChange.bind(this);
+    this.handleNewSessionSubmit = this.handleNewSessionSubmit.bind(this);
   }
 
   handleNewSessionChange(e) {
     const name = e.target.name;
     const value = e.target.value;
+    if (name === 'name') {
+      let nameExists = this.checkIfSessionNameExists(value);
+      if (nameExists) {
+        this.setState({
+          sessionExists: true
+        });
+      } else {
+        this.setState({
+          sessionExists: false
+        });
+      }
+    }
     this.setState(prevState => ({
-      ...prevState.newSession,
-      [name]: value
+      newSession: {
+        ...prevState.newSession,
+        [name]: value
+      }
     }));
+  }
+
+  checkIfSessionNameExists(sessionName) {
+    const findName = this.props.allSessions.find(sessionObj => sessionObj.name === sessionName);
+    if (findName) {
+      return true;
+    }
+    return false;
+  }
+
+  handleNewSessionSubmit(newSession, e) {
+    e.preventDefault();
+    if (newSession.startDate.length === 11 && newSession.endDate.length === 11) {
+      let startDateNewFormat = newSession.startDate + ' 00:00:00 GMT';
+      let convertStartDate = new Date(startDateNewFormat);
+      let startDateUnix = convertStartDate.valueOf();
+
+      let endDateNewFormat = newSession.endDate + ' 23:59:00 GMT';
+      let convertEndDate = new Date(endDateNewFormat);
+      let endDateUnix = convertEndDate.valueOf();
+
+      newSession = { ...newSession, startDate: startDateUnix, endDate: endDateUnix };
+    }
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(newSession)
+    };
+    fetch(`api/admin-lines-buses-sessions.php`, init)
+      .then(response => response.json())
+      .then(sessionInfo => {
+        this.setState({
+          newSessionAdded: true
+        }, this.getAllUpdatedSessions());
+        this.props.handleAddNewSessionClick();
+      })
+      .catch(error => console.error(error));
+
+  }
+
+  getAllUpdatedSessions() {
+    fetch('api/admin-lines-buses-sessions.php')
+      .then(response => response.json())
+      .then(sessionsData => {
+        console.log(sessionsData);
+      })
+      .catch(error => console.error(error));
   }
 
   render() {
     return (
       <div className="row">
-        <div className="card mt-1">
+        <div className="card w-100 mt-1">
           <div className="card-header">
             <div className="row">
-              <div className="col-2">
-                {this.state.sessionExists ? <label>Session Name<br /><span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span></label> : <label>Line Name<br /><span className="addNewLineName"><i>Name Available</i></span></label>}
-                <input defaultValue={this.state.newLineName}
-                  className="col border border-primary lineNameInput"
+              <div className="col-4">
+                <label>
+                  Session Name
+                </label>
+                <br />
+                <input className="col border border-primary sessionNameInput"
                   type="text"
-                  name="line_name"
-                  onChange={this.handleAddLineChange}>
-                </input>
-              </div>
-              {this.state.currentSession === 'All Sessions'
-                ? <div className="col">
-                  <label>
-                    Session
-                            <br />
-                    <span className="addLineHeaderDescription"><i>active/inactive</i></span>
-                  </label>
-                  <select onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="session_id">
-                    {this.state.sessions.map(session => {
-                      return (
-                        <option key={session.id}>{session.name}</option>
-                      );
-                    })}
-                  </select>
-                </div> : null}
-              <div className="col">
-                <label>
-                  Status
-                          <br />
-                  <span className="addLineHeaderDescription"><i>active/inactive</i></span>
-                </label>
-                <select name="status" className="col border border-primary" onChange={this.handleAddLineChange}>
-                  <option>active</option>
-                  <option>inactive</option>
-                </select>
-                {/* <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" /> */}
-              </div>
-              <div className="col">
-                <label>
-                  Round Duration
-                          <br />
-                  <span className="addLineHeaderDescription"><i>Number of Min</i></span>
-                </label>
-                <input onChange={this.handleAddLineChange} className="col border border-primary roundDurationInput" type="text" name="roundDuration" />
-              </div>
-              <div className="col">
-                <label>
-                  Public
-                          <br />
-                  <span className="addLineHeaderDescription"><i>True/False</i></span>
-                </label>
+                  name="name"
+                  onChange={this.handleNewSessionChange} />
                 <br />
-                <select onChange={this.handleAddLineChange} className="col border border-primary" name="public">
-                  <option>True</option>
-                  <option>False</option>
-                </select>
+                {this.state.sessionExists ? <span className="sessionNameSpan"><i className="sessionNameExists">Session {`"${this.state.newSession.name}"`} Already Exists</i></span> : <span className="sessionNameSpan"><i className="sessionNameAvailable">Name Available</i></span>}
               </div>
-              <div className="col">
-                <label>
-                  Regular Service
-                          <br />
-                  <span className="addLineHeaderDescription"><i>True/False</i></span>
-                </label>
+              <div className="col-2">
+                <label>Start Date</label>
                 <br />
-                <select onChange={this.handleAddLineChange} className="col border border-primary" name="public">
-                  <option>True</option>
-                  <option>False</option>
-                </select>
+                <input onChange={this.handleNewSessionChange} className="col border border-primary sessionStartDateInput" name="startDate" type="text" />
               </div>
-              <div className="col">
-                <label className="form-check-label" htmlFor="specialDriverCheckbox">
-                  Special Driver
-                          <br />
-                  <span><i>True/False</i></span>
-                </label>
+              <div className="col-2">
+                <label>End Date</label>
                 <br />
-                <input type="checkbox" onChange={this.handleSpecialDriverClick} name="specialDriver" className="specialDriverCheckbox form-check-input" id="specialDriverCheckbox" />
+                <input onChange={this.handleNewSessionChange} className="col border border-primary sessionEndDateInput" name="endDate" type="text" />
               </div>
-              <div className="col">
+              <div className="col-2">
+                <label>Notes (Optional)</label>
+                <br />
+                <input onChange={this.handleNewSessionChange} className="col border border-primary sessionNotesInput" type="text" name="notes" />
+              </div>
+              {/* <div className="col"></div> */}
+              <div className="col-2">
                 <button onClick={this.handleAddLineButton} className="col btn btn-warning">CANCEL</button>
                 <br />
-                {this.state.lineExists ? <button className="col btn btn-danger mt-1" type="submit" name="submit">NAME TAKEN</button> : <button onClick={e => this.addNewLine(this.state.newLine, e)} className="col btn btn-success mt-1" type="submit" name="submit">ADD</button>}
+                {this.state.sessionExists ? <button className="col btn btn-danger mt-1" type="submit" name="submit">NAME TAKEN</button> : <button onClick={e => this.handleNewSessionSubmit(this.state.newSession, e)} className="col btn btn-success mt-1" type="submit" name="submit">ADD</button>}
               </div>
             </div>
           </div>
         </div>
       </div>
-            </div >
-          </div >
     );
   }
 }
