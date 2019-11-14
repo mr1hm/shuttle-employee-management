@@ -280,13 +280,13 @@ class ShiftsMonth extends React.Component {
             <table className="monthTable table h-100 m-0 border-bottom">
               <thead>
                 <tr className="monthDays">
-                  <th scope="col">SUN</th>
-                  <th scope="col">MON</th>
-                  <th scope="col">TUE</th>
-                  <th scope="col">WED</th>
-                  <th scope="col">THU</th>
-                  <th scope="col">FRI</th>
-                  <th scope="col">SAT</th>
+                  <th className="p-0" scope="col">SUN</th>
+                  <th className="p-0" scope="col">MON</th>
+                  <th className="p-0" scope="col">TUE</th>
+                  <th className="p-0" scope="col">WED</th>
+                  <th className="p-0" scope="col">THU</th>
+                  <th className="p-0" scope="col">FRI</th>
+                  <th className="p-0" scope="col">SAT</th>
                 </tr>
               </thead>
               <tbody className="monthDates">
@@ -296,7 +296,7 @@ class ShiftsMonth extends React.Component {
             <table className="weekTotal table h-100 m-0 border-bottom">
               <thead>
                 <tr>
-                  <th>TOTAL</th>
+                  <th className="p-0" >TOTAL</th>
                 </tr>
               </thead>
               <tbody>
