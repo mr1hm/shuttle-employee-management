@@ -36,12 +36,15 @@ function shiftWithinAvailability ($operator, $shift, int $option = null) {
     return false;
   }
   if ( $option === 1 ) {
+    $validShift = 0;
     foreach ($operator['available_times'] as $timeBlock) {
-      if ( intval($timeBlock[0]) <= intval(reset($shift)['round_start']) &&
-           intval($timeBlock[1]) >= intval(end($shift)['round_end']) ) return '';
+      foreach ($shift as $round) {
+        if ( intval($timeBlock[0]) <= intval($round['round_start']) &&
+             intval($timeBlock[1]) >= intval($round['round_end']) ) ++$validShift;
+      }
     }
     unset($timeBlock);
-    return 'Shift is outside operators availability';
+    return $validShift === count($shift) ? '' : 'Shift is outside operators availability';
   }
 }
 
