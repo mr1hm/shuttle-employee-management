@@ -268,16 +268,6 @@ function getShift ($lineName, &$rounds) {
           'total_daily_minutes' => $operatorDetails['total_daily_minutes'],
           'total_weekly_minutes' => $operator['total_weekly_minutes']
         ]);
-
-
-        // if ($user_id == 10) {
-        //   print('<pre>');
-        //   print('before');
-        //   print_r($operator);
-        //   print('after');
-        //   print_r(json_decode($jsonOperator, true));
-        // }
-
         foreach ( $operatorDetails['dates'] as $date ) {
           $ops[] = [
             'date' => $date,
@@ -484,6 +474,7 @@ function getShift ($lineName, &$rounds) {
       $operatorsForDay = getOperatorsForDay($operators, $day);
       $session = getSessionDays($index, $sessionStartTimestamp, $sessionEndTimestamp);
       populateSchedule($operatorsForDay, $roundsForDay, $conn, $session);
+      asort($operatorsForDay);
       foreach ( $operators as &$operator ) {
         $key = array_search(intval($operator['user_id']), array_column($operatorsForDay, 'user_id'));
         if ( $key !== false ) {
@@ -492,17 +483,6 @@ function getShift ($lineName, &$rounds) {
             $operator['assignment_details'][next($week)]['shift_restrictions']['worked_passed_10']['prior_day'] = true;
             prev($week);
           }
-
-        if ($operator['user_id'] == 10) {
-          print('<pre>');
-          print('before');
-          print_r($operator['assignment_details'][$day]);
-          print('after');
-          print_r($operatorsForDay[$key]);
-        }
-
-        // $operator['assignment_details'][$day]['available_times'] = array_slice($operatorsForDay[$key]['available_times'], 0);
-        // $operator['assignment_details'][$day]['assigned_times'] = array_slice($operatorsForDay[$key]['assigned_times'], 0);
           $operator['assignment_details'][$day]['available_times'] = $operatorsForDay[$key]['available_times'];
           $operator['assignment_details'][$day]['assigned_times'] = $operatorsForDay[$key]['assigned_times'];
           $operator['assignment_details'][$day]['total_daily_minutes'] = $operatorsForDay[$key]['total_daily_minutes'];
