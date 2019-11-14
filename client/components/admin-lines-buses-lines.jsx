@@ -98,7 +98,7 @@ export default class Lines extends React.Component {
         } else {
           this.props.getLinesBusesInfo({ session_id: sessionID });
         }
-        this.props.storeOperationsHistory();
+        this.props.operationsHistoryMethod();
       })
       .catch(error => console.error(error));
     console.log('LINE DELETED');

@@ -26,13 +26,12 @@ export default class AddBus extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.setRouteID = this.setRouteID.bind(this);
     this.addNewBus = this.addNewBus.bind(this);
-    // this.calculateEndTime = this.calculateEndTime.bind(this);
-    this.calculateEndTime2 = this.calculateEndTime2.bind(this);
+    this.calculateEndTime = this.calculateEndTime.bind(this);
   }
 
   addNewBus(newBus, sessionID, e) {
     e.preventDefault();
-    newBus = { ...newBus, end_time: this.calculateEndTime2() };
+    newBus = { ...newBus, end_time: this.calculateEndTime() };
     const init = {
       method: 'POST',
       body: JSON.stringify(newBus)
@@ -64,16 +63,15 @@ export default class AddBus extends React.Component {
         [name]: value
       }
     }));
-    this.calculateEndTime2();
+    this.calculateEndTime();
   }
 
-  calculateEndTime2() {
+  calculateEndTime() {
     const { line } = this.props;
     const { newBus } = this.state;
     if (newBus.start_time.length !== 4) {
       return '';
     }
-    // let totalTime = null;
     const roundDuration = parseInt(line.roundDuration);
     const startTime = newBus.start_time;
     const rounds = parseInt(newBus.rounds);
@@ -109,65 +107,6 @@ export default class AddBus extends React.Component {
 
     return finalEndTime;
   }
-
-  // calculateEndTime() {
-  //   const { line } = this.props;
-  //   const { newBus } = this.state;
-  //   let endTime = null;
-  //   let totalRoundTime = null;
-  //   let amountOfHours = null;
-  //   const roundDuration = parseInt(line.roundDuration);
-  //   const startTime = newBus.start_time;
-  //   const startTimeLength = newBus.start_time.length;
-  //   const rounds = parseInt(newBus.rounds);
-  //   // console.log(startTimeLength);
-  //   if (startTime.length !== 4 && !rounds) {
-  //     return '';
-  //   }
-  //   if (startTimeLength === 4 && newBus.start_time[0] === '0') {
-  //     // debugger;
-  //     totalRoundTime = rounds * roundDuration;
-  //     amountOfHours = totalRoundTime / 60;
-  //     let startTimeArr = startTime.split('');
-  //     let newHour = startTimeArr.splice(0, 2);
-  //     let newMinutes = startTimeArr.splice(0, 2);
-  //     console.log(newMinutes);
-  //     let newHourStr = newHour.join('');
-  //     let newHourInt = parseInt(newHourStr) + amountOfHours;
-  //     let newHourIntStr = newHourInt + '';
-  //     let splitNewHourStr = newHourIntStr.split('');
-  //     console.log(splitNewHourStr);
-  //     // if (splitNewHourStr.includes('.')) {
-  //     //   splitNewHourStr[2];
-  //     // }
-  //     if (splitNewHourStr[1]) {
-  //       let addHourToArr = startTimeArr.splice(0, 0, splitNewHourStr[0], splitNewHourStr[1]);
-  //     }
-  //     let addHourToArr = startTimeArr.splice(0, 0, splitNewHourStr[0]);
-  //     console.log('startTimeArr', startTimeArr);
-  //     if (startTimeArr.length === 3) {
-  //       startTimeArr.unshift(0);
-  //     } else if (startTimeArr.length === 5) {
-  //       startTimeArr.shift();
-  //     }
-  //     endTime = startTimeArr.join('');
-  //     console.log('endTime', endTime);
-  //     console.log(endTime);
-  //     return endTime;
-  //   } else if (startTimeLength === 4 && newBus.start_time[0] !== '0') {
-  //     totalRoundTime = rounds * roundDuration;
-  //     amountOfHours = totalRoundTime / 60;
-  //     let startTimeArr = startTime.split('');
-  //     let hour = startTimeArr.splice(0, 2);
-  //     let newHour = hour.join('');
-  //     let newHour2 = parseInt(newHour) + amountOfHours;
-  //     let joinHour = startTimeArr.splice(0, 0, newHour2);
-  //     // console.log(startTimeArr);
-  //     endTime = startTimeArr.join('');
-  //     // console.log(endTime);
-  //     return endTime;
-  //   }
-  // }
 
   setRouteID() {
     this.setState({ route_id: this.props.line.real_route_id });
@@ -206,7 +145,7 @@ export default class AddBus extends React.Component {
               </div>
               <div className="col">
                 <label>End Time</label>
-                <input value={this.calculateEndTime2()} readOnly className="col border border-primary addBusInputs" type="text" name="end_time" />
+                <input value={this.calculateEndTime()} readOnly className="col border border-primary addBusInputs" type="text" name="end_time" />
               </div>
               <div className="col">
                 <label>Gap</label>
