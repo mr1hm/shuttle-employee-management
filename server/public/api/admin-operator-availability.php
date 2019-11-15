@@ -10,7 +10,10 @@ function getOperatorsWithSubmittedAvailability($conn, $session) {
   $operatorsWithAvailabilityQuery = "SELECT 
                                      us.uci_net_id, 
                                      us.first_name, 
-                                     us.last_name
+                                     us.last_name,
+                                     us.role,
+                                     us.status,
+                                     us.special_route_ok
                                      FROM operator_availability AS oa 
                                      INNER JOIN user AS us 
                                      ON us.id = oa.user_id 
@@ -32,7 +35,10 @@ function getAllActiveOperators($conn) {
   $allActiveOperatorsQuery = "SELECT 
                               uci_net_id,
                               first_name, 
-                              last_name
+                              last_name,                                     
+                              role,
+                              status,
+                              special_route_ok
                               FROM user
                               WHERE status = 'active' AND role = 'operator'";
 
