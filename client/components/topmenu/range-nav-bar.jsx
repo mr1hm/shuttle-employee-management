@@ -3,6 +3,65 @@ import { Link } from 'react-router-dom';
 import './nav-styles.css';
 
 class Nav extends React.Component {
+  constructor(props) {
+    super(props);
+    this.month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    this.day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    this.state = {
+      date: new Date(this.props.dateString),
+      dateArr: this.props.dateString.split('-')
+    };
+  }
+  renderMenuDateText() {
+    if (this.props.page === 'month') {
+      return this.renderMonthYear();
+    }
+    // if (this.props.page === 'week') {
+
+    // }
+    if (this.props.page === 'day') {
+      return this.renderDayMonth();
+    }
+  }
+  renderMonthYear() {
+    const year = this.state.dateArr[0];
+    const month = this.month[this.state.dateArr[1] - 1];
+    return month + ' ' + year;
+  }
+  renderDayMonth() {
+    const day = this.day[this.state.date.getDay()];
+    const month = this.month[this.state.dateArr[1] - 1];
+    const date = this.state.dateArr[2];
+    return day + ' ' + month + ' ' + date;
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.dateString !== this.props.dateString) {
+      this.setState({
+        date: new Date(this.props.dateString),
+        dateArr: this.props.dateString.split('-')
+      });
+    }
+  }
+  getNextDateString(num) {
+    if (this.props.page === 'month') {
+      let nextMonth = new Date(this.props.dateString);
+      nextMonth.setUTCMonth(nextMonth.getUTCMonth() + num);
+      return `${nextMonth.getUTCFullYear()}-${nextMonth.getUTCMonth() + 1}-${nextMonth.getUTCDate()}`;
+    }
+    if (this.props.page === 'day') {
+      let nextDay = new Date(this.props.dateString);
+      console.log('range date string: ', this.props.dateString);
+      console.log('today: ', nextDay.getUTCDate());
+      console.log('num: ', num);
+      nextDay.setUTCDate(nextDay.getUTCDate() + num);
+      return `${nextDay.getUTCFullYear()}-${nextDay.getUTCMonth() + 1}-${nextDay.getUTCDate()}`;
+    }
+    if (this.props.page === 'week') {
+      let nextWeek = new Date(this.props.dateString);
+      nextWeek.setUTCDate(nextWeek.getUTCDate() + (num * 7));
+      return `${nextWeek.getUTCFullYear()}-${nextWeek.getUTCMonth() + 1}-${nextWeek.getUTCDate()}`;
+    }
+  }
   zeroPadNumber(number) {
     return ('0' + number).slice(-2);
   }
@@ -65,12 +124,12 @@ class Nav extends React.Component {
       'month': { number: 30, route: '/shifts/month/shifts-month' }
       // might need to add an availabile route
     };
-    const leftRoute = this.generateNextTimestamp(this.getDateObjFromDateString(this.props.date), daysInRange[this.props.page].number, -1).pathDate;
-    const rightRoute = this.generateNextTimestamp(this.getDateObjFromDateString(this.props.date), daysInRange[this.props.page].number, 1).pathDate;
+    const leftRoute = this.getNextDateString(-1);
+    const rightRoute = this.getNextDateString(1);
     return (
       <React.Fragment>
         <Link to={`${daysInRange[this.props.page].route}/${leftRoute}`}><div className="arrow arrowLeft" ></div></Link>
-        <div className="font-weight-bold">{this.generateText()}</div>
+        <div className="font-weight-bold">{this.renderMenuDateText()}</div>
         <Link to={`${daysInRange[this.props.page].route}/${rightRoute}`}> <div className="arrow arrowRight" ></div></Link>
       </React.Fragment>
     );

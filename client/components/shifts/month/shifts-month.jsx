@@ -18,15 +18,67 @@ class ShiftsMonth extends React.Component {
     super(props);
     this.id = '&id=' + this.props.userId;
     this.state = {
-      date: new Date(),
+      today: new Date(),
+      date: new Date(this.props.match.params.date),
+      shiftsForEachDay: {},
       scheduledHoursForCurrentMonth: [],
       swapFlag: 0
     };
+  }
+  getMonthInfo() {
+    const dateObj = new Date(this.props.match.params.date);
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth();
+    const numOfDaysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    return { numOfDaysInMonth: numOfDaysInMonth, firstDayOfMonth: firstDayOfMonth };
+  }
+  renderCalendar() {
+    console.log('param: ', this.props.match.params.date);
+    const todayString = `${this.state.today.getFullYear()}-${this.state.today.getMonth() + 1}-${this.state.today.getDate()}`;
+    const dateObj = new Date(this.props.match.params.date);
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth() + 1;
+    const monthInfo = this.getMonthInfo();
+    const dayOffset = monthInfo.firstDayOfMonth;
+    const numOfDaysInMonth = monthInfo.numOfDaysInMonth;
+    const monthElements = [];
+    for (let monthDayIndex = 1 - dayOffset; monthDayIndex <= numOfDaysInMonth;) {
+      const weekElement = [];
+      for (let weekDayIndex = 0; weekDayIndex < 7; weekDayIndex++, monthDayIndex++) {
+        weekElement.push(
+          <td key={monthDayIndex} className="align-middle p-0">
+            {monthDayIndex < 1 || monthDayIndex > numOfDaysInMonth ? <div></div> : <Link
+              className=
+                {year + '-' + month + '-' + monthDayIndex === todayString ? 'today-mark link-style ' : 'link-style'}
+              to={{
+                pathname: `/shifts/day/shifts-day/${year}-${month}-${monthDayIndex}`,
+                state: {
+                  swapFlag: this.state.swapFlag
+                }
+              }}>
+              <DayOfMonth
+                dayObj={new Date(dateObj.setDate(monthDayIndex))}
+                dayIndex={monthDayIndex > 0 && monthDayIndex <= numOfDaysInMonth ? monthDayIndex : ''}
+                shiftsArray={this.state.scheduledHoursForCurrentMonth}
+              />
+            </Link>}
+          </td>
+        );
+      }
+      monthElements.push(
+        <tr key={monthDayIndex} >
+          {weekElement}
+        </tr>
+      );
+    }
+    return monthElements;
   }
   getData(url, methodToUse) {
     fetch(url, { method: methodToUse })
       .then(response => response.json())
       .then(monthShiftInfo => {
+        console.log('data: ', monthShiftInfo);
         this.setState({
           scheduledHoursForCurrentMonth: monthShiftInfo
         });
@@ -34,8 +86,9 @@ class ShiftsMonth extends React.Component {
       .catch(error => { throw (error); });
   }
   componentDidMount() {
+    const today = new Date(this.props.match.params.date);
     const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
-    const initialQuery = this.calculateQueryRange(this.props.defaultDate);
+    const initialQuery = this.calculateQueryRange(today.getTime());
     this.getData('/api/shifts-month.php' + initialQuery + this.id, 'GET');
     this.setState({
       swapFlag: swapFlag
@@ -47,27 +100,27 @@ class ShiftsMonth extends React.Component {
       this.getData('/api/shifts-month.php' + newQuery + this.id, 'GET');
     }
   }
-  calculateQueryRange(dateProp) {
-    var selectedDate = new Date(dateProp);
+  calculateQueryRange(timestamp) {
+    var selectedDate = new Date(timestamp);
     var firstDayOfMonth = new Date(selectedDate).setDate(1);
     var previousDate = new Date(firstDayOfMonth);
-    while (previousDate.getDay() > 0) {
-      previousDate = new Date(previousDate);
-      previousDate.setDate(previousDate.getDate() - 1);
-    }
-    const unixCalendarStartRange = previousDate.getTime();
-    const secondsTimestampStartRange = adjustLocalTimestampToUTCSeconds(unixCalendarStartRange) + '';
+    // while (previousDate.getDay() > 0) {
+    //   previousDate = new Date(previousDate);
+    //   previousDate.setDate(previousDate.getDate() - 1);
+    // }
+    const unixCalendarStartRange = firstDayOfMonth;
+    const secondsTimestampStartRange = unixCalendarStartRange / 1000;
     var lastDayOfMonth = function (month, year) {
       return new Date(year, month, 0).getDate();
     };
-    var lastDate = new Date(dateProp);
+    var lastDate = new Date(timestamp);
     lastDate.setDate(lastDayOfMonth(selectedDate.getMonth() + 1, selectedDate.getFullYear()));
-    while (lastDate.getDay() !== 6) {
-      lastDate = new Date(lastDate);
-      lastDate.setDate(lastDate.getDate() + 1);
-    }
+    // while (lastDate.getDay() !== 6) {
+    //   lastDate = new Date(lastDate);
+    //   lastDate.setDate(lastDate.getDate() + 1);
+    // }
     const unixCalendarEndRange = lastDate.getTime();
-    const secondsTimestampEndRange = adjustLocalTimestampToUTCSeconds(unixCalendarEndRange) + '';
+    const secondsTimestampEndRange = unixCalendarEndRange; //= adjustLocalTimestampToUTCSeconds(unixCalendarEndRange) + '';
     const query = `?unixstart=${secondsTimestampStartRange}&unixend=${secondsTimestampEndRange}`;
     return query;
   }
@@ -156,7 +209,6 @@ class ShiftsMonth extends React.Component {
     return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`;
   }
   displayWeeklyHours(calendarPage, shiftsArray) {
-    // console.log("shiftsArray", shiftsArray);
     var weekTotalHoursArrayToBeDisplayed = [];
     var arrayOfRoundsForWeek = [];
     var bundledWeeksArray = this.chunkArray(calendarPage, 7);
@@ -170,7 +222,6 @@ class ShiftsMonth extends React.Component {
           const shiftTimestampToStringDate = convertUnixMonthDay(shiftTimestamp);
           if (calendarTimestampToStringDate === shiftTimestampToStringDate) {
             arrayOfRoundsForWeek.push(shiftsArray[roundIndex]);
-            // console.log("array of rounds per week: ",arrayOfRoundsForWeek);
           }
           weekHourTotal = this.calculateSumOfHoursScheduledForWeek(arrayOfRoundsForWeek);
         }
@@ -215,7 +266,7 @@ class ShiftsMonth extends React.Component {
     if (this.props.match.params.date === undefined) {
       var dateToPass = this.props.defaultDate;
     } else {
-      dateToPass = createDateObjFromDateString(this.props.match.params.date);// converts unix time to date/at midnight 09/17/2019
+      dateToPass = new Date(this.props.match.params.date);// converts unix time to date/at midnight 09/17/2019
       dateToPass = dateToPass.getTime();
     }
     if (!this.state.scheduledHoursForCurrentMonth) {
@@ -223,34 +274,36 @@ class ShiftsMonth extends React.Component {
     }
     return (
       <div className="mainCalendarContainer">
-        <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass} />
-        <div className="calendarContainer d-flex mx-4">
-          <table className="monthTable table h-100 m-0 border-bottom">
-            <thead>
-              <tr className="monthDays">
-                <th scope="col">SUN</th>
-                <th scope="col">MON</th>
-                <th scope="col">TUE</th>
-                <th scope="col">WED</th>
-                <th scope="col">THU</th>
-                <th scope="col">FRI</th>
-                <th scope="col">SAT</th>
-              </tr>
-            </thead>
-            <tbody className="monthDates">
-              {this.displayCalendarPage(dateToPass)}
-            </tbody>
-          </table>
-          <table className="weekTotal table h-100 m-0 border-bottom">
-            <thead>
-              <tr>
-                <th>TOTAL</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.displayWeeklyHours(this.generateCalendarPage(dateToPass), this.state.scheduledHoursForCurrentMonth)}
-            </tbody>
-          </table>
+        <TopMenuShift userId={this.props.userId} title="MONTH" page='month' date={dateToPass} dateString={this.props.match.params.date} />
+        <div className="calendarShiftContainer mx-4">
+          <div className="calendarContainer d-flex h-100">
+            <table className="monthTable table h-100 m-0 border-bottom">
+              <thead>
+                <tr className="monthDays">
+                  <th className="p-0" scope="col">SUN</th>
+                  <th className="p-0" scope="col">MON</th>
+                  <th className="p-0" scope="col">TUE</th>
+                  <th className="p-0" scope="col">WED</th>
+                  <th className="p-0" scope="col">THU</th>
+                  <th className="p-0" scope="col">FRI</th>
+                  <th className="p-0" scope="col">SAT</th>
+                </tr>
+              </thead>
+              <tbody className="monthDates">
+                {this.renderCalendar()}
+              </tbody>
+            </table>
+            <table className="weekTotal table h-100 m-0 border-bottom">
+              <thead>
+                <tr>
+                  <th className="p-0" >TOTAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.displayWeeklyHours(this.generateCalendarPage(dateToPass), this.state.scheduledHoursForCurrentMonth)}
+              </tbody>
+            </table>
+          </div>
         </div>
         <div><Legend /></div>
       </div>

@@ -4,6 +4,13 @@ import { createDateObjFromDateString, adjustUTCSecondsToLocalTimestamp } from '.
 
 class DayOfMonth extends React.Component {
   renderDate() {
+    if (!this.props.dayIndex) {
+      return (
+        <div className="monthDay rounded-circle mx-auto p-1">
+          {this.props.dayIndex}
+        </div>
+      );
+    }
     if (this.props.shiftsArray.length !== 0) {
       let dayTypeClasses = {
         posted: false,
@@ -12,8 +19,10 @@ class DayOfMonth extends React.Component {
       for (var shiftIndex = 0; shiftIndex < this.props.shiftsArray.length; shiftIndex++) {
         const shiftDate = this.props.shiftsArray[shiftIndex].date;
         // const shiftDateFullTimestamp = adjustUTCSecondsToLocalTimestamp(shiftDate);
-        let baseDate = createDateObjFromDateString(parseInt(shiftDate) * 1000);// converts unix time to date/at midnight 09/17/2019
-        if (baseDate.getTime() === this.props.dayObj.getTime()) {
+        let baseDate = new Date(shiftDate * 1000);// converts unix time to date/at midnight 09/17/2019
+        if (baseDate.getFullYear() === this.props.dayObj.getFullYear() &&
+          baseDate.getMonth() === this.props.dayObj.getMonth() &&
+          baseDate.getDate() === this.props.dayObj.getDate()) {
           dayTypeClasses[this.props.shiftsArray[shiftIndex].status] = true;
         }
       }

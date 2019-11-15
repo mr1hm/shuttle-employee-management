@@ -113,7 +113,7 @@ class ShiftsWeek extends React.Component {
     return (
 
       <React.Fragment>
-        <TopMenuShift userId={this.props.userId} title="WEEK" page='week' date={dateToPass}/>
+        <TopMenuShift userId={this.props.userId} title="WEEK" page='week' date={dateToPass} dateString={this.props.match.params.date} />
 
         <div className="masterContainerIphone">
           <div className="viewHoursContainer">
