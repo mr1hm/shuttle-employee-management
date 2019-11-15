@@ -24,19 +24,39 @@
   border-bottom: 1px dotted black;
 }
 
-.sessionContainer {
+.operationsContainer {
+  background-color: rgb(150, 149, 149);
   border: 1px solid black;
   border-radius: 10px;
-  height: 250px;
+  height: 400px;
   /* max-width: 1140px; */
   max-width: 95%;
   margin-bottom: 26px;
 }
 
-.addLineBtn {
+.operationsHeader {
+  color: rgba(255, 255, 255, .9);
+  border-bottom: 1px solid #FFA804;
+}
+
+.selectSessionLabel {
+  color: rgba(255, 255, 255, .9);
+}
+
+.newSessionBtn {
+  height: 23px;
+  line-height: 0;
+}
+
+.addLineBtn,
+.liveFieldStatusBtn,
+.masterFieldStatusBtn,
+.newSessionBtn {
   color: #FFA804;
   background-color: rgb(23, 2, 61);
   border: 1px solid #FFA804;
+  height: 23px;
+  line-height: 0;
 }
 
 .lineNameInput,
@@ -47,6 +67,31 @@
 .editBusInputs {
   border-radius: .25rem;
   height: 23px;
+}
+
+.sessionNameInput,
+.sessionStartDateInput,
+.sessionEndDateInput,
+.sessionNotesInput {
+  border-radius: .25rem;
+  height: 23px;
+}
+
+.sessionNameExists {
+  color: red;
+}
+
+.sessionNameAvailable {
+  color: green;
+}
+
+.sessionNameExists,
+.sessionNameAvailable {
+  font-size: 10px;
+}
+
+.sessionNameSpan {
+  margin: 0;
 }
 
 /* .copyPaste-session-buttons {
@@ -93,7 +138,11 @@
   font-weight: 700;
 }
 
-.editBusModal {
+.liveFieldStatus {
+  border: 1px solid black;
+}
+
+.gapsModal {
   position: fixed;
   width: 75%;
   height: 300px;
@@ -101,8 +150,17 @@
   left: 12%;
   bottom: 25%;
   border: 2px solid black;
-  background-color: rgba(182, 182, 182, 0.6);
+  background-color: rgba(182, 182, 182, 0.8);
   border-radius: 5px;
+}
+
+.gapModalTableHeader {
+  background-color: rgba(23, 2, 61, 0.8);
+  color: #FFA804;
+}
+
+.closeGapModal {
+  height: 40px;
 }
 
 .editLineBtn {
