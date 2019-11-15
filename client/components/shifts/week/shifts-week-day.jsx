@@ -1,16 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ShiftDisplayComponent from './shift-display-component';
-import { convertMilitaryTimeStringToMilitaryTimeFloat, convertUnixDateDay, convertUnixDateNumber } from '../../../lib/time-functions';
+import {
+  getUTCYearMonthDateDay,
+  convertMilitaryTimeStringToMilitaryTimeFloat,
+  getZeroPaddedNumber,
+  convertUnixDateDay,
+  convertUnixDateNumber }
+  from '../../../lib/time-functions';
 
 class ShiftsWeekDay extends React.Component {
-
-  getZeroPaddedNumber(number) { // could be moved to time-function.jsx
-    return ('0' + number).slice(-2);
-  }
   getDateStringFromTimestamp(timestamp) { // The convertUnixMonthDay(time) function from shifts-day.jsx could be used here 09/17/2019
     const date = new Date(parseInt(timestamp));
-    return `${date.getFullYear()}-${this.getZeroPaddedNumber(date.getMonth() + 1)}-${this.getZeroPaddedNumber(date.getDate())}`;
+    return `${date.getUTCFullYear()}-${getZeroPaddedNumber(date.getUTCMonth() + 1)}-${getZeroPaddedNumber(date.getUTCDate())}`;
   }
   calculateDailyWorkingTotalHours(startTime, endTime) {
     if (!startTime && !endTime) {
@@ -58,12 +60,14 @@ class ShiftsWeekDay extends React.Component {
   render() {
     const range = { min: 6, max: 24 };
     const startAndEndTimes = { start: 6, end: 24 };
-    const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));// converts unix time to date/time
-    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));// converts unix time to specific day of the month
+    const dayObj = getUTCYearMonthDateDay(this.props.dayData.round_date);
+    // console.log('dayObj: ', dayObj);
+    const dayText = dayObj.dayNameShort;
+    const dateText = dayObj.date;
     const dayHours = this.props.dayData.shifts.reduce((sum, current) => this.calculateDailyWorkingTotalHours(current, current) + sum, 0);
-    const dayHoursRounded = dayHours.toFixed(2);
+    const dayHoursRounded = dayHours.toFixed(1);
     const currentUnixDate = this.props.dayData.round_date;
-    let currentDayHighlightClass = 'dayDataContainer';
+    let currentDayHighlightClass = 'dayMainContainer d-flex border';
 
     if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.round_date)) {
       currentDayHighlightClass += ' currentDay';
@@ -85,12 +89,12 @@ class ShiftsWeekDay extends React.Component {
     return (
       <Link
         className="shiftWeekIndividualDayLink"
-        to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
+        to={`/shifts/day/shifts-day/${dayObj.dateString}`}>
         <div className={currentDayHighlightClass}>
-          <div className="dayLabelContainer">
-            <div className="dayText">{dayText}</div>
-            <div className="dateText">{dateText}</div>
-            <div className="dayHours">{dayHoursRounded} {dayHoursRounded === 1 ? 'Hour' : 'Hours'}</div>
+          <div className="dayInfoContainer d-flex flex-column align-items-center border-right p-2">
+            <div className="dayName font-weight-bold">{dayText}</div>
+            <div className="dayDate">{dateText}</div>
+            <div className="hoursSchedued">{`${dayHoursRounded}${dayHoursRounded === 1 ? 'hr' : 'hrs'}`}</div>
           </div>
           <div className="shiftRowContainer w-100">
             <ShiftDisplayComponent

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { getZeroPaddedNumber } from '../../lib/time-functions';
 import './nav-styles.css';
 
 class Nav extends React.Component {
@@ -14,22 +15,36 @@ class Nav extends React.Component {
   }
   renderMenuDateText() {
     if (this.props.page === 'month') {
-      return this.renderMonthYear();
+      return this.renderMonthText();
     }
-    // if (this.props.page === 'week') {
-
-    // }
+    if (this.props.page === 'week') {
+      return this.renderWeekText();
+    }
     if (this.props.page === 'day') {
-      return this.renderDayMonth();
+      return this.renderDayText();
     }
   }
-  renderMonthYear() {
+  renderMonthText() {
     const year = this.state.dateArr[0];
     const month = this.month[this.state.dateArr[1] - 1];
     return month + ' ' + year;
   }
-  renderDayMonth() {
-    const day = this.day[this.state.date.getDay()];
+  renderWeekText() {
+    const dateObj = new Date(this.props.dateString);
+    const dayOfWeek = dateObj.getUTCDay();
+    dateObj.setUTCDate(dateObj.getUTCDate() - dayOfWeek);
+    const firstDayOfWeek = this.day[dateObj.getUTCDay()];
+    const firstMonthOfWeek = this.month[dateObj.getUTCMonth()];
+    const firstDateOfWeek = dateObj.getUTCDate();
+    dateObj.setUTCDate(dateObj.getUTCDate() + 6);
+    const lastDayOfWeek = this.day[dateObj.getUTCDay()];
+    const lastMonthOfWeek = this.month[dateObj.getUTCMonth()];
+    const lastDateOfWeek = dateObj.getUTCDate();
+    return (firstDayOfWeek + ' ' + firstMonthOfWeek + ' ' + firstDateOfWeek + ' – ' +
+            lastDayOfWeek + ' ' + lastMonthOfWeek + ' ' + lastDateOfWeek);
+  }
+  renderDayText() {
+    const day = this.day[this.state.date.getUTCDay()];
     const month = this.month[this.state.dateArr[1] - 1];
     const date = this.state.dateArr[2];
     return day + ' ' + month + ' ' + date;
@@ -46,20 +61,17 @@ class Nav extends React.Component {
     if (this.props.page === 'month') {
       let nextMonth = new Date(this.props.dateString);
       nextMonth.setUTCMonth(nextMonth.getUTCMonth() + num);
-      return `${nextMonth.getUTCFullYear()}-${nextMonth.getUTCMonth() + 1}-${nextMonth.getUTCDate()}`;
+      return `${nextMonth.getUTCFullYear()}-${getZeroPaddedNumber(nextMonth.getUTCMonth() + 1)}-${getZeroPaddedNumber(nextMonth.getUTCDate())}`;
     }
     if (this.props.page === 'day') {
       let nextDay = new Date(this.props.dateString);
-      console.log('range date string: ', this.props.dateString);
-      console.log('today: ', nextDay.getUTCDate());
-      console.log('num: ', num);
       nextDay.setUTCDate(nextDay.getUTCDate() + num);
-      return `${nextDay.getUTCFullYear()}-${nextDay.getUTCMonth() + 1}-${nextDay.getUTCDate()}`;
+      return `${nextDay.getUTCFullYear()}-${getZeroPaddedNumber(nextDay.getUTCMonth() + 1)}-${getZeroPaddedNumber(nextDay.getUTCDate())}`;
     }
     if (this.props.page === 'week') {
       let nextWeek = new Date(this.props.dateString);
       nextWeek.setUTCDate(nextWeek.getUTCDate() + (num * 7));
-      return `${nextWeek.getUTCFullYear()}-${nextWeek.getUTCMonth() + 1}-${nextWeek.getUTCDate()}`;
+      return `${nextWeek.getUTCFullYear()}-${getZeroPaddedNumber(nextWeek.getUTCMonth() + 1)}-${getZeroPaddedNumber(nextWeek.getUTCDate())}`;
     }
   }
   zeroPadNumber(number) {

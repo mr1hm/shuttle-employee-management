@@ -18,8 +18,7 @@ class DayOfMonth extends React.Component {
       };
       for (var shiftIndex = 0; shiftIndex < this.props.shiftsArray.length; shiftIndex++) {
         const shiftDate = this.props.shiftsArray[shiftIndex].date;
-        // const shiftDateFullTimestamp = adjustUTCSecondsToLocalTimestamp(shiftDate);
-        let baseDate = new Date(shiftDate * 1000);// converts unix time to date/at midnight 09/17/2019
+        let baseDate = new Date(shiftDate * 1000);
         if (baseDate.getFullYear() === this.props.dayObj.getFullYear() &&
           baseDate.getMonth() === this.props.dayObj.getMonth() &&
           baseDate.getDate() === this.props.dayObj.getDate()) {
