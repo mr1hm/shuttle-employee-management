@@ -57,13 +57,13 @@ if ( $user_id === 1 ) { // Unassign shift(s) from operator in operators table
   //   next($shifts);
   // }
 } else {  // Assign shift(s) to operator in operators table
-  print(json_encode($operator));
+  // print(json_encode($operator));
   while ( current($shifts) ) {
     assignShiftToOperator($operator, current($shifts)['round']);
     updateShiftFlags($operator, current($shifts)['round']);
     next($shifts);
   }
-  print( json_encode($operator) );
+  // print( json_encode($operator) );
 }
 
 ?>

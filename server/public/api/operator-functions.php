@@ -4,7 +4,8 @@ function updateShiftFlags(&$operator, $shift) {
   if (intval($operator['minutes_without_30_minute_break']) >= 300) {
     $operator['minutes_without_30_minute_break'] -= 300;
   }
-  if (intval(end($shift)['round_end']) > 2200) {
+  $shiftEnd = intval(end($shift)['round_end']) ? end($shift)['round_end'] : $shift['round_end'];
+  if (intval($shiftEnd) > 2200) {
     $operator['shift_restrictions']['worked_passed_10']['current_day'] = true;
   }
   if (intval($operator['assigned_times'][0][0]) < 800) {
@@ -22,7 +23,9 @@ function assignShiftToOperator(&$operator, $shift) {
   updateOperatorAvailableTimes($operator, $shift);
   // print( json_encode($operator) );
 
-  $shiftTime = calculateShiftMinutes(intval(reset($shift)['round_start']), intval(end($shift)['round_end']));
+  $shiftStart = intval(reset($shift)['round_start']) ? reset($shift)['round_start'] : $shift['round_start'];
+  $shiftEnd = intval(end($shift)['round_end']) ? end($shift)['round_end'] : $shift['round_end'];
+  $shiftTime = calculateShiftMinutes(intval($shiftStart), intval($shiftEnd));
   $operator['minutes_without_30_minute_break'] += $shiftTime;
   $operator['total_daily_minutes'] += $shiftTime;
   $operator['total_weekly_minutes'] += $shiftTime;
@@ -30,7 +33,7 @@ function assignShiftToOperator(&$operator, $shift) {
 
 function updateOperatorAssignedTimes(&$operator, $shift) {
   $shiftStart = intval(reset($shift)['round_start']) ? intval(reset($shift)['round_start']) : intval($shift['round_start']);
-  $shiftEnd = intval(end($shift)['round_end']) ? intval(reset($shift)['round_start']) : intval($shift['round_end']);
+  $shiftEnd = intval(end($shift)['round_end']) ? intval(end($shift)['round_end']) : intval($shift['round_end']);
   $lastIndex = count($operator['assigned_times']) - 1;
 
   // Empty assigned times
@@ -97,7 +100,7 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
   }
 
   $shiftStart = intval(reset($shift)['round_start']) ? intval(reset($shift)['round_start']) : intval($shift['round_start']);
-  $shiftEnd = intval(end($shift)['round_end']) ? intval(reset($shift)['round_start']) : intval($shift['round_end']);
+  $shiftEnd = intval(end($shift)['round_end']) ? intval(end($shift)['round_end']) : intval($shift['round_end']);
   foreach ($operator['available_times'] as $key => &$timeBlock) {
     if ($shiftStart === intval($timeBlock[0])) { // Push back start time
       $timeBlock[0] = intval($shiftEnd);
