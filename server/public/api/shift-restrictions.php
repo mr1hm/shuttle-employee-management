@@ -132,4 +132,19 @@ function requireBreak ($operator, $shift, int $option = null) {
   }
 }
 
+// Takes a start and end time, calculates the difference and returns it
+function calculateShiftMinutes($startTime, $endTime) {
+  $startHourDigits = floor($startTime / 100);
+  $startMinuteDigits = $startTime / 100 - $startHourDigits;
+
+  $endHourDigits = floor($endTime / 100);
+  $endMinuteDigits = $endTime / 100 - $endHourDigits;
+
+  $startTimeInMinutes = $startHourDigits * 60 + $startMinuteDigits * 100;
+  $endTimeInMinutes = $endHourDigits * 60 + $endMinuteDigits * 100;
+
+  $shiftLengthInMinutes = $endTimeInMinutes - $startTimeInMinutes;
+  return round($shiftLengthInMinutes);
+}
+
 ?>

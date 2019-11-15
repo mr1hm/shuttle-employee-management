@@ -2,7 +2,6 @@
 require_once('functions.php');
 set_exception_handler('error_handler');
 require_once 'db_connection.php';
-require_once('operator-functions.php');
 
 $data = getBodyData();
 $user_id = $data['user_id'];
@@ -58,11 +57,11 @@ if ( $user_id === 1 ) { // Unassign shift(s) from operator in operators table
   // }
 } else {  // Assign shift(s) to operator in operators table
   // print(json_encode($operator));
-  while ( current($shifts) ) {
-    assignShiftToOperator($operator, current($shifts)['round']);
-    updateShiftFlags($operator, current($shifts)['round']);
-    next($shifts);
-  }
+  // while ( current($shifts) ) {
+  //   assignShiftToOperator($operator, current($shifts)['round']);
+  //   updateShiftFlags($operator, current($shifts)['round']);
+  //   next($shifts);
+  // }
   // print( json_encode($operator) );
 }
 

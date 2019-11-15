@@ -1,138 +1,84 @@
 <?php
+require_once('functions.php');
+set_exception_handler('error_handler');
+require_once 'db_connection.php';
+require_once('shift-restrictions.php');
 
-function updateShiftFlags(&$operator, $shift) {
-  if (intval($operator['minutes_without_30_minute_break']) >= 300) {
-    $operator['minutes_without_30_minute_break'] -= 300;
-  }
-  $shiftEnd = intval(end($shift)['round_end']) ? end($shift)['round_end'] : $shift['round_end'];
-  if (intval($shiftEnd) > 2200) {
-    $operator['shift_restrictions']['worked_passed_10']['current_day'] = true;
-  }
-  if (intval($operator['assigned_times'][0][0]) < 800) {
-    $operator['shift_restrictions']['shift_passed_15_hour_window']['shift_start'] = intval($operator['assigned_times'][0][0]);
-  }
+/**
+ *
+ */
+function getOperator ($operator_id, $date) {
+
+  // 1. Determine week start & week end based off given date
+    // 1. Query `round` table to get all round time data for operator
+    //    in calculated week
+    // 2. Add up all of the operators scheduled round minutes
+    // 3. Store in variable to be used as total weekly minutes
+  // 2. Query `user`, `operator_availability`, `round` tables for
+    // 1. Get `user_id`, `first_name`, `last_name`, `special_status`
+    //    from `user` table
+    // 2. Get available times from `operator_availability` table
+    // 3. Get assigned times for the given day from the `round` table
+  // 3. Build operator structure like this |
+  //                                       V
+    // {
+    //   user_id: 4,
+    //   last_name: "Wu",
+    //   first_name: "Teresa",
+    //   special_route: 0,
+    //   assigned_times: [],
+    //   available_times: [],
+    //   shift_restrictions: {
+    //     worked_passed_10: {
+    //       prior_day: false,
+    //       current_day: false
+    //     },
+    //     shift_passed_15_hour_window: {
+    //       shift_start: 0
+    //     }
+    //   },
+    //   total_daily_minutes: 0,
+    //   total_weekly_minutes: 0,
+    //   minutes_without_30_minute_break: 0
+    // }
+  // 4. Return constructed operator
 }
 
-/* Update operators times_assigned associative array with shift times
-   * Update operators times_available associative array
-   * Update operators daily & weekly minutes */
-function assignShiftToOperator(&$operator, $shift) {
-  // print( json_encode($operator) );
-  updateOperatorAssignedTimes($operator, $shift);
-  // print( json_encode($operator) );
-  updateOperatorAvailableTimes($operator, $shift);
-  // print( json_encode($operator) );
+// Helper functions
 
-  $shiftStart = intval(reset($shift)['round_start']) ? reset($shift)['round_start'] : $shift['round_start'];
-  $shiftEnd = intval(end($shift)['round_end']) ? end($shift)['round_end'] : $shift['round_end'];
-  $shiftTime = calculateShiftMinutes(intval($shiftStart), intval($shiftEnd));
-  $operator['minutes_without_30_minute_break'] += $shiftTime;
-  $operator['total_daily_minutes'] += $shiftTime;
-  $operator['total_weekly_minutes'] += $shiftTime;
-}
-
-function updateOperatorAssignedTimes(&$operator, $shift) {
-  $shiftStart = intval(reset($shift)['round_start']) ? intval(reset($shift)['round_start']) : intval($shift['round_start']);
-  $shiftEnd = intval(end($shift)['round_end']) ? intval(end($shift)['round_end']) : intval($shift['round_end']);
-  $lastIndex = count($operator['assigned_times']) - 1;
-
-  // Empty assigned times
-  if (empty($operator['assigned_times'])) {
-    array_push($operator['assigned_times'], [$shiftStart, $shiftEnd]);
-    return;
-  }
-
-  // Insert at beginning
-  if ($shiftEnd <= intval($operator['assigned_times'][0][0])) {
-    array_unshift($operator['assigned_times'], [$shiftStart, $shiftEnd]);
-    if (intval($operator['assigned_times'][0][1]) === intval($operator['assigned_times'][1][0])) {
-      $operator['assigned_times'][0][1] = $operator['assigned_times'][1][1];
-      array_splice($operator['assigned_times'], 1, 1);
-    }
-    return;
-  }
-  // Insert at end
-  if ($shiftStart >= intval($operator['assigned_times'][$lastIndex][1])) {
-    array_push($operator['assigned_times'], [$shiftStart, $shiftEnd]);
-    $lastIndex = count($operator['assigned_times']) - 1;
-    if (intval($operator['assigned_times'][$lastIndex][0]) === intval($operator['assigned_times'][$lastIndex - 1][1])) {
-      $operator['assigned_times'][$lastIndex - 1][1] = $operator['assigned_times'][$lastIndex][1];
-      array_pop($operator['assigned_times']);
-    }
-    return;
-  }
-  // Insert in between
-  $prevTimeBlock = null;
-  $insertIndex = 0;
-  foreach ($operator['assigned_times'] as $key => &$timeBlock) {
-    if ($prevTimeBlock && ($shiftStart >= $prevTimeBlock[1] && $shiftEnd <= $timeBlock[0])) {
-      $temp = $operator['assigned_times'][$key];
-      array_splice($operator['assigned_times'], $key, 1, [[$shiftStart, $shiftEnd]]);
-      array_splice($operator['assigned_times'], $key+1, 1, [$key+1 => $temp]);
-      $insertIndex = $key;
-      break;
-    }
-    $prevTimeBlock = $timeBlock;
-  }
-  unset($timeBlock);
-
-  /* If inserted shift has start/end times that are equivalent to neighboring
-      * shifts - trunctate the shift(s) into a single shift */
-  if (intval($operator['assigned_times'][$insertIndex - 1][1]) === intval($operator['assigned_times'][$insertIndex][0])) {
-    $operator['assigned_times'][$insertIndex - 1][1] = $operator['assigned_times'][$insertIndex][1];
-    array_splice($operator['assigned_times'], $insertIndex, 1);
-    --$insertIndex;
-  }
-  if (isset($operator['assigned_times'][$insertIndex + 1])) {
-    if (intval($operator['assigned_times'][$insertIndex + 1][0]) === intval($operator['assigned_times'][$insertIndex][1])) {
-      $operator['assigned_times'][$insertIndex + 1][0] = $operator['assigned_times'][$insertIndex][0];
-      array_splice($operator['assigned_times'], $insertIndex, 1);
-    }
-  }
-}
-
-function updateOperatorAvailableTimes(&$operator, $shift) {
-  // Remove availability if it is the same as the shift
-  $key = array_search($shift, array_column($operator, 'available_times'));
-  if ($key !== false) {
-    array_splice($operator['available_times'], $key, 1);
-    return;
-  }
-
-  $shiftStart = intval(reset($shift)['round_start']) ? intval(reset($shift)['round_start']) : intval($shift['round_start']);
-  $shiftEnd = intval(end($shift)['round_end']) ? intval(end($shift)['round_end']) : intval($shift['round_end']);
-  foreach ($operator['available_times'] as $key => &$timeBlock) {
-    if ($shiftStart === intval($timeBlock[0])) { // Push back start time
-      $timeBlock[0] = intval($shiftEnd);
-      break;
-    }
-    if ($shiftEnd === intval($timeBlock[1])) { // Push back end time
-      $timeBlock[1] = intval($shiftStart);
-      break;
-    }
-    // If shift is inside of a time block - Break the time block into 2 blocks
-    if ($shiftStart > intval($timeBlock[0]) && $shiftEnd < intval($timeBlock[1])) {
-      $newBlockEnd = intval($timeBlock[1]);
-      $timeBlock[1] = intval($shiftStart);
-      array_splice($operator['available_times'], $key + 1, 1, [$key + 1 => [intval($shiftEnd), $newBlockEnd]]);
+function determineWeeklyMinutes (int $operator_id, $date) {
+  global $conn;
+  $week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  $day = date('D', $date);
+  $weekStart = null;
+  $weekEnd = null;
+  foreach ( $week as $index => $weekDay ) {
+    if ( $day === $weekDay ) {
+      $weekStart = strtotime("-$index days", $date);
+      $difference = count($week) - $index - 1;
+      $weekEnd = strtotime("+$difference days", $date);
       break;
     }
   }
+  unset($weekDay);
+
+  $query = "SELECT `start_time`, `end_time`
+            FROM `round`
+            WHERE `user_id` = {$operator_id} AND
+                  `date` >= {$weekStart} AND `date` <= {$weekEnd}";
+  $result = mysqli_query($conn, $query);
+  if (!$result) {
+    throw new Exception('MySQL error: ' . mysqli_error($conn));
+  }
+  $weeklyMinutes = 0;
+  while ( $row = mysqli_fetch_assoc($result) ) {
+    $weeklyMinutes += calculateShiftMinutes($row['start_time'], $row['end_time']);
+  }
+
+  return intval( $weeklyMinutes );
 }
-
-// Takes a start and end time, calculates the difference and returns it
-function calculateShiftMinutes($startTime, $endTime) {
-  $startHourDigits = floor($startTime / 100);
-  $startMinuteDigits = $startTime / 100 - $startHourDigits;
-
-  $endHourDigits = floor($endTime / 100);
-  $endMinuteDigits = $endTime / 100 - $endHourDigits;
-
-  $startTimeInMinutes = $startHourDigits * 60 + $startMinuteDigits * 100;
-  $endTimeInMinutes = $endHourDigits * 60 + $endMinuteDigits * 100;
-
-  $shiftLengthInMinutes = $endTimeInMinutes - $startTimeInMinutes;
-  return round($shiftLengthInMinutes);
-}
+// 1566619200
+// print(determineWeeklyMinutes(10, 1566446400));
+print(determineWeeklyMinutes(10, 1566100800));
 
 ?>
