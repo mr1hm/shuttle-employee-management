@@ -14,11 +14,15 @@ function getOperator ($operator_id, $date) {
     //    in calculated week
     // 2. Add up all of the operators scheduled round minutes
     // 3. Store in variable to be used as total weekly minutes
+  $weeklyMinutes = determineWeeklyMinutes($operator_id, $date);
+
   // 2. Query `user`, `operator_availability`, `round` tables for
     // 1. Get `user_id`, `first_name`, `last_name`, `special_status`
     //    from `user` table
     // 2. Get available times from `operator_availability` table
     // 3. Get assigned times for the given day from the `round` table
+
+
   // 3. Build operator structure like this |
   //                                       V
     // {
@@ -77,8 +81,59 @@ function determineWeeklyMinutes (int $operator_id, $date) {
 
   return intval( $weeklyMinutes );
 }
-// 1566619200
-// print(determineWeeklyMinutes(10, 1566446400));
-print(determineWeeklyMinutes(10, 1566100800));
+// 1566619200 Sat ^
+// 1566446400 Thu |
+// 1566100800 Sun |
+
+function getOperatorInfo ($operator_id, $date) {
+  global $conn;
+  // 2. Query `user`, `operator_availability`, `round` tables for
+  // 1. Get `user_id`, `first_name`, `last_name`, `special_status`
+  //    from `user` table
+  // 2. Get available times from `operator_availability` table
+  // 3. Get assigned times for the given day from the `round` table
+  $day = date('D', $date);
+
+  $query = "SELECT `u`.`id` AS 'user_id', `u`.`last_name`, `u`.`first_name`, `u`.`special_route_ok` AS 'special_route',
+                   CONCAT(`avail`.`start_time`, ',', `avail`.`end_time`) AS 'availability',
+                   CONCAT(`r`.`start_time`, ',', `r`.`end_time`) AS 'assigned'
+            FROM `user` AS `u`
+            JOIN `operator_availability` AS `avail` ON `avail`.`user_id` = `u`.`id`
+            JOIN `round` AS `r` ON `r`.`user_id` = `u`.`id` AND `r`.`date` = {$date}
+            WHERE `u`.`role` = 'operator' AND `u`.`status` = 'active' AND
+                  `avail`.`session_id` = 1 AND `avail`.`user_id` = {$operator_id} AND `avail`.`day_of_week` = '{$day}'
+            ORDER BY `r`.`start_time` ASC";
+  $result = mysqli_query($conn, $query);
+  if (!$result) {
+    throw new Exception('MySQL error: ' . mysqli_error($conn));
+  }
+  $operatorInfo = [];
+  while ( $row = mysqli_fetch_assoc($result) ) {
+    if ( !isset($operatorInfo['user_id']) ) {
+      $operatorInfo['user_id'] = intval($row['user_id']);
+      $operatorInfo['last_name'] = $row['last_name'];
+      $operatorInfo['first_name'] = $row['first_name'];
+      $operatorInfo['special_route'] = $row['special_route'];
+    }
+    $operatorInfo['available_times'][] = explode(',', $row['availability']);
+    $operatorInfo['assigned_times'][] = explode(',', $row['assigned']);
+  }
+  if ( count($operatorInfo['available_times']) > 1 ) {
+    if ( $operatorInfo['available_times'][0] === $operatorInfo['available_times'][1] ) {
+      $singleAvailability = $operatorInfo['available_times'][0];
+      $operatorInfo['available_times'] = [];
+      $operatorInfo['available_times'][] = $singleAvailability;
+    }
+  }
+
+  return $operatorInfo;
+}
+
+print_r(getOperatorInfo(46, 1566100800));
+
+
+function buildOperator ($operatorInfo, $weeklyMinutes) {
+
+}
 
 ?>
