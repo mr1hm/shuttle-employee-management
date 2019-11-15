@@ -24,7 +24,10 @@ class ShiftsDay extends React.Component {
       swapFlag: 0
     };
   }
-  getShifts(query) {
+  getShifts() {
+    const timestamp = new Date(this.props.match.params.date).getTime();
+    const query = `?date=${adjustLocalTimestampToUTCSeconds(timestamp)}&userID=${this.props.userId}&type=myShifts`;
+    console.log('date path: ', this.props.match.params.date);
     console.log('day query: ', query);
     const response = fetch(`/api/shifts-day.php` + query, {
       method: 'GET'
@@ -32,11 +35,13 @@ class ShiftsDay extends React.Component {
 
     response
       .then(response => response.json())
-      .then(json => this.setState({ shifts: json }))
+      .then(data => {
+        this.setState({ shifts: data });
+        console.log(data);
+      })
       .catch(error => { console.error(error); });
   }
   componentDidMount() {
-    console.log('shift-day: ', this.props.match.params.date);
     const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
     this.getShifts(this.state.queryString);
     this.setState({

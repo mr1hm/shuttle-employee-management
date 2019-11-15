@@ -28,10 +28,10 @@ class TopMenuHamburger extends React.Component {
       <HamburgerMenu notificationCount={this.props.notificationCount} userId={this.props.userId} count={this.state.numberOfShifts}>
         <Link to={{ pathname: '/trade-notification/', state: { newShiftsAndSelectedDriver: this.props.tradeNotification } }}>Notifications</Link>
         <Link to="/myinfo/">My Info</Link>
-        <Link to={`/shifts/day/shifts-day/${currentDateString}`}>Day</Link>
-        <Link to={`/shifts/week/shifts-week/${currentDateString}`}>Week</Link>
+        <Link to={`/shifts/day/shifts-day/${dateString}`}>Day</Link>
+        <Link to={`/shifts/week/shifts-week/${dateString}`}>Week</Link>
         <Link to={`/shifts/month/shifts-month/${dateString}`}>Month</Link>
-        <Link to={`/shifts/available/${currentDateString}`}>Available</Link>
+        <Link to={`/shifts/available/${dateString}`}>Available</Link>
       </HamburgerMenu>
 
     );

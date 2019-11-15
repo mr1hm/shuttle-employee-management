@@ -52,7 +52,7 @@ class ShiftsMonth extends React.Component {
               className=
                 {year + '-' + month + '-' + monthDayIndex === todayString ? 'today-mark link-style ' : 'link-style'}
               to={{
-                pathname: `/shifts/day/shifts-day/${year}-${month}-${monthDayIndex}`,
+                pathname: `/shifts/day/shifts-day/${year}-${this.getZeroPaddedNumber(month)}-${monthDayIndex < 10 ? '0' + monthDayIndex : monthDayIndex}`,
                 state: {
                   swapFlag: this.state.swapFlag
                 }
@@ -149,47 +149,6 @@ class ShiftsMonth extends React.Component {
       dayOfNextMonth.setDate(dayOfNextMonth.getDate() + 1);
     }
     return calendarPage;
-  }
-  displayCalendarPage(dateProp) {
-    var monthDivArray = [];
-    var calendarPage = this.generateCalendarPage(dateProp);
-    for (var dayOfCalendar = 0; dayOfCalendar < calendarPage.length;) {
-      const monthWeekArray = [];
-      for (let dayOfWeekIndex = 0; dayOfWeekIndex < 7; dayOfWeekIndex++, dayOfCalendar++) {
-        var targetUnixDate = calendarPage[dayOfCalendar].getTime();
-        monthWeekArray.push(
-          <td
-            key={calendarPage[dayOfCalendar].getTime()}
-            className="align-middle p-0">
-            <Link
-              className={calendarPage[dayOfCalendar].getFullYear() +
-                '-' + calendarPage[dayOfCalendar].getMonth() +
-                '-' + calendarPage[dayOfCalendar].getDate() === new Date(this.props.defaultDate).getFullYear() +
-              '-' + new Date(this.props.defaultDate).getMonth() +
-              '-' + new Date(this.props.defaultDate).getDate() ? 'today-mark link-style ' : 'link-style'}
-              to={{
-                pathname: `/shifts/day/shifts-day/${this.getDateStringFromTimestamp(targetUnixDate)}`,
-                state: {
-                  swapFlag: this.state.swapFlag
-                }
-              }}>
-              <DayOfMonth
-                key={calendarPage[dayOfCalendar].getTime()}
-                dayObj={calendarPage[dayOfCalendar]}
-                dayIndex={calendarPage[dayOfCalendar].getDate()}
-                shiftsArray={this.state.scheduledHoursForCurrentMonth}
-              />
-            </Link>
-          </td>
-        );
-      }
-      monthDivArray.push(
-        <tr key={dayOfCalendar}>
-          {monthWeekArray}
-        </tr>
-      );
-    }
-    return monthDivArray;
   }
   chunkArray(calendarArray, chunkSize) {
     var calenderIndex = 0;

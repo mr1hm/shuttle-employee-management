@@ -6,6 +6,7 @@
 }
 .calendarShiftContainer a:hover{
   color: blue;
+  font-weight: normal;
 }
 .monthTable {
   width: 50%;
