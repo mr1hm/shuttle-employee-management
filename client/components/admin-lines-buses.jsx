@@ -12,7 +12,7 @@ import Lines from './admin-lines-buses-lines';
 import CreateSession from './admin-lines-buses-createSession';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown, faThumbsDown, faMinusCircle, faCopy, faPaste, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faBus, faCaretDown, faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
 import OperationsHistory from './admin-lines-buses-operationsHistory';
 
 class AdminRoutes extends React.Component {
@@ -583,7 +583,7 @@ class AdminRoutes extends React.Component {
             {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
             <h4 className="operationsHistory mt-2">Operations History</h4>
             {console.log(this.state.linesBusesInfo)}
-            <OperationsHistory originalData={this.state.originalData} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
+            <OperationsHistory originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
           </div>
         </div>
         <div className="accordion" id="accordionExample">

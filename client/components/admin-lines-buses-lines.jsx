@@ -9,7 +9,7 @@ import AddBus from './admin-lines-buses-addBus';
 import GapsModal from './admin-lines-buses-viewGaps';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown, faWindowClose, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCaretUp, faBus, faCaretDown, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import AdminRoutes from './admin-lines-buses';
 import EditLine from './admin-lines-buses-editLine';
 
