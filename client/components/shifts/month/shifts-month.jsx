@@ -6,6 +6,7 @@ import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends';
 import {
+  getZeroPaddedNumber,
   createDateObjFromDateString,
   calculateShiftHours,
   adjustLocalTimestampToUTCSeconds,
@@ -35,7 +36,7 @@ class ShiftsMonth extends React.Component {
   }
   renderCalendar() {
     console.log('param: ', this.props.match.params.date);
-    const todayString = `${this.state.today.getFullYear()}-${this.state.today.getMonth() + 1}-${this.state.today.getDate()}`;
+    const todayString = `${this.state.today.getFullYear()}-${getZeroPaddedNumber(this.state.today.getMonth() + 1)}-${getZeroPaddedNumber(this.state.today.getDate())}`;
     const dateObj = new Date(this.props.match.params.date);
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth() + 1;

@@ -48,9 +48,6 @@ class App extends React.Component {
     this.setState({ shiftId: id, date: date });
   }
   render() {
-    const today = new Date();
-    const dateString = `${today.getUTCFullYear()}-${today.getUTCMonth() + 1}-${today.getUTCDate()}`;
-    console.log('app: ', dateString);
     const userStateId = parseInt(this.state.userId);
     if (this.state.userLogin === true) {
       return (
