@@ -9,18 +9,27 @@ export default class CreateSession extends React.Component {
       sessions: this.props.allSessions,
       newSession: {
         name: '',
-        startDate: '',
-        startMonth: '',
-        startYear: '',
-        endDate: '',
-        endMonth: '',
-        endYear: '',
+        startDateString: null,
+        endDateString: null,
+        startDate: '01',
+        startMonth: 'Jan',
+        startYear: '2020',
+        endDate: '01',
+        endMonth: 'Jan',
+        endYear: '2020',
         notes: ''
       }
     };
     this.handleNewSessionChange = this.handleNewSessionChange.bind(this);
     this.handleNewSessionSubmit = this.handleNewSessionSubmit.bind(this);
+    this.getAllUpdatedSessions = this.getAllUpdatedSessions.bind(this);
   }
+
+  // componentDidUpdate(prevProps) {
+  //   if (prevProps.allSessions.length !== this.state.sessions.length) {
+  //     this.getAllUpdatedSessions();
+  //   }
+  // }
 
   handleNewSessionChange(e) {
     const name = e.target.name;
@@ -55,17 +64,28 @@ export default class CreateSession extends React.Component {
 
   handleNewSessionSubmit(newSession, e) {
     e.preventDefault();
-    if (newSession.startDate.length === 11 && newSession.endDate.length === 11) {
-      let startDateNewFormat = newSession.startDate + ' 00:00:00 GMT';
-      let convertStartDate = new Date(startDateNewFormat);
-      let startDateUnix = convertStartDate.valueOf();
+    let startDay = this.state.newSession.startDate;
+    let startMonth = this.state.newSession.startMonth;
+    let startYear = this.state.newSession.startYear;
+    let endDay = this.state.newSession.endDate;
+    let endMonth = this.state.newSession.endMonth;
+    let endYear = this.state.newSession.endYear;
+    let newStartDate = `${startYear}-${startMonth}-${startDay}`;
+    console.log(newStartDate);
+    let newEndDate = `${endYear}-${endMonth}-${endDay}`;
+    console.log(newEndDate);
+    newSession = {...newSession, startDateString: newStartDate, endDateString: newEndDate};
+    // if (newSession.startDate.length === 11 && newSession.endDate.length === 11) {
+    //   let startDateNewFormat = newSession.startDate + ' 00:00:00 GMT';
+    //   let convertStartDate = new Date(startDateNewFormat);
+    //   let startDateUnix = convertStartDate.valueOf();
 
-      let endDateNewFormat = newSession.endDate + ' 23:59:00 GMT';
-      let convertEndDate = new Date(endDateNewFormat);
-      let endDateUnix = convertEndDate.valueOf();
+    //   let endDateNewFormat = newSession.endDate + ' 23:59:00 GMT';
+    //   let convertEndDate = new Date(endDateNewFormat);
+    //   let endDateUnix = convertEndDate.valueOf();
 
-      newSession = { ...newSession, startDate: startDateUnix, endDate: endDateUnix };
-    }
+    //   newSession = { ...newSession, startDate: startDateUnix, endDate: endDateUnix };
+    // }
     const init = {
       method: 'POST',
       body: JSON.stringify(newSession)
@@ -75,8 +95,8 @@ export default class CreateSession extends React.Component {
       .then(sessionInfo => {
         this.setState({
           newSessionAdded: true
-        }, this.props.handleAddNewSessionClick());
-        this.getAllUpdatedSessions();
+        }, this.props.getLinesBusesInfo)
+        this.props.handleAddNewSessionClick();
       })
       .catch(error => console.error(error));
 
@@ -150,18 +170,18 @@ export default class CreateSession extends React.Component {
                 <label>Start Month</label>
                 <br />
                 <select onChange={this.handleNewSessionChange} className="col border border-primary sessionStartMonthInput" name="startMonth" type="text">
-                  <option>Jan</option>
-                  <option>Feb</option>
-                  <option>Mar</option>
-                  <option>Apr</option>
-                  <option>May</option>
-                  <option>Jun</option>
-                  <option>Jul</option>
-                  <option>Aug</option>
-                  <option>Sep</option>
-                  <option>Oct</option>
-                  <option>Nov</option>
-                  <option>Dec</option>
+                  <option>01</option>
+                  <option>02</option>
+                  <option>03</option>
+                  <option>04</option>
+                  <option>05</option>
+                  <option>06</option>
+                  <option>07</option>
+                  <option>08</option>
+                  <option>09</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
                 </select>
               </div>
               <div className="col">
@@ -222,18 +242,18 @@ export default class CreateSession extends React.Component {
                 <label>End Month</label>
                 <br />
                 <select onChange={this.handleNewSessionChange} className="col border border-primary sessionEndMonthInput" name="endMonth" type="text">
-                  <option>Jan</option>
-                  <option>Feb</option>
-                  <option>Mar</option>
-                  <option>Apr</option>
-                  <option>May</option>
-                  <option>Jun</option>
-                  <option>Jul</option>
-                  <option>Aug</option>
-                  <option>Sep</option>
-                  <option>Oct</option>
-                  <option>Nov</option>
-                  <option>Dec</option>
+                  <option>01</option>
+                  <option>02</option>
+                  <option>03</option>
+                  <option>04</option>
+                  <option>05</option>
+                  <option>06</option>
+                  <option>07</option>
+                  <option>08</option>
+                  <option>09</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
                 </select>
               </div>
               <div className="col">

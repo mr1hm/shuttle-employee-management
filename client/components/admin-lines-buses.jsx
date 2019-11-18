@@ -515,7 +515,7 @@ class AdminRoutes extends React.Component {
               </div>
               {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
               <h4 className="operationsHistory mt-2">Operations History</h4>
-              <OperationsHistory linesBusesInfo={this.state.linesBusesInfo} />
+              <OperationsHistory getLinesBusesInfo={this.getLinesBusesInfo} linesBusesInfo={this.state.linesBusesInfo} />
             </div>
           </div>
           <div className="accordion" id="accordionExample">
@@ -583,7 +583,7 @@ class AdminRoutes extends React.Component {
             {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
             <h4 className="operationsHistory mt-2">Operations History</h4>
             {console.log(this.state.linesBusesInfo)}
-            <OperationsHistory originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
+            <OperationsHistory getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
           </div>
         </div>
         <div className="accordion" id="accordionExample">
