@@ -10,7 +10,11 @@ export default class CreateSession extends React.Component {
       newSession: {
         name: '',
         startDate: '',
+        startMonth: '',
+        startYear: '',
         endDate: '',
+        endMonth: '',
+        endYear: '',
         notes: ''
       }
     };
@@ -93,7 +97,7 @@ export default class CreateSession extends React.Component {
         <div className="card w-100 mt-1">
           <div className="card-header">
             <div className="row">
-              <div className="col-4">
+              <div className="col-2">
                 <label>
                   Session Name
                 </label>
@@ -105,18 +109,149 @@ export default class CreateSession extends React.Component {
                 <br />
                 {this.state.sessionExists ? <span className="sessionNameSpan"><i className="sessionNameExists">Session {`"${this.state.newSession.name}"`} Already Exists</i></span> : <span className="sessionNameSpan"><i className="sessionNameAvailable">Name Available</i></span>}
               </div>
-              <div className="col-2">
+              <div className="col">
                 <label>Start Date</label>
                 <br />
-                <input onChange={this.handleNewSessionChange} className="col border border-primary sessionStartDateInput" name="startDate" type="text" />
-                <span>
-                  <i className="sessionStartDateFormat">DD MMM YYYY<br />Include spaces (i.e. "12 Aug 2020")</i>
-                </span>
+                <select onChange={this.handleNewSessionChange} className="col border border-primary sessionStartDateInput" name="startDate" type="text">
+                  <option>01</option>
+                  <option>02</option>
+                  <option>03</option>
+                  <option>04</option>
+                  <option>05</option>
+                  <option>06</option>
+                  <option>07</option>
+                  <option>08</option>
+                  <option>09</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
+                  <option>13</option>
+                  <option>14</option>
+                  <option>15</option>
+                  <option>16</option>
+                  <option>17</option>
+                  <option>18</option>
+                  <option>19</option>
+                  <option>20</option>
+                  <option>21</option>
+                  <option>22</option>
+                  <option>23</option>
+                  <option>24</option>
+                  <option>25</option>
+                  <option>26</option>
+                  <option>27</option>
+                  <option>28</option>
+                  <option>29</option>
+                  <option>30</option>
+                  <option>31</option>
+                </select>
               </div>
-              <div className="col-2">
+              <div className="col">
+                <label>Start Month</label>
+                <br />
+                <select onChange={this.handleNewSessionChange} className="col border border-primary sessionStartMonthInput" name="startMonth" type="text">
+                  <option>Jan</option>
+                  <option>Feb</option>
+                  <option>Mar</option>
+                  <option>Apr</option>
+                  <option>May</option>
+                  <option>Jun</option>
+                  <option>Jul</option>
+                  <option>Aug</option>
+                  <option>Sep</option>
+                  <option>Oct</option>
+                  <option>Nov</option>
+                  <option>Dec</option>
+                </select>
+              </div>
+              <div className="col">
+                <label>Start Year</label>
+                <br />
+                <select onChange={this.handleNewSessionChange} className="col border border-primary sessionStartYearInput" name="startYear" type="text">
+                  <option>2020</option>
+                  <option>2021</option>
+                  <option>2022</option>
+                  <option>2023</option>
+                  <option>2024</option>
+                  <option>2025</option>
+                  <option>2026</option>
+                  <option>2027</option>
+                  <option>2028</option>
+                  <option>2029</option>
+                  <option>2030</option>
+                </select>
+              </div>
+              <div className="col">
                 <label>End Date</label>
                 <br />
-                <input onChange={this.handleNewSessionChange} className="col border border-primary sessionEndDateInput" name="endDate" type="text" />
+                <select onChange={this.handleNewSessionChange} className="col border border-primary sessionEndDateInput" name="endDate" type="text">
+                  <option>01</option>
+                  <option>02</option>
+                  <option>03</option>
+                  <option>04</option>
+                  <option>05</option>
+                  <option>06</option>
+                  <option>07</option>
+                  <option>08</option>
+                  <option>09</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
+                  <option>13</option>
+                  <option>14</option>
+                  <option>15</option>
+                  <option>16</option>
+                  <option>17</option>
+                  <option>18</option>
+                  <option>19</option>
+                  <option>20</option>
+                  <option>21</option>
+                  <option>22</option>
+                  <option>23</option>
+                  <option>24</option>
+                  <option>25</option>
+                  <option>26</option>
+                  <option>27</option>
+                  <option>28</option>
+                  <option>29</option>
+                  <option>30</option>
+                  <option>31</option>
+                </select>
+              </div>
+              <div className="col">
+                <label>End Month</label>
+                <br />
+                <select onChange={this.handleNewSessionChange} className="col border border-primary sessionEndMonthInput" name="endMonth" type="text">
+                  <option>Jan</option>
+                  <option>Feb</option>
+                  <option>Mar</option>
+                  <option>Apr</option>
+                  <option>May</option>
+                  <option>Jun</option>
+                  <option>Jul</option>
+                  <option>Aug</option>
+                  <option>Sep</option>
+                  <option>Oct</option>
+                  <option>Nov</option>
+                  <option>Dec</option>
+                </select>
+              </div>
+              <div className="col">
+                <label>End Year</label>
+                <br />
+                <select onChange={this.handleNewSessionChange} className="col border border-primary sessionEndYearInput" name="endYear" type="text">
+                  <option>2020</option>
+                  <option>2021</option>
+                  <option>2022</option>
+                  <option>2023</option>
+                  <option>2024</option>
+                  <option>2025</option>
+                  <option>2026</option>
+                  <option>2027</option>
+                  <option>2028</option>
+                  <option>2029</option>
+                  <option>2030</option>
+                </select>
               </div>
               <div className="col-2">
                 <label>Notes (Optional)</label>
