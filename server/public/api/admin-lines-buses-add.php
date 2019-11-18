@@ -4,8 +4,8 @@ require_once 'functions.php';
 set_exception_handler('error_handler');
 require_once 'db_connection.php';
 
-if (isset($bodyData['line_name'])) {
-  print('add line running');
+if (isset($bodyData['line_name'])) { // add a new line
+
   $line_name = $bodyData['line_name'];
   $sessionID = $bodyData['session_id'];
   $status = $bodyData['status'];
@@ -23,7 +23,21 @@ if (isset($bodyData['line_name'])) {
     throw new Exception('mysql error' . mysqli_error($conn));
   }
 
-} else if (isset($bodyData['route_id'])) {
+  $query = "SELECT * FROM `route`";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('mysql error' . mysqli_error($conn));
+  }
+
+  $data = [];
+  while ($row = mysqli_fetch_assoc($result)) {
+    $data = $row;
+  }
+
+  print(json_encode($data));
+
+} else if (isset($bodyData['route_id'])) { // add a new bus
 
   $busNumber = $bodyData['bus_number'];
   $startTime = $bodyData['start_time'];
@@ -72,23 +86,7 @@ if (isset($bodyData['line_name'])) {
 
 }
 
-if (isset($bodyData['line_name'])) {
-
-  $query = "SELECT * FROM `route`";
-  $result = mysqli_query($conn, $query);
-
-  if (!$result) {
-    throw new Exception('mysql error' . mysqli_error($conn));
-  }
-
-  $data = [];
-  while ($row = mysqli_fetch_assoc($result)) {
-    $data = $row;
-  }
-
-  print(json_encode($data));
-
-} else if (isset($bodyData['route_id'])) {
+  if (isset($bodyData['route_id'])) {
 
   $query = "SELECT bi.`id`, bi.`bus_number`, bi.`start_time`, bi.`end_time`, r.`session_id`, r.`user_id`, r.`bus_info_id`, r.`start_time`, r.`end_time`
             FROM `bus_info` AS bi, `round` AS r

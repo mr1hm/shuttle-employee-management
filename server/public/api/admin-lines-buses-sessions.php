@@ -28,12 +28,14 @@ if ($method === 'GET') { // get all lines/buses from all sessions.
 if ($method === 'POST' && (isset($bodyData['name']))) { // add a new session
 
   $name = $bodyData['name'];
+  $startDateString = $bodyData['startDateString'];
+  $endDateString = $bodyData['endDateString'];
   $startDate = $bodyData['startDate'];
   $endDate = $bodyData['endDate'];
   $notes = $bodyData['notes'];
 
-  $query = "INSERT INTO `session` (`name`, `startDate`, `endDate`, `notes`)
-          VALUES ('$name', '$startDate', '$endDate', '$notes')";
+  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `startDate`, `endDate`, `notes`)
+          VALUES ('$name', '$startDateString', '$endDateString', '$startDate', '$endDate', '$notes')";
   $result = mysqli_query($conn, $query);
 
   if (!$result) {

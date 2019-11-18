@@ -9,7 +9,7 @@ import AddBus from './admin-lines-buses-addBus';
 import GapsModal from './admin-lines-buses-viewGaps';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown, faWindowClose, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCaretUp, faBus, faCaretDown, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import AdminRoutes from './admin-lines-buses';
 import EditLine from './admin-lines-buses-editLine';
 
@@ -20,10 +20,11 @@ export default class Lines extends React.Component {
       busDetailsClicked: false,
       addBusClicked: false,
       busAdded: false,
-      deletedLine: null,
+      deletedLineName: null,
       editLineClicked: false,
       specialDriverRequired: this.props.line.specialDriver === 'True',
-      sessionName: ''
+      sessionName: '',
+      line: this.props.line
     };
     this.displayBusDetails = this.displayBusDetails.bind(this);
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
@@ -90,13 +91,14 @@ export default class Lines extends React.Component {
       .then(response => response.json())
       .then(deletedLine => {
         this.setState({
-          deletedLine
+          deletedLineName: this.props.line.line_name // not working
         });
         if (this.props.currentSession === 'All Sessions') {
           this.props.getLinesBusesInfo();
         } else {
           this.props.getLinesBusesInfo({ session_id: sessionID });
         }
+        this.props.operationsHistoryMethod();
       })
       .catch(error => console.error(error));
     console.log('LINE DELETED');
