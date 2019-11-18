@@ -25,12 +25,6 @@ export default class CreateSession extends React.Component {
     this.getAllUpdatedSessions = this.getAllUpdatedSessions.bind(this);
   }
 
-  // componentDidUpdate(prevProps) {
-  //   if (prevProps.allSessions.length !== this.state.sessions.length) {
-  //     this.getAllUpdatedSessions();
-  //   }
-  // }
-
   handleNewSessionChange(e) {
     const name = e.target.name;
     const value = e.target.value;

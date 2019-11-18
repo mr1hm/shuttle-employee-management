@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import AdminRoutes from './admin-lines-buses';
 import EditLine from './admin-lines-buses-editLine';
+import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 
 export default class Lines extends React.Component {
   constructor(props) {
@@ -24,12 +25,15 @@ export default class Lines extends React.Component {
       editLineClicked: false,
       specialDriverRequired: this.props.line.specialDriver === 'True',
       sessionName: '',
-      line: this.props.line
+      line: this.props.line,
+      deleteLineClicked: false,
+      deleteBusClicked: false
     };
     this.displayBusDetails = this.displayBusDetails.bind(this);
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
     this.deleteLine = this.deleteLine.bind(this);
     this.handleEditLineClicked = this.handleEditLineClicked.bind(this);
+    this.handleDeleteLine = this.handleDeleteLine.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -73,6 +77,12 @@ export default class Lines extends React.Component {
     this.setState({ busDetailsClicked: !this.state.busDetailsClicked });
   }
 
+  handleDeleteLine() {
+    this.setState({
+      deleteLineClicked: !this.state.deleteLineClicked
+    })
+  }
+
   deleteLine(lineID, sessionID) {
     let busIDArr = [];
     let busIDs = this.props.line.activeBuses.forEach(buses => { // another bug. if deleting line from All Sessions tab, it will get/render all the lines from only that session.
@@ -109,6 +119,11 @@ export default class Lines extends React.Component {
     const { activeBuses } = this.props.line;
     if (!this.props.line.real_route_id) {
       return null;
+    }
+    if (this.state.deleteLineClicked) {
+      return (
+        <DeleteConfirmationModal handleDeleteLine={this.handleDeleteLine} deleteLine={this.deleteLine} line={line} />
+      );
     }
     if (this.state.editLineClicked) {
       return (
@@ -192,7 +207,7 @@ export default class Lines extends React.Component {
                 </button>
               </div>
               <div className="col d-flex justify-content-center">
-                <button onClick={() => this.deleteLine(line.real_route_id, line.sessionID)} className="deleteLineBtn btn btn-danger">
+                <button onClick={this.handleDeleteLine} className="deleteLineBtn btn btn-danger">
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
