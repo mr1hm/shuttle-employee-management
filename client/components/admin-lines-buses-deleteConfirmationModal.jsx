@@ -26,7 +26,6 @@ export default class DeleteConfirmationModal extends React.Component {
             <button className="btn btn-warning w-100 deleteConfirmationModalCancelBtn" onClick={this.props.handleDeleteLine}>CANCEL</button>
           </div>
         </div>
-
       </div>
     );
   }
