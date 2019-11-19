@@ -189,14 +189,24 @@
 
 .deleteConfirmationModal {
   position: fixed;
-  width: 75%;
-  height: 300px;
+  width: 65%;
   z-index: 1;
-  left: 12%;
+  left: 18%;
   bottom: 25%;
-  border: 2px solid black;
-  background-color: rgba(182, 182, 182, 0.8);
-  border-radius: 5px;
+  background-color: rgb(150, 149, 149);
+  border: 1px solid black;
+  border-radius: 10px;
+  height: 200px;
+  /* max-width: 1140px; */
+  max-width: 95%;
+  margin-bottom: 120px;
+  overflow: scroll;
+}
+
+
+.deleteConfirmationModalHeader {
+  color: rgba(255, 255, 255, .9);
+  border-bottom: 1px solid #FFA804;
 }
 
 .editLineBtn {

@@ -219,6 +219,8 @@ class AdminRoutes extends React.Component {
   handleAddLineChange(e) {
     const name = e.target.name;
     const value = e.target.value;
+    let sessionFind = this.state.sessions.find(session => session.name === this.state.newLine.session_id);
+    console.log('session found ', sessionFind);
     this.setState(prevState => ({
       newLine: {
         ...prevState.newLine,
@@ -232,15 +234,23 @@ class AdminRoutes extends React.Component {
             session_id: this.state.selectedSessionID
           }
         }));
-      } else if (this.state.newLine.session_id === 'Fall 2019' || this.state.newLine.session_id === 'Winter 2020') {
-        let sessionInfo = this.state.sessions.find(session => session.name === value);
+      } else if (sessionFind) {
         this.setState(prevState => ({
           newLine: {
             ...prevState.newLine,
-            session_id: sessionInfo.id
+            session_id: sessionFind.id
           }
         }));
       }
+      //   else if (this.state.newLine.session_id === 'Fall 2019' || this.state.newLine.session_id === 'Winter 2020' || this.state.newLine.session_id === 'Summer 2020') {
+      //   let sessionInfo = this.state.sessions.find(session => session.name === value);
+      //   this.setState(prevState => ({
+      //     newLine: {
+      //       ...prevState.newLine,
+      //       session_id: sessionInfo.id
+      //     }
+      //   }));
+      // }
     });
     this.checkIfLineExists(value);
     console.log(value);
