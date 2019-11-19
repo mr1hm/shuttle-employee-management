@@ -51,9 +51,9 @@ function shiftWithinAvailability ($operator, $shift, int $option = null) {
 
 function hasSpecialStatus ($operator, $shift, $conn, int $option = null) {
   $query = "SELECT `line_name`
-              FROM `route`
-              WHERE `specialDriver` = 1 AND
-                    `status` = 'active'";
+            FROM `route`
+            WHERE `specialDriver` = 1 AND
+                  `status` = 'active'";
   $result = mysqli_query($conn, $query);
   $lines = [];
   while ($row = mysqli_fetch_assoc($result)) {
@@ -103,7 +103,10 @@ function totalShiftTimeRestriction ($operator, $shift, int $option = null) {
     );
   }
   if ( $option === 1 ) {
-    $shiftLength = calculateShiftMinutes(intval(reset($shift)['start_time']), intval(end($shift)['stop_time']));
+    $shiftLength = array_reduce($shift, function ($acc, $round) {
+                     $acc += calculateShiftMinutes(intval($round['round_start']), intval($round['round_end']));
+                     return $acc;
+                   }, 0);
     return (
       intval($operator['total_daily_minutes']) + $shiftLength > 480
         ? 'Operators hours will exceed daily maximum'
@@ -123,32 +126,80 @@ function requireBreak ($operator, $shift, int $option = null) {
     );
   }
   if ($option === 1) {
-    $shiftLength = calculateShiftMinutes(intval(reset($shift)['round_start']), intval(end($shift)['round_end']));
+
+    if ( !shiftWithinAvailability($operator, $shift) ) return '';
+
+    $shiftLength = array_reduce($shift, function ($acc, $round) {
+                      $acc += calculateShiftMinutes(intval($round['round_start']), intval($round['round_end']));
+                      return $acc;
+                    }, 0);
+    $accumulatedMinutes = [ 'before' => 0, 'after' => 0];
     $assignedShift = [];
-    if ( $index = array_search(intval(end($shift)['round_end']), $operator['assigned_times']) !== null ||
-         $index = array_search(intval(reset($shift)['round_start']), $operator['assigned_times']) !== null ) {
-      $assignedShift[] = $operator['assigned_times'][$index];
-    } else if ( intval(end($shift)['round_end']) < intval($operator['assigned_times'][0][0]) ) {
+
+    $shift1 = array_search(intval(reset($shift)['round_start']), array_column($operator['assigned_times'], 1));
+    $shift2 = array_search(intval(end($shift)['round_end']), array_column($operator['assigned_times'], 0));
+    if ( $shift1 !== false && $shift2 !== false ) {
+      $assignedShift[] = $operator['assigned_times'][$shift1];
+      $assignedShift[] = $operator['assigned_times'][$shift2];
+    }
+    else if ( $shift1 !== false ) {
+      $assignedShift[] = $operator['assigned_times'][$shift1];
+    }
+    else if ( $shift2 !== false ) {
+      $assignedShift[] = $operator['assigned_times'][$shift2];
+    }
+    else if ( intval(end($shift)['round_end']) < intval($operator['assigned_times'][0][0]) ) {
       $assignedShift[] = $operator['assigned_times'][0];
-    } else if ( intval(end($shift)['round_start']) > intval($operator['assigned_times'][count($operator['assigned_times'])-1][1]) ) {
+    }
+    else if ( intval(end($shift)['round_start']) > intval($operator['assigned_times'][count($operator['assigned_times'])-1][1]) ) {
       $assignedShift[] = $operator['assigned_times'][count($operator['assigned_times']) - 1];
-    } else {
-      $assignedShift = array_filter($operator['assigned_times'], function ($time) use ($shift) {
-          return intval(reset($shift['round_start'])) > intval($time[0]) &&
-                 intval(end($shift['round_end'])) < intval($time[1]);
-        });
+    }
+    else {
+      $lastTime = $operator['assigned_times'][0];
+      $assignedShift['before'] = [];
+      $assignedShift['after'] = [];
+      foreach ( $operator['assigned_times'] as $assignedTime ) {
+        if ( intval($assignedTime[1]) < intval(reset($shift['round_start'])) ) {
+          if (intval($assignedTime[0]) - intval($lastTime[1]) < 30) {
+            $accumulatedMinutes['before'] += calculateShiftMinutes(intval($assignedTime[0]), intval($assignedTime[1]));
+          } else {
+            $accumulatedMinutes['before'] = 0;
+          }
+          $assignedShift['before'][] = $assignedTime;
+        } else if ( intval($assignedTime[0]) > intval(end($shift['round_end'])) ) {
+          if (intval($assignedTime[0]) - intval($lastTime[1]) < 30) {
+            $accumulatedMinutes['after'] += calculateShiftMinutes(intval($assignedTime[0]), intval($assignedTime[1]));
+          } else {
+            $accumulatedMinutes['after'] = 0;
+          }
+          $assignedShift['after'][] = $assignedTime;
+        }
+        $lastTime = $assignedTime;
+      }
+      unset($assignedTime);
+      $assignedShift['before'] = array_slice($assignedShift['before'], 0, 1);
+      $assignedShift['after'] = array_slice($assignedShift['after'], 0, 1);
     }
 
     $reason = '';
-    foreach ($assignedShift as $timeBlock) {
-      if ((calculateShiftMinutes($timeBlock[0], $timeBlock[1]) + $shiftLength) > 300 ||
-          calculateShiftMinutes($timeBlock[0], $timeBlock[1]) === 300 &&
-          (calculateShiftMinutes($timeBlock[1], intval(reset($shift['round_start']))) < 30 ||
-           calculateShiftMinutes(intval(end($shift['round_end'])), $timeBlock[0]) < 30) ) {
+    // print_r(json_encode($operator['assigned_times']));
+    // print_r(json_encode($assignedShift));
+    // print_r(json_encode($accumulatedMinutes));
+
+    if (count($assignedShift) === 1) {
+      if ( (calculateShiftMinutes($assignedShift[0][0], $assignedShift[0][1]) + $shiftLength) > 300 ||
+           (calculateShiftMinutes($assignedShift[0][0], $assignedShift[0][1]) === 300 && calculateShiftMinutes($assignedShift[0][1], intval(reset($shift['round_start']))) < 30) ||
+           calculateShiftMinutes(intval(end($shift['round_end'])), $assignedShift[0][0]) < 30 ) {
+        $reason = 'Operator cannot work more than 5 hours without at least a 30 minute break';
+      }
+    } else {
+      if ( ($accumulatedMinutes['before'] + $shiftLength) > 300 || ($accumulatedMinutes['after'] + $shiftLength) > 300 ||
+           ($accumulatedMinutes['before'] === 300 && (intval(reset($shift['round_start'])) - intval($assignedShift['before'][1])) < 30) ||
+           ($accumulatedMinutes['after'] === 300 && (intval($assignedShift['after'][0]) - intval(end($shift['round_end']))) < 30) ) {
         $reason = 'Operator cannot work more than 5 hours without at least a 30 minute break';
       }
     }
-
+    // print($reason);
     return $reason;
   }
 }
