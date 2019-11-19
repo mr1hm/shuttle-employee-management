@@ -20,6 +20,11 @@ export default class GapsModal extends React.Component {
   //     .catch(error => console.error(error));
   // }
 
+  editBusGaps(e, busID) {
+    const value = e.target.value;
+
+  }
+
   render() {
     const { busGapInfo } = this.props;
     console.log(busGapInfo);
@@ -50,7 +55,7 @@ export default class GapsModal extends React.Component {
                 </td>
                 <td>{busGapInfo.gap}</td>
                 <td>{`${busGapInfo.gapDuration}min`}</td>
-                <td className="">
+                <td>
                   <button onClick={this.handleEditBusClicked} className="busGapEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
                   <button onClick={() => this.deleteBus(busGapInfo.busID)} className="busGapDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
                 </td>

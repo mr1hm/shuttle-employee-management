@@ -228,7 +228,7 @@ export default class Lines extends React.Component {
                 <div className="card-header">
                     Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
                 </div>
-                <table className="card-table table">
+                <table className="card-table table busTable">
                   <thead>
                     <tr>
                       <th scope="col">Bus Number</th>
