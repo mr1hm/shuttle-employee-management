@@ -43,7 +43,7 @@ export default class DeleteConfirmationModal extends React.Component {
 
 
   render() {
-    const { line } = this.props;
+    const {line } = this.props;
     return (
       <div className="container deleteConfirmationModal">
         <div className="row">

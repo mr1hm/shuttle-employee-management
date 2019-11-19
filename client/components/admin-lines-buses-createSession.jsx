@@ -68,7 +68,7 @@ export default class CreateSession extends React.Component {
     console.log(newStartDate);
     let newEndDate = `${endYear}-${endMonth}-${endDay}`;
     console.log(newEndDate);
-    newSession = {...newSession, startDateString: newStartDate, endDateString: newEndDate};
+    newSession = { ...newSession, startDateString: newStartDate, endDateString: newEndDate };
     // if (newSession.startDate.length === 11 && newSession.endDate.length === 11) {
     //   let startDateNewFormat = newSession.startDate + ' 00:00:00 GMT';
     //   let convertStartDate = new Date(startDateNewFormat);
