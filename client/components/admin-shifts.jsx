@@ -92,7 +92,7 @@ class AdminShiftsDay extends React.Component {
       return;
     }
     var roundTimesString = JSON.stringify(this.state.roundTimes);
-    fetch(`/api/admin-available-operators.php?date=${this.state.date}&sunday=${this.state.week[0].unix}&saturday=${this.state.week[6].unix}&round_time=${roundTimesString}&line_bus=${lineBus}`, {
+    fetch(`/api/admin-available-operators.php?date=${this.state.date}&round_time=${roundTimesString}&line_bus=${lineBus}`, {
       method: 'GET'
     })
       .then(response => response.json())
@@ -129,18 +129,16 @@ class AdminShiftsDay extends React.Component {
       headers: { 'Content-Type': 'application/json' }
     };
     fetch(`/api/admin-update-shifts.php`, data)
-      // .then(response => { })
-      .then(response => response.json())
+      .then(response => { })
       .then(data => {
-        console.log(data);
-        // this.getTodaysShiftData(this.state.date);
-        // this.setState({
-        //   availableOperators: [],
-        //   roundsSelected: [],
-        //   selectingAssign: false,
-        //   shiftsSelected: [],
-        //   roundTimes: []
-        // });
+        this.getTodaysShiftData(this.state.date);
+        this.setState({
+          availableOperators: [],
+          roundsSelected: [],
+          selectingAssign: false,
+          shiftsSelected: [],
+          roundTimes: []
+        });
       })
       .catch(error => { throw (error); });
   }
@@ -342,11 +340,11 @@ class AdminShiftsDay extends React.Component {
       if (availableOperators[op]['available']) {
         availableOperatorElements.push(
           <AdminAvailableOperator
-            key={availableOperators[op]['details'].user_id}
-            id={availableOperators[op]['details'].user_id}
-            name={`${availableOperators[op]['details'].last_name}, ${availableOperators[op]['details'].first_name}`}
-            dailyHours={availableOperators[op]['details'].total_daily_minutes / 60}
-            weeklyHours={availableOperators[op]['details'].total_weekly_minutes / 60}
+            key={availableOperators[op].user_id}
+            id={availableOperators[op].user_id}
+            name={`${availableOperators[op].last_name}, ${availableOperators[op].first_name}`}
+            dailyHours={availableOperators[op].total_daily_minutes / 60}
+            weeklyHours={availableOperators[op].total_weekly_minutes / 60}
             onClickAssignShift={this.handleClickAssignShift} />
         );
       }
@@ -369,9 +367,9 @@ class AdminShiftsDay extends React.Component {
       if (!unavailableOperators[op]['available']) {
         unavailableOperatorElements.push(
           <AdminUnavailableOperator
-            key={unavailableOperators[op]['details'].user_id}
-            id={unavailableOperators[op]['details'].user_id}
-            name={`${unavailableOperators[op]['details'].last_name}, ${unavailableOperators[op]['details'].first_name}`}
+            key={unavailableOperators[op].user_id}
+            id={unavailableOperators[op].user_id}
+            name={`${unavailableOperators[op].last_name}, ${unavailableOperators[op].first_name}`}
             unavailableReasons={unavailableOperators[op]['unavailable_reasons']} />
         );
       }

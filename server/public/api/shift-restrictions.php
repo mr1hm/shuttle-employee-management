@@ -36,6 +36,7 @@ function shiftWithinAvailability ($operator, $shift, int $option = null) {
     return false;
   }
   if ( $option === 1 ) {
+    if (!$operator['available_times']) return 'Operator has no availability';
     $validShift = 0;
     foreach ($operator['available_times'] as $timeBlock) {
       foreach ($shift as $round) {
@@ -82,7 +83,7 @@ function shiftTimeRestriction ($operator, $shift, int $option = null) {
   }
   if ( $option === 1 ) {
     return (
-      ( intval(reset($shift)['start_time']) < 800 && $operator['shift_restrictions']['worked_passed_10']['prior_day'])
+      ( intval(reset($shift)['start_time']) < 800 && $operator['shift_restrictions']['worked_passed_10'])
         ? 'Operator cannot work before 8am if they worked past 10pm the previous night'
         : ( intval(end($shift)['stop_time']) > 2100 && intval($operator['shift_restrictions']['shift_passed_15_hour_window']['shift_start']) < 800)
           ? 'Operator cannot work after 9pm if they started working before 8am the same day'
@@ -121,15 +122,48 @@ function requireBreak ($operator, $shift, int $option = null) {
       intval($operator['minutes_without_30_minute_break']) + $shiftLength >= 300 && $gap < 30
     );
   }
-  if ( $option === 1 ) {
-    $shiftLength = calculateShiftMinutes(intval(reset($shift)['start_time']), intval(end($shift)['stop_time']));
-    $gap = calculateShiftMinutes(intval(end($operator['assigned_times'])[1]), intval(reset($shift)['start_time']));
-    return (
-      intval($operator['minutes_without_30_minute_break']) + $shiftLength >= 300 && $gap < 30
-        ? 'Operator cannot work more than 5 hours without at least a 30 minute break'
-        : ''
-      );
+  if ($option === 1) {
+    $shiftLength = calculateShiftMinutes(intval(reset($shift)['round_start']), intval(end($shift)['round_end']));
+    $assignedShift = [];
+    if ( $index = array_search(intval(end($shift)['round_end']), $operator['assigned_times']) !== null ||
+         $index = array_search(intval(reset($shift)['round_start']), $operator['assigned_times']) !== null ) {
+      $assignedShift[] = $operator['assigned_times'][$index];
+    } else if ( intval(end($shift)['round_end']) < intval($operator['assigned_times'][0][0]) ) {
+      $assignedShift[] = $operator['assigned_times'][0];
+    } else if ( intval(end($shift)['round_start']) > intval($operator['assigned_times'][count($operator['assigned_times'])-1][1]) ) {
+      $assignedShift[] = $operator['assigned_times'][count($operator['assigned_times']) - 1];
+    } else {
+      $assignedShift = array_filter($operator['assigned_times'], function ($time) use ($shift) {
+          return intval(reset($shift['round_start'])) > intval($time[0]) &&
+                 intval(end($shift['round_end'])) < intval($time[1]);
+        });
+    }
+
+    $reason = '';
+    foreach ($assignedShift as $timeBlock) {
+      if ((calculateShiftMinutes($timeBlock[0], $timeBlock[1]) + $shiftLength) > 300 ||
+          calculateShiftMinutes($timeBlock[0], $timeBlock[1]) === 300 &&
+          (calculateShiftMinutes($timeBlock[1], intval(reset($shift['round_start']))) < 30 ||
+           calculateShiftMinutes(intval(end($shift['round_end'])), $timeBlock[0]) < 30) ) {
+        $reason = 'Operator cannot work more than 5 hours without at least a 30 minute break';
+      }
+    }
+
+    return $reason;
+    // $gap = calculateShiftMinutes(intval(end($operator['assigned_times'])[1]), intval(reset($shift)['start_time']));
+    // return (intval($operator['minutes_without_30_minute_break']) + $shiftLength >= 300 && $gap < 30
+    //   ? 'Operator cannot work more than 5 hours without at least a 30 minute break'
+    //   : '');
   }
+  // if ( $option === 1 ) {
+  //   $shiftLength = calculateShiftMinutes(intval(reset($shift)['start_time']), intval(end($shift)['stop_time']));
+  //   $gap = calculateShiftMinutes(intval(end($operator['assigned_times'])[1]), intval(reset($shift)['start_time']));
+  //   return (
+  //     intval($operator['minutes_without_30_minute_break']) + $shiftLength >= 300 && $gap < 30
+  //       ? 'Operator cannot work more than 5 hours without at least a 30 minute break'
+  //       : ''
+  //     );
+  // }
 }
 
 // Takes a start and end time, calculates the difference and returns it

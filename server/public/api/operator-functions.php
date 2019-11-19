@@ -13,7 +13,6 @@ function getOperator ($operator_id, $date) {
   return $operator;
 }
 
-
 // Helper functions
 function editAvailableTimes(&$operator, $shift) {
   // Remove availability if it is the same as the shift
@@ -90,7 +89,7 @@ function editAssignedTimes(&$operator, $shift) {
   unset($timeBlock);
 
   /* If inserted shift has start/end times that are equivalent to neighboring
-      * shifts - trunctate the shift(s) into a single shift */
+   * shifts - trunctate the shift(s) into a single shift */
   if (intval($operator['assigned_times'][$insertIndex - 1][1]) === intval($operator['assigned_times'][$insertIndex][0])) {
     $operator['assigned_times'][$insertIndex - 1][1] = $operator['assigned_times'][$insertIndex][1];
     array_splice($operator['assigned_times'], $insertIndex, 1);
@@ -106,11 +105,11 @@ function editAssignedTimes(&$operator, $shift) {
 
 function hadShiftPassed10 (int $operator_id, $date) {
   global $conn;
-  $lastNight = strtotime('-1 day', $date);
+  $yesterday = strtotime('-1 day', $date);
   $query = "SELECT `end_time`
             FROM `round`
             WHERE `user_id` = {$operator_id} AND
-                  `date` = {$lastNight} AND
+                  `date` = {$yesterday} AND
                   `end_time` > 2200";
   $result = mysqli_query($conn, $query);
   if (!$result) {
@@ -168,37 +167,37 @@ function determineWeeklyMinutes (int $operator_id, $date) {
 
   return intval( $weeklyMinutes );
 }
-// 1566619200 Sat ^
-// 1566446400 Thu |
-// 1566100800 Sun |
 
 function getOperatorInfo ($operator_id, $date) {
   global $conn;
   $day = date('D', $date);
 
-  $query = "SELECT `u`.`id` AS 'user_id', `u`.`last_name`, `u`.`first_name`, `u`.`special_route_ok` AS 'special_route',
+  $query = "SELECT `u`.`id`, `u`.`last_name`, `u`.`first_name`, `u`.`special_route_ok` AS 'special_route',
                    CONCAT(`avail`.`start_time`, ',', `avail`.`end_time`) AS 'availability',
                    CONCAT(`r`.`start_time`, ',', `r`.`end_time`) AS 'assigned'
             FROM `user` AS `u`
             JOIN `operator_availability` AS `avail` ON `avail`.`user_id` = `u`.`id`
-            JOIN `round` AS `r` ON `r`.`user_id` = `u`.`id` AND `r`.`date` = {$date}
-            WHERE `u`.`role` = 'operator' AND `u`.`status` = 'active' AND
-                  `avail`.`session_id` = 1 AND `avail`.`user_id` = {$operator_id} AND `avail`.`day_of_week` = '{$day}'
+            JOIN `round` AS `r` ON `r`.`date` = {$date}
+            WHERE `u`.`role` = 'operator' AND
+                  `u`.`status` = 'active' AND
+                  `u`.`id` = {$operator_id} AND
+                  `avail`.`session_id` = 1 AND
+                  `avail`.`day_of_week` = '{$day}'
             ORDER BY `r`.`start_time` ASC";
   $result = mysqli_query($conn, $query);
   if (!$result) {
     throw new Exception('MySQL error: ' . mysqli_error($conn));
   }
   $operatorInfo = [];
-  $operatorInfo['user_id'] = null;
+  $operatorInfo['user_id'] = $operator_id;
   $operatorInfo['last_name'] = '';
   $operatorInfo['first_name'] = '';
   $operatorInfo['special_route'] = 0;
   $operatorInfo['available_times'] = [];
   $operatorInfo['assigned_times'] = [];
   while ( $row = mysqli_fetch_assoc($result) ) {
-    if ( !isset($operatorInfo['user_id']) ) {
-      $operatorInfo['user_id'] = intval($row['user_id']);
+    if ( !$operatorInfo['last_name'] ) {
+      $operatorInfo['user_id'] = $row['id'];
       $operatorInfo['last_name'] = $row['last_name'];
       $operatorInfo['first_name'] = $row['first_name'];
       $operatorInfo['special_route'] = $row['special_route'];
@@ -206,29 +205,41 @@ function getOperatorInfo ($operator_id, $date) {
     $operatorInfo['available_times'][] = explode(',', $row['availability']);
     editAssignedTimes($operatorInfo, explode(',', $row['assigned']));
   }
-  if ( count($operatorInfo['available_times']) > 1 ) {
+
+  if ( $operatorInfo['available_times'] ) {
     if ( $operatorInfo['available_times'][0] === $operatorInfo['available_times'][1] ) {
       $singleAvailability = $operatorInfo['available_times'][0];
       $operatorInfo['available_times'] = [];
       $operatorInfo['available_times'][] = $singleAvailability;
     }
+  } else {
+    $query = "SELECT `first_name`, `last_name`, `special_route_ok` AS 'special_route'
+              FROM `user`
+              WHERE `id` = {$operator_id}";
+    $result = mysqli_query($conn, $query);
+    if (!$result) {
+      throw new Exception('MySQL error: ' . mysqli_error($conn));
+    }
+    $data = mysqli_fetch_assoc($result);
+    $operatorInfo['first_name'] = $data['first_name'];
+    $operatorInfo['last_name'] = $data['last_name'];
+    $operatorInfo['special_route'] = $data['special_route'];
   }
 
   foreach ($operatorInfo['assigned_times'] as $timeBlock) {
     editAvailableTimes($operatorInfo, $timeBlock);
   }
-
   return $operatorInfo;
 }
 
 
 function addRemainingFields (&$operator, $date) {
   $operator['shift_restrictions'] = [
-    'worked_passed_10' => hadShiftPassed10($operator['user_id'], $date),
-    'shift_passed_15_hour_window' => [ 'shift_start' => 0 ]
+    'worked_passed_10' => hadShiftPassed10(intval($operator['user_id']), $date),
+    'shift_passed_15_hour_window' => [ 'shift_start' => intval($operator['assigned_times'][0][0]) < 800 ? intval($operator['assigned_times'][0][0]) : 0 ]
   ];
-  $operator['total_daily_minutes'] = determineDailyMinutes($operator['user_id'], $date);
-  $operator['total_weekly_minutes'] = determineWeeklyMinutes($operator['user_id'], $date);
+  $operator['total_daily_minutes'] = determineDailyMinutes(intval($operator['user_id']), $date);
+  $operator['total_weekly_minutes'] = determineWeeklyMinutes(intval($operator['user_id']), $date);
 }
 
 ?>
