@@ -150,20 +150,7 @@ function requireBreak ($operator, $shift, int $option = null) {
     }
 
     return $reason;
-    // $gap = calculateShiftMinutes(intval(end($operator['assigned_times'])[1]), intval(reset($shift)['start_time']));
-    // return (intval($operator['minutes_without_30_minute_break']) + $shiftLength >= 300 && $gap < 30
-    //   ? 'Operator cannot work more than 5 hours without at least a 30 minute break'
-    //   : '');
   }
-  // if ( $option === 1 ) {
-  //   $shiftLength = calculateShiftMinutes(intval(reset($shift)['start_time']), intval(end($shift)['stop_time']));
-  //   $gap = calculateShiftMinutes(intval(end($operator['assigned_times'])[1]), intval(reset($shift)['start_time']));
-  //   return (
-  //     intval($operator['minutes_without_30_minute_break']) + $shiftLength >= 300 && $gap < 30
-  //       ? 'Operator cannot work more than 5 hours without at least a 30 minute break'
-  //       : ''
-  //     );
-  // }
 }
 
 // Takes a start and end time, calculates the difference and returns it

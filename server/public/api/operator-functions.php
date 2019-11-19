@@ -171,64 +171,53 @@ function determineWeeklyMinutes (int $operator_id, $date) {
 function getOperatorInfo ($operator_id, $date) {
   global $conn;
   $day = date('D', $date);
+  $operatorInfo = [];
 
-  $query = "SELECT `u`.`id`, `u`.`last_name`, `u`.`first_name`, `u`.`special_route_ok` AS 'special_route',
-                   CONCAT(`avail`.`start_time`, ',', `avail`.`end_time`) AS 'availability',
-                   CONCAT(`r`.`start_time`, ',', `r`.`end_time`) AS 'assigned'
-            FROM `user` AS `u`
-            JOIN `operator_availability` AS `avail` ON `avail`.`user_id` = `u`.`id`
-            JOIN `round` AS `r` ON `r`.`date` = {$date}
-            WHERE `u`.`role` = 'operator' AND
-                  `u`.`status` = 'active' AND
-                  `u`.`id` = {$operator_id} AND
-                  `avail`.`session_id` = 1 AND
-                  `avail`.`day_of_week` = '{$day}'
-            ORDER BY `r`.`start_time` ASC";
+  // Get basic user data
+  $query = "SELECT `id`, `last_name`, `first_name`, `special_route_ok` AS 'special_route'
+            FROM `user`
+            WHERE `role` = 'operator' AND `status` = 'active' AND `id` = {$operator_id}";
   $result = mysqli_query($conn, $query);
   if (!$result) {
     throw new Exception('MySQL error: ' . mysqli_error($conn));
   }
-  $operatorInfo = [];
-  $operatorInfo['user_id'] = $operator_id;
-  $operatorInfo['last_name'] = '';
-  $operatorInfo['first_name'] = '';
-  $operatorInfo['special_route'] = 0;
+  $result = mysqli_fetch_assoc($result);
+  $operatorInfo['user_id'] = $result['id'];
+  $operatorInfo['last_name'] = $result['last_name'];
+  $operatorInfo['first_name'] = $result['first_name'];
+  $operatorInfo['special_route'] = $result['special_route'];
+
+
+  // Get operator available times
+  $query = "SELECT CONCAT(`start_time`, ',', `end_time`) AS 'availability'
+            FROM `operator_availability`
+            WHERE `user_id` = {$operator_id} AND `day_of_week` = '{$day}' AND `session_id` = 1";
+  $result = mysqli_query($conn, $query);
+  if (!$result) {
+    throw new Exception('MySQL error: ' . mysqli_error($conn));
+  }
   $operatorInfo['available_times'] = [];
-  $operatorInfo['assigned_times'] = [];
   while ( $row = mysqli_fetch_assoc($result) ) {
-    if ( !$operatorInfo['last_name'] ) {
-      $operatorInfo['user_id'] = $row['id'];
-      $operatorInfo['last_name'] = $row['last_name'];
-      $operatorInfo['first_name'] = $row['first_name'];
-      $operatorInfo['special_route'] = $row['special_route'];
-    }
     $operatorInfo['available_times'][] = explode(',', $row['availability']);
-    editAssignedTimes($operatorInfo, explode(',', $row['assigned']));
   }
 
-  if ( $operatorInfo['available_times'] ) {
-    if ( $operatorInfo['available_times'][0] === $operatorInfo['available_times'][1] ) {
-      $singleAvailability = $operatorInfo['available_times'][0];
-      $operatorInfo['available_times'] = [];
-      $operatorInfo['available_times'][] = $singleAvailability;
-    }
-  } else {
-    $query = "SELECT `first_name`, `last_name`, `special_route_ok` AS 'special_route'
-              FROM `user`
-              WHERE `id` = {$operator_id}";
-    $result = mysqli_query($conn, $query);
-    if (!$result) {
-      throw new Exception('MySQL error: ' . mysqli_error($conn));
-    }
-    $data = mysqli_fetch_assoc($result);
-    $operatorInfo['first_name'] = $data['first_name'];
-    $operatorInfo['last_name'] = $data['last_name'];
-    $operatorInfo['special_route'] = $data['special_route'];
+  // Get operator assigned times
+  $query = "SELECT CONCAT(`start_time`, ',', `end_time`) AS 'assigned'
+            FROM `round`
+            WHERE `user_id` = {$operator_id} AND `date` = {$date} AND `session_id` = 1";
+  $result = mysqli_query($conn, $query);
+  if (!$result) {
+    throw new Exception('MySQL error: ' . mysqli_error($conn));
+  }
+  $operatorInfo['assigned_times'] = [];
+  while ($row = mysqli_fetch_assoc($result)) {
+    editAssignedTimes($operatorInfo, explode(',', $row['assigned']));
   }
 
   foreach ($operatorInfo['assigned_times'] as $timeBlock) {
     editAvailableTimes($operatorInfo, $timeBlock);
   }
+
   return $operatorInfo;
 }
 
