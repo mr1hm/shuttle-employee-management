@@ -8,6 +8,7 @@ require_once('shift-restrictions.php');
 function populateSchedule (&$operators, $rounds, $conn, $session) {
   // Traverse through all rounds
   while ( current($rounds) ) {
+    print('current rounds: ');
     print(current($rounds)['line_name']);
     $shift = getShift(current($rounds)['line_name'], $rounds);
     $madeAssignment = false;
@@ -209,13 +210,15 @@ function assignOperatorToShift ($operator, &$shift) {
 }
 
 function getSessionDays ($dayIndex, $sessionStartTimestamp, $sessionEndTimestamp) {
-  $day = strtotime("+{$dayIndex} days", $sessionStartTimestamp);
-  $session = $day . ',';
+  $day = date("Y-m-d", strtotime("+{$dayIndex} days", strtotime($sessionStartTimestamp)));
+  $session = "'$day'" . ',';
   while ($day <= $sessionEndTimestamp) {
-    $day = strtotime('+1 week', $day);
-    $session .= $day . ',';
+    $day = date("Y-m-d", strtotime('+1 week', strtotime($day)));
+    $session .= "'$day'" . ',';
   }
   $session = substr($session, 0, -1);
+  echo 'session: ';
+  print($session);
   return $session;
 }
 
@@ -230,14 +233,14 @@ function updateDatabase ($conn, $shift, $session) {
     $query = "UPDATE `round`
               SET `user_id` = {$user_id},
                   `status` = 'scheduled'
-              WHERE `date` IN ({$session}) AND
+              WHERE `date` IN ($session) AND
                     `bus_info_id` = {$bus_info_id} AND
                     `start_time` = {$round[0]} AND
                     `end_time` = {$round[1]} AND
                     `status` = 'unscheduled'";
     $result = mysqli_query($conn, $query);
     if (!$result) {
-      throw new Exception('MySQL error: ' . mysqli_error($conn));
+      throw new Exception('MySQL update database error: ' . mysqli_error($conn));
     }
     next($shift);
   }
@@ -255,11 +258,11 @@ function operatorSort ($a, $b) {
 // Returns an associative array of rounds for the week
 function getRoundsForWeek ($conn, $sessionTimestamp) {
   //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
-  $weekdays = '';
+  $weekdays = [];
   for ($day = 0; $day < 7; ++$day) {
-    $weekdays .= $sessionTimestamp;
-    if ( $day !== 6 ) $weekdays .= ',';
-    $sessionTimestamp = strtotime('+1 day', $sessionTimestamp);
+    $weekdays[] = $sessionTimestamp;
+    //if ( $day !== 6 ) $weekdays .= ',';
+    $sessionTimestamp = date("Y-m-d", strtotime('+1 day', strtotime($sessionTimestamp)));
   }
 
   $query = "SELECT `rd`.`id`, `rt`.`line_name`, `bi`.`bus_number`, `rd`.`start_time` AS 'round_start', `rd`.`end_time` AS 'round_end',
@@ -268,7 +271,7 @@ function getRoundsForWeek ($conn, $sessionTimestamp) {
             JOIN `bus_info` AS bi ON `bi`.`route_id` = `rt`.`id`
             JOIN `round` AS rd ON `rd`.`bus_info_id` = `bi`.`id`
             JOIN `user` AS us ON `rd`.`user_id` = `us`.`id`
-            WHERE `rd`.`session_id` = 1 AND `rd`.`date` IN ({$weekdays})
+            WHERE `rd`.`session_id` = 5 AND `rd`.`date` IN ('$weekdays[0]', '$weekdays[1]', '$weekdays[2]', '$weekdays[3]', '$weekdays[4]', '$weekdays[5]', '$weekdays[6]')
             ORDER BY date ASC, line_name ASC, bus_number ASC, round_start ASC, round_end ASC";
   $result = mysqli_query($conn, $query);
   if (!$result) {
@@ -277,9 +280,11 @@ function getRoundsForWeek ($conn, $sessionTimestamp) {
 
   $rounds = [];
   while ($row = mysqli_fetch_assoc($result)) {
-    $row['day'] = date('D', $row['date']);
+    $row['day'] = date('D', strtotime($row['date']));
     $rounds[] = $row;
   }
+  echo 'rounds: ';
+  print(json_encode($rounds));
   return $rounds;
 }
 
@@ -440,8 +445,8 @@ function populateWeeks ($conn, $rounds, $operators, $sessionStartTimestamp, $ses
   unset($day);
 }
 
-$sessionStartTimestamp = 1566100800;
-$sessionEndTimestamp = 1576904400;
+$sessionStartTimestamp = '2019-08-18';
+$sessionEndTimestamp = '2019-12-21';
 
 //populate the entire quarter week by week
 $rounds = getRoundsForWeek($conn, $sessionStartTimestamp);

@@ -12,10 +12,10 @@ export default class CreateSession extends React.Component {
         startDateString: null,
         endDateString: null,
         startDate: '01',
-        startMonth: 'Jan',
+        startMonth: '01',
         startYear: '2020',
         endDate: '01',
-        endMonth: 'Jan',
+        endMonth: '01',
         endYear: '2020',
         notes: ''
       }
@@ -74,7 +74,7 @@ export default class CreateSession extends React.Component {
     console.log(newStartDate);
     let newEndDate = `${endYear}-${endMonth}-${endDay}`;
     console.log(newEndDate);
-    newSession = {...newSession, startDateString: newStartDate, endDateString: newEndDate};
+    newSession = { ...newSession, startDateString: newStartDate, endDateString: newEndDate };
     // if (newSession.startDate.length === 11 && newSession.endDate.length === 11) {
     //   let startDateNewFormat = newSession.startDate + ' 00:00:00 GMT';
     //   let convertStartDate = new Date(startDateNewFormat);
@@ -95,7 +95,7 @@ export default class CreateSession extends React.Component {
       .then(sessionInfo => {
         this.setState({
           newSessionAdded: true
-        }, this.props.getLinesBusesInfo)
+        }, this.props.getLinesBusesInfo);
         this.props.handleAddNewSessionClick();
       })
       .catch(error => console.error(error));

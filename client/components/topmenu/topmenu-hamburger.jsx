@@ -21,9 +21,10 @@ class TopMenuHamburger extends React.Component {
     }
   }
   render() {
-    const today = new Date();
-    const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-    const currentDateString = this.props.date ? createDateStringFromDateObject(this.props.date) : '';// converts unix time to date/at midnight
+    // const today = new Date();
+    // const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    // const currentDateString = this.props.date ? createDateStringFromDateObject(this.props.date) : '';// converts unix time to date/at midnight
+    let dateString = this.props.date;
     return (
       <HamburgerMenu notificationCount={this.props.notificationCount} userId={this.props.userId} count={this.state.numberOfShifts}>
         <Link to={{ pathname: '/trade-notification/', state: { newShiftsAndSelectedDriver: this.props.tradeNotification } }}>Notifications</Link>
