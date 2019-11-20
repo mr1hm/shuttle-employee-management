@@ -129,10 +129,12 @@ function requireBreak ($operator, $shift, int $option = null) {
   if ($option === 1) {
     usort($shift, function ($a, $b) {
       if ($a['round_start'] === $b['round_start']) return 0;
-      return $a < $b ? -1 : 1;
+      return $a['round_start'] < $b['round_start'] ? -1 : 1;
     });
-    $shift = combineRounds($shift);
 
+    if ( hasOverlappingRounds($shift) ) return 'Operator cannot work overlapping rounds';
+
+    $shift = combineRounds($shift);
     if ( shiftWithinAvailability($operator, $shift, 1) ) return '';
 
     $shiftLength = array_reduce($shift, function ($acc, $round) {
@@ -178,6 +180,16 @@ function combineRounds ($shifts) {
   }
   unset($shift);
   return $combinedRounds;
+}
+
+function hasOverlappingRounds ($shifts) {
+  $previousRound = null;
+  foreach ( $shifts as $round ) {
+    if ( $previousRound )
+      if ( intval($previousRound['round_end']) > intval($round['round_start']) ) return true;
+    $previousRound = $round;
+  }
+  return false;
 }
 
 // Takes a start and end time, calculates the difference and returns it
