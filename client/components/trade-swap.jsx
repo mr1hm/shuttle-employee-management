@@ -39,13 +39,14 @@ class TradeSwap extends React.Component {
     let roundTimes = [];
     this.props.shiftDetails.map(oneShift => {
       roundTimes.push({
-        'start_time': oneShift.start_time,
-        'stop_time': oneShift.end_time
+        'round_start': oneShift.start_time,
+        'round_end': oneShift.end_time
       });
     });
     const roundTimesString = JSON.stringify(roundTimes);
+    const lineName = this.props.shiftDetails[0].line_name;
     const date = this.props.shiftDetails[0].date;
-    fetch(`/api/admin-available-operators.php?date=${date}&sunday=${week[0]}&saturday=${week[6]}&round_time=${roundTimesString}`)
+    fetch(`/api/admin-available-operators.php?date=${date}&line_bus=${lineName}&round_time=${roundTimesString}`)
       .then(response => response.json())
       .then(details => {
         this.setState({

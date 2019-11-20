@@ -15,25 +15,25 @@ $date = round(microtime(true) * 1000);
 
 mysqli_query($conn, "START TRANSACTION");
 
-foreach($target_rounds as $round) {
+foreach($target_rounds as $round ) {
   $query = "INSERT INTO `transaction`
     (`user_id`, `round_id`, `target_user_id`, `date`, `type`, `comment`, `status`) VALUES
-    ($target_id, {$round['roundID']}, $user_id, $date, 'swap', 'no', 'pending')";
+    ($target_id, {$round['roundID']}, $user_id, $date, 'swap-confirm', 'no', 'pending')";
   $result = mysqli_query($conn, $query);
 }
+if(!$result) {
+  throw new Exception("Sql error".mysqli_error($conn));
+}
 
-foreach ($original_rounds as $round) {
+foreach ($original_rounds as $round ) {
   $query = "INSERT INTO `transaction`
     (`user_id`, `target_round_id`, `target_user_id`, `date`, `type`, `comment`, `status`) VALUES
-    ($target_id,{$round['round_id']}, $user_id, $date, 'swap', 'no', 'pending')";
+    ($target_id,{$round['round_id']}, $user_id, $date, 'swap-confirm', 'no', 'pending')";
   $result = mysqli_query($conn, $query);
 }
-
-
-
-
-
-
+if (!$result) {
+  throw new Exception("Sql error 2" . mysqli_error($conn));
+}
 
 // foreach($original_rounds as $round ){
 //   $query = "UPDATE `transaction` SET `status` = 'pending' WHERE `round_id` = {$round['round_id']}";
