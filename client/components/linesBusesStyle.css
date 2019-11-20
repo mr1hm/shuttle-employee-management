@@ -81,13 +81,25 @@
   line-height: 0;
 }
 
-table.busTable thead th {
+table.busTable thead tr th {
   border-bottom: 1px solid #FFA804;
 }
 
-/* table.gapsModalTable tbody tr {
-  border-bottom: 1px solid #FFA804;
+/* table.gapsModalTable td {
+  border-top: 1px solid #FFA804;
 } */
+
+/* table.busTable td {
+  border-top: 1px solid #FFA804;
+} */
+
+table.busTable tbody {
+  border-top: 2px solid #FFA804;
+}
+
+.busTableEditBtnTd {
+  border-top: none!important;
+}
 
 .addLineBtn,
 .liveFieldStatusBtn,
@@ -191,7 +203,7 @@ table.busTable thead th {
   left: 17%;
   bottom: 30%;
   border: 2px solid black;
-  background-color: rgb(150, 149, 149);
+  background-color: rgba(150, 149, 149, 0.9);
   border-radius: 5px;
   overflow: scroll;
 }

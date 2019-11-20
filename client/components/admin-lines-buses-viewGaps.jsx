@@ -12,15 +12,6 @@ export default class GapsModal extends React.Component {
     };
   }
 
-  // componentDidMount() {
-  //   const gapDurationArr = this.props.busGapInfo.gapDurations.split(',');
-  //   const gapStartTimeArr = this.props.busGapInfo.gapStartTimes.split(',');
-  //   this.setState({
-  //     gapDurations: gapDurationArr,
-  //     gapStartTimes: gapStartTimeArr
-  //   })
-  // }
-
   editBusGaps(e, busID) {
     const value = e.target.value;
 
@@ -66,7 +57,7 @@ export default class GapsModal extends React.Component {
                   return null;
                 } else {
                   return (
-                    <tr className="busGapInfo">
+                    <tr key={startTime + index} className="busGapInfo">
                       {/* <td rowSpan="3"></td> */}
                       <td>{startTime}</td>
                       <td>{`${busGapInfo.gapDurations[index]}min`}</td>

@@ -95,7 +95,7 @@ export default class BusesTable extends React.Component {
               <br /> */}
               <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
             </td>
-            <td className="d-flex justify-content-center">
+              <td className="d-flex justify-content-center busTableEditBtnTd">
               <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
             </td>
           </tr>
@@ -144,7 +144,7 @@ export default class BusesTable extends React.Component {
             <br/> */}
             <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
           </td>
-          <td className="d-flex justify-content-center">
+          <td className="d-flex justify-content-center busTableEditBtnTd">
             <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
           </td>
         </tr>
