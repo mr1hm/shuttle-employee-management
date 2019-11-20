@@ -245,54 +245,6 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
     }
   }
 
-  function updateDatabaseOperators ($conn, $operators) {
-    if (!mysqli_query($conn, "TRUNCATE TABLE `operators`")) {
-      throw new Exception('MySQL error: ' . mysqli_error($conn));
-    }
-    $query = "INSERT INTO `operators` (`user_id`, `date`, `operator`)
-              VALUES\n";
-
-    $ops = [];
-    reset($operators);
-    while ( current($operators) ) {
-      $operator = current($operators);
-      $user_id = $operator['user_id'];
-      while ( current($operator['assignment_details']) ) {
-        $operatorDetails = current($operator['assignment_details']);
-        $jsonOperator = json_encode([
-          'user_id' => $user_id,
-          'last_name' => $operator['last_name'],
-          'first_name' => $operator['first_name'],
-          'special_route' => $operator['special_route'],
-          'available_times' => $operatorDetails['available_times'],
-          'assigned_times' => $operatorDetails['assigned_times'],
-          'shift_restrictions' => $operatorDetails['shift_restrictions'],
-          'minutes_without_30_minute_break' => $operatorDetails['minutes_without_30_minute_break'],
-          'total_daily_minutes' => $operatorDetails['total_daily_minutes'],
-          'total_weekly_minutes' => $operator['total_weekly_minutes']
-        ]);
-        foreach ( $operatorDetails['dates'] as $date ) {
-          $ops[] = [
-            'date' => $date,
-            'operator' => json_decode($jsonOperator, true)
-          ];
-          $query .= "({$user_id}, {$date}, '{$jsonOperator}'),\n";
-        }
-        unset($date);
-        next($operator['assignment_details']);
-      }
-      reset($operator['assignment_details']);
-      next($operators);
-    }
-    reset($operators);
-
-    $query = substr($query, 0, -2);
-    if (!mysqli_query($conn, $query)) {
-      throw new Exception('MySQL error: ' . mysqli_error($conn));
-    }
-    return $ops;
-  }
-
   // Sort operators so that they are in order by the operator that has the least amount of weekly minutes
   function operatorSort ($a, $b) {
     if (intval($a['total_weekly_minutes']) === intval($b['total_weekly_minutes'])) {
@@ -503,6 +455,5 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
   $rounds = getRoundsForWeek($conn, $sessionStartTimestamp);
   $operators = getOperatorsForWeek($conn);
   populateWeeks($conn, $rounds, $operators, $sessionStartTimestamp, $sessionEndTimestamp);
-  $ops = updateDatabaseOperators($conn, $operators);
 
 ?>
