@@ -81,7 +81,7 @@ export default class BusesTable extends React.Component {
       return (
         <>
         <GapsModal busGapInfo={this.props.busInfo} handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.props.linesBusesInfo} />
-        <tbody>
+        <tbody className="busTable">
           <tr className="busTableInfo">
             <td className="busNumber" rowSpan="3">
               <RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay>
@@ -95,7 +95,7 @@ export default class BusesTable extends React.Component {
               <br /> */}
               <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
             </td>
-            <td className="d-flex justify-content-center">
+              <td className="d-flex justify-content-center busTableEditBtnTd">
               <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
             </td>
           </tr>
@@ -117,7 +117,7 @@ export default class BusesTable extends React.Component {
     }
     if (line.activeBuses.length === 0) {
       return (
-        <tbody>
+        <tbody className="busTable">
           <tr>
             <td className="busNumber" rowSpan="3">THERE ARE NO ACTIVE BUSES</td>
           </tr>
@@ -130,7 +130,7 @@ export default class BusesTable extends React.Component {
       );
     }
     return (
-      <tbody>
+      <tbody className="busTable">
         <tr className="busTableInfo">
           <td className="busNumber" rowSpan="3">
             <RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay>
@@ -144,7 +144,7 @@ export default class BusesTable extends React.Component {
             <br/> */}
             <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
           </td>
-          <td className="d-flex justify-content-center">
+          <td className="d-flex justify-content-center busTableEditBtnTd">
             <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
           </td>
         </tr>

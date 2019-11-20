@@ -52,8 +52,9 @@ export default class EditBusModal extends React.Component {
         }, this.props.handleEditBusClicked);
         if (this.props.currentSession === 'All Sessions') {
           this.props.getLinesBusesInfo();
+        } else {
+          this.props.getLinesBusesInfo({ session_id: sessionID });
         }
-        this.props.getLinesBusesInfo({ session_id: sessionID });
       })
       .catch(error => console.error(error));
   }

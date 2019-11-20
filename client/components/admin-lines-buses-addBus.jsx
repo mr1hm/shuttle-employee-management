@@ -11,7 +11,7 @@ export default class AddBus extends React.Component {
         vehicle_id: null,
         start_time: '',
         rounds: '',
-        daysActive: '',
+        daysActive: null,
         gap: null,
         gapDuration: null,
         opening_duration: null,
@@ -23,7 +23,8 @@ export default class AddBus extends React.Component {
       },
       newBusAdded: false,
       displayGapTimes: [],
-      displayGapDurations: []
+      displayGapDurations: [],
+      displayDaysActive: []
     };
     this.handleChange = this.handleChange.bind(this);
     this.setRouteID = this.setRouteID.bind(this);
@@ -35,11 +36,13 @@ export default class AddBus extends React.Component {
     e.preventDefault();
     let gapTimes = this.state.displayGapTimes.slice();
     let gapDurations = this.state.displayGapDurations.slice();
+    let daysActive = this.state.displayDaysActive.slice();
     gapTimes = gapTimes.split(', ');
-    gapDurations = this.state.displayGapDurations.split(', ');
+    gapDurations = gapDurations.split(', ');
+    daysActive = daysActive.split(', ');
     console.log(gapTimes);
     console.log(gapDurations);
-    newBus = { ...newBus, end_time: this.calculateEndTime(), gap: gapTimes, gapDuration: gapDurations };
+    newBus = { ...newBus, end_time: this.calculateEndTime(), gap: gapTimes, gapDuration: gapDurations, daysActive: daysActive };
     const init = {
       method: 'POST',
       body: JSON.stringify(newBus)
@@ -76,6 +79,10 @@ export default class AddBus extends React.Component {
       // console.log(gapDurations);
       this.setState({
         displayGapDurations: value
+      })
+    } else if (name === 'daysActive') {
+      this.setState({
+        displayDaysActive: value
       })
     }
     this.setState(prevState => ({
@@ -174,7 +181,8 @@ export default class AddBus extends React.Component {
                 <input onChange={this.handleChange} placeholder="Start Time" className="col border border-primary addBusInputs" type="text" name="gap"></input>
               </div>
               <div className="col">
-                <label>Specify Days</label>
+                <label>Specify Days: </label>
+                {this.state.displayDaysActive ? <span><i> {this.state.displayDaysActive}</i></span> : null}
                 <input className="col border border-primary addBusInputs" name="daysActive" type="text" onChange={this.handleChange} placeholder="Ex. Monday, Friday" />
               </div>
             </div>
