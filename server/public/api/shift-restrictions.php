@@ -2,6 +2,7 @@
 require_once('functions.php');
 set_exception_handler('error_handler');
 require_once('db_connection.php');
+require_once('operator-functions.php');
 
 function canTakeShift ($operator, $shift, $conn, int $option = null) {
   /* IF $option is omitted, it is being accessed by auto-populate
@@ -126,82 +127,57 @@ function requireBreak ($operator, $shift, int $option = null) {
     );
   }
   if ($option === 1) {
+    usort($shift, function ($a, $b) {
+      if ($a['round_start'] === $b['round_start']) return 0;
+      return $a < $b ? -1 : 1;
+    });
+    $shift = combineRounds($shift);
 
-    if ( !shiftWithinAvailability($operator, $shift) ) return '';
+    if ( shiftWithinAvailability($operator, $shift, 1) ) return '';
 
     $shiftLength = array_reduce($shift, function ($acc, $round) {
                       $acc += calculateShiftMinutes(intval($round['round_start']), intval($round['round_end']));
                       return $acc;
                     }, 0);
-    $accumulatedMinutes = [ 'before' => 0, 'after' => 0];
-    $assignedShift = [];
 
-    $shift1 = array_search(intval(reset($shift)['round_start']), array_column($operator['assigned_times'], 1));
-    $shift2 = array_search(intval(end($shift)['round_end']), array_column($operator['assigned_times'], 0));
-    if ( $shift1 !== false && $shift2 !== false ) {
-      $assignedShift[] = $operator['assigned_times'][$shift1];
-      $assignedShift[] = $operator['assigned_times'][$shift2];
-    }
-    else if ( $shift1 !== false ) {
-      $assignedShift[] = $operator['assigned_times'][$shift1];
-    }
-    else if ( $shift2 !== false ) {
-      $assignedShift[] = $operator['assigned_times'][$shift2];
-    }
-    else if ( intval(end($shift)['round_end']) < intval($operator['assigned_times'][0][0]) ) {
-      $assignedShift[] = $operator['assigned_times'][0];
-    }
-    else if ( intval(end($shift)['round_start']) > intval($operator['assigned_times'][count($operator['assigned_times'])-1][1]) ) {
-      $assignedShift[] = $operator['assigned_times'][count($operator['assigned_times']) - 1];
-    }
-    else {
-      $lastTime = $operator['assigned_times'][0];
-      $assignedShift['before'] = [];
-      $assignedShift['after'] = [];
-      foreach ( $operator['assigned_times'] as $assignedTime ) {
-        if ( intval($assignedTime[1]) < intval(reset($shift['round_start'])) ) {
-          if (intval($assignedTime[0]) - intval($lastTime[1]) < 30) {
-            $accumulatedMinutes['before'] += calculateShiftMinutes(intval($assignedTime[0]), intval($assignedTime[1]));
-          } else {
-            $accumulatedMinutes['before'] = 0;
-          }
-          $assignedShift['before'][] = $assignedTime;
-        } else if ( intval($assignedTime[0]) > intval(end($shift['round_end'])) ) {
-          if (intval($assignedTime[0]) - intval($lastTime[1]) < 30) {
-            $accumulatedMinutes['after'] += calculateShiftMinutes(intval($assignedTime[0]), intval($assignedTime[1]));
-          } else {
-            $accumulatedMinutes['after'] = 0;
-          }
-          $assignedShift['after'][] = $assignedTime;
-        }
-        $lastTime = $assignedTime;
-      }
-      unset($assignedTime);
-      $assignedShift['before'] = array_slice($assignedShift['before'], 0, 1);
-      $assignedShift['after'] = array_slice($assignedShift['after'], 0, 1);
-    }
+    $numericIndexedShift = [];
+    foreach ($shift as $round) $numericIndexedShift[] = array_values($round);
+    unset($round);
+    $shift = $numericIndexedShift;
 
-    $reason = '';
-    // print_r(json_encode($operator['assigned_times']));
-    // print_r(json_encode($assignedShift));
-    // print_r(json_encode($accumulatedMinutes));
+    foreach ( $shift as $round ) editAssignedTimes($operator, $round);
+    unset($round);
 
-    if (count($assignedShift) === 1) {
-      if ( (calculateShiftMinutes($assignedShift[0][0], $assignedShift[0][1]) + $shiftLength) > 300 ||
-           (calculateShiftMinutes($assignedShift[0][0], $assignedShift[0][1]) === 300 && calculateShiftMinutes($assignedShift[0][1], intval(reset($shift['round_start']))) < 30) ||
-           calculateShiftMinutes(intval(end($shift['round_end'])), $assignedShift[0][0]) < 30 ) {
-        $reason = 'Operator cannot work more than 5 hours without at least a 30 minute break';
+    $minutes = 0;
+    foreach ( $operator['assigned_times'] as $index => $time ) {
+      if ( $index === 0 ) {
+        $minutes += calculateShiftMinutes(intval($time[0]), intval($time[1]));
+      } else if ( calculateShiftMinutes(intval($operator['assigned_times'][$index - 1][1]), intval($time[0])) < 30 ) {
+        $minutes += calculateShiftMinutes(intval($time[0]), intval($time[1]));
+      } else {
+        $minutes = calculateShiftMinutes(intval($time[0]), intval($time[1]));
       }
-    } else {
-      if ( ($accumulatedMinutes['before'] + $shiftLength) > 300 || ($accumulatedMinutes['after'] + $shiftLength) > 300 ||
-           ($accumulatedMinutes['before'] === 300 && (intval(reset($shift['round_start'])) - intval($assignedShift['before'][1])) < 30) ||
-           ($accumulatedMinutes['after'] === 300 && (intval($assignedShift['after'][0]) - intval(end($shift['round_end']))) < 30) ) {
-        $reason = 'Operator cannot work more than 5 hours without at least a 30 minute break';
-      }
+      if ( $minutes > 300 ) return 'Operator cannot work more than 5 hours without at least a 30 minute break';
     }
-    // print($reason);
-    return $reason;
+    return '';
   }
+}
+
+function combineRounds ($shifts) {
+  $previousShift = $shifts[0];
+  $combinedRounds = [];
+
+  foreach ( $shifts as $index => $shift ) {
+    if ( intval($previousShift['round_end']) === intval($shift['round_start']) ) {
+      $combinedRounds[$index - 1]['round_start'] = intval($previousShift['round_start']);
+      $combinedRounds[$index - 1]['round_end'] = intval($shift['round_end']);
+    } else {
+      $combinedRounds[] = $shift;
+    }
+    $previousShift = $combinedRounds[$index];
+  }
+  unset($shift);
+  return $combinedRounds;
 }
 
 // Takes a start and end time, calculates the difference and returns it
