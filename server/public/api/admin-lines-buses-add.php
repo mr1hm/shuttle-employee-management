@@ -85,15 +85,32 @@ if (isset($bodyData['line_name'])) { // add a new line
       $gapDuration = $bodyData['gapDuration'][$index];
       $busGapsInsertQuery .= "(LAST_INSERT_ID(), '$value', '$gapDuration')";
 
-    }
-
       $result = mysqli_query($conn, $busGapsInsertQuery);
 
       if (!$result) {
         throw new Exception('mysqli error ' . mysqli_error($conn));
       }
 
-}
+    }
+  }
+
+  if (isset($bodyData['daysActive'])) {
+
+      $busDaysActiveQuery = "INSERT INTO `busDaysActive` (`bus_id`, `daysActive`) VALUES";
+
+      foreach ($bodyData['daysActive'] as $value) {
+
+        $daysActive = $value;
+        $busDaysActiveQuery .= "(LAST_INSERT_ID(), '$value')";
+
+        $result = mysqli_query($conn, $busDaysActiveQuery);
+
+        if (!$result) {
+          throw new Exception('mysql error ' . mysqli_error($conn));
+        }
+
+      }
+  }
 
   if (mysqli_affected_rows($conn) === 0) {
     mysqli_query($conn, 'ROLLBACK');

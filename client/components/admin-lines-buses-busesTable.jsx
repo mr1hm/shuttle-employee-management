@@ -91,8 +91,8 @@ export default class BusesTable extends React.Component {
             <td>{busInfo.endTime}</td>
             <td>{busInfo.daysActive}</td>
             <td>
-              {busInfo.gap}
-              <br />
+              {/* {busInfo.gap}
+              <br /> */}
               <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
             </td>
             <td className="d-flex justify-content-center">
@@ -140,8 +140,8 @@ export default class BusesTable extends React.Component {
           <td>{busInfo.endTime}</td>
           <td>{busInfo.daysActive}</td>
           <td>
-            {busInfo.gap}
-            <br/>
+            {/* {busInfo.gap}
+            <br/> */}
             <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
           </td>
           <td className="d-flex justify-content-center">

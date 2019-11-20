@@ -156,9 +156,21 @@ if($method === 'GET') {
       $busInfo['openingDuration'] = $row['opening_duration'];
       $busInfo['closingDuration'] = $row['closing_duration'];
       $busInfo['vehicleID'] = $row['vehicle_id'];
-      $busInfo['daysActive'] = $row['daysActive'];
-      $busInfo['gapStartTimes'] = $row['gapStartTimes'];
-      $busInfo['gapDurations'] = $row['gapDurations'];
+      if ($row['daysActive'] !== NULL) {
+        $busInfo['daysActive'] = explode(',', $row['daysActive']);
+      } else {
+        $busInfo['daysActive'] = [];
+      }
+      if ($row['gapStartTimes'] !== NULL) {
+        $busInfo['gapStartTimes'] = explode(',', $row['gapStartTimes']);
+      } else {
+        $busInfo['gapStartTimes'] = [];
+      }
+      if ($row['gapDurations'] !== NULL) {
+        $busInfo['gapDurations'] = explode(',', $row['gapDurations']);
+      } else {
+        $busInfo['gapDurations'] = [];
+      }
     }
 
     unset($row['busID']);
