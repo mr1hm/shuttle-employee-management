@@ -20,13 +20,12 @@ export default class DeleteConfirmationModal extends React.Component {
         </div>
         <div className="row">
           <div className="col d-flex justify-content-center">
-            <button className="btn btn-success w-100 deleteConfirmationModalConfirmBtn" onClick={() => this.props.deleteLine(line.real_route_id, line.sessionID)}>Confirm</button>
+            <button className="btn btn-success w-100 deleteConfirmationModalConfirmBtn" onClick={() => this.props.deleteLine(line.real_route_id, line.sessionID)}>CONFIRM</button>
           </div>
           <div className="col d-flex justify-content-center">
-            <button className="btn btn-warning w-100 deleteConfirmationModalCancelBtn" onClick={this.props.handleDeleteLine}>Cancel</button>
+            <button className="btn btn-warning w-100 deleteConfirmationModalCancelBtn" onClick={this.props.handleDeleteLine}>CANCEL</button>
           </div>
         </div>
-
       </div>
     );
   }

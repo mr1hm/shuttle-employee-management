@@ -21,7 +21,9 @@ export default class AddBus extends React.Component {
         date: 1566100800,
         status: 'scheduled'
       },
-      newBusAdded: false
+      newBusAdded: false,
+      displayGapTimes: [],
+      displayGapDurations: []
     };
     this.handleChange = this.handleChange.bind(this);
     this.setRouteID = this.setRouteID.bind(this);
@@ -31,7 +33,13 @@ export default class AddBus extends React.Component {
 
   addNewBus(newBus, sessionID, e) {
     e.preventDefault();
-    newBus = { ...newBus, end_time: this.calculateEndTime() };
+    let gapTimes = this.state.displayGapTimes.slice();
+    let gapDurations = this.state.displayGapDurations.slice();
+    gapTimes = gapTimes.split(', ');
+    gapDurations = this.state.displayGapDurations.split(', ');
+    console.log(gapTimes);
+    console.log(gapDurations);
+    newBus = { ...newBus, end_time: this.calculateEndTime(), gap: gapTimes, gapDuration: gapDurations };
     const init = {
       method: 'POST',
       body: JSON.stringify(newBus)
@@ -57,6 +65,19 @@ export default class AddBus extends React.Component {
   handleChange(event) {
     const name = event.target.name;
     const value = event.target.value;
+    if (name === 'gap') {
+      // let gapTimes = value;
+      // console.log(gapTimes);
+      this.setState({
+        displayGapTimes: value
+      })
+    } else if (name === 'gapDuration') {
+      // let gapDurations = value;
+      // console.log(gapDurations);
+      this.setState({
+        displayGapDurations: value
+      })
+    }
     this.setState(prevState => ({
       newBus: {
         ...prevState.newBus,
@@ -148,7 +169,8 @@ export default class AddBus extends React.Component {
                 <input value={this.calculateEndTime()} readOnly className="col border border-primary addBusInputs" type="text" name="end_time" />
               </div>
               <div className="col">
-                <label>Gap</label>
+                <label>Gap: </label>
+                {this.state.displayGapTimes ? <span><i> {this.state.displayGapTimes}</i></span> : null}
                 <input onChange={this.handleChange} placeholder="Start Time" className="col border border-primary addBusInputs" type="text" name="gap"></input>
               </div>
               <div className="col">
@@ -176,7 +198,8 @@ export default class AddBus extends React.Component {
                 <input readOnly className="col border border-primary addBusInputs" type="text" name="route_id" value={this.props.line.real_route_id}></input>
               </div>
               <div className="col">
-                <label>Gap Duration</label>
+                <label>Gap Duration: </label>
+                {this.state.displayGapDurations ? <span><i> {this.state.displayGapDurations}</i></span> : null}
                 <br />
                 <input onChange={this.handleChange} name="gapDuration" type="text" className="col border border-primary addBusInputs"></input>
               </div>
