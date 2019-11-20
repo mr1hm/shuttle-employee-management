@@ -9,12 +9,7 @@ $session = $data['session_id'];
 
 function getOperatorsWithSubmittedAvailability($conn, $session) {
   $operatorsWithAvailabilityQuery = "SELECT 
-                                     us.uci_net_id, 
-                                     us.first_name, 
-                                     us.last_name,
-                                     us.role,
-                                     us.status,
-                                     us.special_route_ok
+                                     us.uci_net_id
                                      FROM operator_availability AS oa 
                                      INNER JOIN user AS us 
                                      ON us.id = oa.user_id 
