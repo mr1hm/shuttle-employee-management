@@ -34,6 +34,16 @@ function buildStartEndArray($availability) {
   return $startEndArray;
 }
 
+function deleteCurrentAvailabilityInDatabase($conn, $userId, $sessionId) {
+  $deleteQuery = "DELETE FROM operator_availability
+                  WHERE user_id = $userId AND session_id = $sessionId";
+
+  $result = mysqli_query($conn, $deleteQuery);
+  if(!$result){
+    throw new Exception('MySQL delete error: '.mysqli_error($conn));
+  }
+}
+
 function updateOperatorAvailabilityInDatabase($conn, $arrayOfAvailableShifts, $userId, $sessionId) {
   $length = count($arrayOfAvailableShifts);
   for( $index=0; $index < $length; $index++ ){
@@ -60,12 +70,13 @@ function updateOperatorAvailabilityInDatabase($conn, $arrayOfAvailableShifts, $u
 
     $result = mysqli_query($conn, $updateQuery);
     if(!$result){
-      throw new Exception('MySQL error: '.mysqli_error($conn));
+      throw new Exception('MySQL update error: '.mysqli_error($conn));
     }
   }
 }
 
 $arrayOfAvailableShifts = buildStartEndArray($availability);
+deleteCurrentAvailabilityInDatabase($conn, $userId, $sessionId);
 updateOperatorAvailabilityInDatabase($conn, $arrayOfAvailableShifts, $userId, $sessionId);
 
 ?>

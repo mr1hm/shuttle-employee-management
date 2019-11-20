@@ -18,6 +18,11 @@ class OperatorAvailability extends React.Component {
         'Friday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
+      // cutoff after current date
+      cutoffTimestamp: 1583187212000,
+      // cutoff before current date
+      // cutoffTimestamp: 1573167329000,
+      minimumAvailability: 1620,
       show: false,
       clear: false,
       submit: false,
@@ -25,7 +30,6 @@ class OperatorAvailability extends React.Component {
       error: false,
       selectedStartTime: null,
       selectedEndTime: null,
-      // eventually this needs to be passed by props
       userId: 45,
       sessionId: 1
     };
@@ -34,17 +38,25 @@ class OperatorAvailability extends React.Component {
 
     this.times = ['6:00 am', '6:15 am', '6:30 am', '6:45 am', '7:00 am', '7:15 am', '7:30 am', '7:45 am', '8:00 am', '8:15 am', '8:30 am', '8:45 am', '9:00 am', '9:15 am', '9:30 am', '9:45 am', '10:00 am', '10:15 am', '10:30 am', '10:45 am', '11:00 am', '11:15 am', '11:30 am', '11:45 am', '12:00 pm', '12:15 pm', '12:30 pm', '12:45 pm', '1:00 pm', '1:15 pm', '1:30 pm', '1:45 pm', '2:00 pm', '2:15 pm', '2:30 pm', '2:45 pm', '3:00 pm', '3:15 pm', '3:30 pm', '3:45 pm', '4:00 pm', '4:15 pm', '4:30 pm', '4:45 pm', '5:00 pm', '5:15 pm', '5:30 pm', '5:45 pm', '6:00 pm', '6:15 pm', '6:30 pm', '6:45 pm', '7:00 pm', '7:15 pm', '7:30 pm', '7:45 pm', '8:00 pm', '8:15 pm', '8:30 pm', '8:45 pm', '9:00 pm', '9:15 pm', '9:30 pm', '9:45 pm', '10:00 pm', '10:15 pm', '10:30 pm', '10:45 pm', '11:00 pm', '11:15 pm', '11:30 pm', '11:45 pm', '12:00 am'];
 
-    this.showModal = this.showModal.bind(this);
-    this.hideModal = this.hideModal.bind(this);
+    this.hideShiftModal = this.hideShiftModal.bind(this);
+    this.showShiftModal = this.showShiftModal.bind(this);
+
     this.hideErrorModal = this.hideErrorModal.bind(this);
-    this.showError = this.showError.bind(this);
+    this.showErrorModal = this.showErrorModal.bind(this);
+
+    this.cancelSubmitModal = this.cancelSubmitModal.bind(this);
+    this.handleSubmitModal = this.handleSubmitModal.bind(this);
+    this.showSubmitModal = this.showSubmitModal.bind(this);
+
+    this.getEnteredAvailability = this.getEnteredAvailability.bind(this);
+
     this.setStartTime = this.setStartTime.bind(this);
     this.setEndTime = this.setEndTime.bind(this);
+
     this.updateDatabase = this.updateDatabase.bind(this);
-    this.showSubmitModal = this.showSubmitModal.bind(this);
-    this.handleSubmitModal = this.handleSubmitModal.bind(this);
-    this.cancelSubmitModal = this.cancelSubmitModal.bind(this);
+
     this.getShiftInfo = this.getShiftInfo.bind(this);
+
     this.deleteShift = this.deleteShift.bind(this);
   }
 
@@ -55,7 +67,6 @@ class OperatorAvailability extends React.Component {
       borderBottom: '1px solid black'
     };
 
-    // cleanup the remaining lines to match what was done on line 62
     return (
       this.state.availability[day].map((isSelected, index) => {
         const isPM = index >= 24;
@@ -75,8 +86,8 @@ class OperatorAvailability extends React.Component {
     );
   }
 
-  buildHeaderTimes() {
-    let defaultStyles = {
+  buildHeaderCell() {
+    const defaultStyles = {
       width: '1.35%',
       height: '8vh',
       borderTop: '1px solid black',
@@ -87,21 +98,16 @@ class OperatorAvailability extends React.Component {
 
     return (
       headerTimes.map((element, index) => {
-        if (index < 24) {
-          if (index % 4 === 0) {
-            return <th key={index} style={{ ...defaultStyles, borderLeft: '1px solid black' }} className="d-flex align-items-center pb-2">{element}</th>;
-          } else {
-            return <th key={index} style={{ ...defaultStyles }} className="d-flex align-items-center pb-2">{element}</th>;
-          }
-        } else {
-          if (index === 71) {
-            return <th key={index} style={{ ...defaultStyles, borderRight: '1px solid black' }} className="d-flex align-items-center pb-2">{element}</th>;
-          } if (index % 4 === 0) {
-            return <th key={index} style={{ ...defaultStyles, borderLeft: '1px solid black' }} className="d-flex align-items-center pb-2">{element}</th>;
-          } else {
-            return <th key={index} style={{ ...defaultStyles }} className="d-flex align-items-center pb-2">{element}</th>;
-          }
-        }
+        const isFirst15Minutes = index % 4 === 0;
+        const isFinal15Minutes = index === 71;
+        const style = {
+          backgroundColor: undefined,
+          borderRight: undefined,
+          borderLeft: undefined
+        };
+        if (isFirst15Minutes) style.borderLeft = '1px solid black';
+        if (isFinal15Minutes) style.borderRight = '1px solid black';
+        return <th key={index} className="d-flex align-items-center pb-2" style={{ ...defaultStyles, ...style }}>{element}</th>;
       })
     );
   }
@@ -110,6 +116,10 @@ class OperatorAvailability extends React.Component {
     this.setState({
       submit: false
     });
+  }
+
+  componentDidMount() {
+    this.getEnteredAvailability();
   }
 
   deleteShift() {
@@ -174,6 +184,25 @@ class OperatorAvailability extends React.Component {
     }
   }
 
+  getEnteredAvailability() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'user_id': this.state.userId,
+        'session_id': this.state.sessionId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/operator-entered-availability.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          availability: data
+        });
+      })
+      .catch(error => { throw (error); });
+  }
+
   getShiftInfo(event) {
     var clickedIndex = event.currentTarget.id;
     var day = event.currentTarget.className;
@@ -199,7 +228,7 @@ class OperatorAvailability extends React.Component {
     });
   }
 
-  hideModal() {
+  hideShiftModal() {
     this.setState({
       show: false
     });
@@ -207,18 +236,11 @@ class OperatorAvailability extends React.Component {
     const endIndex = this.timeIndex[this.state.selectedEndTime];
 
     if (startIndex > endIndex || startIndex === endIndex || endIndex - startIndex < 6) {
-      this.showError();
+      this.showErrorModal();
     } else {
       var availabilityObject = Object.assign({}, this.state.availability);
-      var availabilityDay = availabilityObject[this.state.day].map((cell, index) => {
-        if (index >= startIndex && index < endIndex) {
-          return 1;
-        } if (cell === 1) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
+      var availabilityDay = availabilityObject[this.state.day].map((fifteenMinuteBlock, index) => (index >= startIndex && index < endIndex) ? 1 : (fifteenMinuteBlock === 1) ? 1 : 0
+      );
       availabilityObject[this.state.day] = availabilityDay;
       this.setState({
         availability: availabilityObject,
@@ -230,21 +252,15 @@ class OperatorAvailability extends React.Component {
   }
 
   setEndTime(event) {
-    var storedEndTimeIndex = this.timeIndex[this.state.selectedEndTime];
-    var incomingEndTimeIndex = this.timeIndex[event.currentTarget.textContent];
-    var availabilityObject = Object.assign({}, this.state.availability);
+    const storedEndTimeIndex = this.timeIndex[this.state.selectedEndTime];
+    const newEndTimeIndex = this.timeIndex[event.currentTarget.textContent];
+    let availabilityObject = Object.assign({}, this.state.availability);
 
     if (storedEndTimeIndex) {
-      if (storedEndTimeIndex > incomingEndTimeIndex) {
-        var availabilityDay = availabilityObject[this.state.day].map((cell, index) => {
-          if (index <= storedEndTimeIndex && index >= incomingEndTimeIndex) {
-            return 0;
-          } if (cell === 1) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
+      if (storedEndTimeIndex > newEndTimeIndex) {
+        var availabilityDay = availabilityObject[this.state.day].map((fifteenMinuteBlock, index) =>
+          (index <= storedEndTimeIndex && index >= newEndTimeIndex) ? 0 : fifteenMinuteBlock === 1 ? 1 : 0
+        );
         availabilityObject[this.state.day] = availabilityDay;
 
         this.setState({
@@ -259,21 +275,15 @@ class OperatorAvailability extends React.Component {
   }
 
   setStartTime(event) {
-    var storedStartTimeIndex = this.timeIndex[this.state.selectedStartTime];
-    var incomingStartTimeIndex = this.timeIndex[event.currentTarget.textContent];
-    var availabilityObject = Object.assign({}, this.state.availability);
+    const storedStartTimeIndex = this.timeIndex[this.state.selectedStartTime];
+    const newStartTimeIndex = this.timeIndex[event.currentTarget.textContent];
+    let availabilityObject = Object.assign({}, this.state.availability);
 
     if (storedStartTimeIndex >= 0) {
-      if (storedStartTimeIndex < incomingStartTimeIndex) {
-        var availabilityDay = availabilityObject[this.state.day].map((cell, index) => {
-          if (index >= storedStartTimeIndex && index < incomingStartTimeIndex) {
-            return 0;
-          } if (cell === 1) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
+      if (storedStartTimeIndex < newStartTimeIndex) {
+        let availabilityDay = availabilityObject[this.state.day].map((fifteenMinuteBlock, index) =>
+          (index >= storedStartTimeIndex && index < newStartTimeIndex) ? 0 : fifteenMinuteBlock === 1 ? 1 : 0
+        );
         availabilityObject[this.state.day] = availabilityDay;
 
         this.setState({
@@ -287,7 +297,7 @@ class OperatorAvailability extends React.Component {
     });
   }
 
-  showError() {
+  showErrorModal() {
     this.setState({
       error: true
     });
@@ -300,14 +310,45 @@ class OperatorAvailability extends React.Component {
     });
   }
 
-  showModal(event) {
+  showShiftModal(event) {
     this.setState({
       show: true,
       day: event.currentTarget.id
     });
   }
 
-  // updating the db with the availability
+  submitOrMessage() {
+    var todaysDate = new Date();
+    var currentTimestamp = Date.parse(todaysDate);
+    var totalAvailability = this.totalEnteredAvailability();
+
+    if (currentTimestamp < this.state.cutoffTimestamp && totalAvailability >= this.state.minimumAvailability) {
+      return (
+        <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>Submit Availability</button>
+      );
+    } if (currentTimestamp < this.state.cutoffTimestamp && totalAvailability < this.state.minimumAvailability) {
+      return (
+        <button type="button" className="btn btn-dark btn-sm mr-4">Enter more hours</button>
+      );
+    } else {
+      return (
+        <button type="button" className="btn btn-dark btn-sm mr-4">Too late to Submit</button>
+      );
+    }
+  }
+
+  totalEnteredAvailability() {
+    var number15MinuteBlocks = 0;
+    for (var key in this.state.availability) {
+      for (var index = 0; index < this.state.availability[key].length; index++) {
+        if (this.state.availability[key][index]) {
+          number15MinuteBlocks++;
+        }
+      }
+    }
+    return number15MinuteBlocks * 15;
+  }
+
   updateDatabase() {
     fetch('/api/operator-availability.php', {
       method: 'POST',
@@ -329,7 +370,8 @@ class OperatorAvailability extends React.Component {
         <TopMenuGeneral title="MY AVAILABILITY"/>
         <div className="d-flex justify-content-between">
           <div className='mb-0 ml-3'>Click day and approximate time to add, change, or delete.</div>
-          <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>Submit Availability</button>
+          {this.submitOrMessage()}
+
         </div>
         <div className="d-flex">
           <div style={{ width: '5%' }}></div>
@@ -337,7 +379,7 @@ class OperatorAvailability extends React.Component {
             <thead className="container">
               <tr className="row d-flex justify-content-end">
                 <th style={{ width: '2.8%', height: '8vh', borderLeft: '1px solid black', borderBottom: '1px solid black', borderTop: '1px solid black' }}></th>
-                {this.buildHeaderTimes()}
+                {this.buildHeaderCell()}
               </tr>
             </thead>
             <tbody className="container">
@@ -357,7 +399,7 @@ class OperatorAvailability extends React.Component {
           </table>
           <div style={{ width: '5%' }}></div>
         </div>
-        <SelectAvailabilityModal day={this.state.day} show={this.state.show} close={this.hideModal} deleteShift={this.deleteShift}>
+        <SelectAvailabilityModal day={this.state.day} show={this.state.show} close={this.hideShiftModal} deleteShift={this.deleteShift}>
           <div className="d-flex">
             <div className="mr-2">
               <div className="number m-2 border" id="startTime">{this.state.selectedStartTime}</div>
@@ -399,7 +441,7 @@ class OperatorAvailability extends React.Component {
 
         <ErrorModal day={this.state.day} errorShow={this.state.error} closeError={this.hideErrorModal}>
           <div className="d-flex justify-content-center">
-            <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>The end time must be at least 1 hr 30 min after the start time</p>
+            <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>The end time must be at least 1 hr 30 min after the start time.</p>
           </div>
         </ErrorModal>
 
@@ -408,6 +450,8 @@ class OperatorAvailability extends React.Component {
             <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>Are you sure you want to submit your available times?</p>
           </div>
         </SubmitModal>
+
+
 
       </React.Fragment>
     );

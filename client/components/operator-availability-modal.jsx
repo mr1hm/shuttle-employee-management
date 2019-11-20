@@ -11,7 +11,7 @@ class SelectAvailabilityModal extends React.Component {
           </div>
           <div className="d-flex justify-content-around">{this.props.children}</div>
           <div className="d-flex justify-content-center">
-            <button className="btn btn-primary center-block mr-3 mb-3" onClick={this.props.close}>Add Time</button>
+            <button className="btn btn-primary center-block mr-3 mb-3" onClick={this.props.close}>Update</button>
             <button className="btn btn-danger center-block ml-3 mb-3" onClick={this.props.deleteShift}>Delete</button>
           </div>
         </section>

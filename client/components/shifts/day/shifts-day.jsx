@@ -13,9 +13,10 @@ class ShiftsDay extends React.Component {
     super(props);
     this.query = ``;
     this.dataDidUpdate = this.dataDidUpdate.bind(this);
-    const defaultDate = this.props.match.params.date ? createDateObjFromDateString(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);// converts unix time to date/at midnight 09/17/2019
+    const defaultDate = this.props.match.params.date ? new Date(this.props.match.params.date).getTime() : parseInt(this.props.defaultDate);// converts unix time to date/at midnight 09/17/2019
     const defaultId = this.props.userId;
     this.state = {
+      date: new Date(this.props.match.params.date),
       shifts: [],
       queryString: `?date=${adjustLocalTimestampToUTCSeconds(defaultDate)}&userID=${defaultId}&type=myShifts`,
       dateToPass: defaultDate,
@@ -23,14 +24,21 @@ class ShiftsDay extends React.Component {
       swapFlag: 0
     };
   }
-  getShifts(query) {
+  getShifts() {
+    const timestamp = new Date(this.props.match.params.date).getTime();
+    const query = `?date=${adjustLocalTimestampToUTCSeconds(timestamp)}&userID=${this.props.userId}&type=myShifts`;
+    console.log('date path: ', this.props.match.params.date);
+    console.log('day query: ', query);
     const response = fetch(`/api/shifts-day.php` + query, {
       method: 'GET'
     });
 
     response
       .then(response => response.json())
-      .then(json => this.setState({ shifts: json }))
+      .then(data => {
+        this.setState({ shifts: data });
+        console.log(data);
+      })
       .catch(error => { console.error(error); });
   }
   componentDidMount() {
@@ -62,9 +70,9 @@ class ShiftsDay extends React.Component {
       return (
         <>
         {this.state.swapFlag ? (
-          <TopMenuShift title="SWAP" page='day' userId={this.props.userId} date={dateToPass} />
+          <TopMenuShift title="SWAP" page='day' userId={this.props.userId} date={dateToPass} dateString={this.props.match.params.date}/>
         ) : (
-          <TopMenuShift title="DAY" page='day' userId={this.props.userId} date={dateToPass} />
+          <TopMenuShift title="DAY" page='day' userId={this.props.userId} date={dateToPass} dateString={this.props.match.params.date}/>
         )}
           {/* <TopMenuShift title="DAY" page='day' userId={this.props.userId} date={dateToPass} /> */}
           <div className="container mt-5">
@@ -81,9 +89,9 @@ class ShiftsDay extends React.Component {
         <>
           <Link to={`/shifts/day/shifts-day/${convertUnixMonthDay(this.state.dateToPass)}`}> </Link>
           {this.state.swapFlag ? (
-            <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'SWAP' : 'AVAILABLE'} page='day' date={(dateToPass)} />
+            <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'SWAP' : 'AVAILABLE'} page='day' date={(dateToPass)} dateString={this.props.match.params.date}/>
           ) : (
-            <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} />
+            <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} dateString={this.props.match.params.date}/>
           )}
           {/* <TopMenuShift userId={this.props.userId} title={this.props.view === 'myShifts' ? 'DAY' : 'AVAILABLE'} page='day' date={(dateToPass)} /> */}
             <table className='table table-striped text-center'>
