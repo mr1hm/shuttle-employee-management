@@ -128,8 +128,8 @@ function requireBreak ($operator, $shift, int $option = null) {
   }
   if ($option === 1) {
     usort($shift, function ($a, $b) {
-      if ($a['round_start'] === $b['round_start']) return 0;
-      return $a['round_start'] < $b['round_start'] ? -1 : 1;
+      if (intval($a['round_start']) === intval($b['round_start'])) return 0;
+      return intval($a['round_start']) < intval($b['round_start']) ? -1 : 1;
     });
 
     if ( hasOverlappingRounds($shift) ) return 'Operator cannot work overlapping rounds';
