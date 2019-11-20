@@ -1,7 +1,10 @@
-# POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
 
-# {"session_id": "6"}
+{
+  "gap": ['1100', '1200'],
+  "gapDuration": ['5', '5']
+}
 
-
+###
 
 GET http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php

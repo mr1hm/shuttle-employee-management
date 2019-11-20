@@ -4,7 +4,7 @@ import EditBusModal from './admin-lines-buses-editBus';
 import AdminRoutes from './admin-lines-buses';
 import GapsModal from './admin-lines-buses-viewGaps';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faPaperPlane, faDivide } from '@fortawesome/free-solid-svg-icons';
 
 export default class BusesTable extends React.Component {
   constructor(props) {
@@ -13,11 +13,13 @@ export default class BusesTable extends React.Component {
       busExistsOnRoute: false,
       editBusClicked: false,
       checkLinesBusesInfo: null,
-      prevDeletedBus: null
+      prevDeletedBus: null,
+      showGapsModal: false
     };
     this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
     this.closeEditBus = this.closeEditBus.bind(this);
     this.deleteBus = this.deleteBus.bind(this);
+    this.handleGapsModal = this.handleGapsModal.bind(this);
   }
 
   // checkForActiveBuses() {
@@ -27,6 +29,12 @@ export default class BusesTable extends React.Component {
   //     });
   //   }
   // }
+
+  handleGapsModal() {
+    this.setState({
+      showGapsModal: !this.state.showGapsModal
+    });
+  }
 
   deleteBus(busID, sessionID) {
     const body = {
@@ -68,12 +76,11 @@ export default class BusesTable extends React.Component {
   render() {
     const { line } = this.props;
     const { busInfo } = this.props;
-    if (this.props.showGapsModal) {
+    console.log(busInfo);
+    if (this.state.showGapsModal) {
       return (
-      <>
-        <div className="container">
-          <GapsModal busInfo={this.props.busInfo} handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} linesBusesInfo={this.props.linesBusesInfo} />
-        </div>
+        <>
+        <GapsModal busGapInfo={this.props.busInfo} handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.props.linesBusesInfo} />
         <tbody>
           <tr className="busTableInfo">
             <td className="busNumber" rowSpan="3">
@@ -84,9 +91,9 @@ export default class BusesTable extends React.Component {
             <td>{busInfo.endTime}</td>
             <td>{busInfo.daysActive}</td>
             <td>
-              {busInfo.gap}
-              <br />
-              <button onClick={this.props.handleGapsModal} className="col btn btn-info">Show Gaps</button>
+              {/* {busInfo.gap}
+              <br /> */}
+              <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
             </td>
             <td className="d-flex justify-content-center">
               <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
@@ -103,7 +110,7 @@ export default class BusesTable extends React.Component {
             </td>
           </tr>
         </tbody>
-      </>
+        </>
       );
     } else if (!line.line_name) {
       return null;
@@ -133,9 +140,9 @@ export default class BusesTable extends React.Component {
           <td>{busInfo.endTime}</td>
           <td>{busInfo.daysActive}</td>
           <td>
-            {busInfo.gap}
-            <br/>
-            <button onClick={this.props.handleGapsModal} className="col btn btn-info">Show Gaps</button>
+            {/* {busInfo.gap}
+            <br/> */}
+            <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
           </td>
           <td className="d-flex justify-content-center">
             <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
