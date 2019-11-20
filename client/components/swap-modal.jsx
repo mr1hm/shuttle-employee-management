@@ -16,7 +16,6 @@ function SwapModal(props) {
       user_round: arrayOfRoundIds,
       type: 'swap'
     };
-    console.log(selectedDriverToTradeWith);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     fetch('/api/request-shift-trade.php', {

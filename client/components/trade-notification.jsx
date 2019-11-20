@@ -12,7 +12,8 @@ class TradeNotification extends React.Component {
       newShifts: [],
       selectedDriver: {},
       swapShifts: [],
-      selectedRoundId: 0
+      selectedRoundId: 0,
+      notificationCount: 0
     };
     this.removeShift = this.removeShift.bind(this);
     this.giveShifttoSelectedDriver = this.giveShifttoSelectedDriver.bind(this);
@@ -26,7 +27,8 @@ class TradeNotification extends React.Component {
         this.setState({
           newShifts: shiftsArrayOfObjects,
           swapShifts: swapShift,
-          selectedRoundId: selectedRoundId
+          selectedRoundId: selectedRoundId,
+          notificationCount: shiftsArrayOfObjects.length
         });
       })
       .catch(error => console.error('Fetch failed', error));
@@ -44,14 +46,17 @@ class TradeNotification extends React.Component {
       body: JSON.stringify(selectedDriverToTradeWith),
       headers: headers
     })
+      .then(response => {
+        this.setState({
+          newShifts: newShifts,
+          notificationCount: this.state.notificationCount - 1
+        });
+      })
       .catch(error => console.error('Fetch failed', error));
     const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
-    this.setState({
-      newShifts: newShifts
-    });
   }
   removeShift(roundID) {
-    const response = fetch('/api/decline-shift-trade.php', {
+    fetch('/api/decline-shift-trade.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -59,12 +64,15 @@ class TradeNotification extends React.Component {
       body: JSON.stringify({
         id: roundID
       })
-    });
-    response.catch(err => console.error(err));
+    })
+      .then(response => {
+        this.setState({
+          newShifts: newShifts,
+          notificationCount: this.state.notificationCount - 1
+        });
+      })
+      .catch(err => console.error(err));
     const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
-    this.setState({
-      newShifts: newShifts
-    });
   }
   render() {
     if (this.state.selectedRoundId) {
@@ -85,7 +93,7 @@ class TradeNotification extends React.Component {
     return (
       <div className="container">
         <div className="row justify-content-center mb-3">
-          <TopMenuGeneral userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
+          <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
         </div>
         <div className="row text-center">
           <div className="col-2">

@@ -122,22 +122,22 @@ export default class EditBusModal extends React.Component {
         <tbody>
           <tr className="editBusTableInfo">
             <td>
-              <input defaultValue={busInfo.busNumber} name="bus_number" onChange={this.handleEditChange} type="text" />
+              <input className="editBusInputs" defaultValue={busInfo.busNumber} name="bus_number" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
-              <input defaultValue={busInfo.startTime} name="start_time" onChange={this.handleEditChange} type="text" />
+              <input className="editBusInputs" defaultValue={busInfo.startTime} name="start_time" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
-              <input defaultValue={busInfo.rounds} name="rounds" onChange={this.handleEditChange} type="text"/>
+              <input className="editBusInputs" defaultValue={busInfo.rounds} name="rounds" onChange={this.handleEditChange} type="text"/>
             </td>
             <td>
-              <input defaultValue={busInfo.endTime} name="end_time" onChange={this.handleEditChange} type="text" />
+              <input className="editBusInputs" defaultValue={busInfo.endTime} name="end_time" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
-              <input defaultValue={busInfo.daysActive} name="daysActive" onChange={this.handleEditChange} type="text" />
+              <input className="editBusInputs" defaultValue={busInfo.daysActive} name="daysActive" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
-              <input defaultValue={busInfo.gap} name="gap" onChange={this.handleEditChange} type="text" />
+              <input className="editBusInputs" defaultValue={busInfo.gap} name="gap" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
               <button onClick={this.props.handleEditBusClicked} className="w-40 closeModal btn btn-warning">
@@ -150,19 +150,19 @@ export default class EditBusModal extends React.Component {
             <td>
               <label className="editOpeningDuration">Opening Duration</label>
               <br/>
-              <input defaultValue={busInfo.openingDuration} name="opening_duration" onChange={this.handleEditChange} type="text" />
+              <input className="editBusInputs" defaultValue={busInfo.openingDuration} name="opening_duration" onChange={this.handleEditChange} type="text" />
             </td>
             <td></td>
             <td>
               <label className="editClosingDuration">Closing Duration</label>
               <br/>
-              <input defaultValue={busInfo.closingDuration} name="closing_duration" onChange={this.handleEditChange} type="text" />
+              <input className="editBusInputs" defaultValue={busInfo.closingDuration} name="closing_duration" onChange={this.handleEditChange} type="text" />
             </td>
             <td></td>
             <td>
               <label className="editGapDuration">Gap Duration</label>
               <br />
-              <input defaultValue={busInfo.gapDuration} name="gapDuration" onChange={this.handleEditChange} type="text" />
+              <input className="editBusInputs" defaultValue={busInfo.gapDuration} name="gapDuration" onChange={this.handleEditChange} type="text" />
             </td>
             <td>
               <button onClick={() => this.editBus(this.state.editBus, line.sessionID)} type="submit" className="w-40 saveChangesBtn btn btn-success">

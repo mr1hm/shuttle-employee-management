@@ -6,11 +6,13 @@ import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
 import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
+import GapsModal from './admin-lines-buses-viewGaps';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown, faWindowClose, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCaretUp, faBus, faCaretDown, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import AdminRoutes from './admin-lines-buses';
 import EditLine from './admin-lines-buses-editLine';
+import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 
 export default class Lines extends React.Component {
   constructor(props) {
@@ -19,15 +21,19 @@ export default class Lines extends React.Component {
       busDetailsClicked: false,
       addBusClicked: false,
       busAdded: false,
-      deletedLine: null,
+      deletedLineName: null,
       editLineClicked: false,
       specialDriverRequired: this.props.line.specialDriver === 'True',
-      sessionName: ''
+      sessionName: '',
+      line: this.props.line,
+      deleteLineClicked: false,
+      deleteBusClicked: false
     };
     this.displayBusDetails = this.displayBusDetails.bind(this);
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
     this.deleteLine = this.deleteLine.bind(this);
     this.handleEditLineClicked = this.handleEditLineClicked.bind(this);
+    this.handleDeleteLine = this.handleDeleteLine.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -71,10 +77,16 @@ export default class Lines extends React.Component {
     this.setState({ busDetailsClicked: !this.state.busDetailsClicked });
   }
 
+  handleDeleteLine() {
+    this.setState({
+      deleteLineClicked: !this.state.deleteLineClicked
+    })
+  }
+
   deleteLine(lineID, sessionID) {
     let busIDArr = [];
     let busIDs = this.props.line.activeBuses.forEach(buses => { // another bug. if deleting line from All Sessions tab, it will get/render all the lines from only that session.
-      busIDArr.push(buses.busID); // DELETES BUS AS WELL - IT WORKS!!
+      busIDArr.push(buses.busID); // DELETES BUS AS WELL - IT WORKS!!d
     });
     console.log(busIDArr);
     const body = {
@@ -89,15 +101,17 @@ export default class Lines extends React.Component {
       .then(response => response.json())
       .then(deletedLine => {
         this.setState({
-          deletedLine
+          deletedLineName: this.props.line.line_name // not working
         });
         if (this.props.currentSession === 'All Sessions') {
           this.props.getLinesBusesInfo();
         } else {
           this.props.getLinesBusesInfo({ session_id: sessionID });
         }
+        this.props.operationsHistoryMethod();
       })
       .catch(error => console.error(error));
+    console.log('LINE DELETED');
   }
 
   render() {
@@ -105,6 +119,11 @@ export default class Lines extends React.Component {
     const { activeBuses } = this.props.line;
     if (!this.props.line.real_route_id) {
       return null;
+    }
+    if (this.state.deleteLineClicked) {
+      return (
+        <DeleteConfirmationModal handleDeleteLine={this.handleDeleteLine} deleteLine={this.deleteLine} line={line} />
+      );
     }
     if (this.state.editLineClicked) {
       return (
@@ -116,7 +135,7 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="col">
                 <div id="accordion">
-                  <AddBus getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
+                  <AddBus currentSession={this.props.currentSession} getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
                 </div>
               </div>
             </div>
@@ -138,7 +157,7 @@ export default class Lines extends React.Component {
                     </tr>
                   </thead>
                   {activeBuses.map((bus, index) => {
-                    return <BusesTable linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                    return <BusesTable key={bus.busNumber + index} handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} selectedSessionID={this.props.selectedSessionID} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
                   }
                   )}
                 </table>
@@ -154,7 +173,7 @@ export default class Lines extends React.Component {
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
             <div className="row w-100 align-items-center lineHeaderFirstRow">
               <div className={`col-2 lineName ${line.line_name}`}>
-                Line {this.state.specialDriverRequired ? <FontAwesomeIcon className="specialDriverIcon ml-3" icon={faUserTie} /> : null}
+                  Line {this.state.specialDriverRequired ? <FontAwesomeIcon className="specialDriverIcon ml-3" icon={faUserTie} /> : null}
               </div>
               <div className="col">Status</div>
               <div className="col">Round Duration</div>
@@ -183,12 +202,12 @@ export default class Lines extends React.Component {
               <div className="col">
                 <button className="btn btn-link" type="button" data-toggle="collapse"
                   name={`busDetailsClicked${line.route_id}`} href={'#collapse' + line.line_name} onClick={this.displayBusDetails} aria-expanded="true" aria-controls={'collapse' + line.line_name}>
-                    Bus Details
+                      Bus Details
                   {this.state.busDetailsClicked ? <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretUp} /> : <FontAwesomeIcon className="busDetailsIcon ml-1" icon={faCaretDown} />}
                 </button>
               </div>
               <div className="col d-flex justify-content-center">
-                <button onClick={() => this.deleteLine(line.real_route_id, line.sessionID)} className="deleteLineBtn btn btn-danger">
+                <button onClick={this.handleDeleteLine} className="deleteLineBtn btn btn-danger">
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
@@ -200,16 +219,16 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="col">
                 <div id="accordion">
-                  <AddBus getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
+                  <AddBus currentSession={this.props.currentSession} getLinesBusesInfo={this.props.getLinesBusesInfo} accordionID={this.props.accordionID} line={line} handleAddBusButtonClick={this.handleAddBusButtonClick} addBusClicked={this.state.addBusClicked} addBus={this.props.addBus} />
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="card col-12">
                 <div className="card-header">
-                  Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
+                    Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
                 </div>
-                <table className="card-table table">
+                <table className="card-table table busTable">
                   <thead>
                     <tr>
                       <th scope="col">Bus Number</th>
@@ -222,9 +241,9 @@ export default class Lines extends React.Component {
                     </tr>
                   </thead>
                   {activeBuses.map((bus, index) => {
-                    return <BusesTable currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
-                  }
-                  )}
+                    return <BusesTable key={bus.busNumber + index} selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                  })
+                }
                 </table>
               </div>
             </div>

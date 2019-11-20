@@ -1,6 +1,6 @@
 <?php
 require_once('db_connection.php');
-$query = "SELECT cellProvider.cell_provider FROM `cellProvider`";
+$query = "SELECT cell_provider FROM cellProvider";
 $result = mysqli_query($conn, $query);
 if (!$result) {
   throw new Exception('mysql error ' . mysqli_error($conn));

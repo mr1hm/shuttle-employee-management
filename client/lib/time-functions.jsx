@@ -16,14 +16,14 @@ function convertMilitaryTime(militaryTime) { // takes a string military time (eg
   return hour + ':' + minute + ' ' + meridiem;
 }
 function adjustLocalTimestampToUTCSeconds(localMillisecondsTimeStamp) { // adjusts local timestamp (msec) [number or string] to UTC then converts to 10-digit timestamp (sec) [number]
-  const timestampUTCmilliseconds = parseInt(localMillisecondsTimeStamp) - 10800000;
+  const timestampUTCmilliseconds = parseInt(localMillisecondsTimeStamp) + 100800000;
   return timestampUTCmilliseconds / 1000;
   // NOTE: this function combines the convertMillisecondsToSeconds function
   // should be used when needing to convert front-end generated 13-digit timestamps to a 10-digit UTC timestamp (since front-end generated timestamps are not in UTC)
 }
 function adjustUTCSecondsToLocalTimestamp(utcSecondsTimestamp) { // the reverse of the above function (adjustLocalTimestampToUTCSeconds)
-  const utcMillisecondsTimestamp = utcSecondsTimestamp + '000';
-  return parseInt(utcMillisecondsTimestamp) + 10800000;
+  const utcMillisecondsTimestamp = parseInt(utcSecondsTimestamp) * 1000;
+  return parseInt(utcMillisecondsTimestamp) - 100800000;
   // NOTE: the purpose of this function is to get timestamps from the back-end or db (seconds / UTC) and convert to a 13-digit local time timestamp (milliseconds)
   // also note that this function incorporates the convertSecondsToMilliseconds function below
 }
@@ -213,12 +213,49 @@ function createDateObject(unix) {
   };
 }
 /**
+ * global month, day and 3 letter day arrays
+ */
+const globalMonth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const globalDayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const globalDayOfWeekShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/**
+ * takes one param and integer and returns a number with a leading 0 if number < 10
+ */
+function getZeroPaddedNumber(num) {
+  return num < 10 ? '0' + num : num;
+}
+
+/**
+ * takes one param timestamp that can be a unix timestamp or a string timestamp
+ * returns an object with year, month(0-11), date(1-31) and day(0-6) represented as numbers
+ * and names of month, day and 3 letter version of day
+ */
+function getUTCYearMonthDateDay(timestamp) {
+  const UTCDate = new Date(timestamp);
+  const year = UTCDate.getUTCFullYear();
+  const month = UTCDate.getUTCMonth();
+  const date = UTCDate.getUTCDate();
+  const day = UTCDate.getUTCDay();
+  const UTCDateObj = {
+    timestamp: timestamp,
+    year: year,
+    month: month,
+    date: date,
+    day: day,
+    monthName: globalMonth[month],
+    dayName: globalDayOfWeek[day],
+    dayNameShort: globalDayOfWeekShort[day],
+    dateString: `${year}-${getZeroPaddedNumber(month + 1)}-${getZeroPaddedNumber(date)}`
+  };
+  return UTCDateObj;
+}
+
+/**
  * takes one param unixTimestamp that can be any day of the week
  * returns an array of 7 objects, one per day of week (sun - sat)
  * each object includes day, date object and unix timestamps of one day
  */
-const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 function returnWeekInfoArray(unixTimestamp) {
   unixTimestamp = unixTimestamp * 1000;
   const unixDayOffset = 86400000;
@@ -229,8 +266,8 @@ function returnWeekInfoArray(unixTimestamp) {
     const timestamp = unixTimestamp + (weekIndex - day) * unixDayOffset;
     const currentDateObj = new Date(timestamp);
     const weekArrayItem = {
-      month: month[currentDateObj.getUTCMonth()],
-      day: dayOfWeek[weekIndex],
+      month: globalMonth[currentDateObj.getUTCMonth()],
+      day: globalDayOfWeek[weekIndex],
       date: currentDateObj,
       unix: timestamp / 1000
     };
@@ -239,7 +276,7 @@ function returnWeekInfoArray(unixTimestamp) {
   return weekArray;
 }
 
-export { returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { getZeroPaddedNumber, getUTCYearMonthDateDay, returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
   createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };

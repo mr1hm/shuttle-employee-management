@@ -1,7 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import RouteBusDisplay from './route-bus-display';
-import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, createDateStringFromDateObject } from '../lib/time-functions';
+import {
+  getZeroPaddedNumber,
+  convertMilitaryTime,
+  calcShiftLenghtInHourMinFormat,
+  createDateStringFromDateObject
+} from '../lib/time-functions';
 
 class NotificationShift extends React.Component {
   removeShift(id) {
@@ -12,10 +17,12 @@ class NotificationShift extends React.Component {
   }
   renderOperations() {
     const { round_id, target_user_id } = this.props;
+    const today = new Date();
+    const dateString = `${today.getFullYear()}-${getZeroPaddedNumber(today.getMonth() + 1)}-${getZeroPaddedNumber(today.getDate())}`;
     if (this.props.type === 'trade') {
       return (
         <button
-          onClick={() => this.giveShifttoSelectedDriver(round_id, target_user_id)}
+          onClick={this.props.giveShifttoSelectedDriver(round_id, target_user_id)}
           type="button"
           className="btn btn-success">
           Take Shift
@@ -25,7 +32,7 @@ class NotificationShift extends React.Component {
 
       return (
         <Link to={{
-          pathname: '/shifts/month/shifts-month/',
+          pathname: '/shifts/month/shifts-month/' + dateString,
           state: {
             swapFlag: round_id
           }
