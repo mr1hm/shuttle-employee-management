@@ -43,7 +43,6 @@ if (isset($bodyData['line_name'])) { // add a new line
   $startTime = $bodyData['start_time'];
   $rounds = $bodyData['rounds'];
   $endTime = $bodyData['end_time'];
-  $daysActive = $bodyData['daysActive'];
   $idRoute = $bodyData['route_id'];
   $vehicleID = $bodyData['vehicle_id'];
   $openingDuration = $bodyData['opening_duration'];
@@ -59,8 +58,8 @@ if (isset($bodyData['line_name'])) { // add a new line
     throw new Exception('could not start transaction' . mysqli_error($conn));
   }
 
-  $busInsertQuery = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `daysActive`, `route_id`, `vehicle_id`, `opening_duration`, `closing_duration`)
-              VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$daysActive', '$idRoute', '$vehicleID', '$openingDuration', '$closingDuration')";
+  $busInsertQuery = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `route_id`, `vehicle_id`, `opening_duration`, `closing_duration`)
+              VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$idRoute', '$vehicleID', '$openingDuration', '$closingDuration')";
   $result = mysqli_query($conn, $busInsertQuery);
 
   if (!$result) {
@@ -94,11 +93,11 @@ if (isset($bodyData['line_name'])) { // add a new line
     }
   }
 
-  if (isset($bodyData['daysActive'])) {
+  if (isset($bodyData['daysActive'])) { // add days active to busDaysActive table
 
       $busDaysActiveQuery = "INSERT INTO `busDaysActive` (`bus_id`, `daysActive`) VALUES";
 
-      foreach ($bodyData['daysActive'] as $value) {
+      foreach ($bodyData['daysActive'] as $value) { // errors out here.
 
         $daysActive = $value;
         $busDaysActiveQuery .= "(LAST_INSERT_ID(), '$value')";
