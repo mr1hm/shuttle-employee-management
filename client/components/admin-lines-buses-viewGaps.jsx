@@ -7,18 +7,19 @@ export default class GapsModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      busInfo: this.props.linesBusesInfo
+      gapStartTimes: null,
+      gapDurations: null
     };
   }
 
-  // componentDidMount() {
-  //   fetch(`api/admin-lines-buses.php?id=${this.props.busInfo}`)
-  //     .then(response => response.json())
-  //     .then(busInfo => this.setState({
-  //       busInfo: busInfo
-  //     }))
-  //     .catch(error => console.error(error));
-  // }
+  componentDidMount() {
+    const gapDurationArr = this.props.busGapInfo.gapDurations.split(',');
+    const gapStartTimeArr = this.props.busGapInfo.gapStartTimes.split(',');
+    this.setState({
+      gapDurations: gapDurationArr,
+      gapStartTimes: gapStartTimeArr
+    })
+  }
 
   editBusGaps(e, busID) {
     const value = e.target.value;
@@ -27,7 +28,7 @@ export default class GapsModal extends React.Component {
 
   render() {
     const { busGapInfo } = this.props;
-    console.log(busGapInfo);
+    // console.log(busGapInfo);
     if (!this.props.showGapsModal) {
       return null;
     }
@@ -53,8 +54,8 @@ export default class GapsModal extends React.Component {
                 <td className="busNumber" rowSpan="3">
                   <RouteBusDisplay bus={busGapInfo.busNumber}></RouteBusDisplay>
                 </td>
-                <td>{busGapInfo.gap}</td>
-                <td>{`${busGapInfo.gapDuration}min`}</td>
+                <td>{busGapInfo.gapStartTimes}</td>
+                <td>{`${busGapInfo.gapDurations}min`}</td>
                 <td>
                   <button onClick={this.handleEditBusClicked} className="busGapEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
                   <button onClick={() => this.deleteBus(busGapInfo.busID)} className="busGapDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>

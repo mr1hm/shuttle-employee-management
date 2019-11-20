@@ -13,19 +13,19 @@ if ($method === 'GET'){
 $query = "SELECT
             bi.`id` AS 'busID',
             bi.`bus_number`,
-            bi.`gapDuration`,
             rt.`id` AS 'real_route_id',
             bi.`rounds`,
             rt.`roundDuration`,
             bi.`start_time`,
             bi.`end_time`,
-            bi.`daysActive`,
-            bi.`gap`,
+            bg.`gapStartTimes`,
+            bg.`gapDurations`,
             rt.`line_name`,
             rt.`status`,
             bi.`opening_duration`,
             bi.`closing_duration`,
             bi.`vehicle_id`,
+            bd.`daysActive`,
             rt.`public`,
             rt.`regularService`,
             rt.`specialDriver`,
@@ -33,7 +33,9 @@ $query = "SELECT
             IF (rt.`specialDriver` = 1, 'True', 'False') AS specialDriver
             FROM `route` AS rt
             LEFT JOIN `bus_info` AS bi ON bi.`route_id` = rt.`id`
-            JOIN `session` AS s ON s.`id` = rt.`session_id`
+            LEFT JOIN `session` AS s ON s.`id` = rt.`session_id`
+            LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`gapStartTime`) AS gapStartTimes, GROUP_CONCAT(`gapDuration`) AS gapDurations FROM `busGaps` GROUP BY `bus_id`) AS bg ON bg.`bus_id` = bi.`id`
+            LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`daysActive`) AS daysActive FROM `busDaysActive` GROUP BY `bus_id`) AS bd ON bd.`bus_id` = bi.`id`
             ORDER BY line_name";
 
 } else if ($method === 'POST' && (isset($bodyData['lineID']))) { // edit a line
@@ -131,6 +133,7 @@ $query = "SELECT
 }
 
 $result = mysqli_query($conn, $query);
+
 if (!$result) {
   throw new Exception('mysql error ' . mysqli_error($conn));
 }
@@ -148,12 +151,14 @@ if($method === 'GET') {
       $busInfo['startTime'] = $row['start_time'];
       $busInfo['rounds'] = $row['rounds'];
       $busInfo['endTime'] = $row['end_time'];
-      $busInfo['daysActive'] = $row['daysActive'];
-      $busInfo['gap'] = $row['gap'];
-      $busInfo['gapDuration'] = $row['gapDuration'];
+      // $busInfo['daysActive'] = $row['daysActive'];
+      // $busInfo['gapDuration'] = $row['gapDuration'];
       $busInfo['openingDuration'] = $row['opening_duration'];
       $busInfo['closingDuration'] = $row['closing_duration'];
       $busInfo['vehicleID'] = $row['vehicle_id'];
+      $busInfo['daysActive'] = $row['daysActive'];
+      $busInfo['gapStartTimes'] = $row['gapStartTimes'];
+      $busInfo['gapDurations'] = $row['gapDurations'];
     }
 
     unset($row['busID']);
@@ -162,7 +167,7 @@ if($method === 'GET') {
     unset($row['rounds']);
     unset($row['end_time']);
     unset($row['daysActive']);
-    unset($row['gap']);
+    unset($row['gapStartTime']);
     unset($row['gapDuration']);
     unset($row['opening_duration']);
     unset($row['closing_duration']);
