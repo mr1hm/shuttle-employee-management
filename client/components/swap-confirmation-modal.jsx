@@ -25,7 +25,8 @@ class SwapConfirmation extends React.Component {
       original_rounds: selectedRoundsToSwap,
       target_rounds: this.props.ownShiftsToSwap
     };
-    fetch('/api/swap-shift.php', {
+
+    fetch('/api/pending-swap-shifts.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
