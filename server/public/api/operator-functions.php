@@ -105,11 +105,11 @@ function editAssignedTimes(&$operator, $shift) {
 
 function hadShiftPassed10 (int $operator_id, $date) {
   global $conn;
-  $yesterday = strtotime('-1 day', $date);
+  $yesterday = strtotime('-1 day', strtotime($date));
   $query = "SELECT `end_time`
             FROM `round`
             WHERE `user_id` = {$operator_id} AND
-                  `date` = {$yesterday} AND
+                  `date` = '{$yesterday}' AND
                   `end_time` > 2200";
   $result = mysqli_query($conn, $query);
   if (!$result) {
@@ -123,7 +123,7 @@ function determineDailyMinutes (int $operator_id, $date) {
   global $conn;
   $query = "SELECT `start_time`, `end_time`
             FROM `round`
-            WHERE `user_id` = {$operator_id} AND `date` = {$date}";
+            WHERE `user_id` = {$operator_id} AND `date` = '{$date}'";
   $result = mysqli_query($conn, $query);
   if (!$result) {
     throw new Exception('MySQL error: ' . mysqli_error($conn));
@@ -139,14 +139,14 @@ function determineDailyMinutes (int $operator_id, $date) {
 function determineWeeklyMinutes (int $operator_id, $date) {
   global $conn;
   $week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  $day = date('D', $date);
+  $day = date('D', strtotime($date));
   $weekStart = null;
   $weekEnd = null;
   foreach ( $week as $index => $weekDay ) {
     if ( $day === $weekDay ) {
-      $weekStart = strtotime("-$index days", $date);
+      $weekStart = date('Y-m-d', strtotime("-$index days", strtotime($date)));
       $difference = count($week) - $index - 1;
-      $weekEnd = strtotime("+$difference days", $date);
+      $weekEnd = date('Y-m-d', strtotime("+$difference days", strtotime($date)));
       break;
     }
   }
@@ -155,7 +155,7 @@ function determineWeeklyMinutes (int $operator_id, $date) {
   $query = "SELECT `start_time`, `end_time`
             FROM `round`
             WHERE `user_id` = {$operator_id} AND
-                  `date` >= {$weekStart} AND `date` <= {$weekEnd}";
+                  `date` >= '{$weekStart}' AND `date` <= '{$weekEnd}'";
   $result = mysqli_query($conn, $query);
   if (!$result) {
     throw new Exception('MySQL error: ' . mysqli_error($conn));
@@ -170,7 +170,7 @@ function determineWeeklyMinutes (int $operator_id, $date) {
 
 function getOperatorInfo ($operator_id, $date) {
   global $conn;
-  $day = date('D', $date);
+  $day = date('D', strtotime($date));
   $operatorInfo = [];
 
   // Get basic user data
@@ -204,7 +204,7 @@ function getOperatorInfo ($operator_id, $date) {
   // Get operator assigned times
   $query = "SELECT CONCAT(`start_time`, ',', `end_time`) AS 'assigned'
             FROM `round`
-            WHERE `user_id` = {$operator_id} AND `date` = {$date} AND `session_id` = 1";
+            WHERE `user_id` = {$operator_id} AND `date` = '{$date}' AND `session_id` = 5";
   $result = mysqli_query($conn, $query);
   if (!$result) {
     throw new Exception('MySQL error: ' . mysqli_error($conn));
