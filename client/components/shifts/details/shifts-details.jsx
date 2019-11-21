@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { convertMilitaryTime, createDateObject } from '../../../lib/time-functions';
+import { convertMilitaryTime, createDateObject, getUTCYearMonthDateDay } from '../../../lib/time-functions';
 import TopMenuHamburger from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
 import PostModal from './post-modal';
@@ -89,14 +89,14 @@ class ShiftsDetails extends React.Component {
         </div>);
     }
     const { start_time, end_time, date } = this.state.shiftOverview;
-    const dateObj = createDateObject(date);
+    const dateObj = getUTCYearMonthDateDay(date);
     const timeDisplay = (
       <>
         <div>
           {`${convertMilitaryTime(start_time)} - ${convertMilitaryTime(end_time)}`}
         </div>
         <div>
-          {`${dateObj.weekday}, ${dateObj.month} ${dateObj.day}, ${dateObj.year}`}
+          {`${dateObj.dayName}, ${dateObj.monthName} ${dateObj.date}, ${dateObj.year}`}
         </div>
       </>
     );
@@ -116,7 +116,7 @@ class ShiftsDetails extends React.Component {
           </div>
           <div className="row align-items-center mb-2">
             <div className="col-2 col-md-1">
-              <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.bus_info_id}/>
+              <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.route_id}/>
             </div>
             <div className="col text-left col-md-4">
               {timeDisplay}

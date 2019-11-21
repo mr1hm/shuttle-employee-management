@@ -3,7 +3,6 @@ import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import AddUserModal from './admin-add-user-modal';
 import EditUserModal from './admin-edit-user-modal';
-import ParameterModal from './admin-parameter-modal';
 
 class AdminOperatorAvailability extends React.Component {
   constructor(props) {
@@ -15,11 +14,13 @@ class AdminOperatorAvailability extends React.Component {
       role: '',
       status: '',
       specialRouteOK: '',
+      minAvailHours: '',
+      availSubmissionDate: '',
       addUser: false,
       editUser: false,
       operatorDetails: null,
       parameter: false,
-      sessionId: 1
+      sessionId: 6
     };
     this.getOperatorDetails = this.getOperatorDetails.bind(this);
     this.showAddUserModal = this.showAddUserModal.bind(this);
@@ -231,7 +232,6 @@ class AdminOperatorAvailability extends React.Component {
           <TopMenuGeneral title="ADMIN-OPERATOR AVAILABILITY" />
         </div>
         <div className="addButton d-flex justify-content-end mt-3">
-          <button type="button" className="btn btn-primary btn" onClick={this.showParameterModal}>Set Parameters</button>
           <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAddUserModal}>Add User</button>
         </div>
         <table className= 'mt-4'>
@@ -248,6 +248,10 @@ class AdminOperatorAvailability extends React.Component {
               <th>Status</th>
               <th></th>
               <th>Special Route</th>
+              <th></th>
+              <th>Min Avail. Hrs</th>
+              <th></th>
+              <th>Avail. Submission Date</th>
               <th></th>
               <th>Submitted</th>
               <th></th>
@@ -270,6 +274,10 @@ class AdminOperatorAvailability extends React.Component {
                     <td className='pb-2'>{operator['status']}</td>
                     <td></td>
                     <td className='pb-2'>{operator['special_route_ok']}</td>
+                    <td></td>
+                    <td className='pb-2'>{operator['min_avail_hours']}</td>
+                    <td></td>
+                    <td className='pb-2'>{operator['avail_end_date']}</td>
                     <td></td>
                     <td className='pb-2'>{this.submittedStatus(operator)}</td>
                     <td></td>
@@ -371,6 +379,27 @@ class AdminOperatorAvailability extends React.Component {
                   <option value='1'>1</option>
                 </select>
               </div>
+              <div className="m-2">
+                <div>Minimum Available Hours</div>
+                <select name="minAvailHours" value={this.state.minAvailHours} onChange={this.handleFormEntry}>
+                  <option></option>
+                  <option value='0'>10</option>
+                  <option value='1'>11</option>
+                  <option value='1'>12</option>
+                  <option value='1'>13</option>
+                  <option value='1'>14</option>
+                  <option value='1'>15</option>
+                  <option value='1'>16</option>
+                  <option value='1'>17</option>
+                  <option value='1'>18</option>
+                  <option value='1'>19</option>
+                  <option value='1'>20</option>
+                </select>
+              </div>
+              <div className="m-2">
+                <div>Availability Submission Date</div>
+                <input type='text' name="availSubmissionDate" value={this.state.availSubmissionDate} contentEditable="true" onChange={this.handleFormEntry} />
+              </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
                 <button className="btn-success mr-2" type='submit'>Submit</button>
                 <button className="btn-danger ml-2" type='reset' onClick={this.closeEditUserModalClearInfo} >Cancel</button>
@@ -378,29 +407,6 @@ class AdminOperatorAvailability extends React.Component {
             </form>
           </div>
         </EditUserModal>
-        <ParameterModal parameterShow={this.state.parameter} closeParameter={this.updateParameters} parameterCancel={this.cancelParameterModal}>
-          <div>
-            <form>
-              <div className="d-flex flex-column justify-content-center">
-                <div className="mt-3 mb-2" style={{ fontWeight: 'bold' }}>Please enter the minimum hours that must be submitted.</div>
-                <div>Operator: <input maxLength="2" size="2"/></div>
-                <div>Operations: <input maxLength="2" size="2"/></div>
-                <div>Operations/Trainer: <input maxLength="2" size="2"/></div>
-                <div>Trainer: <input maxLength="2" size="2"/></div>
-                <div>Trainee: <input maxLength="2" size="2"/></div>
-              </div>
-              <div className="d-flex flex-column">
-                <div className="mt-3 mb-2" style={{ fontWeight: 'bold' }}>Date Availability Range</div>
-                <div className="d-inline-flex">
-                  <div>Open Date</div>
-                  <input maxLength="10" size="10"/>
-                  <div>Close Date</div>
-                  <input maxLength="10" size="10"/>
-                </div>
-              </div>
-            </form>
-          </div>
-        </ParameterModal>
       </React.Fragment>
     );
   }

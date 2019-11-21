@@ -1,28 +1,29 @@
 <?php
 
-  require_once('functions.php');
-  set_exception_handler('error_handler');
-  require_once('db_connection.php');
-  require_once('shift-restrictions.php');
+require_once('functions.php');
+set_exception_handler('error_handler');
+require_once('db_connection.php');
+require_once('shift-restrictions.php');
 
-  function populateSchedule (&$operators, $rounds, $conn, $session) {
-    // Traverse through all rounds
-    while ( current($rounds) ) {
-      $shift = getShift(current($rounds)['line_name'], $rounds);
-      $madeAssignment = false;
+function populateSchedule (&$operators, $rounds, $conn, $session) {
+  // Traverse through all rounds
+  while ( current($rounds) ) {
+    print('current rounds: ');
+    print(current($rounds)['line_name']);
+    $shift = getShift(current($rounds)['line_name'], $rounds);
+    $madeAssignment = false;
 
-      if ( hasAdequateRounds($shift) ) {
-        uasort($operators, 'operatorSort');
-        // Traverse operators
-        foreach ( $operators as &$operator ) {
-          if ( canTakeShift($operator, $shift, $conn) ) {
-            assignOperatorToShift($operator, $shift);
-            assignShiftToOperator($operator, $shift);
-            updateShiftFlags($operator, $shift);
+    if ( hasAdequateRounds($shift) ) {
+      uasort($operators, 'operatorSort');
+      // Traverse operators
+      foreach ( $operators as &$operator ) {
+        if ( canTakeShift($operator, $shift) ) {
+          assignOperatorToShift($operator, $shift);
+          assignShiftToOperator($operator, $shift);
+          updateShiftFlags($operator, $shift);
 
-            $madeAssignment = true;
-            break;
-          }
+          $madeAssignment = true;
+          break;
         }
         unset($operator);
       }
@@ -245,6 +246,40 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
     }
   }
 
+function getSessionDays ($dayIndex, $sessionStartTimestamp, $sessionEndTimestamp) {
+  $day = date("Y-m-d", strtotime("+{$dayIndex} days", strtotime($sessionStartTimestamp)));
+  $session = "'$day'" . ',';
+  while ($day <= $sessionEndTimestamp) {
+    $day = date("Y-m-d", strtotime('+1 week', strtotime($day)));
+    $session .= "'$day'" . ',';
+  }
+  $session = substr($session, 0, -1);
+  echo 'session: ';
+  print($session);
+  return $session;
+}
+
+// Update all of the rounds in this shift in the database
+function updateDatabase ($conn, $shift, $session) {
+  print('<pre>');
+  print_r($shift);
+  while ( current($shift) ) {
+    $user_id = current($shift)['user_id'];
+    $bus_info_id = current($shift)['bus_info_id'];
+    $round = [ current($shift)['round_start'], current($shift)['round_end'] ];
+    $query = "UPDATE `round`
+              SET `user_id` = {$user_id},
+                  `status` = 'scheduled'
+              WHERE `date` IN ($session) AND
+                    `bus_info_id` = {$bus_info_id} AND
+                    `start_time` = {$round[0]} AND
+                    `end_time` = {$round[1]} AND
+                    `status` = 'unscheduled'";
+        $result = mysqli_query($conn, $query);
+    if (!$result) {
+      throw new Exception('MySQL update database error: ' . mysqli_error($conn));
+    }
+
   // Sort operators so that they are in order by the operator that has the least amount of weekly minutes
   function operatorSort ($a, $b) {
     if (intval($a['total_weekly_minutes']) === intval($b['total_weekly_minutes'])) {
@@ -254,35 +289,38 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
     }
   }
 
-  // Returns an associative array of rounds for the week
-  function getRoundsForWeek ($conn, $sessionTimestamp) {
-    $weekdays = '';
-    for ($day = 0; $day < 7; ++$day) {
-      $weekdays .= $sessionTimestamp;
-      if ( $day !== 6 ) $weekdays .= ',';
-      $sessionTimestamp = strtotime('+1 day', $sessionTimestamp);
-    }
-
-    $query = "SELECT `rd`.`id`, `rt`.`line_name`, `bi`.`bus_number`, `rd`.`start_time` AS 'round_start', `rd`.`end_time` AS 'round_end',
-                    `us`.`id` AS 'user_id', `us`.`last_name`, `us`.`first_name`, `rd`.`date`, `rd`.`status`, `rd`.`bus_info_id`
-              FROM `route` AS `rt`
-              JOIN `bus_info` AS bi ON `bi`.`route_id` = `rt`.`id`
-              JOIN `round` AS rd ON `rd`.`bus_info_id` = `bi`.`id`
-              JOIN `user` AS us ON `rd`.`user_id` = `us`.`id`
-              WHERE `rd`.`session_id` = 1 AND `rd`.`date` IN ({$weekdays})
-              ORDER BY date ASC, line_name ASC, bus_number ASC, round_start ASC, round_end ASC";
-    $result = mysqli_query($conn, $query);
-    if (!$result) {
-      throw new Exception('MySQL error: ' . mysqli_error($conn));
-    }
-
-    $rounds = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-      $row['day'] = date('D', $row['date']);
-      $rounds[] = $row;
-    }
-    return $rounds;
+// Returns an associative array of rounds for the week
+function getRoundsForWeek ($conn, $sessionTimestamp) {
+  //TODO: EVENTUALLY REMOVE us.last_name and us.last_name - only for physcial print out/debugging not for db
+  $weekdays = [];
+  for ($day = 0; $day < 7; ++$day) {
+    $weekdays[] = $sessionTimestamp;
+    //if ( $day !== 6 ) $weekdays .= ',';
+    $sessionTimestamp = date("Y-m-d", strtotime('+1 day', strtotime($sessionTimestamp)));
   }
+
+  $query = "SELECT `rd`.`id`, `rt`.`line_name`, `bi`.`bus_number`, `rd`.`start_time` AS 'round_start', `rd`.`end_time` AS 'round_end',
+                   `us`.`id` AS 'user_id', `us`.`last_name`, `us`.`first_name`, `rd`.`date`, `rd`.`status`, `rd`.`bus_info_id`
+            FROM `route` AS `rt`
+            JOIN `bus_info` AS bi ON `bi`.`route_id` = `rt`.`id`
+            JOIN `round` AS rd ON `rd`.`bus_info_id` = `bi`.`id`
+            JOIN `user` AS us ON `rd`.`user_id` = `us`.`id`
+            WHERE `rd`.`session_id` = 5 AND `rd`.`date` IN ('$weekdays[0]', '$weekdays[1]', '$weekdays[2]', '$weekdays[3]', '$weekdays[4]', '$weekdays[5]', '$weekdays[6]')
+            ORDER BY date ASC, line_name ASC, bus_number ASC, round_start ASC, round_end ASC";
+  $result = mysqli_query($conn, $query);
+  if (!$result) {
+    throw new Exception('MySQL error: ' . mysqli_error($conn));
+  }
+
+  $rounds = [];
+  while ($row = mysqli_fetch_assoc($result)) {
+    $row['day'] = date('D', strtotime($row['date']));
+    $rounds[] = $row;
+  }
+  echo 'rounds: ';
+  print(json_encode($rounds));
+  return $rounds;
+}
 
   // Returns an associative array of operators for the week
   function getOperatorsForWeek ($conn) {
@@ -449,8 +487,9 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
     unset($day);
   }
 
-  $sessionStartTimestamp = 1566100800;
-  $sessionEndTimestamp = 1576904400;
+$sessionStartTimestamp = '2019-08-18';
+$sessionEndTimestamp = '2019-12-21';
+
 
   $rounds = getRoundsForWeek($conn, $sessionStartTimestamp);
   $operators = getOperatorsForWeek($conn);

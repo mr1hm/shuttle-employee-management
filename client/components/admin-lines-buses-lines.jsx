@@ -80,7 +80,7 @@ export default class Lines extends React.Component {
   handleDeleteLine() {
     this.setState({
       deleteLineClicked: !this.state.deleteLineClicked
-    })
+    });
   }
 
   deleteLine(lineID, sessionID) {
@@ -119,11 +119,6 @@ export default class Lines extends React.Component {
     const { activeBuses } = this.props.line;
     if (!this.props.line.real_route_id) {
       return null;
-    }
-    if (this.state.deleteLineClicked) {
-      return (
-        <DeleteConfirmationModal handleDeleteLine={this.handleDeleteLine} deleteLine={this.deleteLine} line={line} />
-      );
     }
     if (this.state.editLineClicked) {
       return (
@@ -168,6 +163,8 @@ export default class Lines extends React.Component {
       );
     }
     return (
+      <>
+      {this.state.deleteLineClicked ? <DeleteConfirmationModal handleDeleteLine={this.handleDeleteLine} deleteLine={this.deleteLine} line={line} /> : null}
       <div id="accordion">
         <div className="card" id={line.real_route_id}>
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
@@ -243,13 +240,14 @@ export default class Lines extends React.Component {
                   {activeBuses.map((bus, index) => {
                     return <BusesTable key={bus.busNumber + index} selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
                   })
-                }
+                  }
                 </table>
               </div>
             </div>
           </div>
         </div>
       </div>
+      </>
     );
   }
 }

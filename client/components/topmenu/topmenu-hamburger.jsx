@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './topmenu.css';
 import HamburgerMenu from './hamburger-menu';
-import { createDateStringFromDateObject } from '../../lib/time-functions';
+import { getZeroPaddedNumber, createDateStringFromDateObject } from '../../lib/time-functions';
 
 class TopMenuHamburger extends React.Component {
   constructor(props) {
@@ -22,8 +22,7 @@ class TopMenuHamburger extends React.Component {
   }
   render() {
     const today = new Date();
-    const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-    const currentDateString = this.props.date ? createDateStringFromDateObject(this.props.date) : '';// converts unix time to date/at midnight
+    const dateString = `${today.getFullYear()}-${getZeroPaddedNumber(today.getMonth() + 1)}-${getZeroPaddedNumber(today.getDate())}`;
     return (
       <HamburgerMenu notificationCount={this.props.notificationCount} userId={this.props.userId} count={this.state.numberOfShifts}>
         <Link to={{ pathname: '/trade-notification/', state: { newShiftsAndSelectedDriver: this.props.tradeNotification } }}>Notifications</Link>

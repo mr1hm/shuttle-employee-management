@@ -10,10 +10,12 @@ import Sessions from './admin-lines-buses-sessions';
 import GapsModal from './admin-lines-buses-viewGaps';
 import Lines from './admin-lines-buses-lines';
 import CreateSession from './admin-lines-buses-createSession';
+import OperationsHistory from './admin-lines-buses-operationsHistory';
+import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
+import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faBus, faCaretDown, faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
-import OperationsHistory from './admin-lines-buses-operationsHistory';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
@@ -45,7 +47,9 @@ class AdminRoutes extends React.Component {
       newLineAdded: false,
       mostRecentRouteID: null,
       operationsHistoryMethod: null,
-      originalLinesBusesInfo: null
+      originalLinesBusesInfo: null,
+      liveFieldStatus: false,
+      masterFieldStatus: false
     };
     this.getUpdatedLines = this.getUpdatedLines.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
@@ -62,6 +66,8 @@ class AdminRoutes extends React.Component {
     this.handleAddNewSessionClick = this.handleAddNewSessionClick.bind(this);
     this.getAllSessions = this.getAllSessions.bind(this);
     this.getStoreOperationsHistoryMethod = this.getStoreOperationsHistoryMethod.bind(this);
+    this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
+    this.toggleMasterFieldStatus = this.toggleMasterFieldStatus.bind(this);
     // this.copyOriginalLinesBusesInfo = this.copyOriginalLinesBusesInfo.bind(this);
     // this.storeOperationsHistory = this.storeOperationsHistory.bind(this);
   }
@@ -271,6 +277,7 @@ class AdminRoutes extends React.Component {
     fetch('api/admin-lines-buses-sessions.php')
       .then(response => response.json())
       .then(sessionsData => {
+        console.log('getallsessions: ', sessionsData);
         this.setState({
           sessions: sessionsData
         });
@@ -315,6 +322,7 @@ class AdminRoutes extends React.Component {
       fetch('api/admin-lines-buses.php', init)
         .then(response => response.json())
         .then(sessionData => {
+          console.log('linebusinfo: ', sessionData);
           this.setState({
             linesBusesInfo: sessionData
           });
@@ -325,7 +333,7 @@ class AdminRoutes extends React.Component {
         .then(response => response.json())
         .then(linesBusesInfo => {
           // console.log(this.state.linesBusesInfo);
-          // console.log(linesBusesInfo);
+          console.log('getlinesbusesinfo: ', linesBusesInfo);
           this.setState({
             linesBusesInfo: linesBusesInfo
           });
@@ -367,7 +375,21 @@ class AdminRoutes extends React.Component {
     });
   }
 
+  toggleLiveFieldStatus() {
+    this.setState({
+      liveFieldStatus: !this.state.liveFieldStatus
+    });
+  }
+
+  toggleMasterFieldStatus() {
+    this.setState({
+      masterFieldStatus: !this.state.masterFieldStatus
+    });
+  }
+
   render() {
+    const { linesBusesInfo } = this.state;
+    const { sessions } = this.state;
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
     let largestID = 0;
@@ -407,7 +429,7 @@ class AdminRoutes extends React.Component {
                 <div className="col d-flex align-items-end">
                   {/* <label>View</label> */}
                   <br />
-                  <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+                  <button onClick={this.toggleLiveFieldStatus} className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
                 </div>
                 <div className="col d-flex align-items-end">
                   {/* <label>View</label> */}
@@ -542,6 +564,7 @@ class AdminRoutes extends React.Component {
     }
     return (
       <React.Fragment>
+        {this.state.liveFieldStatus ? <LiveFieldStatus liveFieldStatus={this.state.liveFieldStatus} /> : null}
         <TopMenuGeneral title="ADMIN - Lines/Buses" />
         {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
         <div className="container-fluid mt-2">
@@ -564,12 +587,32 @@ class AdminRoutes extends React.Component {
               <div className="col d-flex align-items-end">
                 {/* <label>View</label> */}
                 <br />
-                <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+                <Link to={{
+                  pathname: `/livefieldstatus`,
+                  state: {
+                    linesBusesInfo,
+                    sessions
+                  }
+                }}
+                onClick={this.toggleLiveFieldStatus}
+                className="btn btn-outline-dark w-100 liveFieldStatusBtn">
+                  Live Field View
+                </Link>
               </div>
               <div className="col d-flex align-items-end">
                 {/* <label>View</label> */}
                 <br />
-                <button className="btn btn-outline-dark w-100 masterFieldStatusBtn">Master Field View</button>
+                <Link to={{
+                  pathname: `/masterfieldstatus`,
+                  state: {
+                    linesBusesInfo,
+                    sessions
+                  }
+                }}
+                onClick={this.toggleMasterFieldStatus}
+                className="btn btn-outline-dark w-100 masterFieldStatusBtn">
+                  Master Field View
+                </Link>
               </div>
               <div className="col d-flex align-items-end">
                 <br />
