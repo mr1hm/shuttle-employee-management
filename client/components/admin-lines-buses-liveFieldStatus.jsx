@@ -1,5 +1,4 @@
 import React from 'react';
-import LiveFieldStatusTable from './admin-lines-buses-liveFieldStatusTable';
 
 export default class LiveFieldStatus extends React.Component {
   constructor(props) {
@@ -27,7 +26,6 @@ export default class LiveFieldStatus extends React.Component {
   render() {
     const { linesBusesInfo } = this.props.location.state;
     const { sessions } = this.props.location.state;
-    console.log(linesBusesInfo);
     return (
       <div className="container-fluid">
         <header>
@@ -47,10 +45,19 @@ export default class LiveFieldStatus extends React.Component {
       </div>
       {sessions.map((session, index) => {
         return (
-          <div className="container">
+          <div key={session.name + index} className="container liveFieldStatusParentContainer">
             <div className="row">
-              <div className="col d-flex justify-content-center">
+              <div className="col-6 d-flex justify-content-center text-left">
                 <h2 className="liveFieldStatusSessionName">{session.name}</h2>
+              </div>
+              <div className="col-4 d-inline-flex align-items-end justify-content-end text-right">
+                <div>
+                  <span className="liveFieldStatusStartDateSpan"><i className="liveFieldStatusStartDate">Start Date</i>: {session.startDateString}</span>
+                  <span><i className="liveFieldStatusEndDate">End Date</i>: {session.endDateString}</span>
+                </div>
+              </div>
+              <div className="col-2 d-inline-flex align-items-end">
+
               </div>
             </div>
             <div key={session.name + index} className="container liveFieldStatusTableContainer">
@@ -61,7 +68,9 @@ export default class LiveFieldStatus extends React.Component {
                       <th scope="col">Line</th>
                       <th scope="col">Bus Number</th>
                       <th scope="col">Vehicle</th>
+                      <th scope="col">Previous Shift</th>
                       <th scope="col">Current Shift</th>
+                      <th scope="col">Upcoming Shift</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -72,14 +81,41 @@ export default class LiveFieldStatus extends React.Component {
                         return (
                           <>
                             {lineBusData.activeBuses.map((bus, index) => {
-                              return (
-                                <tr>
-                                  <td>{lineBusData.line_name}</td>
-                                  <td>{bus.busNumber}</td>
-                                  <td>{bus.vehicleID}</td>
-                                  <td>Shift Time & Operator Name</td>
-                                </tr>
-                              );
+                              if (!activeBusesLength) {
+                                return (
+                                  <tr>
+                                    <td className="liveFieldStatusLineName">{lineBusData.line_name}</td>
+                                    <td>No Bus</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                  </tr>
+                                );
+                              } else {
+                                return (
+                                  <tr>
+                                    <td className="liveFieldStatusLineName">{lineName}</td>
+                                    <td>{bus.busNumber}</td>
+                                    <td>{bus.vehicleID}</td>
+                                    <td>
+                                      Shift Time
+                                      <br />
+                                      Operator Name
+                                    </td>
+                                    <td>
+                                      Shift Time
+                                      <br />
+                                      Operator Name
+                                    </td>
+                                    <td>
+                                      Shift Time
+                                      <br />
+                                      Operator Name
+                                    </td>
+                                  </tr>
+                                );
+                              }
                             })}
                           </>
                         );

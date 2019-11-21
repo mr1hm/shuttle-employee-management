@@ -30,6 +30,10 @@ if ($method === 'POST' && (isset($bodyData['name']))) { // add a new session
   $name = $bodyData['name'];
   $startDateString = $bodyData['startDateString'];
   $endDateString = $bodyData['endDateString'];
+  $holidays = $bodyData['holidays'];
+  $reqStartDate = $bodyData['reqStartDate'];
+  $reqEndDate = $bodyData['reqEndDate'];
+  $minHoursReq = $bodyData['minHoursReq'];
   $startDate = $bodyData['startDate'];
   $endDate = $bodyData['endDate'];
   $notes = $bodyData['notes'];

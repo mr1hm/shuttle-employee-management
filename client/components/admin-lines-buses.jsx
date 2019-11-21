@@ -65,7 +65,7 @@ class AdminRoutes extends React.Component {
     this.handleCopySession = this.handleCopySession.bind(this);
     this.handleAddNewSessionClick = this.handleAddNewSessionClick.bind(this);
     this.getAllSessions = this.getAllSessions.bind(this);
-    this.getStoreOperationsHistoryMethod = this.getStoreOperationsHistoryMethod.bind(this);
+    // this.getStoreOperationsHistoryMethod = this.getStoreOperationsHistoryMethod.bind(this);
     this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
     this.toggleMasterFieldStatus = this.toggleMasterFieldStatus.bind(this);
     // this.copyOriginalLinesBusesInfo = this.copyOriginalLinesBusesInfo.bind(this);
@@ -367,11 +367,11 @@ class AdminRoutes extends React.Component {
     }
   }
 
-  getStoreOperationsHistoryMethod(callback) {
-    this.setState({
-      operationsHistoryMethod: callback
-    });
-  }
+  // getStoreOperationsHistoryMethod(callback) {
+  //   this.setState({
+  //     operationsHistoryMethod: callback
+  //   });
+  // }
 
   toggleLiveFieldStatus() {
     this.setState({
@@ -445,18 +445,22 @@ class AdminRoutes extends React.Component {
                 {this.state.copiedSession && this.state.currentSession !== 'All Sessions'
                   ? <div className="col-2 mt-1 mb-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste Session<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
               </div>
-              <div className="row">
-                <div className="card mt-1">
+              <div className="row justify-content-center">
+                <div className="card mt-1 addLineCard">
                   <div className="card-header">
                     <div className="row">
                       <div className="col-2">
-                        {this.state.lineExists ? <label>Line Name<br /><span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span></label> : <label>Line Name<br /><span className="addNewLineName"><i>Name Available</i></span></label>}
+                        <label>Line Name</label>
+                        <br />
+                        <br />
                         <input defaultValue={this.state.newLineName}
                           className="col border border-primary lineNameInput"
                           type="text"
                           name="line_name"
                           onChange={this.handleAddLineChange}>
                         </input>
+                        <br />
+                        {this.state.lineExists ? <span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span> : <span className="addNewLineName"><i>Name Available</i></span>}
                       </div>
                       {this.state.currentSession === 'All Sessions'
                         ? <div className="col">
