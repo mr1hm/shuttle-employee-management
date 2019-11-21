@@ -22,7 +22,7 @@ class NotificationShift extends React.Component {
     if (this.props.type === 'trade') {
       return (
         <button
-          onClick={this.props.giveShifttoSelectedDriver(round_id, target_user_id)}
+          onClick={() => this.props.giveShifttoSelectedDriver(round_id, target_user_id)}
           type="button"
           className="btn btn-success">
           Take Shift
