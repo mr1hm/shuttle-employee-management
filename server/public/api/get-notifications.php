@@ -21,9 +21,7 @@ bi.`bus_number`,
           FROM `transaction` as t
           JOIN `round` as r
           ON  t.`round_id` = r.`id`
-          JOIN `bus_info` as bi
-          ON  r.`bus_info_id` = bi.`id`
-          WHERE `target_user_id` = $id AND t.`status` = 'pending'";
+          WHERE `target_user_id` = $id AND t.`status` = 'pending' AND t.`type` != 'swap-confirm'";
 
 $result = mysqli_query($conn, $query);
 $output = [];

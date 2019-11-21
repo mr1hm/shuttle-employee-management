@@ -24,28 +24,29 @@ class TradeSwap extends React.Component {
 
   handleDriverClick(event) {
     const driverId = event.target.id;
-    const selectedDriver = this.state.availableDrivers.find(driver => driver.id === parseInt(driverId));
+    const selectedDriver = this.state.availableDrivers.find(driver => driver.user_id === driverId);
     const selectedDriverObj = {
-      'first_name': selectedDriver.firstName,
-      'last_name': selectedDriver.lastName,
-      'user_id': selectedDriver.id
+      'first_name': selectedDriver.first_name,
+      'last_name': selectedDriver.last_name,
+      'user_id': selectedDriver.user_id
     };
     this.setState({
       selectedDriver: selectedDriverObj
     });
   }
   getAvailableDrivers() {
-    const week = returnWeekInfoArray(this.props.shiftDetails[0].date);
+    // const week = returnWeekInfoArray(this.props.shiftDetails[0].date);
     let roundTimes = [];
     this.props.shiftDetails.map(oneShift => {
       roundTimes.push({
-        'start_time': oneShift.start_time,
-        'stop_time': oneShift.end_time
+        'round_start': oneShift.start_time,
+        'round_end': oneShift.end_time
       });
     });
     const roundTimesString = JSON.stringify(roundTimes);
+    const lineName = this.props.shiftDetails[0].line_name;
     const date = this.props.shiftDetails[0].date;
-    fetch(`/api/admin-available-operators.php?date=${date}&sunday=${week[0].dateString}&saturday=${week[6].dateString}&round_time=${roundTimesString}`)
+    fetch(`/api/admin-available-operators.php?date=${date}&round_time=${roundTimesString}&line_bus=${lineName}`)
       .then(response => response.json())
       .then(details => {
         this.setState({
@@ -104,7 +105,7 @@ class TradeSwap extends React.Component {
               </button>
               <div className="dropdown-menu w-100">
                 {this.state.availableDrivers.map(singleDriver => {
-                  return <button onClick={this.handleDriverClick} className="dropdown-item" type="button" id={singleDriver.id} key={singleDriver.id}>{singleDriver.firstName} {singleDriver.lastName}</button>;
+                  return <button onClick={this.handleDriverClick} className="dropdown-item" type="button" id={singleDriver.user_id} key={singleDriver.user_id}>{singleDriver.first_name} {singleDriver.last_name}</button>;
                 })}
               </div>
             </div>
