@@ -30,9 +30,6 @@ class TradeModal extends React.Component {
       body: JSON.stringify(selectedDriverToTradeWith),
       headers: headers
     })
-      .then(response => response.json())
-      .then(data => {
-      })
       .catch(error => console.error('Fetch failed', error));
 
   }
