@@ -66,7 +66,7 @@ function hasSpecialStatus ($operator, $shift, $conn, int $option = null) {
             : true;
   }
   if ( $option === 1 ) {
-    return array_search($shift['line_name'], $lines) !== null
+    return array_search(reset($shift)['line_name'], $lines) !== null
       ? $operator['special_route']
         ? '' : 'Operator not authorized for special route'
       : '';
@@ -84,9 +84,9 @@ function shiftTimeRestriction ($operator, $shift, int $option = null) {
   }
   if ( $option === 1 ) {
     return (
-      ( intval(reset($shift)['start_time']) < 800 && $operator['shift_restrictions']['worked_passed_10'])
+      ( intval(reset($shift)['round_start']) < 800 && $operator['shift_restrictions']['worked_passed_10'])
         ? 'Operator cannot work before 8am if they worked past 10pm the previous night'
-        : ( intval(end($shift)['stop_time']) > 2100 && intval($operator['shift_restrictions']['shift_passed_15_hour_window']['shift_start']) < 800)
+        : ( intval(end($shift)['round_end']) > 2100 && intval($operator['shift_restrictions']['shift_passed_15_hour_window']['shift_start']) < 800)
           ? 'Operator cannot work after 9pm if they started working before 8am the same day'
           : ''
     );
