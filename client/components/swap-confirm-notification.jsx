@@ -64,8 +64,8 @@ class SwapConfirmNotification extends React.Component {
             <div className="col-3">{calcShiftLenghtInHourMinFormat(ownShift.start_time, ownShift.end_time)}</div>
           </div>
 
-          <div className="row justify-content-center">
-            <div className="col-3 ml-3 mt-3 mb-3">
+          <div className="row justify-content-center text-center">
+            <div className="col-2 ml-3 mt-3 mb-3">
               <h3>WITH</h3>
             </div>
           </div>
