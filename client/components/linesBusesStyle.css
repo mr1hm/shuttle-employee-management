@@ -97,6 +97,14 @@ table.busTable tbody {
   border-top: 2px solid #FFA804;
 }
 
+table.liveFieldStatusTable tbody {
+  border-top: 1px solid #FFA804;
+}
+
+table.liveFieldStatusTable thead tr th {
+  border-bottom: 1px solid #FFA804;
+}
+
 .busTableEditBtnTd {
   border-top: none!important;
 }
@@ -127,6 +135,13 @@ table.busTable tbody {
 
 .liveFieldStatusTable {
   width: 100%;
+}
+
+.liveFieldStatusTableContainer {
+  height: 300px;
+  overflow: scroll;
+  border: 1px solid black;
+  border-radius: .25rem;
 }
 
 .liveFieldStatusSessionName {

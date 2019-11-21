@@ -50,24 +50,38 @@ export default class LiveFieldStatus extends React.Component {
               <h2 className="liveFieldStatusSessionName">Fall 2019</h2>
             </div>
           </div>
+        </div>
+        <div className="container liveFieldStatusTableContainer">
           <div className="row">
             <table className="table liveFieldStatusTable">
               <thead>
                 <tr>
                   <th scope="col">Line</th>
-                  <th scope="col">Active Buses</th>
+                  <th scope="col">Bus Number</th>
                   <th scope="col">Vehicle</th>
                   <th scope="col">Current Shift</th>
                 </tr>
               </thead>
               <tbody>
-                {linesBusesInfo.forEach(lineBusData => {
+                {linesBusesInfo.map(lineBusData => {
                   let activeBusesLength = lineBusData.activeBuses.length;
                   let lineName = lineBusData.line_name;
-                  lineBusData.activeBuses.forEach((bus, index) => {
-                    return <LiveFieldStatusTable key={bus.busID + index} bus={bus} lineBusData={lineBusData} />;
+                  return (
+                    <>
+                      {lineBusData.activeBuses.map((bus, index) => {
+                        return (
+                          <tr>
+                            <td>{lineBusData.line_name}</td>
+                            <td>{bus.busNumber}</td>
+                            <td>{bus.vehicleID}</td>
+                            <td>Shift Time & Operator Name</td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  );
                   })
-                })}
+                }
               </tbody>
             </table>
           </div>
