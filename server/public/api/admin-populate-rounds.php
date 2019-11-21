@@ -15,7 +15,7 @@ function populateSchedule (&$operators, $rounds, $conn, $session) {
       uasort($operators, 'operatorSort');
       // Traverse operators
       foreach ( $operators as &$operator ) {
-        if ( canTakeShift($operator, $shift) ) {
+        if ( canTakeShift($operator, $shift, $conn) ) {
           assignOperatorToShift($operator, $shift);
           assignShiftToOperator($operator, $shift);
           updateShiftFlags($operator, $shift);
@@ -33,6 +33,7 @@ function populateSchedule (&$operators, $rounds, $conn, $session) {
     }
     next($rounds);
   }
+}
 
 /* Returns an associative array containing all of the rounds to be
  * assigned in a shift */
