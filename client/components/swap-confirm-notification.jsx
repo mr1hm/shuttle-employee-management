@@ -6,7 +6,7 @@ class SwapConfirmNotification extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ownShift: {},
+      ownShift: [],
       shiftsToSwap: []
     };
   }
@@ -27,7 +27,6 @@ class SwapConfirmNotification extends React.Component {
   }
   render() {
     const ownShift = this.state.ownShift;
-    console.log(ownShift);
     return (
       <>
     <div className="row justify-content-center text-center mt-5">
@@ -57,7 +56,7 @@ class SwapConfirmNotification extends React.Component {
         <div className="col-4 d-flex justify-content-center">
           <RouteBusDisplay route={ownShift.line_name} bus={ownShift.bus_info_id} />
         </div>
-        <div className="col-3">{ownShift.start_time + '-' + ownShift.end_time}</div>
+        <div className="col-3">{ownShift.length === 0 ? ownShift.start_time + '-' + ownShift.end_time : convertMilitaryTime(ownShift.start_time) + '-' + convertMilitaryTime(ownShift.end_time) }</div>
         <div className="col-3">{calcShiftLenghtInHourMinFormat(ownShift.start_time, ownShift.end_time)}</div>
       </div>
 
