@@ -121,7 +121,9 @@ class AdminOperatorAvailability extends React.Component {
       firstName: this.state.operatorDetails[index]['first_name'],
       role: this.state.operatorDetails[index]['role'],
       status: this.state.operatorDetails[index]['status'],
-      specialRouteOK: this.state.operatorDetails[index]['special_route_ok']
+      specialRouteOK: this.state.operatorDetails[index]['special_route_ok'],
+      minAvailHours: this.state.operatorDetails[index]['min_avail_hours'],
+      availSubmissionDate: this.state.operatorDetails[index]['avail_end_date']
     });
     this.showEditUserModal();
   }
@@ -202,7 +204,11 @@ class AdminOperatorAvailability extends React.Component {
         'first_name': this.state.firstName,
         'role': this.state.role,
         'status': this.state.status,
-        'special_route_ok': this.state.specialRouteOK
+        'special_route_ok': this.state.specialRouteOK,
+        'min_avail_hours': this.state.minAvailHours,
+        'avail_end_date': this.state.availSubmissionDate,
+        'session_id': this.state.sessionId
+
       }),
       headers: { 'Content-Type': 'application/json' }
     };
@@ -216,7 +222,9 @@ class AdminOperatorAvailability extends React.Component {
           firstName: '',
           role: '',
           status: '',
-          specialRouteOK: ''
+          specialRouteOK: '',
+          minAvailHours: '',
+          availSubmissionDate: ''
         });
       })
       .catch(error => { throw (error); });
@@ -226,6 +234,8 @@ class AdminOperatorAvailability extends React.Component {
     if (!this.state.operatorDetails) {
       return <div>No Data Available</div>;
     }
+    console.log(this.state.operatorDetails);
+
     return (
       <React.Fragment>
         <div className='nav'>
@@ -347,58 +357,74 @@ class AdminOperatorAvailability extends React.Component {
               </div>
               <div className="m-2">
                 <div>First Name</div>
-                <input type='text' name="firstName" value={this.state.firstName} contentEditable="true" onChange={this.handleFormEntry} />
+                <input type='text' name="firstName" defaultValue={this.state.firstName} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="m-2">
                 <div>Last Name</div>
-                <input type='text' name="lastName" value={this.state.lastName} contentEditable="true" onChange={this.handleFormEntry} />
+                <input type='text' name="lastName" defaultValue={this.state.lastName} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="m-2">
                 <div>Role</div>
-                <select name="role" value={this.state.role} onChange={this.handleFormEntry}>
-                  <option></option>
+                <select name="role" defaultValue={this.state.role} onChange={this.handleFormEntry}>
                   <option value='operator'>operator</option>
                   <option value='operations'>operations</option>
                   <option value='trainer'>trainer</option>
-                  <option value='trainee'>trainer</option>
+                  <option value='trainee'>trainee</option>
                 </select>
               </div>
               <div className="m-2">
                 <div>Status</div>
-                <select name="status" value={this.state.status} onChange={this.handleFormEntry}>
-                  <option></option>
+                <select name="status" defaultValue={this.state.status} onChange={this.handleFormEntry}>
                   <option value='active'>active</option>
                   <option value='inactive'>inactive</option>
                 </select>
               </div>
               <div className="m-2">
                 <div>Special Route OK</div>
-                <select name="specialRouteOK" value={this.state.specialRouteOK} onChange={this.handleFormEntry}>
-                  <option></option>
+                <select name="specialRouteOK" defaultValue={this.state.specialRouteOK} onChange={this.handleFormEntry}>
                   <option value='0'>0</option>
                   <option value='1'>1</option>
                 </select>
               </div>
               <div className="m-2">
                 <div>Minimum Available Hours</div>
-                <select name="minAvailHours" value={this.state.minAvailHours} onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='0'>10</option>
-                  <option value='1'>11</option>
-                  <option value='1'>12</option>
-                  <option value='1'>13</option>
-                  <option value='1'>14</option>
-                  <option value='1'>15</option>
-                  <option value='1'>16</option>
-                  <option value='1'>17</option>
-                  <option value='1'>18</option>
-                  <option value='1'>19</option>
-                  <option value='1'>20</option>
+                <select name="minAvailHours" defaultValue={this.state.minAvailHours} onChange={this.handleFormEntry}>
+                  <option value='5'>5</option>
+                  <option value='6'>6</option>
+                  <option value='7'>7</option>
+                  <option value='8'>8</option>
+                  <option value='9'>9</option>
+                  <option value='10'>10</option>
+                  <option value='11'>11</option>
+                  <option value='12'>12</option>
+                  <option value='13'>13</option>
+                  <option value='14'>14</option>
+                  <option value='15'>15</option>
+                  <option value='16'>16</option>
+                  <option value='17'>17</option>
+                  <option value='18'>18</option>
+                  <option value='19'>19</option>
+                  <option value='20'>20</option>
+                  <option value='21'>21</option>
+                  <option value='22'>22</option>
+                  <option value='23'>23</option>
+                  <option value='24'>24</option>
+                  <option value='25'>25</option>
+                  <option value='26'>26</option>
+                  <option value='27'>27</option>
+                  <option value='28'>28</option>
+                  <option value='29'>29</option>
+                  <option value='30'>30</option>
+                  <option value='31'>31</option>
+                  <option value='32'>32</option>
+                  <option value='33'>33</option>
+                  <option value='34'>34</option>
+                  <option value='35'>35</option>
                 </select>
               </div>
               <div className="m-2">
                 <div>Availability Submission Date</div>
-                <input type='text' name="availSubmissionDate" value={this.state.availSubmissionDate} contentEditable="true" onChange={this.handleFormEntry} />
+                <input type='text' name="availSubmissionDate" defaultValue={this.state.availSubmissionDate} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
                 <button className="btn-success mr-2" type='submit'>Submit</button>
