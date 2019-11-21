@@ -41,15 +41,12 @@ export default class AddBus extends React.Component {
     newBus = { ...this.state.newBus };
     newBus.end_time = this.calculateEndTime();
     newBus.roundTimes = this.calculateRoundTimes();
-    console.log(newBus);
     let gapTimes = this.state.displayGapTimes.slice();
     let gapDurations = this.state.displayGapDurations.slice();
     let daysActive = this.state.displayDaysActive.slice();
     gapTimes = gapTimes.split(', ');
     gapDurations = gapDurations.split(', ');
     daysActive = daysActive.split(', ');
-    console.log(gapTimes);
-    console.log(gapDurations);
     newBus = { ...newBus, end_time: this.calculateEndTime(), gap: gapTimes, gapDuration: gapDurations, daysActive: daysActive };
     const init = {
       method: 'POST',
@@ -145,22 +142,37 @@ export default class AddBus extends React.Component {
 
   calculateRoundTimes() {
     let startTime = this.state.newBus.start_time;
+    const openingDuration = parseInt(this.state.newBus.opening_duration);
+    const closingDuration = parseInt(this.state.newBus.closing_duration);
     const rounds = this.state.newBus.rounds;
     const roundDuration = parseInt(this.props.line.roundDuration);
     let endTime = this.state.newBus.end_time;
-    const gapTime = parseInt(this.state.newBus.gap);
-    const gapDuration = parseInt(this.state.newBus.gapDuration);
+    let gapTime = this.state.newBus.gap.slice();
+    const gapTimeArr = gapTime.split(',');
+    console.log('gaptime: ', gapTimeArr);
+    let gapDuration = this.state.newBus.gapDuration.slice();
+    const gapDurationArr = gapDuration.split(',');
+    console.log('gapduration: ', gapDurationArr);
     const date = new Date();
     const roundTimes = [];
     date.setHours(parseInt(startTime[0] + startTime[1]));
     date.setMinutes(parseInt(startTime[2] + startTime[3]));
+    date.setMinutes(date.getMinutes() - openingDuration);
     for (let roundIndex = 0; roundIndex < rounds; roundIndex++) {
       startTime = date.getHours() * 100 + date.getMinutes();
       date.setMinutes(date.getMinutes() + roundDuration);
+      if (roundIndex === 0) {
+        date.setMinutes(date.getMinutes() + openingDuration);
+      }
+      if (roundIndex === rounds - 1) {
+        date.setMinutes(date.getMinutes() + closingDuration);
+      }
       endTime = date.getHours() * 100 + date.getMinutes();
-      if (gapTime && gapDuration && gapTime >= startTime && gapTime < endTime) {
-        date.setMinutes(date.getMinutes() + gapDuration);
-        endTime = date.getHours() * 100 + date.getMinutes();
+      for (let gapIndex = 0; gapIndex < gapTime.length; gapIndex++) {
+        if (gapTimeArr.length && gapDurationArr.length && parseInt(gapTimeArr[gapIndex]) >= startTime && parseInt(gapTimeArr[gapIndex]) < endTime) {
+          date.setMinutes(date.getMinutes() + parseInt(gapDurationArr[gapIndex]));
+          endTime = date.getHours() * 100 + date.getMinutes();
+        }
       }
       roundTimes.push({ start_time: startTime, end_time: endTime });
     }

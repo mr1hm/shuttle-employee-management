@@ -8,8 +8,6 @@ require_once('shift-restrictions.php');
 function populateSchedule (&$operators, $rounds, $conn, $session) {
   // Traverse through all rounds
   while ( current($rounds) ) {
-    print('current rounds: ');
-    print(current($rounds)['line_name']);
     $shift = getShift(current($rounds)['line_name'], $rounds);
     $madeAssignment = false;
 
@@ -17,7 +15,7 @@ function populateSchedule (&$operators, $rounds, $conn, $session) {
       uasort($operators, 'operatorSort');
       // Traverse operators
       foreach ( $operators as &$operator ) {
-        if ( canTakeShift($operator, $shift) ) {
+        if ( canTakeShift($operator, $shift, $conn) ) {
           assignOperatorToShift($operator, $shift);
           assignShiftToOperator($operator, $shift);
           updateShiftFlags($operator, $shift);
@@ -35,6 +33,7 @@ function populateSchedule (&$operators, $rounds, $conn, $session) {
     }
     next($rounds);
   }
+}
 
 /* Returns an associative array containing all of the rounds to be
  * assigned in a shift */
@@ -213,17 +212,6 @@ function updateOperatorAvailableTimes(&$operator, $shift) {
   }
 }
 
-  function getSessionDays ($dayIndex, $sessionStartTimestamp, $sessionEndTimestamp) {
-    $day = strtotime("+{$dayIndex} days", $sessionStartTimestamp);
-    $session = $day . ',';
-    while ($day <= $sessionEndTimestamp) {
-      $day = strtotime('+1 week', $day);
-      $session .= $day . ',';
-    }
-    $session = substr($session, 0, -1);
-    return $session;
-  }
-
   // Update all of the rounds in this shift in the database
   function updateDatabaseRounds ($conn, $shift, $session) {
     while ( current($shift) ) {
@@ -254,31 +242,8 @@ function getSessionDays ($dayIndex, $sessionStartTimestamp, $sessionEndTimestamp
     $session .= "'$day'" . ',';
   }
   $session = substr($session, 0, -1);
-  echo 'session: ';
-  print($session);
   return $session;
 }
-
-// Update all of the rounds in this shift in the database
-function updateDatabase ($conn, $shift, $session) {
-  print('<pre>');
-  print_r($shift);
-  while ( current($shift) ) {
-    $user_id = current($shift)['user_id'];
-    $bus_info_id = current($shift)['bus_info_id'];
-    $round = [ current($shift)['round_start'], current($shift)['round_end'] ];
-    $query = "UPDATE `round`
-              SET `user_id` = {$user_id},
-                  `status` = 'scheduled'
-              WHERE `date` IN ($session) AND
-                    `bus_info_id` = {$bus_info_id} AND
-                    `start_time` = {$round[0]} AND
-                    `end_time` = {$round[1]} AND
-                    `status` = 'unscheduled'";
-        $result = mysqli_query($conn, $query);
-    if (!$result) {
-      throw new Exception('MySQL update database error: ' . mysqli_error($conn));
-    }
 
   // Sort operators so that they are in order by the operator that has the least amount of weekly minutes
   function operatorSort ($a, $b) {
@@ -317,8 +282,6 @@ function getRoundsForWeek ($conn, $sessionTimestamp) {
     $row['day'] = date('D', strtotime($row['date']));
     $rounds[] = $row;
   }
-  echo 'rounds: ';
-  print(json_encode($rounds));
   return $rounds;
 }
 
