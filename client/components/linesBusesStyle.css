@@ -102,14 +102,21 @@ table.busTable tbody {
 }
 
 .addLineBtn,
-.liveFieldStatusBtn,
-.masterFieldStatusBtn,
 .newSessionBtn {
   color: #FFA804;
   background-color: rgb(23, 2, 61);
   border: 1px solid #FFA804;
   height: 23px;
-  line-height: 0;
+  line-height: 0.6;
+}
+
+.liveFieldStatusBtn,
+.masterFieldStatusBtn {
+  color: #FFA804;
+  background-color: rgb(23, 2, 61);
+  border: 1px solid #FFA804;
+  height: 23px;
+  line-height: 0.6;
 }
 
 .lineNameInput,

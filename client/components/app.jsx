@@ -16,6 +16,7 @@ import Transaction from './transaction/transactionpage';
 import TradeSwap from './trade-swap';
 import TradeNotification from './trade-notification';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
+import MasterFieldStatus from './admin-lines-buses-masterFieldStatus';
 
 class App extends React.Component {
   constructor(props) {
@@ -55,6 +56,7 @@ class App extends React.Component {
         <React.Fragment>
           <Switch>
             <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
+            <Route path="/masterfieldstatus/" render={props => <MasterFieldStatus {...props} />} />
             <Route exact path={['/', '/welcome/']} render={props => <Welcome {...props} userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId ? this.state.userId : 17} get={this.getUserID} />} />
             <Route path="/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
@@ -76,6 +78,7 @@ class App extends React.Component {
         <React.Fragment>
           <Switch>
             <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
+            <Route path="/masterfieldstatus/" render={props => <MasterFieldStatus {...props} />} />
             <Route exact path={['/', '/login/']} render={props => <Login {...props} onClick={this.setLoginProps} onChange={this.getUserID} />} />
             <Route path="/welcome/" render={props => <Welcome {...props} />}/>
             <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId} />}/>

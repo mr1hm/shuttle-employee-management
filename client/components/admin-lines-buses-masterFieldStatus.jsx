@@ -1,21 +1,20 @@
 import React from 'react';
 
-export default class LiveFieldStatus extends React.Component {
+export default class MasterFieldStatus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentLines: null,
-      currentBuses: null
-    };
+      allData: null
+    }
   }
 
   render() {
     return (
-      <div className="container-fluid">
+      <div className="container-fluid" >
         <header>
           <div className="row">
             <div className="col-2">
-              <img src="../../server/public/assets/images/mascot/anteater.png" alt="anteater mascot"/>
+              <img src="../../server/public/assets/images/mascot/anteater.png" alt="anteater mascot" />
               <h4>Anteater<br /> Express</h4>
             </div>
           </div>
@@ -23,7 +22,7 @@ export default class LiveFieldStatus extends React.Component {
         <div className="container">
           <div className="row">
             <div className="col">
-              <h1 className="liveFieldStatusTitle">Live Field Status</h1>
+              <h1 className="liveFieldStatusTitle">Master Field Status</h1>
             </div>
           </div>
         </div>

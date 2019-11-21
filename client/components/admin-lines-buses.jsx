@@ -47,7 +47,9 @@ class AdminRoutes extends React.Component {
       newLineAdded: false,
       mostRecentRouteID: null,
       operationsHistoryMethod: null,
-      originalLinesBusesInfo: null
+      originalLinesBusesInfo: null,
+      liveFieldStatus: false,
+      masterFieldStatus: false
     };
     this.getUpdatedLines = this.getUpdatedLines.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
@@ -65,6 +67,7 @@ class AdminRoutes extends React.Component {
     this.getAllSessions = this.getAllSessions.bind(this);
     this.getStoreOperationsHistoryMethod = this.getStoreOperationsHistoryMethod.bind(this);
     this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
+    this.toggleMasterFieldStatus = this.toggleMasterFieldStatus.bind(this);
     // this.copyOriginalLinesBusesInfo = this.copyOriginalLinesBusesInfo.bind(this);
     // this.storeOperationsHistory = this.storeOperationsHistory.bind(this);
   }
@@ -376,7 +379,14 @@ class AdminRoutes extends React.Component {
     })
   }
 
+  toggleMasterFieldStatus() {
+    this.setState({
+      masterFieldStatus: !this.state.masterFieldStatus
+    })
+  }
+
   render() {
+    const { linesBusesInfo } = this.state;
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
     let largestID = 0;
@@ -574,14 +584,30 @@ class AdminRoutes extends React.Component {
               <div className="col d-flex align-items-end">
                 {/* <label>View</label> */}
                 <br />
-                <Link to="livefieldstatus" onClick={this.toggleLiveFieldStatus} className="btn btn-outline-dark w-100 liveFieldStatusBtn">
+                <Link to={{
+                  pathname: '/livefieldstatus',
+                  state: {
+                    linesBusesInfo
+                  },
+                }}
+                  onClick={this.toggleLiveFieldStatus}
+                  className="btn btn-outline-dark w-100 liveFieldStatusBtn">
                   Live Field View
                 </Link>
               </div>
               <div className="col d-flex align-items-end">
                 {/* <label>View</label> */}
                 <br />
-                <button className="btn btn-outline-dark w-100 masterFieldStatusBtn">Master Field View</button>
+                <Link to={{
+                  pathname: '/masterfieldstatus',
+                  state: {
+                    linesBusesInfo
+                  },
+                }}
+                  onClick={this.toggleMasterFieldStatus}
+                  className="btn btn-outline-dark w-100 masterFieldStatusBtn">
+                  Master Field View
+                </Link>
               </div>
               <div className="col d-flex align-items-end">
                 <br />
