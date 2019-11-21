@@ -97,19 +97,68 @@ table.busTable tbody {
   border-top: 2px solid #FFA804;
 }
 
+table.liveFieldStatusTable tbody {
+  border-top: 1px solid #FFA804;
+}
+
+table.liveFieldStatusTable thead tr th {
+  border-bottom: 1px solid #FFA804;
+}
+
 .busTableEditBtnTd {
   border-top: none!important;
 }
 
 .addLineBtn,
-.liveFieldStatusBtn,
-.masterFieldStatusBtn,
 .newSessionBtn {
   color: #FFA804;
   background-color: rgb(23, 2, 61);
   border: 1px solid #FFA804;
   height: 23px;
-  line-height: 0;
+  line-height: 0.6;
+}
+
+.liveFieldStatusBtn,
+.masterFieldStatusBtn {
+  color: #FFA804;
+  background-color: rgb(23, 2, 61);
+  border: 1px solid #FFA804;
+  height: 23px;
+  line-height: 0.6;
+}
+
+.liveFieldStatusHeader {
+  background-color: rgb(150, 149, 149);
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 2px solid #FFA804;
+}
+
+.liveFieldStatusTable {
+  width: 100%;
+}
+
+.liveFieldStatusTableContainer {
+  height: 300px;
+  overflow: scroll;
+  border: 1px solid black;
+  border-radius: .25rem;
+}
+
+.liveFieldStatusSessionName {
+  font-size: 36px;
+  margin-top: 50px;
+  color: rgb(121, 132, 235);
+  font-weight: 700;
+}
+
+.liveFieldStatusTitle {
+  border-bottom: 1px solid #FFA804;
+  margin-top: 25px;
+  font-weight: 800;
+}
+
+.liveFieldStatusContentContainer {
+  max-width: 80%;
 }
 
 .lineNameInput,
@@ -125,9 +174,14 @@ table.busTable tbody {
 .sessionNameInput,
 .sessionStartDateInput,
 .sessionEndDateInput,
-.sessionNotesInput {
+.sessionNotesInput,
+.sessionOperatorInfoInput {
   border-radius: .25rem;
   height: 23px;
+}
+
+.addSessionLineCard {
+  border: 1px solid #FFA804;
 }
 
 .sessionNameExists {
@@ -145,6 +199,10 @@ table.busTable tbody {
 
 .sessionNameSpan {
   margin: 0;
+}
+
+.mascot {
+  background-image: "/Users/kevinihm/lfz/519_anteater_express/server/public/assets/images/mascot/anteater.png"
 }
 
 .addNewBusCard {

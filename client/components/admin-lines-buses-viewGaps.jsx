@@ -7,8 +7,8 @@ export default class GapsModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      gapStartTimes: null,
-      gapDurations: null
+      editGapStartTimes: null,
+      editGapDurations: null
     };
   }
 
