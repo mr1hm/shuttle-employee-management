@@ -10,10 +10,12 @@ import Sessions from './admin-lines-buses-sessions';
 import GapsModal from './admin-lines-buses-viewGaps';
 import Lines from './admin-lines-buses-lines';
 import CreateSession from './admin-lines-buses-createSession';
+import OperationsHistory from './admin-lines-buses-operationsHistory';
+import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
+import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faBus, faCaretDown, faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
-import OperationsHistory from './admin-lines-buses-operationsHistory';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
@@ -62,6 +64,7 @@ class AdminRoutes extends React.Component {
     this.handleAddNewSessionClick = this.handleAddNewSessionClick.bind(this);
     this.getAllSessions = this.getAllSessions.bind(this);
     this.getStoreOperationsHistoryMethod = this.getStoreOperationsHistoryMethod.bind(this);
+    this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
     // this.copyOriginalLinesBusesInfo = this.copyOriginalLinesBusesInfo.bind(this);
     // this.storeOperationsHistory = this.storeOperationsHistory.bind(this);
   }
@@ -367,6 +370,12 @@ class AdminRoutes extends React.Component {
     });
   }
 
+  toggleLiveFieldStatus() {
+    this.setState({
+      liveFieldStatus: !this.state.liveFieldStatus
+    })
+  }
+
   render() {
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
@@ -407,7 +416,7 @@ class AdminRoutes extends React.Component {
                 <div className="col d-flex align-items-end">
                   {/* <label>View</label> */}
                   <br />
-                  <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+                  <button onClick={this.toggleLiveFieldStatus} className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
                 </div>
                 <div className="col d-flex align-items-end">
                   {/* <label>View</label> */}
@@ -542,6 +551,7 @@ class AdminRoutes extends React.Component {
     }
     return (
       <React.Fragment>
+        {this.state.liveFieldStatus ? <LiveFieldStatus liveFieldStatus={this.state.liveFieldStatus} /> : null}
         <TopMenuGeneral title="ADMIN - Lines/Buses" />
         {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
         <div className="container-fluid mt-2">
@@ -564,7 +574,9 @@ class AdminRoutes extends React.Component {
               <div className="col d-flex align-items-end">
                 {/* <label>View</label> */}
                 <br />
-                <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+                <Link to="livefieldstatus" onClick={this.toggleLiveFieldStatus} className="btn btn-outline-dark w-100 liveFieldStatusBtn">
+                  Live Field View
+                </Link>
               </div>
               <div className="col d-flex align-items-end">
                 {/* <label>View</label> */}

@@ -125,9 +125,14 @@ table.busTable tbody {
 .sessionNameInput,
 .sessionStartDateInput,
 .sessionEndDateInput,
-.sessionNotesInput {
+.sessionNotesInput,
+.sessionOperatorInfoInput {
   border-radius: .25rem;
   height: 23px;
+}
+
+.addSessionLineCard {
+  border: 1px solid #FFA804;
 }
 
 .sessionNameExists {
@@ -145,6 +150,14 @@ table.busTable tbody {
 
 .sessionNameSpan {
   margin: 0;
+}
+
+.liveFieldStatusTitle {
+  border-bottom: 1px solid #FFA804;
+}
+
+.mascot {
+  background-image: "/Users/kevinihm/lfz/519_anteater_express/server/public/assets/images/mascot/anteater.png"
 }
 
 .addNewBusCard {
