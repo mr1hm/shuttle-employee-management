@@ -387,6 +387,7 @@ class AdminRoutes extends React.Component {
 
   render() {
     const { linesBusesInfo } = this.state;
+    const { sessions } = this.state;
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
     let largestID = 0;
@@ -585,10 +586,11 @@ class AdminRoutes extends React.Component {
                 {/* <label>View</label> */}
                 <br />
                 <Link to={{
-                  pathname: '/livefieldstatus',
+                  pathname: `/livefieldstatus`,
                   state: {
-                    linesBusesInfo
-                  },
+                    linesBusesInfo,
+                    sessions
+                  }
                 }}
                   onClick={this.toggleLiveFieldStatus}
                   className="btn btn-outline-dark w-100 liveFieldStatusBtn">
@@ -599,10 +601,11 @@ class AdminRoutes extends React.Component {
                 {/* <label>View</label> */}
                 <br />
                 <Link to={{
-                  pathname: '/masterfieldstatus',
+                  pathname: `/masterfieldstatus`,
                   state: {
-                    linesBusesInfo
-                  },
+                    linesBusesInfo,
+                    sessions
+                  }
                 }}
                   onClick={this.toggleMasterFieldStatus}
                   className="btn btn-outline-dark w-100 masterFieldStatusBtn">

@@ -86,7 +86,6 @@ export default class BusesTable extends React.Component {
     const { line } = this.props;
     const { busInfo } = this.props;
     const deleteStatus = 'bus';
-    console.log(busInfo);
     if (this.state.showGapsModal) {
       return (
         <>
