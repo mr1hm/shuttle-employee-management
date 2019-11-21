@@ -277,6 +277,7 @@ class AdminRoutes extends React.Component {
     fetch('api/admin-lines-buses-sessions.php')
       .then(response => response.json())
       .then(sessionsData => {
+        console.log('getallsessions: ', sessionsData);
         this.setState({
           sessions: sessionsData
         });
@@ -321,6 +322,7 @@ class AdminRoutes extends React.Component {
       fetch('api/admin-lines-buses.php', init)
         .then(response => response.json())
         .then(sessionData => {
+          console.log('linebusinfo: ', sessionData);
           this.setState({
             linesBusesInfo: sessionData
           });
@@ -331,7 +333,7 @@ class AdminRoutes extends React.Component {
         .then(response => response.json())
         .then(linesBusesInfo => {
           // console.log(this.state.linesBusesInfo);
-          // console.log(linesBusesInfo);
+          console.log('getlinesbusesinfo: ', linesBusesInfo);
           this.setState({
             linesBusesInfo: linesBusesInfo
           });
@@ -376,13 +378,13 @@ class AdminRoutes extends React.Component {
   toggleLiveFieldStatus() {
     this.setState({
       liveFieldStatus: !this.state.liveFieldStatus
-    })
+    });
   }
 
   toggleMasterFieldStatus() {
     this.setState({
       masterFieldStatus: !this.state.masterFieldStatus
-    })
+    });
   }
 
   render() {
@@ -592,8 +594,8 @@ class AdminRoutes extends React.Component {
                     sessions
                   }
                 }}
-                  onClick={this.toggleLiveFieldStatus}
-                  className="btn btn-outline-dark w-100 liveFieldStatusBtn">
+                onClick={this.toggleLiveFieldStatus}
+                className="btn btn-outline-dark w-100 liveFieldStatusBtn">
                   Live Field View
                 </Link>
               </div>
@@ -607,8 +609,8 @@ class AdminRoutes extends React.Component {
                     sessions
                   }
                 }}
-                  onClick={this.toggleMasterFieldStatus}
-                  className="btn btn-outline-dark w-100 masterFieldStatusBtn">
+                onClick={this.toggleMasterFieldStatus}
+                className="btn btn-outline-dark w-100 masterFieldStatusBtn">
                   Master Field View
                 </Link>
               </div>

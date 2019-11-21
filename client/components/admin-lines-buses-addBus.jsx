@@ -81,17 +81,17 @@ export default class AddBus extends React.Component {
       // console.log(gapTimes);
       this.setState({
         displayGapTimes: value
-      })
+      });
     } else if (name === 'gapDuration') {
       // let gapDurations = value;
       // console.log(gapDurations);
       this.setState({
         displayGapDurations: value
-      })
+      });
     } else if (name === 'daysActive') {
       this.setState({
         displayDaysActive: value
-      })
+      });
     }
     this.setState(prevState => ({
       newBus: {

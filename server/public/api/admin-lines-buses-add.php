@@ -48,8 +48,7 @@ if (isset($bodyData['line_name'])) { // add a new line
   $gapStartTimes = $bodyData['gap'];
   $gapDurations = $bodyData['gapDuration'];
   $daysActive = $bodyData['daysActive'];
-  $daysActiveArr = explode(", ", $daysActive);
-  $dayOffset = getDayOffsets($daysActiveArr);
+  $dayOffset = getDayOffsets($daysActive);
   $idRoute = $bodyData['route_id'];
   $vehicleID = $bodyData['vehicle_id'];
   $openingDuration = $bodyData['opening_duration'];
@@ -74,6 +73,8 @@ if (isset($bodyData['line_name'])) { // add a new line
     throw new Exception('could not start transaction' . mysqli_error($conn));
   }
 
+
+
   $busInsertQuery = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `route_id`, `vehicle_id`, `opening_duration`, `closing_duration`)
               VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$idRoute', '$vehicleID', '$openingDuration', '$closingDuration')";
   $result = mysqli_query($conn, $busInsertQuery);
@@ -82,6 +83,7 @@ if (isset($bodyData['line_name'])) { // add a new line
     throw new Exception('mysql add bus error ' . mysqli_error($conn));
   }
 
+  $addedBusID = mysqli_insert_id($conn);
   $idQuery = "SELECT LAST_INSERT_ID() AS id";
   $result = mysqli_query($conn, $idQuery);
   $row = mysqli_fetch_assoc($result);
