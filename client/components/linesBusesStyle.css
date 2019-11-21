@@ -138,7 +138,7 @@ table.liveFieldStatusTable thead tr th {
 }
 
 .liveFieldStatusTableContainer {
-  height: 300px;
+  height: 350px;
   overflow: scroll;
   border: 1px solid black;
   border-radius: .25rem;

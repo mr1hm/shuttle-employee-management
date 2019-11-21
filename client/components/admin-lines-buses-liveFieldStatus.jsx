@@ -27,6 +27,7 @@ export default class LiveFieldStatus extends React.Component {
   render() {
     const { linesBusesInfo } = this.props.location.state;
     const { sessions } = this.props.location.state;
+    console.log(linesBusesInfo);
     return (
       <div className="container-fluid">
         <header>
@@ -44,48 +45,55 @@ export default class LiveFieldStatus extends React.Component {
           </div>
         </div>
       </div>
-        <div className="container">
-          <div className="row">
-            <div className="col d-flex justify-content-center">
-              <h2 className="liveFieldStatusSessionName">Fall 2019</h2>
+      {sessions.map((session, index) => {
+        return (
+          <div className="container">
+            <div className="row">
+              <div className="col d-flex justify-content-center">
+                <h2 className="liveFieldStatusSessionName">{session.name}</h2>
+              </div>
+            </div>
+            <div key={session.name + index} className="container liveFieldStatusTableContainer">
+              <div className="row">
+                <table className="table liveFieldStatusTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">Line</th>
+                      <th scope="col">Bus Number</th>
+                      <th scope="col">Vehicle</th>
+                      <th scope="col">Current Shift</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {linesBusesInfo.map(lineBusData => {
+                      let activeBusesLength = lineBusData.activeBuses.length;
+                      let lineName = lineBusData.line_name;
+                      if (session.id == lineBusData.sessionID) {
+                        return (
+                          <>
+                            {lineBusData.activeBuses.map((bus, index) => {
+                              return (
+                                <tr>
+                                  <td>{lineBusData.line_name}</td>
+                                  <td>{bus.busNumber}</td>
+                                  <td>{bus.vehicleID}</td>
+                                  <td>Shift Time & Operator Name</td>
+                                </tr>
+                              );
+                            })}
+                          </>
+                        );
+                      }
+                    })
+                    }
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="container liveFieldStatusTableContainer">
-          <div className="row">
-            <table className="table liveFieldStatusTable">
-              <thead>
-                <tr>
-                  <th scope="col">Line</th>
-                  <th scope="col">Bus Number</th>
-                  <th scope="col">Vehicle</th>
-                  <th scope="col">Current Shift</th>
-                </tr>
-              </thead>
-              <tbody>
-                {linesBusesInfo.map(lineBusData => {
-                  let activeBusesLength = lineBusData.activeBuses.length;
-                  let lineName = lineBusData.line_name;
-                  return (
-                    <>
-                      {lineBusData.activeBuses.map((bus, index) => {
-                        return (
-                          <tr>
-                            <td>{lineBusData.line_name}</td>
-                            <td>{bus.busNumber}</td>
-                            <td>{bus.vehicleID}</td>
-                            <td>Shift Time & Operator Name</td>
-                          </tr>
-                        );
-                      })}
-                    </>
-                  );
-                  })
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
+        );
+      })}
+
       </div>
     );
   }

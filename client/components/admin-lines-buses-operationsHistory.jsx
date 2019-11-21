@@ -14,7 +14,7 @@ export default class OperationsHistory extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getStoreOperationsHistoryMethod(this.storeOperationsHistory);
+    // this.props.getStoreOperationsHistoryMethod(this.storeOperationsHistory);
     this.copyOriginalLinesBusesInfo();
   }
 
