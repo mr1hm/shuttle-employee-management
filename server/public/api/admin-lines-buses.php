@@ -96,19 +96,40 @@ $query = "SELECT
     $rounds = $bodyData['rounds'];
     $endTime = $bodyData['end_time'];
     $daysActive = $bodyData['daysActive'];
-    $gap = $bodyData['gap'];
-    $gapDuration = $bodyData['gapDuration'];
+    // $gap = $bodyData['gap'];
+    // $gapDuration = $bodyData['gapDuration'];
     $openingDuration = $bodyData['opening_duration'];
     $closingDuration = $bodyData['closing_duration'];
     $query = "UPDATE `bus_info`
-                SET `bus_number` = '$busNumber', `start_time` = '$startTime', `rounds` = '$rounds', `end_time` = '$endTime', `daysActive` = '$daysActive', `gap` = '$gap',
-                    `gapDuration` = $gapDuration, `opening_duration` = '$openingDuration', `closing_duration` = '$closingDuration'
+                SET `bus_number` = '$busNumber', `start_time` = '$startTime', `rounds` = '$rounds', `end_time` = '$endTime', `opening_duration` = '$openingDuration', `closing_duration` = '$closingDuration'
                 WHERE `bus_info`.`id` = '$busID'";
 
 } else if ($method === 'DELETE' && (isset($bodyData['id']))) {
 
     $busID = $bodyData['id'];
     $query = "DELETE FROM `bus_info` WHERE `id` = $busID";
+
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('mysql error bus_info table ' . mysqli_error($conn));
+    }
+
+    $query = "DELETE FROM `busGaps` WHERE `bus_id` = $busID";
+
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('mysql error busGaps table ' . mysqli_error($conn));
+    }
+
+    $query = "DELETE FROM `busDaysActive` WHERE `bus_id` = $busID";
+
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('mysql error busDaysActive table ' . mysqli_error($conn));
+    }
 
 } else if ($method === 'DELETE' && (isset($bodyData['routeID']))) { // deletes line and buses that were on that line
 
@@ -181,6 +202,8 @@ if($method === 'GET') {
     unset($row['daysActive']);
     unset($row['gapStartTime']);
     unset($row['gapDuration']);
+    unset($row['gapStartTimes']);
+    unset($row['gapDurations']);
     unset($row['opening_duration']);
     unset($row['closing_duration']);
     unset($row['vehicle_id']);

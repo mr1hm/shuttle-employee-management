@@ -185,19 +185,19 @@ if ($method === 'POST' && (isset($bodyData['session_id']))) { // select data fro
   $query = "SELECT
             bi.`id` AS 'busID',
             bi.`bus_number`,
-            bi.`gapDuration`,
             rt.`id` AS 'real_route_id',
             bi.`rounds`,
             rt.`roundDuration`,
             bi.`start_time`,
             bi.`end_time`,
-            bi.`daysActive`,
-            bi.`gap`,
+            bg.`gapStartTimes`,
+            bg.`gapDurations`,
             rt.`line_name`,
             rt.`status`,
             bi.`opening_duration`,
             bi.`closing_duration`,
             bi.`vehicle_id`,
+            bd.`daysActive`,
             rt.`public`,
             rt.`regularService`,
             rt.`specialDriver`,
@@ -205,7 +205,9 @@ if ($method === 'POST' && (isset($bodyData['session_id']))) { // select data fro
             IF (rt.`specialDriver` = 1, 'True', 'False') AS specialDriver
             FROM `route` AS rt
             LEFT JOIN `bus_info` AS bi ON bi.`route_id` = rt.`id`
-            JOIN `session` AS s ON s.`id` = rt.`session_id`
+            LEFT JOIN `session` AS s ON s.`id` = rt.`session_id`
+            LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`gapStartTime`) AS gapStartTimes, GROUP_CONCAT(`gapDuration`) AS gapDurations FROM `busGaps` GROUP BY `bus_id`) AS bg ON bg.`bus_id` = bi.`id`
+            LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`daysActive`) AS daysActive FROM `busDaysActive` GROUP BY `bus_id`) AS bd ON bd.`bus_id` = bi.`id`
             WHERE s.`id` = '$sessionID'
             ORDER BY line_name";
 
@@ -227,12 +229,24 @@ if ($method === 'POST' && (isset($bodyData['session_id']))) { // select data fro
       $busInfo['startTime'] = $row['start_time'];
       $busInfo['rounds'] = $row['rounds'];
       $busInfo['endTime'] = $row['end_time'];
-      $busInfo['daysActive'] = $row['daysActive'];
-      $busInfo['gap'] = $row['gap'];
-      $busInfo['gapDuration'] = $row['gapDuration'];
       $busInfo['openingDuration'] = $row['opening_duration'];
       $busInfo['closingDuration'] = $row['closing_duration'];
       $busInfo['vehicleID'] = $row['vehicle_id'];
+      if ($row['daysActive'] !== NULL) {
+        $busInfo['daysActive'] = explode(',', $row['daysActive']);
+      } else {
+        $busInfo['daysActive'] = [];
+      }
+      if ($row['gapStartTimes'] !== NULL) {
+        $busInfo['gapStartTimes'] = explode(',', $row['gapStartTimes']);
+      } else {
+        $busInfo['gapStartTimes'] = [];
+      }
+      if ($row['gapDurations'] !== NULL) {
+        $busInfo['gapDurations'] = explode(',', $row['gapDurations']);
+      } else {
+        $busInfo['gapDurations'] = [];
+      }
     }
 
     unset($row['busID']);
@@ -241,7 +255,7 @@ if ($method === 'POST' && (isset($bodyData['session_id']))) { // select data fro
     unset($row['rounds']);
     unset($row['end_time']);
     unset($row['daysActive']);
-    unset($row['gap']);
+    unset($row['gapStartTime']);
     unset($row['gapDuration']);
     unset($row['opening_duration']);
     unset($row['closing_duration']);

@@ -6,7 +6,7 @@ import AdminClickedShiftDetailsAside from './admin-shifts-clicked-details-aside'
 import AdminShiftsCombinedRounds from './admin-shifts-combined-rounds';
 import AdminAvailableOperator from './admin-available-operator';
 import AdminUnavailableOperator from './admin-unavailable-operator';
-import { returnWeekInfoArray } from '../lib/time-functions';
+import { getZeroPaddedNumber, getDateString, returnWeekInfoArray } from '../lib/time-functions';
 import './admin-shifts-display.css';
 import AdminConfirmModal from './admin-confirm-modal';
 class AdminShiftsDay extends React.Component {
@@ -23,9 +23,9 @@ class AdminShiftsDay extends React.Component {
     this.handleClickUnassignShift = this.handleClickUnassignShift.bind(this);
     this.handleClickCancel = this.handleClickCancel.bind(this);
     this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
-    const defaultDate = 1566619200;
+    const today = new Date();
     this.state = {
-      date: defaultDate,
+      date: `${today.getFullYear()}-${getZeroPaddedNumber(today.getMonth() + 1)}-${getZeroPaddedNumber(today.getDate())}`,
       week: null,
       availableOperators: [],
       operatorSelected: { name: 'n/a', id: 'n/a' },
@@ -49,15 +49,15 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error); });
   }
   // get assigned/unassigned rounds from database
-  getTodaysShiftData(timestamp) {
-    fetch(`/api/admin-day-shifts.php?date=${timestamp}`)
+  getTodaysShiftData(dateString) {
+    console.log('date: ', dateString);
+    fetch(`/api/admin-day-shifts.php?date=${dateString}`)
       .then(response => response.json())
       .then(data => {
         console.log('todays data: ', data);
         this.setState({
           groupedShifts: data,
-          date: timestamp,
-          week: returnWeekInfoArray(timestamp),
+          week: returnWeekInfoArray(dateString),
           selectingAssign: false,
           selectingUnassign: false,
           shiftsSelected: [],
@@ -92,7 +92,8 @@ class AdminShiftsDay extends React.Component {
       return;
     }
     var roundTimesString = JSON.stringify(this.state.roundTimes);
-    fetch(`/api/admin-available-operators.php?date=${this.state.date}&round_time=${roundTimesString}&line_bus=${lineBus}`, {
+    console.log(`date=${this.state.date}&sunday=${this.state.week[0].dateString}&saturday=${this.state.week[6].dateString}`);
+    fetch(`/api/admin-available-operators.php?date=${this.state.date}&sunday=${this.state.week[0].dateString}&saturday=${this.state.week[6].dateString}&round_time=${roundTimesString}`, {
       method: 'GET'
     })
       .then(response => response.json())
@@ -107,8 +108,11 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error); });
   }
   // when admin clicks on a day of the week in the nav get new shift data for that day
-  handleClickGoToDay(timestamp) {
-    this.getTodaysShiftData(timestamp);
+  handleClickGoToDay(dateString) {
+    this.getTodaysShiftData(dateString);
+    this.setState({
+      date: dateString
+    });
   }
   handleClickAssignShift(name, id) {
     this.setState({

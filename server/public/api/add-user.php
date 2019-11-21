@@ -52,6 +52,46 @@ function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, 
   }
 }
 
-addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId);
+function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId) {
+  print($lastName);
+  $addUserQuery = "INSERT INTO user (
+    id,
+    uci_net_id,
+    last_name,
+    first_name,
+    nickname,
+    photo,
+    status,
+    role,
+    special_route_ok,
+    phone,
+    email,
+    shirt_size,
+    cell_provider,
+    url,
+    last_update)
+    VALUES (
+    null,
+    $uciNetId,
+    '$lastName',
+    '$firstName',
+    '',
+    '',
+    '$status',
+    '$role',
+    '$specialRouteOK',
+    0,
+    '',
+    '',
+    '',
+    '',
+    null)";
 
+  $result = mysqli_query($conn, $addUserQuery);
+  if(!$result){
+  throw new Exception('MySQL update error: '.mysqli_error($conn));
+  }
+}
+
+addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId);
 ?>

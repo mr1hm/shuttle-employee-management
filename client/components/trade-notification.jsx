@@ -139,7 +139,6 @@ class TradeNotification extends React.Component {
       );
 
     }
-
   }
 }
 

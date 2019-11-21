@@ -44,15 +44,15 @@ class NotificationShift extends React.Component {
     }
   }
   render() {
-    const { shift_date, line_name, bus_info_id, start_time, end_time, target_user_id, round_id } = this.props;
+    const { shift_date, line_name, bus_info_id, start_time, end_time, target_user_id, round_id, busNumber } = this.props;
     const operation = this.renderOperations();
     return (
       <div className="row mb-3 text-center">
         <div className="col-2">
-          {createDateStringFromDateObject(parseInt(shift_date) * 1000)}
+          {shift_date}
         </div>
         <div className="col-2">
-          <RouteBusDisplay route={line_name} bus={bus_info_id} />
+          <RouteBusDisplay route={line_name} bus={busNumber} />
         </div>
         <div className="col-2">{convertMilitaryTime(start_time) + '-' + convertMilitaryTime(end_time)}</div>
         <div className="col-2">{calcShiftLenghtInHourMinFormat(start_time, end_time)}</div>

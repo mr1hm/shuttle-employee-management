@@ -120,11 +120,6 @@ export default class Lines extends React.Component {
     if (!this.props.line.real_route_id) {
       return null;
     }
-    if (this.state.deleteLineClicked) {
-      return (
-        <DeleteConfirmationModal handleDeleteLine={this.handleDeleteLine} deleteLine={this.deleteLine} line={line} />
-      );
-    }
     if (this.state.editLineClicked) {
       return (
         <div id="accordion">
@@ -168,6 +163,8 @@ export default class Lines extends React.Component {
       );
     }
     return (
+      <>
+      {this.state.deleteLineClicked ? <DeleteConfirmationModal handleDeleteLine={this.handleDeleteLine} deleteLine={this.deleteLine} line={line} /> : null}
       <div id="accordion">
         <div className="card" id={line.real_route_id}>
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
@@ -250,6 +247,7 @@ export default class Lines extends React.Component {
           </div>
         </div>
       </div>
+      </>
     );
   }
 }
