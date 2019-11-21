@@ -45,13 +45,13 @@ if (isset($bodyData['line_name'])) { // add a new line
   $roundDuration = $bodyData['roundDuration'];
   $roundTimes = $bodyData['roundTimes'];
   $endTime = $bodyData['end_time'];
+  $gapStartTimes = $bodyData['gap'];
+  $gapDurations = $bodyData['gapDuration'];
   $daysActive = $bodyData['daysActive'];
   $daysActiveArr = explode(", ", $daysActive);
   $dayOffset = getDayOffsets($daysActiveArr);
   $idRoute = $bodyData['route_id'];
   $vehicleID = $bodyData['vehicle_id'];
-  $gap = $bodyData['gap'];
-  $gapDuration = $bodyData['gapDuration'];
   $openingDuration = $bodyData['opening_duration'];
   $closingDuration = $bodyData['closing_duration'];
   $sessionID = $bodyData['session_id'];
@@ -74,8 +74,8 @@ if (isset($bodyData['line_name'])) { // add a new line
     throw new Exception('could not start transaction' . mysqli_error($conn));
   }
 
-  $busInsertQuery = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `daysActive`, `route_id`, `vehicle_id`, `gap`, `gapDuration`, `opening_duration`, `closing_duration`)
-              VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$daysActive', '$idRoute', '$vehicleID', '$gap', '$gapDuration', '$openingDuration', '$closingDuration')";
+  $busInsertQuery = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `route_id`, `vehicle_id`, `opening_duration`, `closing_duration`)
+              VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$idRoute', '$vehicleID', '$openingDuration', '$closingDuration')";
   $result = mysqli_query($conn, $busInsertQuery);
 
   if (!$result) {
@@ -114,6 +114,41 @@ if (isset($bodyData['line_name'])) { // add a new line
     $sessionStart = date("Y-m-d", $date);
   }
 
+  if (isset($bodyData['gap'])) { // add gaps to busGaps table
+
+    foreach ($bodyData['gap'] as $index => $value) {
+
+      $gapStartTime = $value;
+      $gapDuration = $bodyData['gapDuration'][$index];
+      $busGapsInsertQuery = "INSERT INTO `busGaps` (`bus_id`, `gapStartTime`, `gapDuration`)
+                            VALUES ($addedBusID, $value, $gapDuration)";
+
+      $result = mysqli_query($conn, $busGapsInsertQuery);
+
+      if (!$result) {
+        throw new Exception('mysqli error ' . mysqli_error($conn));
+      }
+
+    }
+  }
+
+  if (isset($bodyData['daysActive'])) { // add days active to busDaysActive table
+
+      foreach ($bodyData['daysActive'] as $day) { // errors out after first item in the array.
+
+        $daysActive = $value;
+        $busDaysActiveQuery = "INSERT INTO `busDaysActive` (`bus_id`, `daysActive`)
+                              VALUES ($addedBusID, '$day')";
+
+        $result = mysqli_query($conn, $busDaysActiveQuery);
+
+        if (!$result) {
+          throw new Exception('mysql error ' . mysqli_error($conn));
+        }
+
+      }
+  }
+
   if (mysqli_affected_rows($conn) === 0) {
     mysqli_query($conn, 'ROLLBACK');
     throw new Exception('unable to insert/update bus and round info');
@@ -123,7 +158,7 @@ if (isset($bodyData['line_name'])) { // add a new line
 
 }
 
-  if (isset($bodyData['route_id'])) {
+if (isset($bodyData['route_id'])) {
 
   $query = "SELECT bi.`id`, bi.`bus_number`, bi.`start_time`, bi.`end_time`, r.`session_id`, r.`user_id`, r.`bus_info_id`, r.`start_time`, r.`end_time`
             FROM `bus_info` AS bi, `round` AS r

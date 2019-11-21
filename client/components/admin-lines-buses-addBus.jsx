@@ -14,7 +14,7 @@ export default class AddBus extends React.Component {
         rounds: '',
         roundTimes: [],
         roundDuration: this.props.line.roundDuration,
-        daysActive: '',
+        daysActive: null,
         gap: null,
         gapDuration: null,
         opening_duration: null,
@@ -24,7 +24,10 @@ export default class AddBus extends React.Component {
         date: 1566100800,
         status: 'unscheduled'
       },
-      newBusAdded: false
+      newBusAdded: false,
+      displayGapTimes: [],
+      displayGapDurations: [],
+      displayDaysActive: []
     };
     this.handleChange = this.handleChange.bind(this);
     this.setRouteID = this.setRouteID.bind(this);
@@ -39,6 +42,15 @@ export default class AddBus extends React.Component {
     newBus.end_time = this.calculateEndTime();
     newBus.roundTimes = this.calculateRoundTimes();
     console.log(newBus);
+    let gapTimes = this.state.displayGapTimes.slice();
+    let gapDurations = this.state.displayGapDurations.slice();
+    let daysActive = this.state.displayDaysActive.slice();
+    gapTimes = gapTimes.split(', ');
+    gapDurations = gapDurations.split(', ');
+    daysActive = daysActive.split(', ');
+    console.log(gapTimes);
+    console.log(gapDurations);
+    newBus = { ...newBus, end_time: this.calculateEndTime(), gap: gapTimes, gapDuration: gapDurations, daysActive: daysActive };
     const init = {
       method: 'POST',
       body: JSON.stringify(newBus)
@@ -64,6 +76,23 @@ export default class AddBus extends React.Component {
   handleChange(event) {
     const name = event.target.name;
     const value = event.target.value;
+    if (name === 'gap') {
+      // let gapTimes = value;
+      // console.log(gapTimes);
+      this.setState({
+        displayGapTimes: value
+      })
+    } else if (name === 'gapDuration') {
+      // let gapDurations = value;
+      // console.log(gapDurations);
+      this.setState({
+        displayGapDurations: value
+      })
+    } else if (name === 'daysActive') {
+      this.setState({
+        displayDaysActive: value
+      })
+    }
     this.setState(prevState => ({
       newBus: {
         ...prevState.newBus,
@@ -179,11 +208,13 @@ export default class AddBus extends React.Component {
                 <input value={this.calculateEndTime()} className="col border border-primary addBusInputs" type="text" onChange={this.handleChange} name="end_time" />
               </div>
               <div className="col">
-                <label>Gap</label>
+                <label>Gap: </label>
+                {this.state.displayGapTimes ? <span><i> {this.state.displayGapTimes}</i></span> : null}
                 <input onChange={this.handleChange} placeholder="Start Time" className="col border border-primary addBusInputs" type="text" name="gap"></input>
               </div>
               <div className="col">
-                <label>Specify Days</label>
+                <label>Specify Days: </label>
+                {this.state.displayDaysActive ? <span><i> {this.state.displayDaysActive}</i></span> : null}
                 <input className="col border border-primary addBusInputs" name="daysActive" type="text" onChange={this.handleChange} placeholder="Ex. Monday, Friday" />
               </div>
             </div>
@@ -207,7 +238,8 @@ export default class AddBus extends React.Component {
                 <input readOnly className="col border border-primary addBusInputs" type="text" name="route_id" value={this.props.line.real_route_id}></input>
               </div>
               <div className="col">
-                <label>Gap Duration</label>
+                <label>Gap Duration: </label>
+                {this.state.displayGapDurations ? <span><i> {this.state.displayGapDurations}</i></span> : null}
                 <br />
                 <input onChange={this.handleChange} name="gapDuration" type="text" className="col border border-primary addBusInputs"></input>
               </div>

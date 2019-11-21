@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import AdminRoutes from './admin-lines-buses';
 import EditLine from './admin-lines-buses-editLine';
+import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 
 export default class Lines extends React.Component {
   constructor(props) {
@@ -24,12 +25,15 @@ export default class Lines extends React.Component {
       editLineClicked: false,
       specialDriverRequired: this.props.line.specialDriver === 'True',
       sessionName: '',
-      line: this.props.line
+      line: this.props.line,
+      deleteLineClicked: false,
+      deleteBusClicked: false
     };
     this.displayBusDetails = this.displayBusDetails.bind(this);
     this.handleAddBusButtonClick = this.handleAddBusButtonClick.bind(this);
     this.deleteLine = this.deleteLine.bind(this);
     this.handleEditLineClicked = this.handleEditLineClicked.bind(this);
+    this.handleDeleteLine = this.handleDeleteLine.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -71,6 +75,12 @@ export default class Lines extends React.Component {
 
   displayBusDetails() {
     this.setState({ busDetailsClicked: !this.state.busDetailsClicked });
+  }
+
+  handleDeleteLine() {
+    this.setState({
+      deleteLineClicked: !this.state.deleteLineClicked
+    })
   }
 
   deleteLine(lineID, sessionID) {
@@ -142,7 +152,7 @@ export default class Lines extends React.Component {
                     </tr>
                   </thead>
                   {activeBuses.map((bus, index) => {
-                    return <BusesTable handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} selectedSessionID={this.props.selectedSessionID} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                    return <BusesTable key={bus.busNumber + index} handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} selectedSessionID={this.props.selectedSessionID} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
                   }
                   )}
                 </table>
@@ -153,6 +163,8 @@ export default class Lines extends React.Component {
       );
     }
     return (
+      <>
+      {this.state.deleteLineClicked ? <DeleteConfirmationModal handleDeleteLine={this.handleDeleteLine} deleteLine={this.deleteLine} line={line} /> : null}
       <div id="accordion">
         <div className="card" id={line.real_route_id}>
           <div className="card-header lineCardHeader" id={'heading' + line.line_name}>
@@ -192,7 +204,7 @@ export default class Lines extends React.Component {
                 </button>
               </div>
               <div className="col d-flex justify-content-center">
-                <button onClick={() => this.deleteLine(line.real_route_id, line.sessionID)} className="deleteLineBtn btn btn-danger">
+                <button onClick={this.handleDeleteLine} className="deleteLineBtn btn btn-danger">
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
@@ -213,7 +225,7 @@ export default class Lines extends React.Component {
                 <div className="card-header">
                     Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
                 </div>
-                <table className="card-table table">
+                <table className="card-table table busTable">
                   <thead>
                     <tr>
                       <th scope="col">Bus Number</th>
@@ -226,15 +238,16 @@ export default class Lines extends React.Component {
                     </tr>
                   </thead>
                   {activeBuses.map((bus, index) => {
-                    return <BusesTable handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
-                  }
-                  )}
+                    return <BusesTable key={bus.busNumber + index} selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                  })
+                }
                 </table>
               </div>
             </div>
           </div>
         </div>
       </div>
+      </>
     );
   }
 }

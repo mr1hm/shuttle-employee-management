@@ -66,7 +66,7 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
-  getAvailableDrivers(startTime, endTime, roundId, userId) {
+  getAvailableDrivers(startTime, endTime, roundId, userId, lineBus) {
     if (!this.state.selectingAssign || userId !== 1) {
       return;
     }
@@ -79,8 +79,8 @@ class AdminShiftsDay extends React.Component {
     } else {
       roundsSelected.push(roundId);
       roundTimes.push({
-        'start_time': startTime,
-        'stop_time': endTime
+        'round_start': startTime,
+        'round_end': endTime
       });
     }
     if (roundTimes.length === 0) {
@@ -337,40 +337,50 @@ class AdminShiftsDay extends React.Component {
   // this component will be rendered below the AdminClickedShiftDetailsAside component
   // when an unassigned shift is clicked, render an AdminUnavailableOperator component to the right of the schedule
   // this component will be rendered below the AdminAvailableOperator components
-  renderAvailableAndUnavailableOperatorElements() {
+  renderAvailableOperatorElements() {
     const availableOperatorElements = [];
-    const unavailableOperatorElements = [];
     const availableOperators = this.state.availableOperators;
-    for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
-      if (availableOperators[operatorIndex]['availability']['available']) {
+    for (let op in availableOperators) {
+      if (availableOperators[op]['available']) {
         availableOperatorElements.push(
           <AdminAvailableOperator
-            key={availableOperators[operatorIndex].id}
-            id={availableOperators[operatorIndex].id}
-            name={`${availableOperators[operatorIndex].lastName}, ${availableOperators[operatorIndex].firstName}`}
-            dailyHours={availableOperators[operatorIndex].totalHours}
-            weeklyHours={availableOperators[operatorIndex].weeklyHours}
+            key={availableOperators[op].user_id}
+            id={availableOperators[op].user_id}
+            name={`${availableOperators[op].last_name}, ${availableOperators[op].first_name}`}
+            dailyHours={availableOperators[op].total_daily_minutes / 60}
+            weeklyHours={availableOperators[op].total_weekly_minutes / 60}
             onClickAssignShift={this.handleClickAssignShift} />
-        );
-      } else if (!availableOperators[operatorIndex]['availability']['available']) {
-        unavailableOperatorElements.push(
-          <AdminUnavailableOperator
-            key={availableOperators[operatorIndex].id}
-            id={availableOperators[operatorIndex].id}
-            name={`${availableOperators[operatorIndex].lastName}, ${availableOperators[operatorIndex].firstName}`}
-            unavailableReasons={availableOperators[operatorIndex]['availability']['reasons']} />
         );
       }
     }
     if (availableOperatorElements.length) {
       return (
         <React.Fragment>
-          <div className="availableOperatorsContainer d-flex flex-column">
-            <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Available Operators</h6>
-            <div className="availableOperatorElements d-flex flex-column">
-              {availableOperatorElements}
-            </div>
+          <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Available Operators</h6>
+          <div className="availableOperatorElements d-flex flex-column">
+            {availableOperatorElements}
           </div>
+        </React.Fragment>
+      );
+    }
+  }
+  renderUnavailableOperatorElements() {
+    const unavailableOperatorElements = [];
+    const unavailableOperators = this.state.availableOperators;
+    for (let op in unavailableOperators) {
+      if (!unavailableOperators[op]['available']) {
+        unavailableOperatorElements.push(
+          <AdminUnavailableOperator
+            key={unavailableOperators[op].user_id}
+            id={unavailableOperators[op].user_id}
+            name={`${unavailableOperators[op].last_name}, ${unavailableOperators[op].first_name}`}
+            unavailableReasons={unavailableOperators[op]['unavailable_reasons']} />
+        );
+      }
+    }
+    if (unavailableOperatorElements.length) {
+      return (
+        <React.Fragment>
           <div className="unavailableOperatorsContainer d-flex flex-column">
             <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Unavailable Operators</h6>
             <div className="availableOperatorElements d-flex flex-column">
@@ -413,7 +423,8 @@ class AdminShiftsDay extends React.Component {
             <div className="ShiftDetailsContainer d-flex flex-column">
               {this.renderShiftDetailsComponent()}
             </div>
-            {this.renderAvailableAndUnavailableOperatorElements()}
+            {this.renderAvailableOperatorElements()}
+            {this.renderUnavailableOperatorElements()}
           </div>
         </div>
         <AdminConfirmModal // modal to confirm assign/unassign

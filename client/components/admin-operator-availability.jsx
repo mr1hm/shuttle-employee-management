@@ -14,13 +14,18 @@ class AdminOperatorAvailability extends React.Component {
       role: '',
       status: '',
       specialRouteOK: '',
+      minAvailHours: '',
+      availSubmissionDate: '',
       addUser: false,
       editUser: false,
       operatorDetails: null,
-      sessionId: 1
+      parameter: false,
+      sessionId: 6
     };
     this.getOperatorDetails = this.getOperatorDetails.bind(this);
     this.showAddUserModal = this.showAddUserModal.bind(this);
+    this.showParameterModal = this.showParameterModal.bind(this);
+    this.cancelParameterModal = this.cancelParameterModal.bind(this);
     this.addUserToDatabase = this.addUserToDatabase.bind(this);
     this.updateUserInDatabase = this.updateUserInDatabase.bind(this);
     this.handleFormEntry = this.handleFormEntry.bind(this);
@@ -60,6 +65,12 @@ class AdminOperatorAvailability extends React.Component {
         });
       })
       .catch(error => { throw (error); });
+  }
+
+  cancelParameterModal() {
+    this.setState({
+      parameter: false
+    });
   }
 
   closeAddUserModal() {
@@ -151,6 +162,12 @@ class AdminOperatorAvailability extends React.Component {
     });
   }
 
+  showParameterModal() {
+    this.setState({
+      parameter: true
+    });
+  }
+
   submittedStatus(operator) {
     const defaultStyles = {
       width: '15px',
@@ -168,6 +185,10 @@ class AdminOperatorAvailability extends React.Component {
     return (
       <div style={{ ...defaultStyles, ...colorStyle }}></div>
     );
+  }
+
+  updateParameters() {
+
   }
 
   updateUserInDatabase(event) {
@@ -211,7 +232,7 @@ class AdminOperatorAvailability extends React.Component {
           <TopMenuGeneral title="ADMIN-OPERATOR AVAILABILITY" />
         </div>
         <div className="addButton d-flex justify-content-end mt-3">
-          <button type="button" className="btn btn-primary btn" onClick={this.showAddUserModal}>Add User</button>
+          <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAddUserModal}>Add User</button>
         </div>
         <table className= 'mt-4'>
           <thead>
@@ -227,6 +248,10 @@ class AdminOperatorAvailability extends React.Component {
               <th>Status</th>
               <th></th>
               <th>Special Route</th>
+              <th></th>
+              <th>Min Avail. Hrs</th>
+              <th></th>
+              <th>Avail. Submission Date</th>
               <th></th>
               <th>Submitted</th>
               <th></th>
@@ -249,6 +274,10 @@ class AdminOperatorAvailability extends React.Component {
                     <td className='pb-2'>{operator['status']}</td>
                     <td></td>
                     <td className='pb-2'>{operator['special_route_ok']}</td>
+                    <td></td>
+                    <td className='pb-2'>{operator['min_avail_hours']}</td>
+                    <td></td>
+                    <td className='pb-2'>{operator['avail_end_date']}</td>
                     <td></td>
                     <td className='pb-2'>{this.submittedStatus(operator)}</td>
                     <td></td>
@@ -281,8 +310,9 @@ class AdminOperatorAvailability extends React.Component {
                 <select name="role" value={this.state.role} onChange={this.handleFormEntry}>
                   <option></option>
                   <option value='operator'>operator</option>
-                  {/* <option value='operations'>operations</option>
-                  <option value='trainer'>trainer</option> */}
+                  <option value='operations'>operations</option>
+                  <option value='trainer'>trainer</option>
+                  <option value='trainee'>trainer</option>
                 </select>
               </div>
               <div className="m-2">
@@ -328,8 +358,9 @@ class AdminOperatorAvailability extends React.Component {
                 <select name="role" value={this.state.role} onChange={this.handleFormEntry}>
                   <option></option>
                   <option value='operator'>operator</option>
-                  {/* <option value='operations'>operations</option>
-                  <option value='trainer'>trainer</option> */}
+                  <option value='operations'>operations</option>
+                  <option value='trainer'>trainer</option>
+                  <option value='trainee'>trainer</option>
                 </select>
               </div>
               <div className="m-2">
@@ -347,6 +378,27 @@ class AdminOperatorAvailability extends React.Component {
                   <option value='0'>0</option>
                   <option value='1'>1</option>
                 </select>
+              </div>
+              <div className="m-2">
+                <div>Minimum Available Hours</div>
+                <select name="minAvailHours" value={this.state.minAvailHours} onChange={this.handleFormEntry}>
+                  <option></option>
+                  <option value='0'>10</option>
+                  <option value='1'>11</option>
+                  <option value='1'>12</option>
+                  <option value='1'>13</option>
+                  <option value='1'>14</option>
+                  <option value='1'>15</option>
+                  <option value='1'>16</option>
+                  <option value='1'>17</option>
+                  <option value='1'>18</option>
+                  <option value='1'>19</option>
+                  <option value='1'>20</option>
+                </select>
+              </div>
+              <div className="m-2">
+                <div>Availability Submission Date</div>
+                <input type='text' name="availSubmissionDate" value={this.state.availSubmissionDate} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
                 <button className="btn-success mr-2" type='submit'>Submit</button>
