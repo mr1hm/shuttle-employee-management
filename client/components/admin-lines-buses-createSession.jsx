@@ -12,10 +12,10 @@ export default class CreateSession extends React.Component {
         startDateString: null,
         endDateString: null,
         startDate: '01',
-        startMonth: 'Jan',
+        startMonth: '01',
         startYear: '2020',
         endDate: '01',
-        endMonth: 'Jan',
+        endMonth: '01',
         endYear: '2020',
         notes: ''
       }
@@ -89,7 +89,7 @@ export default class CreateSession extends React.Component {
       .then(sessionInfo => {
         this.setState({
           newSessionAdded: true
-        }, this.props.getLinesBusesInfo)
+        }, this.props.getLinesBusesInfo);
         this.props.handleAddNewSessionClick();
       })
       .catch(error => console.error(error));

@@ -45,7 +45,7 @@ class TradeSwap extends React.Component {
     });
     const roundTimesString = JSON.stringify(roundTimes);
     const date = this.props.shiftDetails[0].date;
-    fetch(`/api/admin-available-operators.php?date=${date}&sunday=${week[0]}&saturday=${week[6]}&round_time=${roundTimesString}`)
+    fetch(`/api/admin-available-operators.php?date=${date}&sunday=${week[0].dateString}&saturday=${week[6].dateString}&round_time=${roundTimesString}`)
       .then(response => response.json())
       .then(details => {
         this.setState({
@@ -113,7 +113,7 @@ class TradeSwap extends React.Component {
             return (
               <div key={oneShift.roundID} className="row justify-content-center text-center">
                 <div className="col">
-                  <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
+                  <RouteBusDisplay route={oneShift.line_name} bus={oneShift.route_id} />
                 </div>
                 <div className="col">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
                 <div className="col">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>

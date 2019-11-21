@@ -35,7 +35,7 @@ class SingleShift extends React.Component {
     // Change link to pass state
     return (
       <tr>
-        <td> <RouteBusDisplay bus={shifts.bus_info_id} route={shifts.line_name} /> </td>
+        <td> <RouteBusDisplay bus={shifts.bus_number} route={shifts.line_name} /> </td>
         <td> {convertMilitaryTime(shifts.start_time)} - {convertMilitaryTime(shifts.end_time)} </td>
         <td> {numOfRounds} </td>
         <td> {shiftHours} </td>
@@ -48,7 +48,7 @@ class SingleShift extends React.Component {
             }
           }}
           className="btn btn-dark"
-          onClick={this.openDetails}>
+          onClick={this.openDetails} >
             Details
           </Link>
         </td>

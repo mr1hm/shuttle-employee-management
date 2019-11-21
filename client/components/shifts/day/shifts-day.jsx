@@ -25,8 +25,7 @@ class ShiftsDay extends React.Component {
     };
   }
   getShifts() {
-    const timestamp = new Date(this.props.match.params.date).getTime();
-    const query = `?date=${adjustLocalTimestampToUTCSeconds(timestamp)}&userID=${this.props.userId}&type=myShifts`;
+    const query = `?date=${this.props.match.params.date}&userID=${this.props.userId}&type=myShifts`;
     console.log('date path: ', this.props.match.params.date);
     console.log('day query: ', query);
     const response = fetch(`/api/shifts-day.php` + query, {
@@ -110,6 +109,7 @@ class ShiftsDay extends React.Component {
                   this.state.shifts.map((shifts, index) => {
                     return (
                       < SingleShift
+                        dateString={this.props.match.params.date}
                         key={index}
                         shifts={shifts}
                         view={this.props.view}

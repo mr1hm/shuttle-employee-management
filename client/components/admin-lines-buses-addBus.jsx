@@ -10,16 +10,19 @@ export default class AddBus extends React.Component {
         route_id: this.props.line.real_route_id,
         vehicle_id: null,
         start_time: '',
+        end_time: '',
         rounds: '',
+        roundTimes: [],
+        roundDuration: this.props.line.roundDuration,
         daysActive: null,
         gap: null,
         gapDuration: null,
         opening_duration: null,
         closing_duration: null,
         session_id: this.props.line.sessionID,
-        userID: 62,
+        userID: 1,
         date: 1566100800,
-        status: 'scheduled'
+        status: 'unscheduled'
       },
       newBusAdded: false,
       displayGapTimes: [],
@@ -30,10 +33,15 @@ export default class AddBus extends React.Component {
     this.setRouteID = this.setRouteID.bind(this);
     this.addNewBus = this.addNewBus.bind(this);
     this.calculateEndTime = this.calculateEndTime.bind(this);
+    this.calculateRoundTimes = this.calculateRoundTimes.bind(this);
   }
 
   addNewBus(newBus, sessionID, e) {
     e.preventDefault();
+    newBus = { ...this.state.newBus };
+    newBus.end_time = this.calculateEndTime();
+    newBus.roundTimes = this.calculateRoundTimes();
+    console.log(newBus);
     let gapTimes = this.state.displayGapTimes.slice();
     let gapDurations = this.state.displayGapDurations.slice();
     let daysActive = this.state.displayDaysActive.slice();
@@ -91,15 +99,15 @@ export default class AddBus extends React.Component {
         [name]: value
       }
     }));
-    this.calculateEndTime();
   }
 
   calculateEndTime() {
-    const { line } = this.props;
+
     const { newBus } = this.state;
-    if (newBus.start_time.length !== 4) {
+    if (newBus.start_time.length < 4 || !newBus.rounds) {
       return '';
     }
+    const { line } = this.props;
     const roundDuration = parseInt(line.roundDuration);
     const startTime = newBus.start_time;
     const rounds = parseInt(newBus.rounds);
@@ -128,12 +136,36 @@ export default class AddBus extends React.Component {
           finalHoursNew = '0' + finalHoursNew;
         }
         let finalTimeNew = finalHoursNew.toString() + finalMinutesNew;
-
         return finalTimeNew;
       }
     }
 
     return finalEndTime;
+  }
+
+  calculateRoundTimes() {
+    let startTime = this.state.newBus.start_time;
+    const rounds = this.state.newBus.rounds;
+    const roundDuration = parseInt(this.props.line.roundDuration);
+    let endTime = this.state.newBus.end_time;
+    const gapTime = parseInt(this.state.newBus.gap);
+    const gapDuration = parseInt(this.state.newBus.gapDuration);
+    const date = new Date();
+    const roundTimes = [];
+    date.setHours(parseInt(startTime[0] + startTime[1]));
+    date.setMinutes(parseInt(startTime[2] + startTime[3]));
+    for (let roundIndex = 0; roundIndex < rounds; roundIndex++) {
+      startTime = date.getHours() * 100 + date.getMinutes();
+      date.setMinutes(date.getMinutes() + roundDuration);
+      endTime = date.getHours() * 100 + date.getMinutes();
+      if (gapTime && gapDuration && gapTime >= startTime && gapTime < endTime) {
+        date.setMinutes(date.getMinutes() + gapDuration);
+        endTime = date.getHours() * 100 + date.getMinutes();
+      }
+      roundTimes.push({ start_time: startTime, end_time: endTime });
+    }
+    console.log('round times: ', roundTimes);
+    return roundTimes;
   }
 
   setRouteID() {
@@ -173,7 +205,7 @@ export default class AddBus extends React.Component {
               </div>
               <div className="col">
                 <label>End Time</label>
-                <input value={this.calculateEndTime()} readOnly className="col border border-primary addBusInputs" type="text" name="end_time" />
+                <input value={this.calculateEndTime()} className="col border border-primary addBusInputs" type="text" onChange={this.handleChange} name="end_time" />
               </div>
               <div className="col">
                 <label>Gap: </label>
