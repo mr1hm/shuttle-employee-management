@@ -109,12 +109,13 @@ class TradeNotification extends React.Component {
             <h4>Shift Length</h4>
           </div>
         </div>
-        {this.state.newShifts.map(oneShift => {
+        {this.state.newShifts.map((oneShift, index) => {
           return (
             <NotificationShift
-              key={oneShift.id}
+              key={index}
               shift_date={oneShift.shift_date}
               line_name={oneShift.line_name}
+              busNumber={oneShift.bus_number}
               bus_info_id={oneShift.bus_info_id}
               start_time={oneShift.start_time}
               end_time={oneShift.end_time}

@@ -22,15 +22,15 @@ if(!empty($_GET['date'])){
 } else {
   throw new Exception('no date');
 }
-$day_of_week = date('D', $date_to_check);
+$day_of_week = date('D', strtotime($date_to_check));
 
 if (!empty($_GET['sunday'])) {
-  $sunday = (int)$_GET['sunday'];
+  $sunday = $_GET['sunday'];
 } else {
   throw new Exception('no beginning of week');
 }
 if (!empty($_GET['saturday'])) {
-  $saturday = (int)$_GET['saturday'];
+  $saturday = $_GET['saturday'];
 } else {
   throw new Exception('no end of week');
 }
@@ -63,7 +63,7 @@ $query = "SELECT
           JOIN bus_info AS bi ON bi.route_id = rt.id
           JOIN round AS rd ON rd.bus_info_id = bi.id
           JOIN user AS us ON rd.user_id = us.id
-          WHERE rd.date >= $sunday AND rd.date <= $saturday
+          WHERE rd.date >= '$sunday' AND rd.date <= '$saturday'
           ORDER BY rd.date ASC, line_name ASC, bus_number ASC, round_start ASC";
 
 $result = mysqli_query($conn, $query);

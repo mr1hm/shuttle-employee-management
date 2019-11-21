@@ -92,7 +92,8 @@ class AdminShiftsDay extends React.Component {
       return;
     }
     var roundTimesString = JSON.stringify(this.state.roundTimes);
-    fetch(`/api/admin-available-operators.php?date=${this.state.date}&sunday=${this.state.week[0].unix}&saturday=${this.state.week[6].unix}&round_time=${roundTimesString}`, {
+    console.log(`date=${this.state.date}&sunday=${this.state.week[0].dateString}&saturday=${this.state.week[6].dateString}`);
+    fetch(`/api/admin-available-operators.php?date=${this.state.date}&sunday=${this.state.week[0].dateString}&saturday=${this.state.week[6].dateString}&round_time=${roundTimesString}`, {
       method: 'GET'
     })
       .then(response => response.json())
