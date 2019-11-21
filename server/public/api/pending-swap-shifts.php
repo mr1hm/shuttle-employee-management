@@ -15,6 +15,14 @@ $date = round(microtime(true) * 1000);
 
 mysqli_query($conn, "START TRANSACTION");
 
+foreach ($original_rounds as $round) {
+  $query = "UPDATE `transaction` SET `status` = 'accepted' WHERE `round_id` = {$round['round_id']}";
+  $result = mysqli_query($conn, $query);
+}
+if (!$result) {
+  throw new Exception("Sql error" . mysqli_error($conn));
+}
+
 foreach($target_rounds as $round ) {
   $query = "INSERT INTO `transaction`
     (`user_id`, `round_id`, `target_user_id`, `date`, `type`, `comment`, `status`) VALUES

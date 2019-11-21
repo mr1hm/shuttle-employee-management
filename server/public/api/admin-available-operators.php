@@ -39,5 +39,6 @@ if (validParameters()) {
     $operator['unavailable_reasons'] = $unavailable ?? null;
   }
   unset($operator);
+  ob_clean();
   print(json_encode($operators));
 }

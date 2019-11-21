@@ -4,6 +4,7 @@ import TopMenuGeneral from './topmenu/topmenu-general';
 import { Link } from 'react-router-dom';
 import NotificationShift from './trade-notification-shift';
 import SwapConfirmation from './swap-confirmation-modal';
+import SwapConfirmNotification from './swap-confirm-notification';
 
 class TradeNotification extends React.Component {
   constructor(props) {
@@ -80,54 +81,65 @@ class TradeNotification extends React.Component {
         <SwapConfirmation selectedRoundId={this.state.selectedRoundId} allShifts={this.state.newShifts} ownShiftsToSwap={this.state.swapShifts} />
       );
     }
-    if (!this.state.newShifts) {
+    if (this.state.newShifts.length === 0) {
       return (
-        <div className="container mt-2">
-          <div className="row justify-content-center">
-            <div className="col-4">
-              <h1>No Notifications</h1>
+        <>
+        <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
+        <SwapConfirmNotification userId={this.props.userId} />
+        </>
+        // <div className="container mt-2">
+        //   <div className="row justify-content-center">
+        //     <div className="col-4">
+        //       <h1>No Notifications</h1>
+        //     </div>
+        //   </div>
+        // </div>);
+      );
+    } else {
+      return (
+        <div className="container">
+          <div className="row justify-content-center mb-3">
+            <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
+          </div>
+          <div className="row text-center">
+            <div className="col-2">
+              <h5>Date</h5>
+            </div>
+            <div className="col-2">
+              <h5>Bus Line/Number</h5>
+            </div>
+            <div className="col-2">
+              <h4>Shift Time</h4>
+            </div>
+            <div className="col-2">
+              <h4>Shift Length</h4>
             </div>
           </div>
-        </div>);
+          {this.state.newShifts.map(oneShift => {
+            return (
+              <NotificationShift
+                key={oneShift.id}
+                shift_date={oneShift.shift_date}
+                line_name={oneShift.line_name}
+                bus_info_id={oneShift.bus_info_id}
+                start_time={oneShift.start_time}
+                end_time={oneShift.end_time}
+                target_user_id={oneShift.target_user_id}
+                round_id={oneShift.round_id}
+                removeShift={this.removeShift}
+                giveShifttoSelectedDriver={this.giveShifttoSelectedDriver}
+                type={oneShift.type}
+              />
+            );
+          })}
+          <div>
+            <SwapConfirmNotification userId={this.props.userId} />
+          </div>
+        </div>
+      );
+
     }
-    return (
-      <div className="container">
-        <div className="row justify-content-center mb-3">
-          <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
-        </div>
-        <div className="row text-center">
-          <div className="col-2">
-            <h5>Date</h5>
-          </div>
-          <div className="col-2">
-            <h5>Bus Line/Number</h5>
-          </div>
-          <div className="col-2">
-            <h4>Shift Time</h4>
-          </div>
-          <div className="col-2">
-            <h4>Shift Length</h4>
-          </div>
-        </div>
-        {this.state.newShifts.map(oneShift => {
-          return (
-            <NotificationShift
-              key={oneShift.id}
-              shift_date={oneShift.shift_date}
-              line_name={oneShift.line_name}
-              bus_info_id={oneShift.bus_info_id}
-              start_time={oneShift.start_time}
-              end_time={oneShift.end_time}
-              target_user_id={oneShift.target_user_id}
-              round_id ={oneShift.round_id}
-              removeShift={this.removeShift}
-              giveShifttoSelectedDriver={this.giveShifttoSelectedDriver}
-              type={oneShift.type}
-            />
-          );
-        })}
-      </div>
-    );
+
   }
 }
 
