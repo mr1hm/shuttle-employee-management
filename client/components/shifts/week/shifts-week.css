@@ -102,6 +102,10 @@
 .shiftWeekIndividualDayLink {
   color: black;
 }
+.shiftWeekIndividualDayLink:hover {
+    color: blue;
+    font-weight: normal;
+}
 .dayRowFill {
     background-color: rgb(255, 255, 255);
     height: 100%;

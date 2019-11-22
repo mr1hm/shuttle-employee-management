@@ -30,9 +30,6 @@ class TradeModal extends React.Component {
       body: JSON.stringify(selectedDriverToTradeWith),
       headers: headers
     })
-      .then(response => response.json())
-      .then(data => {
-      })
       .catch(error => console.error('Fetch failed', error));
 
   }
@@ -52,7 +49,7 @@ class TradeModal extends React.Component {
                 return (
                   <div key={oneShift.roundID} className="row justify-content-center text-center">
                     <div className="col">
-                      <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
+                      <RouteBusDisplay route={oneShift.line_name} bus={oneShift.route_id} />
                     </div>
                     <div className="col-6">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
                     <div className="col">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>

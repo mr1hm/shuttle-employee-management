@@ -25,7 +25,8 @@ class SwapConfirmation extends React.Component {
       original_rounds: selectedRoundsToSwap,
       target_rounds: this.props.ownShiftsToSwap
     };
-    fetch('/api/swap-shift.php', {
+
+    fetch('/api/pending-swap-shifts.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -65,10 +66,10 @@ class SwapConfirmation extends React.Component {
                 return (
                   <div key={oneShift.round_id} className="row text-center justify-content-center">
                     <div className="col-2">
-                      {createDateStringFromDateObject(parseInt(oneShift.shift_date) * 1000)}
+                      {oneShift.shift_date}
                     </div>
                     <div className="col-4 d-flex justify-content-center">
-                      <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
+                      <RouteBusDisplay route={oneShift.line_name} bus={oneShift.route_id} />
                     </div>
                     <div className="col-3">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
                     <div className="col-3">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>
@@ -84,10 +85,10 @@ class SwapConfirmation extends React.Component {
                 return (
                   <div key={oneShift.roundID} className="row text-center justify-content-center">
                     <div className="col-2">
-                      {createDateStringFromDateObject(parseInt(oneShift.date) * 1000)}
+                      {oneShift.date}
                     </div>
                     <div className="col-4 d-flex justify-content-center">
-                      <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
+                      <RouteBusDisplay route={oneShift.line_name} bus={oneShift.route_id} />
                     </div>
                     <div className="col-3">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
                     <div className="col-3">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>

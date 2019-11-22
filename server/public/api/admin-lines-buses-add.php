@@ -42,10 +42,13 @@ if (isset($bodyData['line_name'])) { // add a new line
   $busNumber = $bodyData['bus_number'];
   $startTime = $bodyData['start_time'];
   $rounds = $bodyData['rounds'];
+  $roundDuration = $bodyData['roundDuration'];
+  $roundTimes = $bodyData['roundTimes'];
   $endTime = $bodyData['end_time'];
   $gapStartTimes = $bodyData['gap'];
   $gapDurations = $bodyData['gapDuration'];
   $daysActive = $bodyData['daysActive'];
+  $dayOffset = getDayOffsets($daysActive);
   $idRoute = $bodyData['route_id'];
   $vehicleID = $bodyData['vehicle_id'];
   $openingDuration = $bodyData['opening_duration'];
@@ -53,7 +56,16 @@ if (isset($bodyData['line_name'])) { // add a new line
   $sessionID = $bodyData['session_id'];
   $userID = $bodyData['userID'];
   $date = $bodyData['date'];
-  // $scheduleStatus = $bodyData['status'];
+  $status = $bodyData['status'];
+
+  $sessionQuery = "SELECT * FROM `session` WHERE `session`.`id` = $sessionID";
+  $result = mysqli_query($conn, $sessionQuery);
+  if (!$result) {
+    throw new Exception('mysql error' . mysqli_error($conn));
+  }
+  $row = mysqli_fetch_assoc($result);
+  $sessionStart = $row['startDateString'];
+  $sessionEnd = $row['endDateString'];
 
   $transactionResult = mysqli_query($conn, 'START TRANSACTION');
 
@@ -61,21 +73,47 @@ if (isset($bodyData['line_name'])) { // add a new line
     throw new Exception('could not start transaction' . mysqli_error($conn));
   }
 
+
+
   $busInsertQuery = "INSERT INTO `bus_info` (`bus_number`, `start_time`, `rounds`, `end_time`, `route_id`, `vehicle_id`, `opening_duration`, `closing_duration`)
               VALUES ('$busNumber', '$startTime', '$rounds', '$endTime', '$idRoute', '$vehicleID', '$openingDuration', '$closingDuration')";
   $result = mysqli_query($conn, $busInsertQuery);
 
   if (!$result) {
-    throw new Exception('mysql error' . mysqli_error($conn));
+    throw new Exception('mysql add bus error ' . mysqli_error($conn));
   }
 
   $addedBusID = mysqli_insert_id($conn);
-  $roundInsertQuery = "INSERT INTO `round` (`bus_info_id`, `session_id`, `user_id`, `date`, `start_time`, `end_time`)
-                VALUES ('$addedBusID', $sessionID, $userID, $date, $startTime, $endTime)";
-  $result = mysqli_query($conn, $roundInsertQuery);
+  $idQuery = "SELECT LAST_INSERT_ID() AS id";
+  $result = mysqli_query($conn, $idQuery);
+  $row = mysqli_fetch_assoc($result);
+  $busInfoId = $row['id'];
 
-  if (!$result) {
-    throw new Exception('mysql error' . mysqli_error($conn));
+  $date = strtotime($sessionStart);
+  for ( $sessionStart; $sessionStart < $sessionEnd;) {
+    for ($dayIndex = 0; $dayIndex < count($dayOffset); $dayIndex++) {
+      $offSet = $dayOffset[$dayIndex];
+      if ($offSet === 0) {
+        $dateToAdd = date("Y-m-d", $date);
+      } else if ($offSet === 1) {
+        $dateToAdd = date("Y-m-d", strtotime("+1 day", $date));
+      } else {
+        $dateToAdd = date("Y-m-d", strtotime("+$offSet days", $date));
+      }
+      for ($roundIndex = 0; $roundIndex < count($roundTimes); $roundIndex++) {
+        $startTime = $roundTimes[$roundIndex]['start_time'];
+        $endTime = $roundTimes[$roundIndex]['end_time'];
+        $roundInsertQuery = "INSERT INTO `round` (`bus_info_id`, `session_id`, `user_id`, `date`, `start_time`, `end_time`, `status`)
+                VALUES ('$busInfoId', '$sessionID', '$userID', '$dateToAdd', '$startTime', '$endTime', '$status')";
+        $result = mysqli_query($conn, $roundInsertQuery);
+
+        if (!$result) {
+          throw new Exception('mysql add round error ' . mysqli_error($conn));
+        }
+      }
+    }
+    $date = strtotime("+1 week", strtotime($sessionStart));
+    $sessionStart = date("Y-m-d", $date);
   }
 
   if (isset($bodyData['gap'])) { // add gaps to busGaps table
@@ -140,6 +178,15 @@ if (isset($bodyData['route_id'])) {
 
   print(json_encode($data));
 
+}
+
+function getDayOffsets( $dayArr ) {
+  $day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  $keys = [];
+  for ($dayArrIndex = 0; $dayArrIndex < count($dayArr); $dayArrIndex++) {
+    array_push($keys, array_search($dayArr[$dayArrIndex], $day));
+  }
+  return $keys;
 }
 
 ?>
