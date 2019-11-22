@@ -123,6 +123,10 @@ table.liveFieldStatusTable td {
   border: 1px solid #FFA804;
 }
 
+.addLineRoundDurationDescription {
+  font-size: 10px;
+}
+
 .liveFieldStatusBtn,
 .masterFieldStatusBtn {
   color: #FFA804;

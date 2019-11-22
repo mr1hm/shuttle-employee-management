@@ -481,7 +481,6 @@ class AdminRoutes extends React.Component {
                       <div className="col-2">
                         <label>Line Name</label>
                         <br />
-                        <br />
                         <input defaultValue={this.state.newLineName}
                           className="col border border-primary lineNameInput"
                           type="text"
@@ -496,7 +495,6 @@ class AdminRoutes extends React.Component {
                           <label>
                             Session
                             <br />
-                            <span className="addLineHeaderDescription"><i>active/inactive</i></span>
                           </label>
                           <select onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="session_id">
                             {this.state.sessions.map(session => {
@@ -510,7 +508,6 @@ class AdminRoutes extends React.Component {
                         <label>
                           Status
                           <br />
-                          <span className="addLineHeaderDescription"><i>active/inactive</i></span>
                         </label>
                         <select name="status" className="col border border-primary" onChange={this.handleAddLineChange}>
                           <option>active</option>
@@ -522,15 +519,14 @@ class AdminRoutes extends React.Component {
                         <label>
                           Round Duration
                           <br />
-                          <span className="addLineHeaderDescription"><i>Number of Min</i></span>
                         </label>
                         <input onChange={this.handleAddLineChange} className="col border border-primary roundDurationInput" type="text" name="roundDuration" />
+                        <span className="addLineHeaderDescription addLineRoundDurationDescription"><i>Number of Minutes</i></span>
                       </div>
                       <div className="col">
                         <label>
                           Public
                           <br />
-                          <span className="addLineHeaderDescription"><i>True/False</i></span>
                         </label>
                         <br />
                         <select onChange={this.handleAddLineChange} className="col border border-primary" name="public">
@@ -542,7 +538,6 @@ class AdminRoutes extends React.Component {
                         <label>
                           Regular Service
                           <br />
-                          <span className="addLineHeaderDescription"><i>True/False</i></span>
                         </label>
                         <br />
                         <select onChange={this.handleAddLineChange} className="col border border-primary" name="public">
@@ -554,7 +549,6 @@ class AdminRoutes extends React.Component {
                         <label className="form-check-label" htmlFor="specialDriverCheckbox">
                           Special Driver
                           <br />
-                          <span><i>True/False</i></span>
                         </label>
                         <br />
                         <input type="checkbox" onChange={this.handleSpecialDriverClick} name="specialDriver" className="specialDriverCheckbox form-check-input" id="specialDriverCheckbox" />
