@@ -1,23 +1,29 @@
 import React from 'react';
 import './shifts-month.css';
-import { createDateObjFromDateString, adjustUTCSecondsToLocalTimestamp } from '../../../lib/time-functions';
+import { getLocalDateString } from '../../../lib/time-functions';
 
 class DayOfMonth extends React.Component {
   renderDate() {
+    if (!this.props.dayIndex) {
+      return (
+        <div className="monthDay rounded-circle mx-auto p-1">
+          {this.props.dayIndex}
+        </div>
+      );
+    }
     if (this.props.shiftsArray.length !== 0) {
       let dayTypeClasses = {
         posted: false,
         scheduled: false
       };
       for (var shiftIndex = 0; shiftIndex < this.props.shiftsArray.length; shiftIndex++) {
-        const shiftDate = this.props.shiftsArray[shiftIndex].date;
-        const shiftDateFullTimestamp = adjustUTCSecondsToLocalTimestamp(shiftDate);
-        let baseDate = createDateObjFromDateString(parseInt(shiftDateFullTimestamp));// converts unix time to date/at midnight 09/17/2019
-        if (baseDate.getTime() === this.props.dayObj.getTime()) {
+        const shiftDateString = this.props.shiftsArray[shiftIndex].date;
+        const thisDayDateString = getLocalDateString(this.props.dayObj);
+        if (shiftDateString === thisDayDateString) {
           dayTypeClasses[this.props.shiftsArray[shiftIndex].status] = true;
         }
       }
-      let postedClasses = 'calendarDay';
+      let postedClasses = 'monthDay rounded-circle mx-auto p-1';
       for (let key in dayTypeClasses) {
         postedClasses += dayTypeClasses[key] ? ` ${key}-shift-color` : '';
       }
@@ -28,19 +34,13 @@ class DayOfMonth extends React.Component {
       );
     }
     return (
-      <div>
-        <div className="calendarDay">
-          {this.props.dayIndex}
-        </div>
+      <div className="monthDay rounded-circle mx-auto p-1">
+        {this.props.dayIndex}
       </div>
     );
   }
   render() {
-    return (
-      <div>
-        {this.renderDate()}
-      </div>
-    );
+    return this.renderDate();
   }
 }
 

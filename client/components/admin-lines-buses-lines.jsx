@@ -80,7 +80,7 @@ export default class Lines extends React.Component {
   handleDeleteLine() {
     this.setState({
       deleteLineClicked: !this.state.deleteLineClicked
-    })
+    });
   }
 
   deleteLine(lineID, sessionID) {
@@ -240,7 +240,7 @@ export default class Lines extends React.Component {
                   {activeBuses.map((bus, index) => {
                     return <BusesTable key={bus.busNumber + index} selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
                   })
-                }
+                  }
                 </table>
               </div>
             </div>
