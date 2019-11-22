@@ -12,7 +12,13 @@ $status = $data['status'];
 $specialRouteOK = intval($data['special_route_ok']);
 $minAvailHours = intval($data['min_avail_hours']);
 $availEndDate = intval($data['avail_end_date']);
-$sessionId = intval($data['session_id']);
+
+$sessionId = $data['session_id'];
+if ($sessionId === '') {
+  $sessionId = 6;
+} else {
+  $sessionId = intval($sessionId);
+}
 
 function userId($conn, $uciNetId) {
   $userIdQuery = "SELECT id
@@ -27,7 +33,6 @@ function userId($conn, $uciNetId) {
   while ($row = mysqli_fetch_assoc($userIdResult)) {
     $userIdData[] = $row;
   }
-
   return $userIdData[0]['id'];
 }
 
@@ -47,14 +52,15 @@ function updateUser($conn, $userId, $lastName, $firstName, $role, $status, $spec
   }
 }
 
-function updateSessionAvailability($conn, $userId, $sessionId , $minAvailHours, $availEndDate) {
+function updateSessionAvailability($conn, $userId, $sessionId, $minAvailHours, $availEndDate) {
   $editAvailability = "UPDATE operator_session_avail 
                        SET  min_avail_hours = '$minAvailHours',
                        avail_end_date = '$availEndDate'
                        WHERE session_id = '$sessionId' 
-                       AND user_id = $userId";
+                       AND user_id = '$userId'";
 
   $result = mysqli_query($conn, $editAvailability);
+
   if(!$result) {
     throw new Exception('MySQL update error: '.mysqli_error($conn));
   }

@@ -3,7 +3,6 @@ import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import AddUserModal from './admin-add-user-modal';
 import EditUserModal from './admin-edit-user-modal';
-import SelectSessionModal from './admin-select-session-modal';
 
 class AdminOperatorAvailability extends React.Component {
   constructor(props) {
@@ -19,17 +18,14 @@ class AdminOperatorAvailability extends React.Component {
       availSubmissionDate: '',
       addUser: false,
       editUser: false,
-      selectSession: false,
       operatorDetails: null,
       parameter: false,
-      sessionId: '',
-      sessionName: 'Winter 2020'
+      sessionId: 6
     };
     this.getOperatorDetails = this.getOperatorDetails.bind(this);
     this.showAddUserModal = this.showAddUserModal.bind(this);
-    this.showSelectSessionModal = this.showSelectSessionModal.bind(this);
-    this.processSessionSelection = this.processSessionSelection.bind(this);
-    this.closeSelectSessionModal = this.closeSelectSessionModal.bind(this);
+    this.showParameterModal = this.showParameterModal.bind(this);
+    this.cancelParameterModal = this.cancelParameterModal.bind(this);
     this.addUserToDatabase = this.addUserToDatabase.bind(this);
     this.updateUserInDatabase = this.updateUserInDatabase.bind(this);
     this.handleFormEntry = this.handleFormEntry.bind(this);
@@ -51,7 +47,10 @@ class AdminOperatorAvailability extends React.Component {
         'first_name': this.state.firstName,
         'role': this.state.role,
         'status': this.state.status,
-        'special_route_ok': this.state.specialRouteOK
+        'special_route_ok': this.state.specialRouteOK,
+        'min_avail_hours': this.state.minAvailHours,
+        'avail_end_date': this.state.availSubmissionDate,
+        'session_id': this.state.sessionId
       }),
       headers: { 'Content-Type': 'application/json' }
     };
@@ -71,6 +70,12 @@ class AdminOperatorAvailability extends React.Component {
         });
       })
       .catch(error => { throw (error); });
+  }
+
+  cancelParameterModal() {
+    this.setState({
+      parameter: false
+    });
   }
 
   closeAddUserModal() {
@@ -93,25 +98,10 @@ class AdminOperatorAvailability extends React.Component {
     });
   }
 
-  processSessionSelection(event) {
-    event.preventDefault();
-    this.setState({
-      selectSession: false
-    });
-    this.getOperatorDetails();
-  }
-
-  closeSelectSessionModal() {
-    this.setState({
-      selectSession: false
-    });
-  }
-
   closeEditUserModal() {
     this.setState({
       editUser: false
     });
-    this.getOperatorDetails();
   }
 
   closeEditUserModalClearInfo() {
@@ -166,12 +156,6 @@ class AdminOperatorAvailability extends React.Component {
   }
 
   handleFormEntry(event) {
-    if (event.target.name === 'sessionId') {
-      var index = event.nativeEvent.target.selectedIndex;
-      this.setState({
-        sessionName: event.nativeEvent.target[index].text
-      });
-    }
     this.setState({
       [event.target.name]: event.target.value
     });
@@ -180,12 +164,6 @@ class AdminOperatorAvailability extends React.Component {
   showAddUserModal() {
     this.setState({
       addUser: true
-    });
-  }
-
-  showSelectSessionModal() {
-    this.setState({
-      selectSession: true
     });
   }
 
@@ -218,6 +196,10 @@ class AdminOperatorAvailability extends React.Component {
     return (
       <div style={{ ...defaultStyles, ...colorStyle }}></div>
     );
+  }
+
+  updateParameters() {
+
   }
 
   updateUserInDatabase(event) {
@@ -255,19 +237,19 @@ class AdminOperatorAvailability extends React.Component {
       })
       .catch(error => { throw (error); });
   }
+
   render() {
     if (!this.state.operatorDetails) {
       return <div>No Data Available</div>;
     }
+    console.log(this.state.operatorDetails);
+
     return (
       <React.Fragment>
         <div className='nav'>
           <TopMenuGeneral title="ADMIN-OPERATOR AVAILABILITY" />
         </div>
-        <div className="addButton" style={{ fontWeight: 'bold', fontSize: '1.5em' }}>{this.state.sessionName}</div>
         <div className="addButton d-flex justify-content-end mt-3">
-          <div>{this.state.SessionId}</div>
-          <button type="button" className="btn btn-primary btn ml-3" onClick={this.showSelectSessionModal}>Select Session</button>
           <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAddUserModal}>Add User</button>
         </div>
         <table className= 'mt-4'>
@@ -459,25 +441,6 @@ class AdminOperatorAvailability extends React.Component {
             </form>
           </div>
         </EditUserModal>
-        <SelectSessionModal showSelectSessionModal={this.state.selectSession}>
-          <div className="d-flex justify-content-center">
-            <form onSubmit={this.processSessionSelection}>
-              <div className="m-2">
-                <div>Select Session to Display</div>
-                <select name="sessionId" onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='5'>Fall 2019</option>
-                  <option value='6'>Winter 2020</option>
-                  <option value='7'>Spring 2020</option>
-                </select>
-              </div>
-              <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
-                <button className="btn-success mr-2" type='submit'>Submit</button>
-                <button className="btn-danger ml-2" type='reset' onClick={this.closeSelectSessionModal} >Cancel</button>
-              </div>
-            </form>
-          </div>
-        </SelectSessionModal>
       </React.Fragment>
     );
   }
