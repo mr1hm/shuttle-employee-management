@@ -5,7 +5,7 @@ export default class LiveFieldStatus extends React.Component {
     super(props);
     this.state = {
       allLinesBusesInfo: [],
-      sessions: [],
+      allSessionsInfo: [],
       currentLines: null,
       currentBuses: null,
       currentSession: null
@@ -14,10 +14,7 @@ export default class LiveFieldStatus extends React.Component {
 
   componentDidMount() {
     this.getAllLinesBusesInfo();
-    let sessions = this.props.location.state.sessions.slice();
-    this.setState({
-      sessions
-    })
+    this.getAllSessions();
   }
 
   getAllLinesBusesInfo() {
@@ -31,11 +28,22 @@ export default class LiveFieldStatus extends React.Component {
       .catch(error => console.error(error));
   }
 
+  getAllSessions() {
+    fetch(`api/admin-lines-buses-sessions.php`)
+      .then(response => response.json())
+      .then(allSessionsInfo => {
+        this.setState({
+          allSessionsInfo
+        })
+      })
+      .catch(error => console.error(error));
+  }
+
 
 
   render() {
     const { allLinesBusesInfo } = this.state;
-    const { sessions } = this.props.location.state;
+    const { allSessionsInfo } = this.state;
     return (
       <>
       <div className="container-fluid">
@@ -57,7 +65,7 @@ export default class LiveFieldStatus extends React.Component {
           </div>
         </div>
       </div>
-      {sessions.map((session, index) => {
+      {allSessionsInfo.map((session, index) => {
         return (
           <div key={session.name + index} className="container liveFieldStatusParentContainer">
             <div className="row">
