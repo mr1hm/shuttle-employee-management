@@ -6,7 +6,9 @@ import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends';
 import {
-  createDateObjFromDateString,
+  getZeroPaddedNumber,
+  getLocalDateString,
+  getDateString,
   calculateShiftHours,
   adjustLocalTimestampToUTCSeconds,
   adjustUTCSecondsToLocalTimestamp,
@@ -35,8 +37,9 @@ class ShiftsMonth extends React.Component {
   }
   renderCalendar() {
     console.log('param: ', this.props.match.params.date);
-    const todayString = `${this.state.today.getFullYear()}-${this.state.today.getMonth() + 1}-${this.state.today.getDate()}`;
+    const todayString = getLocalDateString(this.state.today);
     const dateObj = new Date(this.props.match.params.date);
+    const currentString = getLocalDateString(dateObj);
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth() + 1;
     const monthInfo = this.getMonthInfo();
@@ -50,7 +53,7 @@ class ShiftsMonth extends React.Component {
           <td key={monthDayIndex} className="align-middle p-0">
             {monthDayIndex < 1 || monthDayIndex > numOfDaysInMonth ? <div></div> : <Link
               className=
-                {year + '-' + month + '-' + monthDayIndex === todayString ? 'today-mark link-style ' : 'link-style'}
+                {currentString === todayString ? 'today-mark link-style ' : 'link-style'}
               to={{
                 pathname: `/shifts/day/shifts-day/${year}-${this.getZeroPaddedNumber(month)}-${monthDayIndex < 10 ? '0' + monthDayIndex : monthDayIndex}`,
                 state: {
@@ -88,7 +91,7 @@ class ShiftsMonth extends React.Component {
   componentDidMount() {
     const today = new Date(this.props.match.params.date);
     const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
-    const initialQuery = this.calculateQueryRange(today.getTime());
+    const initialQuery = this.calculateQueryRange(this.props.match.params.date);
     this.getData('/api/shifts-month.php' + initialQuery + this.id, 'GET');
     this.setState({
       swapFlag: swapFlag
@@ -100,28 +103,18 @@ class ShiftsMonth extends React.Component {
       this.getData('/api/shifts-month.php' + newQuery + this.id, 'GET');
     }
   }
-  calculateQueryRange(timestamp) {
-    var selectedDate = new Date(timestamp);
-    var firstDayOfMonth = new Date(selectedDate).setDate(1);
-    var previousDate = new Date(firstDayOfMonth);
-    // while (previousDate.getDay() > 0) {
-    //   previousDate = new Date(previousDate);
-    //   previousDate.setDate(previousDate.getDate() - 1);
-    // }
-    const unixCalendarStartRange = firstDayOfMonth;
-    const secondsTimestampStartRange = unixCalendarStartRange / 1000;
-    var lastDayOfMonth = function (month, year) {
-      return new Date(year, month, 0).getDate();
+  calculateQueryRange(dateString) {
+    const currentDate = new Date(dateString);
+    const firstDayOfMonth = new Date(dateString);
+    firstDayOfMonth.setUTCDate(1);
+    const firstDateString = getDateString(firstDayOfMonth);
+    const getlastDayOfMonth = function (month, year) {
+      return new Date(year, month, 0).getUTCDate();
     };
-    var lastDate = new Date(timestamp);
-    lastDate.setDate(lastDayOfMonth(selectedDate.getMonth() + 1, selectedDate.getFullYear()));
-    // while (lastDate.getDay() !== 6) {
-    //   lastDate = new Date(lastDate);
-    //   lastDate.setDate(lastDate.getDate() + 1);
-    // }
-    const unixCalendarEndRange = lastDate.getTime();
-    const secondsTimestampEndRange = unixCalendarEndRange; //= adjustLocalTimestampToUTCSeconds(unixCalendarEndRange) + '';
-    const query = `?unixstart=${secondsTimestampStartRange}&unixend=${secondsTimestampEndRange}`;
+    const lastDayOfMonth = new Date(dateString);
+    lastDayOfMonth.setUTCDate(getlastDayOfMonth(currentDate.getUTCMonth() + 1, currentDate.getUTCFullYear()));
+    const lastDateString = getDateString(lastDayOfMonth);
+    const query = `?unixstart=${firstDateString}&unixend=${lastDateString}`;
     return query;
   }
   generateCalendarPage(dateProp) {

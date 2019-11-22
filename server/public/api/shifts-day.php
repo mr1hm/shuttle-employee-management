@@ -28,6 +28,9 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
             rd.`date`,
             rt.`line_name`,
             rt.`id`,
+            bi.`route_id`,
+            bi.`bus_number`,
+            bi.`id`,
             rd. `status`,
             rd.`id` AS roundID
 
@@ -35,11 +38,15 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
           FROM
             `round` AS rd
           INNER JOIN
+          	`bus_info` as bi
+            ON
+            rd.`bus_info_id` = bi.`id`
+          INNER JOIN
             `route` AS rt
           ON
-            rd.`bus_info_id` = rt.`id`
+            rt.id = bi.`route_id`
           WHERE
-rd.`date`= {$date} AND rd.`user_id` = {$userID}";
+            rd.`date`= '$date' AND rd.`user_id` = $userID";
           // GROUP BY
           //   rd.`bus_info_id`,
           //   rd.`user_id`,
@@ -65,7 +72,7 @@ rd.`date`= {$date} AND rd.`user_id` = {$userID}";
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            rd.`date`= {$date}
+            rd.`date`= '$date'
             AND rd.`status` = 'posted' AND rd.`user_id` != {$userID}";
 }
 

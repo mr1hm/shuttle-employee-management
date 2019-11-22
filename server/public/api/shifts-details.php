@@ -8,7 +8,7 @@ if (!empty($_GET['user_id'])) {
 } else throw new Exception('need id for query');
 
 if (!empty($_GET['unixdate'])) {
-  $unixDate = intval($_GET['unixdate']);
+  $unixDate = $_GET['unixdate'];
 } else throw new Exception('need unix date of the shift for query');
 
 if (!empty($_GET['start_time'])) {
@@ -25,21 +25,28 @@ $query = "SELECT
             rd.`start_time`,
             rd.`end_time`,
             rd.`date`,
-            rd. `status`,
             rt.`line_name`,
             rt.`id`,
+            bi.`route_id`,
+            bi.`bus_number`,
+            bi.`id`,
+            rd. `status`,
             rd.`id` AS roundID
           FROM
             `round` AS rd
           INNER JOIN
+          	`bus_info` as bi
+            ON
+            rd.`bus_info_id` = bi.`id`
+          INNER JOIN
             `route` AS rt
           ON
-            rd.`bus_info_id` = rt.`id`
+            rt.id = bi.`route_id`
           WHERE `user_id` = {$userID}
-          AND `date` = {$unixDate}
-          AND (`start_time` >= {$shiftStartTime} AND `end_time` <= {$shiftEndTime})
+          AND `date` = '$unixDate'
+          AND (rd.`start_time` >= {$shiftStartTime} AND rd.`end_time` <= {$shiftEndTime})
 
-          ORDER BY `start_time` ASC";
+          ORDER BY rd.`start_time` ASC";
 
 $result = mysqli_query($conn, $query);
 if (!$result) {

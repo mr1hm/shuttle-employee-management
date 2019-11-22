@@ -10,9 +10,12 @@ import Sessions from './admin-lines-buses-sessions';
 import GapsModal from './admin-lines-buses-viewGaps';
 import Lines from './admin-lines-buses-lines';
 import CreateSession from './admin-lines-buses-createSession';
+import OperationsHistory from './admin-lines-buses-operationsHistory';
+import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
+import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown, faThumbsDown, faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faBus, faCaretDown, faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
@@ -20,7 +23,6 @@ class AdminRoutes extends React.Component {
     this.ref = React.createRef();
     this.state = {
       addNewSessionClicked: false,
-      showGapsModal: false,
       allSessionsView: true,
       copiedSession: null,
       currentSession: 'All Sessions',
@@ -40,8 +42,14 @@ class AdminRoutes extends React.Component {
         regularService: 'True',
         specialDriver: 0
       },
+      deleteHistory: [],
+      addHistory: [],
       newLineAdded: false,
-      mostRecentRouteID: null
+      mostRecentRouteID: null,
+      operationsHistoryMethod: null,
+      originalLinesBusesInfo: null,
+      liveFieldStatus: false,
+      masterFieldStatus: false
     };
     this.getUpdatedLines = this.getUpdatedLines.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
@@ -55,9 +63,13 @@ class AdminRoutes extends React.Component {
     this.handleSessionChange = this.handleSessionChange.bind(this);
     this.handlePasteSession = this.handlePasteSession.bind(this);
     this.handleCopySession = this.handleCopySession.bind(this);
-    this.handleGapsModal = this.handleGapsModal.bind(this);
     this.handleAddNewSessionClick = this.handleAddNewSessionClick.bind(this);
     this.getAllSessions = this.getAllSessions.bind(this);
+    // this.getStoreOperationsHistoryMethod = this.getStoreOperationsHistoryMethod.bind(this);
+    this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
+    this.toggleMasterFieldStatus = this.toggleMasterFieldStatus.bind(this);
+    // this.copyOriginalLinesBusesInfo = this.copyOriginalLinesBusesInfo.bind(this);
+    // this.storeOperationsHistory = this.storeOperationsHistory.bind(this);
   }
 
   componentDidMount() {
@@ -68,12 +80,6 @@ class AdminRoutes extends React.Component {
   handleAddNewSessionClick() {
     this.setState({
       addNewSessionClicked: !this.state.addNewSessionClicked
-    });
-  }
-
-  handleGapsModal() {
-    this.setState({
-      showGapsModal: !this.state.showGapsModal
     });
   }
 
@@ -211,6 +217,8 @@ class AdminRoutes extends React.Component {
   handleAddLineChange(e) {
     const name = e.target.name;
     const value = e.target.value;
+    let sessionFind = this.state.sessions.find(session => session.name === this.state.newLine.session_id);
+    console.log('session found ', sessionFind);
     this.setState(prevState => ({
       newLine: {
         ...prevState.newLine,
@@ -224,15 +232,23 @@ class AdminRoutes extends React.Component {
             session_id: this.state.selectedSessionID
           }
         }));
-      } else if (this.state.newLine.session_id === 'Fall 2019' || this.state.newLine.session_id === 'Winter 2020') {
-        let sessionInfo = this.state.sessions.find(session => session.name === value);
+      } else if (sessionFind) {
         this.setState(prevState => ({
           newLine: {
             ...prevState.newLine,
-            session_id: sessionInfo.id
+            session_id: sessionFind.id
           }
         }));
       }
+      //   else if (this.state.newLine.session_id === 'Fall 2019' || this.state.newLine.session_id === 'Winter 2020' || this.state.newLine.session_id === 'Summer 2020') {
+      //   let sessionInfo = this.state.sessions.find(session => session.name === value);
+      //   this.setState(prevState => ({
+      //     newLine: {
+      //       ...prevState.newLine,
+      //       session_id: sessionInfo.id
+      //     }
+      //   }));
+      // }
     });
     this.checkIfLineExists(value);
     console.log(value);
@@ -261,6 +277,7 @@ class AdminRoutes extends React.Component {
     fetch('api/admin-lines-buses-sessions.php')
       .then(response => response.json())
       .then(sessionsData => {
+        console.log('getallsessions: ', sessionsData);
         this.setState({
           sessions: sessionsData
         });
@@ -305,6 +322,7 @@ class AdminRoutes extends React.Component {
       fetch('api/admin-lines-buses.php', init)
         .then(response => response.json())
         .then(sessionData => {
+          console.log('linebusinfo: ', sessionData);
           this.setState({
             linesBusesInfo: sessionData
           });
@@ -315,7 +333,7 @@ class AdminRoutes extends React.Component {
         .then(response => response.json())
         .then(linesBusesInfo => {
           // console.log(this.state.linesBusesInfo);
-          // console.log(linesBusesInfo);
+          console.log('getlinesbusesinfo: ', linesBusesInfo);
           this.setState({
             linesBusesInfo: linesBusesInfo
           });
@@ -351,7 +369,27 @@ class AdminRoutes extends React.Component {
     }
   }
 
+  // getStoreOperationsHistoryMethod(callback) {
+  //   this.setState({
+  //     operationsHistoryMethod: callback
+  //   });
+  // }
+
+  toggleLiveFieldStatus() {
+    this.setState({
+      liveFieldStatus: !this.state.liveFieldStatus
+    });
+  }
+
+  toggleMasterFieldStatus() {
+    this.setState({
+      masterFieldStatus: !this.state.masterFieldStatus
+    });
+  }
+
   render() {
+    const { linesBusesInfo } = this.state;
+    const { sessions } = this.state;
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
     let largestID = 0;
@@ -391,7 +429,7 @@ class AdminRoutes extends React.Component {
                 <div className="col d-flex align-items-end">
                   {/* <label>View</label> */}
                   <br />
-                  <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+                  <button onClick={this.toggleLiveFieldStatus} className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
                 </div>
                 <div className="col d-flex align-items-end">
                   {/* <label>View</label> */}
@@ -409,18 +447,22 @@ class AdminRoutes extends React.Component {
                 {this.state.copiedSession && this.state.currentSession !== 'All Sessions'
                   ? <div className="col-2 mt-1 mb-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste Session<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
               </div>
-              <div className="row">
-                <div className="card mt-1">
+              <div className="row justify-content-center">
+                <div className="card mt-1 addLineCard">
                   <div className="card-header">
                     <div className="row">
                       <div className="col-2">
-                        {this.state.lineExists ? <label>Line Name<br /><span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span></label> : <label>Line Name<br /><span className="addNewLineName"><i>Name Available</i></span></label>}
+                        <label>Line Name</label>
+                        <br />
+                        <br />
                         <input defaultValue={this.state.newLineName}
                           className="col border border-primary lineNameInput"
                           type="text"
                           name="line_name"
                           onChange={this.handleAddLineChange}>
                         </input>
+                        <br />
+                        {this.state.lineExists ? <span className="addNewLineNameExists"><i>Line {`"${this.state.newLine.line_name}"`} Already Exists</i></span> : <span className="addNewLineName"><i>Name Available</i></span>}
                       </div>
                       {this.state.currentSession === 'All Sessions'
                         ? <div className="col">
@@ -500,6 +542,8 @@ class AdminRoutes extends React.Component {
                 </div>
               </div>
               {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
+              <h4 className="operationsHistory mt-2">Operations History</h4>
+              <OperationsHistory getLinesBusesInfo={this.getLinesBusesInfo} linesBusesInfo={this.state.linesBusesInfo} />
             </div>
           </div>
           <div className="accordion" id="accordionExample">
@@ -507,13 +551,13 @@ class AdminRoutes extends React.Component {
               if (this.state.newLineAdded && (largestID == line.real_route_id)) {
                 return (
                   <div className="newLine" key={line.real_route_id} ref={this.ref}>
-                    <Lines handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                    <Lines storeOperationsHistory={this.storeOperationsHistory} handleGapsModal={this.handleGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                   </div>
                 );
               }
               return (
                 <div key={line.real_route_id}>
-                  <Lines handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                  <Lines storeOperationsHistory={this.storeOperationsHistory} handleGapsModal={this.handleGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                 </div>
               );
             }
@@ -524,6 +568,7 @@ class AdminRoutes extends React.Component {
     }
     return (
       <React.Fragment>
+        {this.state.liveFieldStatus ? <LiveFieldStatus liveFieldStatus={this.state.liveFieldStatus} /> : null}
         <TopMenuGeneral title="ADMIN - Lines/Buses" />
         {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
         <div className="container-fluid mt-2">
@@ -546,12 +591,32 @@ class AdminRoutes extends React.Component {
               <div className="col d-flex align-items-end">
                 {/* <label>View</label> */}
                 <br />
-                <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+                <Link to={{
+                  pathname: `/livefieldstatus`,
+                  state: {
+                    linesBusesInfo,
+                    sessions
+                  }
+                }}
+                onClick={this.toggleLiveFieldStatus}
+                className="btn btn-outline-dark w-100 liveFieldStatusBtn">
+                  Live Field View
+                </Link>
               </div>
               <div className="col d-flex align-items-end">
                 {/* <label>View</label> */}
                 <br />
-                <button className="btn btn-outline-dark w-100 masterFieldStatusBtn">Master Field View</button>
+                <Link to={{
+                  pathname: `/masterfieldstatus`,
+                  state: {
+                    linesBusesInfo,
+                    sessions
+                  }
+                }}
+                onClick={this.toggleMasterFieldStatus}
+                className="btn btn-outline-dark w-100 masterFieldStatusBtn">
+                  Master Field View
+                </Link>
               </div>
               <div className="col d-flex align-items-end">
                 <br />
@@ -565,6 +630,9 @@ class AdminRoutes extends React.Component {
                 ? <div className="col-2 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste Session<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
             </div>
             {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
+            <h4 className="operationsHistory mt-2">Operations History</h4>
+            {console.log(this.state.linesBusesInfo)}
+            <OperationsHistory getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
           </div>
         </div>
         <div className="accordion" id="accordionExample">
@@ -572,13 +640,13 @@ class AdminRoutes extends React.Component {
             if (this.state.newLineAdded && (largestID == line.real_route_id)) {
               return (
                 <div className="newLine" key={`lineDiv${line.real_route_id}`} ref={this.ref}>
-                  <Lines handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                  <Lines operationsHistoryMethod={this.state.operationsHistoryMethod} storeOperationsHistory={this.storeOperationsHistory} handleGapsModal={this.handleGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                 </div>
               );
             }
             return (
               <div key={`lineDiv${line.real_route_id}`}>
-                <Lines handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                <Lines operationsHistoryMethod={this.state.operationsHistoryMethod} storeOperationsHistory={this.storeOperationsHistory} handleGapsModal={this.handleGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
               </div>
             );
           }

@@ -11,10 +11,44 @@ $role = $data['role'];
 $status = $data['status'];
 $specialRouteOK = intval($data['special_route_ok']);
 
+print($uciNetId);
+function getSessionIds($conn) {
+  $sessionIdQuery = "SELECT 
+                     id 
+                     FROM session";
+
+  $sessionIdResult = mysqli_query($conn, $sessionIdQuery);
+  if (!$sessionIdResult) {
+  throw new Exception('mysql error ' . mysqli_error($conn));
+  }
+  $sessionIdData = [];
+  while ($row = mysqli_fetch_assoc($sessionIdResult)) {
+  $sessionIdData[] = $row;
+  }
+
+  return $sessionIdData;
+}
+
+function getUserId($conn, $uciNetId) {
+  $idQuery = "SELECT id
+              FROM user
+              WHERE  uci_net_id = $uciNetId";
+
+  $idResult = mysqli_query($conn, $idQuery);
+  if (!$idResult) {
+  throw new Exception('mysql error ' . mysqli_error($conn));
+  }
+
+  $userIdData = [];
+  while ($row = mysqli_fetch_assoc($idResult)) {
+  $userIdData[] = $row;
+  }
+
+  return $userIdData[0]['id'];
+}
+
 function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId) {
-  print($lastName);
   $addUserQuery = "INSERT INTO user (
-    id,
     uci_net_id,
     last_name,
     first_name,
@@ -30,7 +64,6 @@ function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, 
     url,
     last_update)
     VALUES (
-    null,
     $uciNetId,
     '$lastName',
     '$firstName',
@@ -38,7 +71,7 @@ function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, 
     '',
     '$status',
     '$role',
-    '$specialRouteOK',
+    $specialRouteOK,
     0,
     '',
     '',
@@ -52,6 +85,33 @@ function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, 
   }
 }
 
-addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId);
 
+function addUserToSessionAvailability($conn, $userId, $sessionIdData) {
+  $numberUserId = intval($userId);
+  for ($index = 0; $index < count($sessionIdData); $index++) {
+    $sessionId = intval($sessionIdData[$index]['id']);
+    $addSessionAvailQuery = "INSERT INTO operator_session_avail (
+      user_id,
+      session_id,
+      min_avail_hours,
+      avail_end_date
+      )
+      VALUES (
+      $numberUserId,
+      $sessionId,
+      null,
+      null)";
+    $result = mysqli_query($conn, $addSessionAvailQuery);
+    if(!$result){
+    throw new Exception('MySQL update error: '.mysqli_error($conn));
+    }   
+  }
+}
+
+$sessionIdData = getSessionIds($conn);
+print_r($sessionIdData);
+addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId);
+$userId = getUserId($conn, $uciNetId);
+print_r($userId);
+addUserToSessionAvailability($conn, $userId, $sessionIdData);
 ?>
