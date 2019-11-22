@@ -127,6 +127,11 @@ table.liveFieldStatusTable td {
   font-size: 10px;
 }
 
+.routeBusDisplayLineName {
+  margin-bottom: 0px;
+  margin-top: 8px;
+}
+
 .liveFieldStatusBtn,
 .masterFieldStatusBtn {
   color: #FFA804;

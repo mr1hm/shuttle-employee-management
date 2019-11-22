@@ -4,7 +4,7 @@ export default class LiveFieldStatus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      linesBusesInfo: [],
+      allLinesBusesInfo: [],
       sessions: [],
       currentLines: null,
       currentBuses: null,
@@ -13,18 +13,28 @@ export default class LiveFieldStatus extends React.Component {
   }
 
   componentDidMount() {
-    let linesBusesInfo = this.props.location.state.linesBusesInfo.slice();
+    this.getAllLinesBusesInfo();
     let sessions = this.props.location.state.sessions.slice();
     this.setState({
-      linesBusesInfo,
       sessions
     })
+  }
+
+  getAllLinesBusesInfo() {
+    fetch(`api/admin-lines-buses.php`)
+      .then(response => response.json())
+      .then(allLinesBusesInfo => {
+        this.setState({
+          allLinesBusesInfo
+        })
+      })
+      .catch(error => console.error(error));
   }
 
 
 
   render() {
-    const { linesBusesInfo } = this.props.location.state;
+    const { allLinesBusesInfo } = this.state;
     const { sessions } = this.props.location.state;
     return (
       <>
@@ -79,7 +89,7 @@ export default class LiveFieldStatus extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {linesBusesInfo.map(lineBusData => {
+                    {allLinesBusesInfo.map(lineBusData => {
                       let activeBusesLength = lineBusData.activeBuses.length;
                       let lineName = lineBusData.line_name;
                       if (session.id == lineBusData.sessionID) {
