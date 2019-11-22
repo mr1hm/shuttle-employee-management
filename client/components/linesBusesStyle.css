@@ -85,14 +85,6 @@ table.busTable thead tr th {
   border-bottom: 1px solid #FFA804;
 }
 
-/* table.gapsModalTable td {
-  border-top: 1px solid #FFA804;
-} */
-
-/* table.busTable td {
-  border-top: 1px solid #FFA804;
-} */
-
 table.busTable tbody {
   border-top: 2px solid #FFA804;
 }
@@ -105,6 +97,14 @@ table.liveFieldStatusTable thead tr th {
   border-bottom: 1px solid #FFA804;
 }
 
+table.liveFieldStatusTable td {
+  vertical-align: middle;
+}
+
+/* table.liveFieldStatusTable tbody tr {
+  border-top: 2px solid #FFA804;
+} */
+
 .busTableEditBtnTd {
   border-top: none!important;
 }
@@ -116,6 +116,11 @@ table.liveFieldStatusTable thead tr th {
   border: 1px solid #FFA804;
   height: 23px;
   line-height: 0.6;
+}
+
+.addLineCard {
+  width: 98%;
+  border: 1px solid #FFA804;
 }
 
 .liveFieldStatusBtn,
@@ -137,11 +142,34 @@ table.liveFieldStatusTable thead tr th {
   width: 100%;
 }
 
+.liveFieldStatusParentContainer {
+  max-width: 100%;
+}
+
+.liveFieldStatusFooter {
+  border: 1px solid black;
+  height: 125px;
+  width: 100%;
+}
+
+.anteaterMascot {
+  width: 175px;
+  height: 100px;
+
+}
+
+.liveFieldStatusHeaderTitle {
+  text-shadow: -1px 0 rgba(0, 0, 0, 1), 0 2px rgba(0, 0, 0, 1), 2px 0 rgba(0, 0, 0, 1), 0 -1px rgba(0, 0, 0, 1);
+  margin-top: -50px;
+  margin-left: 100px;
+}
+
 .liveFieldStatusTableContainer {
-  height: 300px;
+  height: 350px;
   overflow: scroll;
   border: 1px solid black;
   border-radius: .25rem;
+  max-width: 65vw;
 }
 
 .liveFieldStatusSessionName {
@@ -149,6 +177,23 @@ table.liveFieldStatusTable thead tr th {
   margin-top: 50px;
   color: rgb(121, 132, 235);
   font-weight: 700;
+}
+
+.liveFieldStatusLineName {
+  font-weight: 600;
+}
+
+.liveFieldStatusStartDate,
+.liveFieldStatusEndDate {
+  font-weight: 500;
+}
+
+.liveFieldStatusStartDateSpan {
+  margin-right: 18px;
+}
+
+.minHoursReqLabel {
+  font-weight: 600;
 }
 
 .liveFieldStatusTitle {
@@ -180,8 +225,18 @@ table.liveFieldStatusTable thead tr th {
   height: 23px;
 }
 
+.minHoursRequiredCol {
+  border-top: 1px solid #FFA804;
+  margin-top: 10px;
+}
+
+.minHoursReqLabel {
+  margin-top: 10px;
+}
+
 .addSessionLineCard {
   border: 1px solid #FFA804;
+  width: 98%;
 }
 
 .sessionNameExists {
@@ -332,13 +387,14 @@ table.liveFieldStatusTable thead tr th {
 }
 
 .addNewLineNameExists {
-  font-weight: 700;
+  /* font-weight: 700; */
   color: red;
 }
 
 .addNewLineName {
-  font-weight: 700;
+  /* font-weight: 700; */
   color: green;
+  font-size: 10px;
 }
 
 .editLineInputRow input {
