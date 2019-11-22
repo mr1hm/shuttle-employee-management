@@ -118,6 +118,11 @@ table.liveFieldStatusTable td {
   line-height: 0.6;
 }
 
+.routeBusDisplayLineName {
+  margin-bottom: 0;
+  margin-top: 8px;
+}
+
 .addLineCard {
   width: 98%;
   border: 1px solid #FFA804;
