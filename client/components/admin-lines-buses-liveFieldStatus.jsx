@@ -31,8 +31,8 @@ export default class LiveFieldStatus extends React.Component {
         <header>
           <div className="row liveFieldStatusHeader">
             <div className="col">
-              <img src="../../server/public/assets/images/mascot/anteater.png" alt="anteater mascot"/>
-              <h3>Anteater<br /> Express</h3>
+              <img className="anteaterMascot" src={require("../../server/public/assets/images/mascot/anteater.png")} alt="anteater mascot" />
+              <h3 className="liveFieldStatusHeaderTitle">Anteater<br /> Express</h3>
             </div>
           </div>
         </header>
@@ -47,10 +47,11 @@ export default class LiveFieldStatus extends React.Component {
         return (
           <div key={session.name + index} className="container liveFieldStatusParentContainer">
             <div className="row">
-              <div className="col-6 d-flex justify-content-center text-left">
+              <div className="col-2"></div>
+              <div className="col d-flex ml-5">
                 <h2 className="liveFieldStatusSessionName">{session.name}</h2>
               </div>
-              <div className="col-4 d-inline-flex align-items-end justify-content-end text-right">
+              <div className="col d-inline-flex align-items-end justify-content-end">
                 <div>
                   <span className="liveFieldStatusStartDateSpan"><i className="liveFieldStatusStartDate">Start Date</i>: {session.startDateString}</span>
                   <span><i className="liveFieldStatusEndDate">End Date</i>: {session.endDateString}</span>
@@ -129,7 +130,9 @@ export default class LiveFieldStatus extends React.Component {
           </div>
         );
       })}
-
+        <div className="container-fluid liveFieldStatusFooter">
+          <div className="row"></div>
+        </div>
       </div>
     );
   }

@@ -146,6 +146,24 @@ table.liveFieldStatusTable td {
   max-width: 100%;
 }
 
+.liveFieldStatusFooter {
+  border: 1px solid black;
+  height: 125px;
+  width: 100%;
+}
+
+.anteaterMascot {
+  width: 175px;
+  height: 100px;
+
+}
+
+.liveFieldStatusHeaderTitle {
+  text-shadow: -1px 0 rgba(0, 0, 0, 1), 0 2px rgba(0, 0, 0, 1), 2px 0 rgba(0, 0, 0, 1), 0 -1px rgba(0, 0, 0, 1);
+  margin-top: -50px;
+  margin-left: 100px;
+}
+
 .liveFieldStatusTableContainer {
   height: 350px;
   overflow: scroll;
