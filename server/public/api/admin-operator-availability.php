@@ -5,10 +5,16 @@ set_exception_handler('error_handler');
 require_once 'db_connection.php';
 
 $data = getBodyData();
-$session = intval($data['session_id']);
+$session = $data['session_id'];
+if ($session === '') {
+  $session = 6;
+} else {
+  $session = intval($session);
+}
 
 // function OK
 function getOperatorsWithSubmittedAvailability($conn, $session) {
+  
   $operatorsWithAvailabilityQuery = "SELECT 
                                      us.uci_net_id
                                      FROM operator_availability AS oa 
@@ -29,7 +35,7 @@ function getOperatorsWithSubmittedAvailability($conn, $session) {
 }
 
 // function OK
-function getAllActiveOperators($conn) {
+function getAllActiveOperators($conn, $session) {
   $allActiveOperatorsQuery = "SELECT 
                               us.uci_net_id,
                               us.first_name, 
@@ -38,10 +44,11 @@ function getAllActiveOperators($conn) {
                               us.status,
                               us.special_route_ok,
                               osa.min_avail_hours,
-                              osa.avail_end_date
+                              osa.avail_end_date,
+                              osa.session_id
                               FROM user AS us
                               JOIN operator_session_avail AS osa ON us.id = osa.user_id
-                              WHERE us.role != 'admin' AND us.role != 'super_admin'";
+                              WHERE us.role != 'admin' AND us.role != 'super_admin' AND osa.session_id = $session";
 
   $allActiveResult = mysqli_query($conn, $allActiveOperatorsQuery);
   if (!$allActiveResult) {
@@ -52,7 +59,6 @@ function getAllActiveOperators($conn) {
     $row['submitted'] = 0;
     $allActiveData[] = $row;
   }
-
   return $allActiveData;
 }
 
@@ -117,10 +123,11 @@ function populateDefaults($submissionStatusData, $sessionAvailabilityData) {
 }
 
 
-$allActiveData = getAllActiveOperators($conn);
+$allActiveData = getAllActiveOperators($conn, $session);
 $opsAvailabilityData = getOperatorsWithSubmittedAvailability($conn, $session);
 $sessionAvailabilityData = getSessionAvailabilityDetails($conn, $session);
 $submissionStatusData = submissionStatus($allActiveData, $opsAvailabilityData);
 populateDefaults($submissionStatusData, $sessionAvailabilityData);
+
 ?>
 
