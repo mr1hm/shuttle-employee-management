@@ -4,8 +4,8 @@ export default class LiveFieldStatus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      linesBusesInfo: [],
-      sessions: [],
+      allLinesBusesInfo: [],
+      allSessionsInfo: [],
       currentLines: null,
       currentBuses: null,
       currentSession: null
@@ -13,19 +13,37 @@ export default class LiveFieldStatus extends React.Component {
   }
 
   componentDidMount() {
-    let linesBusesInfo = this.props.location.state.linesBusesInfo.slice();
-    let sessions = this.props.location.state.sessions.slice();
-    this.setState({
-      linesBusesInfo,
-      sessions
-    })
+    this.getAllLinesBusesInfo();
+    this.getAllSessions();
+  }
+
+  getAllLinesBusesInfo() {
+    fetch(`api/admin-lines-buses.php`)
+      .then(response => response.json())
+      .then(allLinesBusesInfo => {
+        this.setState({
+          allLinesBusesInfo
+        })
+      })
+      .catch(error => console.error(error));
+  }
+
+  getAllSessions() {
+    fetch(`api/admin-lines-buses-sessions.php`)
+      .then(response => response.json())
+      .then(allSessionsInfo => {
+        this.setState({
+          allSessionsInfo
+        })
+      })
+      .catch(error => console.error(error));
   }
 
 
 
   render() {
-    const { linesBusesInfo } = this.props.location.state;
-    const { sessions } = this.props.location.state;
+    const { allLinesBusesInfo } = this.state;
+    const { allSessionsInfo } = this.state;
     return (
       <>
       <div className="container-fluid">
@@ -47,7 +65,7 @@ export default class LiveFieldStatus extends React.Component {
           </div>
         </div>
       </div>
-      {sessions.map((session, index) => {
+      {allSessionsInfo.map((session, index) => {
         return (
           <div key={session.name + index} className="container liveFieldStatusParentContainer">
             <div className="row">
@@ -79,7 +97,7 @@ export default class LiveFieldStatus extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {linesBusesInfo.map(lineBusData => {
+                    {allLinesBusesInfo.map(lineBusData => {
                       let activeBusesLength = lineBusData.activeBuses.length;
                       let lineName = lineBusData.line_name;
                       if (session.id == lineBusData.sessionID) {

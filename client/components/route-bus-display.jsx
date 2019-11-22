@@ -9,7 +9,7 @@ function RouteBusDisplay(props) {
   };
   return (
     <div className="d-flex">
-      <h3 className="" style={routeColorPackage}>{props.route}</h3>
+      <h3 className="routeBusDisplayLineName" style={routeColorPackage}>{props.route}</h3>
       <h3 className="" style={{ 'backgroundColor': 'black', 'color': 'white' }}>{props.bus}</h3>
     </div>
   );
