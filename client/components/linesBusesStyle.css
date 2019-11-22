@@ -123,6 +123,10 @@ table.liveFieldStatusTable td {
   border: 1px solid #FFA804;
 }
 
+.addLineRoundDurationDescription {
+  font-size: 10px;
+}
+
 .liveFieldStatusBtn,
 .masterFieldStatusBtn {
   color: #FFA804;
@@ -132,10 +136,21 @@ table.liveFieldStatusTable td {
   line-height: 0.6;
 }
 
-.liveFieldStatusHeader {
+.liveFieldStatusHeader,
+.adminLinesBusesHeader {
   background-color: rgb(150, 149, 149);
   color: rgba(255, 255, 255, 0.9);
   border-bottom: 2px solid #FFA804;
+  height: 125px;
+}
+
+.liveFieldStatusFooter,
+.adminLinesBusesFooter {
+  background-color: rgb(150, 149, 149);
+  color: rgba(255, 255, 255, 0.9);
+  border-top: 2px solid #FFA804;
+  height: 125px;
+  margin-top: 25px;
 }
 
 .liveFieldStatusTable {
@@ -144,12 +159,6 @@ table.liveFieldStatusTable td {
 
 .liveFieldStatusParentContainer {
   max-width: 100%;
-}
-
-.liveFieldStatusFooter {
-  border: 1px solid black;
-  height: 125px;
-  width: 100%;
 }
 
 .anteaterMascot {
@@ -162,6 +171,7 @@ table.liveFieldStatusTable td {
   text-shadow: -1px 0 rgba(0, 0, 0, 1), 0 2px rgba(0, 0, 0, 1), 2px 0 rgba(0, 0, 0, 1), 0 -1px rgba(0, 0, 0, 1);
   margin-top: -50px;
   margin-left: 100px;
+  font-weight: 600;
 }
 
 .liveFieldStatusTableContainer {
@@ -196,7 +206,8 @@ table.liveFieldStatusTable td {
   font-weight: 600;
 }
 
-.liveFieldStatusTitle {
+.liveFieldStatusTitle,
+.adminLinesBusesTitle {
   border-bottom: 1px solid #FFA804;
   margin-top: 25px;
   font-weight: 800;

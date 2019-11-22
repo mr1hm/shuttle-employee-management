@@ -27,12 +27,16 @@ export default class LiveFieldStatus extends React.Component {
     const { linesBusesInfo } = this.props.location.state;
     const { sessions } = this.props.location.state;
     return (
+      <>
       <div className="container-fluid">
         <header>
           <div className="row liveFieldStatusHeader">
             <div className="col">
               <img className="anteaterMascot" src={require("../../server/public/assets/images/mascot/anteater.png")} alt="anteater mascot" />
               <h3 className="liveFieldStatusHeaderTitle">Anteater<br /> Express</h3>
+            </div>
+            <div className="col d-flex justify-content-end align-items-end">
+              <h5>ADMIN</h5>
             </div>
           </div>
         </header>
@@ -130,10 +134,13 @@ export default class LiveFieldStatus extends React.Component {
           </div>
         );
       })}
-        <div className="container-fluid liveFieldStatusFooter">
-          <div className="row"></div>
-        </div>
       </div>
+      <div className="container-fluid">
+        <footer>
+          <div className="row liveFieldStatusFooter"></div>
+        </footer>
+      </div>
+      </>
     );
   }
 }
