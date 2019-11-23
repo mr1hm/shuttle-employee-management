@@ -137,7 +137,14 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="card col-12">
                 <div className="card-header">
-                  Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
+                  <div className="row">
+                    <div className="col">
+                      Active Buses
+                    </div>
+                    <div className="col d-flex justify-content-end">
+                      <span className="lineID">Line ID: {line.real_route_id}</span>
+                    </div>
+                  </div>
                 </div>
                 <table className="card-table table">
                   <thead>
@@ -223,7 +230,14 @@ export default class Lines extends React.Component {
             <div className="row">
               <div className="card col-12">
                 <div className="card-header">
-                    Active Buses - <span className="lineID">Line/Route ID: {line.real_route_id}</span>
+                  <div className="row">
+                    <div className="col">
+                        Active Buses
+                    </div>
+                    <div className="col d-flex justify-content-end">
+                      <span className="lineID">Line ID: {line.real_route_id}</span>
+                    </div>
+                  </div>
                 </div>
                 <table className="card-table table busTable">
                   <thead>
