@@ -6,16 +6,21 @@ export default class LiveFieldStatus extends React.Component {
     this.state = {
       allLinesBusesInfo: [],
       allSessionsInfo: [],
+      roundInfoToday: [],
+      driversForToday: [],
       currentLines: null,
       currentBuses: null,
       currentSession: null,
       currentDayOfTheWeek: null,
-      currentDate: null
+      displayCurrentDate: null,
+      dateToCompare: null
     };
+    this.getDriversForToday = this.getDriversForToday.bind(this);
   }
 
   componentDidMount() {
     this.getAllLinesBusesInfo();
+    this.getRoundTableInfo();
     this.getAllSessions();
     this.checkCurrentDay();
   }
@@ -24,9 +29,10 @@ export default class LiveFieldStatus extends React.Component {
     const d = new Date();
     let currentDayOfTheWeek = d.getDay();
     let dd = String(d.getDate()).padStart(2, '0');
-    let mm = String(d.getMonth()).padStart(2, '0');
+    let mm = String(d.getMonth() + 1).padStart(2, '0');
     let yyyy = d.getFullYear();
-    let currentDate = mm + '/' + dd + '/' + yyyy;
+    let displayCurrentDate = mm + '/' + dd + '/' + yyyy;
+    let dateToCompare = yyyy + '-' + mm + '-' + dd;
     switch (currentDayOfTheWeek) {
       case 0:
         currentDayOfTheWeek = 'Sunday'
@@ -52,8 +58,57 @@ export default class LiveFieldStatus extends React.Component {
     }
     this.setState({
       currentDayOfTheWeek,
-      currentDate
+      displayCurrentDate,
+      dateToCompare
     })
+  }
+
+  getDriversForToday() {
+    const { roundInfoToday } = this.state;
+    let userID = '';
+    let driversForToday = [];
+    for (let i = 0; i < roundInfoToday.length; ++i) {
+      let driver = driversForToday.find(driver => driver.userID === userID);
+      if (driver === undefined) {
+        let driverInfo = { startTimes: [], endTimes: [] };
+        if (!roundInfoToday[i].nickname) {
+          driverInfo.name = roundInfoToday[i].first_name + ' ' + roundInfoToday[i].last_name;
+        } else {
+          driverInfo.name = roundInfoToday[i].first_name + ` ${roundInfoToday[i].nickname} ` + roundInfoToday[i].last_name;
+        }
+        driverInfo.userID = roundInfoToday[i].id;
+        driverInfo.busID = roundInfoToday[i].bus_info_id;
+        driverInfo.specialDriver = roundInfoToday[i].specialDriver;
+        driverInfo.startTimes.push(roundInfoToday[i].startTimes);
+        driverInfo.endTimes.push(roundInfoToday[i].endTimes);
+        driversForToday.push(driverInfo);
+      }
+      if (driver) {
+        driver.startTimes.push(roundInfoToday[i].startTimes);
+        driver.endTimes.push(roundInfoToday[i].endTimes);
+      }
+      userID = roundInfoToday[i].id;
+      console.log(driversForToday);
+      this.setState({
+        driversForToday
+      });
+    }
+  }
+
+  getRoundTableInfo(rounds) {
+    rounds = {rounds: 1};
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(rounds)
+    };
+    fetch(`api/admin-lines-buses.php`, init)
+      .then(response => response.json())
+      .then(roundInfoToday => {
+        this.setState({
+          roundInfoToday
+        }, this.getDriversForToday)
+      })
+      .catch(error => console.error(error));
   }
 
   getAllLinesBusesInfo() {
@@ -78,11 +133,10 @@ export default class LiveFieldStatus extends React.Component {
       .catch(error => console.error(error));
   }
 
-
-
   render() {
     const { allLinesBusesInfo } = this.state;
     const { allSessionsInfo } = this.state;
+    const { roundInfo } = this.state;
     return (
       <>
       <div className="container-fluid">
@@ -108,7 +162,7 @@ export default class LiveFieldStatus extends React.Component {
             <h5>{this.state.currentDayOfTheWeek}</h5>
           </div>
           <div className="col d-flex justify-content-center">
-            <h6>{this.state.currentDate}</h6>
+            <h6>{this.state.displayCurrentDate}</h6>
           </div>
         </div>
       </div>
@@ -158,19 +212,19 @@ export default class LiveFieldStatus extends React.Component {
                                     <td>{bus.busNumber}</td>
                                     <td>{`AE-${bus.vehicleID}`}</td>
                                     <td>
-                                      Shift Time
+                                      {`Shift Time`}
                                       <br />
-                                      Operator Name
+                                      {`Operator Name`}
                                     </td>
                                     <td>
-                                      Shift Time
+                                      {`Shift Time`}
                                       <br />
-                                      Operator Name
+                                      {`Operator Name`}
                                     </td>
                                     <td>
-                                      Shift Time
+                                      {`Shift Time`}
                                       <br />
-                                      Operator Name
+                                      {`Operator Name`}
                                     </td>
                                   </tr>
                                 );
