@@ -17,7 +17,9 @@ $data = getBodyData();
                 email,
                 cell_provider
                 FROM user
-                WHERE id != 1";
+                WHERE id != 1
+                ORDER BY
+                last_name ASC";
 
   $usersResult = mysqli_query($conn, $usersQuery);
   if (!$usersResult) {

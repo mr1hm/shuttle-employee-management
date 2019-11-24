@@ -19,19 +19,17 @@ class AdminUserSummary extends React.Component {
       addUser: false,
       editUser: false,
       userDetails: [],
-      sessionName: ''
+      active: ''
 
     };
     this.getOperatorDetails = this.getOperatorDetails.bind(this);
     this.showAddUserModal = this.showAddUserModal.bind(this);
     this.addUserToDatabase = this.addUserToDatabase.bind(this);
-    // this.updateUserInDatabase = this.updateUserInDatabase.bind(this);
     this.handleFormEntry = this.handleFormEntry.bind(this);
-    // this.editUser = this.editUser.bind(this);
     this.closeAddUserModal = this.closeAddUserModal.bind(this);
-    // this.closeEditUserModal = this.closeEditUserModal.bind(this);
-    // this.closeEditUserModalClearInfo = this.closeEditUserModalClearInfo.bind(this);
-    // this.closeAddUserModalClearInfo = this.closeAddUserModalClearInfo.bind(this);
+    this.closeAddUserModalClearInfo = this.closeAddUserModalClearInfo.bind(this);
+    this.showAllUsers = this.showAllUsers.bind(this);
+    this.showActiveUsers = this.showActiveUsers.bind(this);
   }
 
   addUserToDatabase(event) {
@@ -65,7 +63,8 @@ class AdminUserSummary extends React.Component {
           specialRouteOK: '',
           phone: '',
           email: '',
-          cellProvider: ''
+          cellProvider: '',
+          active: ''
         });
       })
       .catch(error => { throw (error); });
@@ -86,50 +85,16 @@ class AdminUserSummary extends React.Component {
       role: '',
       status: '',
       specialRouteOK: '',
-      minAvailHours: '',
-      availSubmissionDate: ''
+      phone: '',
+      email: '',
+      cellProvider: '',
+      active: ''
     });
   }
-
-  // closeEditUserModal() {
-  //   this.setState({
-  //     editUser: false
-  //   });
-  //   this.getOperatorDetails();
-  // }
-
-  // closeEditUserModalClearInfo() {
-  //   this.closeEditUserModal();
-  //   this.setState({
-  //     userId: '',
-  //     lastName: '',
-  //     firstName: '',
-  //     role: '',
-  //     status: '',
-  //     specialRouteOK: '',
-  //     minAvailHours: '',
-  //     availSubmissionDate: ''
-  //   });
-  // }
 
   componentDidMount() {
     this.getOperatorDetails();
   }
-
-  // editUser(event) {
-  //   const index = event.currentTarget.id;
-  //   this.setState({
-  //     userId: this.state.operatorDetails[index]['uci_net_id'],
-  //     lastName: this.state.operatorDetails[index]['last_name'],
-  //     firstName: this.state.operatorDetails[index]['first_name'],
-  //     role: this.state.operatorDetails[index]['role'],
-  //     status: this.state.operatorDetails[index]['status'],
-  //     specialRouteOK: this.state.operatorDetails[index]['special_route_ok'],
-  //     minAvailHours: this.state.operatorDetails[index]['min_avail_hours'],
-  //     availSubmissionDate: this.state.operatorDetails[index]['avail_end_date']
-  //   });
-  //   this.showEditUserModal();
-  // }
 
   getOperatorDetails() {
     const data = {
@@ -143,10 +108,7 @@ class AdminUserSummary extends React.Component {
       .then(data => {
         this.setState({
           userDetails: data
-        }, () => {
-          console.log('userDetails', JSON.stringify(this.state.userDetails));
-        }
-        );
+        });
       })
       .catch(error => { throw (error); });
   }
@@ -163,47 +125,29 @@ class AdminUserSummary extends React.Component {
     });
   }
 
-  showEditUserModal() {
+  toggleActiveAndAllUsers() {
+    if (this.state.active) {
+      return (
+        <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAllUsers}>Show All Users</button>
+      );
+    } else {
+      return (
+        <button type="button" className="btn btn-primary btn ml-3" onClick={this.showActiveUsers}>Show Active Users</button>
+      );
+    }
+  }
+
+  showActiveUsers() {
     this.setState({
-      editUser: true
+      active: true
     });
   }
 
-  // updateUserInDatabase(event) {
-  //   event.preventDefault();
-  //   this.closeEditUserModal();
-  //   const data = {
-  //     method: 'POST',
-  //     body: JSON.stringify({
-  //       'uci_net_id': this.state.userId,
-  //       'last_name': this.state.lastName,
-  //       'first_name': this.state.firstName,
-  //       'role': this.state.role,
-  //       'status': this.state.status,
-  //       'special_route_ok': this.state.specialRouteOK,
-  //       'min_avail_hours': this.state.minAvailHours,
-  //       'avail_end_date': this.state.availSubmissionDate,
-  //       'session_id': this.state.sessionId
-  //     }),
-  //     headers: { 'Content-Type': 'application/json' }
-  //   };
-  //   fetch('/api/edit-user.php', data)
-  //     .then(response => { })
-  //     .then(data => {
-  //       this.getOperatorDetails();
-  //       this.setState({
-  //         userId: '',
-  //         lastName: '',
-  //         firstName: '',
-  //         role: '',
-  //         status: '',
-  //         specialRouteOK: '',
-  //         minAvailHours: '',
-  //         availSubmissionDate: ''
-  //       });
-  //     })
-  //     .catch(error => { throw (error); });
-  // }
+  showAllUsers() {
+    this.setState({
+      active: false
+    });
+  }
 
   render() {
     if (!this.state.userDetails) {
@@ -215,7 +159,7 @@ class AdminUserSummary extends React.Component {
           <TopMenuGeneral title="ADMIN-USER SUMMARY" />
         </div>
         <div className="addButton d-flex justify-content-end mt-3">
-          {/* <button type="button" className="btn btn-primary btn ml-3" onClick={this.showSelectSessionModal}>Show All Users</button> */}
+          {this.toggleActiveAndAllUsers()}
           <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAddUserModal}>Add User</button>
         </div>
         <table className= 'mt-4'>
@@ -245,31 +189,61 @@ class AdminUserSummary extends React.Component {
           <tbody>
             {
               this.state.userDetails.map((user, index) => {
-                return (
-                  <tr key={index} className='pb-2'>
-                    <td className='pb-2'>{user['uci_net_id']}</td>
-                    <td></td>
-                    <td className='pb-2'>{user['last_name']}</td>
-                    <td></td>
-                    <td className='pb-2'>{user['first_name']}</td>
-                    <td></td>
-                    <td className='pb-2'>{user['role']}</td>
-                    <td></td>
-                    <td className='pb-2'>{user['status']}</td>
-                    <td></td>
-                    <td className='pb-2'>{user['special_route_ok']}</td>
-                    <td></td>
-                    <td className='pb-2'>{user['phone']}</td>
-                    <td></td>
-                    <td className='pb-2'>{user['email']}</td>
-                    <td></td>
-                    <td className='pb-2'>{user['cell_provider']}</td>
-                    <td></td>
-                    <td className='pb-2'>
-                      <input onClick={this.editUser} id ={index} value="change" type='button'/>
-                    </td>
-                  </tr>
-                );
+                if (this.state.active) {
+                  if (user['status'] === 'active') {
+                    return (
+                      <tr key={index} className='pb-2'>
+                        <td className='pb-2'>{user['uci_net_id']}</td>
+                        <td></td>
+                        <td className='pb-2'>{user['last_name']}</td>
+                        <td></td>
+                        <td className='pb-2'>{user['first_name']}</td>
+                        <td></td>
+                        <td className='pb-2'>{user['role']}</td>
+                        <td></td>
+                        <td className='pb-2'>{user['status']}</td>
+                        <td></td>
+                        <td className='pb-2'>{parseInt(user['special_route_ok']) === 1 ? 'authorized' : 'no'}</td>
+                        <td></td>
+                        <td className='pb-2'>{user['phone']}</td>
+                        <td></td>
+                        <td className='pb-2'>{user['email']}</td>
+                        <td></td>
+                        <td className='pb-2'>{user['cell_provider']}</td>
+                        <td></td>
+                        <td className='pb-2'>
+                          <input onClick={this.editUser} id ={index} value="change" type='button'/>
+                        </td>
+                      </tr>
+                    );
+                  }
+                } else {
+                  return (
+                    <tr key={index} className='pb-2'>
+                      <td className='pb-2'>{user['uci_net_id']}</td>
+                      <td></td>
+                      <td className='pb-2'>{user['last_name']}</td>
+                      <td></td>
+                      <td className='pb-2'>{user['first_name']}</td>
+                      <td></td>
+                      <td className='pb-2'>{user['role']}</td>
+                      <td></td>
+                      <td className='pb-2'>{user['status']}</td>
+                      <td></td>
+                      <td className='pb-2'>{parseInt(user['special_route_ok']) === 1 ? 'yes' : 'no'}</td>
+                      <td></td>
+                      <td className='pb-2'>{user['phone']}</td>
+                      <td></td>
+                      <td className='pb-2'>{user['email']}</td>
+                      <td></td>
+                      <td className='pb-2'>{user['cell_provider']}</td>
+                      <td></td>
+                      <td className='pb-2'>
+                        <input onClick={this.editUser} id ={index} value="change" type='button'/>
+                      </td>
+                    </tr>
+                  );
+                }
               })
             }
           </tbody>
