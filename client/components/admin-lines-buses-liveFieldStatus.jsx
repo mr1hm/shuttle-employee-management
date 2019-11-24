@@ -6,15 +6,109 @@ export default class LiveFieldStatus extends React.Component {
     this.state = {
       allLinesBusesInfo: [],
       allSessionsInfo: [],
+      roundInfoToday: [],
+      driversForToday: [],
       currentLines: null,
       currentBuses: null,
-      currentSession: null
+      currentSession: null,
+      currentDayOfTheWeek: null,
+      displayCurrentDate: null,
+      dateToCompare: null
     };
+    this.getDriversForToday = this.getDriversForToday.bind(this);
   }
 
   componentDidMount() {
     this.getAllLinesBusesInfo();
+    this.getRoundTableInfo();
     this.getAllSessions();
+    this.checkCurrentDay();
+  }
+
+  checkCurrentDay() {
+    const d = new Date();
+    let currentDayOfTheWeek = d.getDay();
+    let dd = String(d.getDate()).padStart(2, '0');
+    let mm = String(d.getMonth() + 1).padStart(2, '0');
+    let yyyy = d.getFullYear();
+    let displayCurrentDate = mm + '/' + dd + '/' + yyyy;
+    let dateToCompare = yyyy + '-' + mm + '-' + dd;
+    switch (currentDayOfTheWeek) {
+      case 0:
+        currentDayOfTheWeek = 'Sunday'
+        break;
+      case 1:
+        currentDayOfTheWeek = 'Monday'
+        break;
+      case 2:
+        currentDayOfTheWeek = 'Tuesday'
+        break;
+      case 3:
+        currentDayOfTheWeek = 'Wednesday'
+        break;
+      case 4:
+        currentDayOfTheWeek = 'Thursday'
+        break;
+      case 5:
+        currentDayOfTheWeek = 'Friday'
+        break;
+      case 6:
+        currentDayOfTheWeek = 'Saturday'
+        break;
+    }
+    this.setState({
+      currentDayOfTheWeek,
+      displayCurrentDate,
+      dateToCompare
+    })
+  }
+
+  getDriversForToday() {
+    const { roundInfoToday } = this.state;
+    let userID = '';
+    let driversForToday = [];
+    for (let i = 0; i < roundInfoToday.length; ++i) {
+      let driver = driversForToday.find(driver => driver.userID === userID);
+      if (driver === undefined) {
+        let driverInfo = { startTimes: [], endTimes: [] };
+        if (!roundInfoToday[i].nickname) {
+          driverInfo.name = roundInfoToday[i].first_name + ' ' + roundInfoToday[i].last_name;
+        } else {
+          driverInfo.name = roundInfoToday[i].first_name + ` ${roundInfoToday[i].nickname} ` + roundInfoToday[i].last_name;
+        }
+        driverInfo.userID = roundInfoToday[i].id;
+        driverInfo.busID = roundInfoToday[i].bus_info_id;
+        driverInfo.specialDriver = roundInfoToday[i].specialDriver;
+        driverInfo.startTimes.push(roundInfoToday[i].startTimes);
+        driverInfo.endTimes.push(roundInfoToday[i].endTimes);
+        driversForToday.push(driverInfo);
+      }
+      if (driver) {
+        driver.startTimes.push(roundInfoToday[i].startTimes);
+        driver.endTimes.push(roundInfoToday[i].endTimes);
+      }
+      userID = roundInfoToday[i].id;
+      console.log(driversForToday);
+      this.setState({
+        driversForToday
+      });
+    }
+  }
+
+  getRoundTableInfo(rounds) {
+    rounds = {rounds: 1};
+    const init = {
+      method: 'POST',
+      body: JSON.stringify(rounds)
+    };
+    fetch(`api/admin-lines-buses.php`, init)
+      .then(response => response.json())
+      .then(roundInfoToday => {
+        this.setState({
+          roundInfoToday
+        }, this.getDriversForToday)
+      })
+      .catch(error => console.error(error));
   }
 
   getAllLinesBusesInfo() {
@@ -39,11 +133,10 @@ export default class LiveFieldStatus extends React.Component {
       .catch(error => console.error(error));
   }
 
-
-
   render() {
     const { allLinesBusesInfo } = this.state;
     const { allSessionsInfo } = this.state;
+    const { roundInfo } = this.state;
     return (
       <>
       <div className="container-fluid">
@@ -62,6 +155,14 @@ export default class LiveFieldStatus extends React.Component {
         <div className="row">
           <div className="col d-inline-flex">
             <h1 className="liveFieldStatusTitle">Live Field Status</h1>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12 d-flex justify-content-center">
+            <h5>{this.state.currentDayOfTheWeek}</h5>
+          </div>
+          <div className="col d-flex justify-content-center">
+            <h6>{this.state.displayCurrentDate}</h6>
           </div>
         </div>
       </div>
@@ -83,7 +184,7 @@ export default class LiveFieldStatus extends React.Component {
 
               </div>
             </div>
-            <div key={session.name + index} className="container liveFieldStatusTableContainer">
+            <div className="container liveFieldStatusTableContainer">
               <div className="row">
                 <table className="table liveFieldStatusTable">
                   <thead>
@@ -97,50 +198,52 @@ export default class LiveFieldStatus extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {allLinesBusesInfo.map(lineBusData => {
+                    {allLinesBusesInfo.map((lineBusData, index) => {
                       let activeBusesLength = lineBusData.activeBuses.length;
                       let lineName = lineBusData.line_name;
                       if (session.id == lineBusData.sessionID) {
                         return (
-                          <>
+                          <React.Fragment key={lineBusData.line_name + index}>
                             {lineBusData.activeBuses.map((bus, index) => {
-                              if (!activeBusesLength) {
+                              if (bus.daysActive.includes(this.state.currentDayOfTheWeek)) {
                                 return (
-                                  <tr>
-                                    <td className="liveFieldStatusLineName">{lineBusData.line_name}</td>
-                                    <td>No Bus</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
+                                  <tr key={bus.busID + index}>
+                                    <td className="liveFieldStatusLineName">{lineName}</td>
+                                    <td>{bus.busNumber}</td>
+                                    <td>{`AE-${bus.vehicleID}`}</td>
+                                    <td>
+                                      {`Shift Time`}
+                                      <br />
+                                      {`Operator Name`}
+                                    </td>
+                                    <td>
+                                      {`Shift Time`}
+                                      <br />
+                                      {`Operator Name`}
+                                    </td>
+                                    <td>
+                                      {`Shift Time`}
+                                      <br />
+                                      {`Operator Name`}
+                                    </td>
                                   </tr>
                                 );
                               } else {
-                                return (
-                                  <tr>
-                                    <td className="liveFieldStatusLineName">{lineName}</td>
-                                    <td>{bus.busNumber}</td>
-                                    <td>{bus.vehicleID}</td>
-                                    <td>
-                                      Shift Time
-                                      <br />
-                                      Operator Name
-                                    </td>
-                                    <td>
-                                      Shift Time
-                                      <br />
-                                      Operator Name
-                                    </td>
-                                    <td>
-                                      Shift Time
-                                      <br />
-                                      Operator Name
-                                    </td>
-                                  </tr>
-                                );
+                                if (!activeBusesLength) {
+                                  return (
+                                    <tr key={bus.busID + index}>
+                                      <td className="liveFieldStatusLineName">{lineBusData.line_name}</td>
+                                      <td>No Bus</td>
+                                      <td>N/A</td>
+                                      <td>N/A</td>
+                                      <td>N/A</td>
+                                      <td>N/A</td>
+                                    </tr>
+                                  );
+                                }
                               }
                             })}
-                          </>
+                          </React.Fragment>
                         );
                       }
                     })
