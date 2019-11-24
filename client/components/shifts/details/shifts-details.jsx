@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { convertMilitaryTime, createDateObject } from '../../../lib/time-functions';
+import { convertMilitaryTime, createDateObject, getUTCYearMonthDateDay } from '../../../lib/time-functions';
 import TopMenuHamburger from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
 import PostModal from './post-modal';
@@ -16,7 +16,7 @@ class ShiftsDetails extends React.Component {
       shiftOverview: null,
       shiftDetails: null,
       checkedRounds: [],
-      swapFlag: false
+      swapFlag: 0
     };
     this.passCheckedRoundIds = this.passCheckedRoundIds.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
@@ -46,7 +46,7 @@ class ShiftsDetails extends React.Component {
       .catch(error => console.error(error));
   }
   componentDidMount() {
-    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : false;
+    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
     this.getShifts();
     this.setState({
       swapFlag: swapFlag
@@ -89,14 +89,14 @@ class ShiftsDetails extends React.Component {
         </div>);
     }
     const { start_time, end_time, date } = this.state.shiftOverview;
-    const dateObj = createDateObject(date);
+    const dateObj = getUTCYearMonthDateDay(date);
     const timeDisplay = (
       <>
         <div>
           {`${convertMilitaryTime(start_time)} - ${convertMilitaryTime(end_time)}`}
         </div>
         <div>
-          {`${dateObj.weekday}, ${dateObj.month} ${dateObj.day}, ${dateObj.year}`}
+          {`${dateObj.dayName}, ${dateObj.monthName} ${dateObj.date}, ${dateObj.year}`}
         </div>
       </>
     );
@@ -111,12 +111,12 @@ class ShiftsDetails extends React.Component {
               <h1>Shift Details</h1>
             </div>
             <div className="col">
-              <TopMenuHamburger/>
+              <TopMenuHamburger userId={userId}/>
             </div>
           </div>
           <div className="row align-items-center mb-2">
             <div className="col-2 col-md-1">
-              <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.bus_info_id}/>
+              <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.route_id}/>
             </div>
             <div className="col text-left col-md-4">
               {timeDisplay}
@@ -137,17 +137,33 @@ class ShiftsDetails extends React.Component {
               }
 
             </div>
-            <div className="col d-flex justify-content-end">
-              <button className="btn btn-primary mr-3" onClick={this.toggleModal}>
-                Post
-              </button>
-              <button className="btn btn-primary mr-3">
-                <Link to='/trade-swap'
+            {this.state.swapFlag ? (
+              <div className="col d-flex justify-content-end">
+                <button className="btn btn-primary mr-3">
+                  <Link to={{
+                    pathname: '/trade-notification',
+                    state: {
+                      swapFlag: this.state.swapFlag
+                    }
+                  }}
                   onClick={this.passCheckedRoundIds}>
-                  Trade/Swap
-                </Link>
-              </button>
-            </div>
+                    Select Swap Shift
+                  </Link>
+                </button>
+              </div>
+            ) : (
+              <div className="col d-flex justify-content-end">
+                <button className="btn btn-primary mr-3" onClick={this.toggleModal}>
+                    Post
+                </button>
+                <button className="btn btn-primary mr-3">
+                  <Link to='/trade-swap'
+                    onClick={this.passCheckedRoundIds}>
+                      Trade/Swap
+                  </Link>
+                </button>
+              </div>
+            )}
           </div>
           <div className="row">
             <div className="col">

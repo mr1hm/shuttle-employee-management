@@ -17,6 +17,9 @@ class HamburgerMenu extends React.Component {
     });
   }
   componentDidMount() {
+    this.getNotifications();
+  }
+  getNotifications() {
     const ID = this.props.userId ? this.props.userId : 17;
     fetch(`/api/get-notifications.php?id=${ID}`)
       .then(response => response.json())
@@ -26,6 +29,13 @@ class HamburgerMenu extends React.Component {
         });
       })
       .catch(error => console.error('Fetch failed', error));
+  }
+  componentDidUpdate(prevProps, prevState) {
+    console.log('prev: ', prevProps.notificationCount);
+    console.log('this: ', this.props.notificationCount);
+    if (prevProps.notificationCount !== this.props.notificationCount) {
+      this.getNotifications();
+    }
   }
   render() {
     const visibleClass = this.state.open ? 'visible' : 'hidden';

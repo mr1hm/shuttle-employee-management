@@ -13,9 +13,14 @@ mysqli_query($conn, "START TRANSACTION");
 
 $query = "UPDATE `round` SET `user_id` = {$target_id} WHERE `id` = {$user_round}";
 $result = mysqli_query($conn, $query);
+if (mysqli_affected_rows($conn) < 1) {
+  mysqli_query($conn, 'ROLLBACK');
+  throw new Exception("No rows affected");
+}
 $query = "UPDATE `transaction` SET `status` = 'accepted' WHERE `round_id` = $user_round";
 $result = mysqli_query($conn, $query);
 if (mysqli_affected_rows($conn) < 1) {
+  mysqli_query($conn, 'ROLLBACK');
   throw new Exception("No rows affected");
 }
 

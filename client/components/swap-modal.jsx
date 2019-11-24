@@ -16,7 +16,6 @@ function SwapModal(props) {
       user_round: arrayOfRoundIds,
       type: 'swap'
     };
-    console.log(selectedDriverToTradeWith);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     fetch('/api/request-shift-trade.php', {
@@ -41,7 +40,7 @@ function SwapModal(props) {
               return (
                 <div key={oneShift.roundID} className="row justify-content-center text-center">
                   <div className="col">
-                    <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
+                    <RouteBusDisplay route={oneShift.line_name} bus={oneShift.route_id} />
                   </div>
                   <div className="col-6">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
                   <div className="col">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>

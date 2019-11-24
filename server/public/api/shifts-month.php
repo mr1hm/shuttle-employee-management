@@ -4,11 +4,11 @@ set_exception_handler('error_handler');
 require_once('db_connection.php');
 
 if (!empty($_GET['unixstart'])) {
-    $lowerDateRange = intval($_GET['unixstart']);
+    $lowerDateRange = $_GET['unixstart'];
 } else throw new Exception('need lower limit date range for query');
 
 if (!empty($_GET['unixend'])) {
-    $upperDateRange = intval($_GET['unixend']);
+    $upperDateRange = $_GET['unixend'];
 } else throw new Exception('need upper limit date range for query');
 
 if (!empty($_GET['id'])) {
@@ -18,7 +18,7 @@ if (!empty($_GET['id'])) {
 $query = "SELECT *
   FROM `round`
   WHERE `user_id`= {$ownerID}
-  AND (`date` >= {$lowerDateRange} AND `date` <={$upperDateRange})
+  AND (`date` >= '$lowerDateRange' AND `date` <= '$upperDateRange')
   AND (`status` = 'scheduled' OR `status` = 'posted')
   ORDER BY `date` ASC";
 

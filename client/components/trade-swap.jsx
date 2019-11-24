@@ -2,6 +2,7 @@ import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import TradeModal from './trade-modal';
 import SwapModal from './swap-modal';
+import Switch from './switch';
 import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, returnWeekInfoArray } from '../lib/time-functions';
 
 class TradeSwap extends React.Component {
@@ -9,9 +10,11 @@ class TradeSwap extends React.Component {
     super(props);
     this.state = {
       availableDrivers: [],
-      selectedDriver: {}
+      selectedDriver: {},
+      toggleButtonisOn: false
     };
     this.handleDriverClick = this.handleDriverClick.bind(this);
+    this.handleToggle = this.handleToggle.bind(this);
   }
   componentDidMount() {
     if (this.props.shiftDetails.length > 0) {
@@ -21,28 +24,29 @@ class TradeSwap extends React.Component {
 
   handleDriverClick(event) {
     const driverId = event.target.id;
-    const selectedDriver = this.state.availableDrivers.find(driver => driver.id === parseInt(driverId));
+    const selectedDriver = this.state.availableDrivers.find(driver => driver.user_id === driverId);
     const selectedDriverObj = {
-      'first_name': selectedDriver.firstName,
-      'last_name': selectedDriver.lastName,
-      'user_id': selectedDriver.id
+      'first_name': selectedDriver.first_name,
+      'last_name': selectedDriver.last_name,
+      'user_id': selectedDriver.user_id
     };
     this.setState({
       selectedDriver: selectedDriverObj
     });
   }
   getAvailableDrivers() {
-    const week = returnWeekInfoArray(this.props.shiftDetails[0].date);
+    // const week = returnWeekInfoArray(this.props.shiftDetails[0].date);
     let roundTimes = [];
     this.props.shiftDetails.map(oneShift => {
       roundTimes.push({
-        'start_time': oneShift.start_time,
-        'stop_time': oneShift.end_time
+        'round_start': oneShift.start_time,
+        'round_end': oneShift.end_time
       });
     });
     const roundTimesString = JSON.stringify(roundTimes);
+    const lineName = this.props.shiftDetails[0].line_name;
     const date = this.props.shiftDetails[0].date;
-    fetch(`/api/admin-available-operators.php?date=${date}&sunday=${week[0]}&saturday=${week[6]}&round_time=${roundTimesString}`)
+    fetch(`/api/admin-available-operators.php?date=${date}&round_time=${roundTimesString}&line_bus=${lineName}`)
       .then(response => response.json())
       .then(details => {
         this.setState({
@@ -51,11 +55,25 @@ class TradeSwap extends React.Component {
       })
       .catch(error => { throw (error); });
   }
+  handleToggle() {
+    this.setState({
+      toggleButtonisOn: !this.state.toggleButtonisOn
+    });
+  }
 
   render() {
 
     const rounds = this.props.shiftDetails;
-    const confirmationText = (Object.keys(this.state.selectedDriver).length !== 0) ? `Trade or Swap with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name}?` : 'Select Coworker';
+    let confirmationText = '';
+    if (Object.keys(this.state.selectedDriver).length !== 0) {
+      if (this.state.toggleButtonisOn) {
+        confirmationText = `Swap with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name}?`;
+      } else {
+        confirmationText = `Trade with ${this.state.selectedDriver.first_name} ${this.state.selectedDriver.last_name}?`;
+      }
+    } else {
+      confirmationText = 'Select Coworker';
+    }
     if (this.props.shiftDetails.length === 0) {
       return (
         <div className="container mt-2">
@@ -69,7 +87,16 @@ class TradeSwap extends React.Component {
       return (
         <div className="container d-flex flex-column justify-content-around h-100">
           <div className="row">
-            <h1> Trade/Swap </h1>
+            <div className="col-5 mt-3 d-flex justify-content-end">
+              <Switch isOn={this.state.toggleButtonisOn} handleToggle={this.handleToggle} />
+            </div>
+            <div className="col-6 ml-5 mt-3">
+              {this.state.toggleButtonisOn ? (
+                <h1> Swap </h1>
+              ) : (
+                <h1> Trade </h1>
+              )}
+            </div>
           </div>
           <div className="row justify-content-center">
             <div className="btn-group w-50">
@@ -78,7 +105,7 @@ class TradeSwap extends React.Component {
               </button>
               <div className="dropdown-menu w-100">
                 {this.state.availableDrivers.map(singleDriver => {
-                  return <button onClick={this.handleDriverClick} className="dropdown-item" type="button" id={singleDriver.id} key={singleDriver.id}>{singleDriver.firstName} {singleDriver.lastName}</button>;
+                  return <button onClick={this.handleDriverClick} className="dropdown-item" type="button" id={singleDriver.user_id} key={singleDriver.user_id}>{singleDriver.first_name} {singleDriver.last_name}</button>;
                 })}
               </div>
             </div>
@@ -87,7 +114,7 @@ class TradeSwap extends React.Component {
             return (
               <div key={oneShift.roundID} className="row justify-content-center text-center">
                 <div className="col">
-                  <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
+                  <RouteBusDisplay route={oneShift.line_name} bus={oneShift.route_id} />
                 </div>
                 <div className="col">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
                 <div className="col">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>
@@ -98,18 +125,21 @@ class TradeSwap extends React.Component {
             <div className="col h-50 d-flex justify-content-center">
               <button type="button" onClick={this.props.history.goBack} className="btn btn-lg btn-light w-75">Cancel</button>
             </div>
-            <div className="col h-50 d-flex justify-content-center">
-              <button type="button" data-toggle="modal" data-target="#tradeModal" className="btn btn-lg btn-success w-75">Trade</button>
+            {this.state.toggleButtonisOn ? (
+              <div className="col h-50 d-flex justify-content-center">
+                <button type="button" data-toggle="modal" data-target="#swapModal" className="btn btn-lg btn-primary w-75">Swap</button>
                 <>
-                  <TradeModal selectedDriver={this.state.selectedDriver} allShifts={rounds}/>
+                  <SwapModal selectedDriver={this.state.selectedDriver} allShifts={rounds} />
                 </>
-            </div>
-            <div className="col h-50 d-flex justify-content-center">
-              <button type="button" data-toggle="modal" data-target="#swapModal" className="btn btn-lg btn-primary w-75">Swap</button>
-                <>
-                <SwapModal selectedDriver={this.state.selectedDriver} allShifts={rounds} />
-                </>
-            </div>
+              </div>
+            ) : (
+              <div className="col h-50 d-flex justify-content-center">
+                <button type="button" data-toggle="modal" data-target="#tradeModal" className="btn btn-lg btn-success w-75">Trade</button>
+                  <>
+                    <TradeModal selectedDriver={this.state.selectedDriver} allShifts={rounds} />
+                  </>
+              </div>
+            )}
           </div>
         </div>
       );

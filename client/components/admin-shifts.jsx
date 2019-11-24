@@ -1,13 +1,12 @@
 import React from 'react';
 import TopMenuAdminDay from './topmenu/topmenu-admin-day';
-import AdminWeekNav from './admin-week-nav';
 import HoursOfOperation from './shifts/week/hours-of-operation';
 import RouteBusDisplay from '../components/route-bus-display';
 import AdminClickedShiftDetailsAside from './admin-shifts-clicked-details-aside';
 import AdminShiftsCombinedRounds from './admin-shifts-combined-rounds';
 import AdminAvailableOperator from './admin-available-operator';
 import AdminUnavailableOperator from './admin-unavailable-operator';
-import { returnWeekInfoArray } from '../lib/time-functions';
+import { getZeroPaddedNumber, getDateString, returnWeekInfoArray } from '../lib/time-functions';
 import './admin-shifts-display.css';
 import AdminConfirmModal from './admin-confirm-modal';
 class AdminShiftsDay extends React.Component {
@@ -21,15 +20,13 @@ class AdminShiftsDay extends React.Component {
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
     this.handleClickAssignShifts = this.handleClickAssignShifts.bind(this);
     this.handleClickAssignShiftConfirm = this.handleClickAssignShiftConfirm.bind(this);
-    this.handleClickUnassignShifts = this.handleClickUnassignShifts.bind(this);
     this.handleClickUnassignShift = this.handleClickUnassignShift.bind(this);
     this.handleClickCancel = this.handleClickCancel.bind(this);
     this.handleClickUnassignOperator = this.handleClickUnassignOperator.bind(this);
-    const defaultDate = 1566619200;
+    const today = new Date();
     this.state = {
-      date: defaultDate,
+      date: `${today.getFullYear()}-${getZeroPaddedNumber(today.getMonth() + 1)}-${getZeroPaddedNumber(today.getDate())}`,
       week: null,
-      rounds: null,
       availableOperators: [],
       operatorSelected: { name: 'n/a', id: 'n/a' },
       shiftsSelected: [],
@@ -38,7 +35,6 @@ class AdminShiftsDay extends React.Component {
       roundsToUnassign: [],
       shiftsToUnassign: [],
       selectingAssign: false,
-      selectingUnassign: false,
       groupedShifts: []
     };
   }
@@ -53,15 +49,15 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error); });
   }
   // get assigned/unassigned rounds from database
-  getTodaysShiftData(timestamp) {
-    fetch(`/api/admin-day-shifts.php?date=${timestamp}`)
+  getTodaysShiftData(dateString) {
+    console.log('date: ', dateString);
+    fetch(`/api/admin-day-shifts.php?date=${dateString}`)
       .then(response => response.json())
       .then(data => {
         console.log('todays data: ', data);
         this.setState({
           groupedShifts: data,
-          date: timestamp,
-          week: returnWeekInfoArray(timestamp),
+          week: returnWeekInfoArray(dateString),
           selectingAssign: false,
           selectingUnassign: false,
           shiftsSelected: [],
@@ -70,7 +66,7 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
-  getAvailableDrivers(startTime, endTime, roundId, userId) {
+  getAvailableDrivers(startTime, endTime, roundId, userId, lineBus) {
     if (!this.state.selectingAssign || userId !== 1) {
       return;
     }
@@ -83,8 +79,8 @@ class AdminShiftsDay extends React.Component {
     } else {
       roundsSelected.push(roundId);
       roundTimes.push({
-        'start_time': startTime,
-        'stop_time': endTime
+        'round_start': startTime,
+        'round_end': endTime
       });
     }
     if (roundTimes.length === 0) {
@@ -96,7 +92,7 @@ class AdminShiftsDay extends React.Component {
       return;
     }
     var roundTimesString = JSON.stringify(this.state.roundTimes);
-    fetch(`/api/admin-available-operators.php?date=${this.state.date}&sunday=${this.state.week[0].unix}&saturday=${this.state.week[6].unix}&round_time=${roundTimesString}`, {
+    fetch(`/api/admin-available-operators.php?date=${this.state.date}&round_time=${roundTimesString}&line_bus=${lineBus}`, {
       method: 'GET'
     })
       .then(response => response.json())
@@ -110,8 +106,12 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
-  handleClickGoToDay(timestamp) {
-    this.getTodaysShiftData(timestamp);
+  // when admin clicks on a day of the week in the nav get new shift data for that day
+  handleClickGoToDay(dateString) {
+    this.getTodaysShiftData(dateString);
+    this.setState({
+      date: dateString
+    });
   }
   handleClickAssignShift(name, id) {
     this.setState({
@@ -121,6 +121,7 @@ class AdminShiftsDay extends React.Component {
       }
     });
   }
+  // click handler for the confirm modal to assign shift
   handleClickAssignShiftConfirm(id) {
     const data = {
       method: 'POST',
@@ -144,62 +145,7 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
-  handleClickAssignShifts() {
-    if (this.state.selectingUnassign) {
-      return;
-    }
-    this.setState({
-      selectingAssign: true,
-      shiftsSelected: []
-    });
-  }
-  handleClickUnassignShifts() {
-    if (this.state.selectingAssign) {
-      return;
-    }
-    this.setState({
-      selectingUnassign: true,
-      shiftsSelected: []
-    });
-  }
-  handleClickUnassignShift(rounds, shifts) {
-    this.setState({
-      selectingUnassign: true,
-      roundsToUnassign: rounds,
-      shiftsToUnassign: shifts
-    });
-  }
-  handleClickCancel() {
-    this.setState({
-      selectingAssign: false,
-      selectingUnassign: false,
-      availableOperators: [],
-      roundsSelected: [],
-      roundTimes: [],
-      shiftsSelected: []
-    });
-  }
-  handleShiftClick(shift) {
-    if (shift.shiftType === 'nonOperational') {
-      return;
-    }
-    var shiftsSelected = this.state.shiftsSelected;
-    var shiftIndex = shiftsSelected.map(shiftItem => shiftItem.roundId).indexOf(shift.roundId);
-    if (shiftIndex > -1) {
-      shiftsSelected.splice(shiftIndex, 1);
-      this.setState({ shiftsSelected: shiftsSelected });
-      return;
-    }
-    if (this.state.selectingAssign) {
-      shiftsSelected.push(shift);
-      this.setState({ shiftsSelected: shiftsSelected });
-    } else if (this.state.selectingUnassign || (!this.state.selectingUnassign && !this.state.selectingAssign)) {
-      shiftsSelected = [shift];
-      this.setState({
-        shiftsSelected: shiftsSelected
-      });
-    }
-  }
+  // click handler for the confirm modal to unassign shift
   handleClickUnassignOperator() {
     let rounds = this.state.roundsToUnassign;
     const data = {
@@ -224,26 +170,76 @@ class AdminShiftsDay extends React.Component {
       })
       .catch(error => { throw (error); });
   }
+  // switches to assign shift mode so admin can select multiple shifts to assign
+  handleClickAssignShifts() {
+    if (this.state.selectingAssign) {
+      return;
+    }
+    this.setState({
+      selectingAssign: true,
+      shiftsSelected: []
+    });
+  }
+  // sets which rounds(an array of round ids) and shifts(an array of shift times)
+  // to unassign before confirming with modal
+  handleClickUnassignShift(rounds, shifts) {
+    this.setState({
+      selectingUnassign: true,
+      roundsToUnassign: rounds,
+      shiftsToUnassign: shifts
+    });
+  }
+  // resets all assign/unassign data to empty
+  handleClickCancel() {
+    this.setState({
+      selectingAssign: false,
+      availableOperators: [],
+      roundsSelected: [],
+      roundTimes: [],
+      shiftsSelected: []
+    });
+  }
+  // sets which shift is selected to display on side of schedule
+  handleShiftClick(shift) {
+    if (shift.shiftType === 'nonOperational') {
+      return;
+    }
+    var shiftsSelected = this.state.shiftsSelected;
+    var shiftIndex = shiftsSelected.map(shiftItem => shiftItem.roundId).indexOf(shift.roundId);
+    if (shiftIndex > -1) {
+      shiftsSelected.splice(shiftIndex, 1);
+      this.setState({ shiftsSelected: shiftsSelected });
+      return;
+    }
+    if (this.state.selectingAssign) {
+      shiftsSelected.push(shift);
+      this.setState({ shiftsSelected: shiftsSelected });
+    } else if (this.state.selectingUnassign || (!this.state.selectingUnassign && !this.state.selectingAssign)) {
+      shiftsSelected = [shift];
+      this.setState({
+        shiftsSelected: shiftsSelected
+      });
+    }
+  }
   componentDidMount() {
     this.getTodaysShiftData(this.state.date);
   }
-  renderSelectModeHeader() {
+  // renders a header when 'select shifts to assign' button is clicked
+  renderAssignCancelButtonAndHeader() {
     if (this.state.selectingAssign) {
-      return <h5 className="selectingAssignHeader m-0">Select shifts to assign</h5>;
-    } else if (this.state.selectingUnassign) {
-      return <h5 className="selectingUnassignHeader m-0">Select shift to unassign</h5>;
+      return (
+        <React.Fragment>
+          <div className="cancelButtonContainer d-flex">
+            <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>
+          </div>
+          <div className="selectModeContainer d-flex justify-content-center align-items-center ml-5">
+            <h3 className="selectingAssignHeader m-0">Select shifts to assign</h3>
+          </div>
+        </React.Fragment>
+      );
     }
   }
-  renderAssignCancelButton() {
-    if (this.state.selectingAssign) {
-      return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
-    }
-  }
-  renderUnAssignCancelButton() {
-    if (this.state.selectingUnassign) {
-      return <button className="cancelButton btn btn-secondary m-2" onClick={this.handleClickCancel}>Cancel</button>;
-    }
-  }
+  // renders the route line and bus number inside a colored div (first column in schedule)
   renderLineComponents() {
     const shiftsGroupedByLine = this.state.groupedShifts;
     const elements = [];
@@ -258,6 +254,7 @@ class AdminShiftsDay extends React.Component {
     });
     return elements;
   }
+  // renders colored divs as rounded rectangles on schedule for each row
   renderShiftComponents() {
     const shiftsGroupedByLine = this.state.groupedShifts;
     if (shiftsGroupedByLine.length === 0) {
@@ -275,7 +272,7 @@ class AdminShiftsDay extends React.Component {
           selectingType = this.state.selectingAssign;
         } else {
           roundType = 'active';
-          selectingType = this.state.selectingUnassign;
+          selectingType = this.state.selectingAssign;
         }
         return (
           < AdminShiftsCombinedRounds
@@ -305,6 +302,9 @@ class AdminShiftsDay extends React.Component {
     }
     return elements;
   }
+  // when a shift is clicked, render an AdminClickedShiftDetailsAside component to the right of the schedule
+  // when 'select shifts to assign' button is clicked multiple unassigned shifts can be clicked and all clicked shifts
+  // will be rendered in the order they were clicked
   renderShiftDetailsComponent() {
     if (this.state.shiftsSelected.length) {
       var shiftElements = this.state.shiftsSelected.map(shift =>
@@ -332,18 +332,22 @@ class AdminShiftsDay extends React.Component {
       );
     }
   }
+  // when an unassigned shift is clicked, render an AdminAvailabeOperator component to the right of the schedule
+  // this component will be rendered below the AdminClickedShiftDetailsAside component
+  // when an unassigned shift is clicked, render an AdminUnavailableOperator component to the right of the schedule
+  // this component will be rendered below the AdminAvailableOperator components
   renderAvailableOperatorElements() {
     const availableOperatorElements = [];
     const availableOperators = this.state.availableOperators;
-    for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
-      if (availableOperators[operatorIndex]['availability']['available']) {
+    for (let op in availableOperators) {
+      if (availableOperators[op]['available']) {
         availableOperatorElements.push(
           <AdminAvailableOperator
-            key={availableOperators[operatorIndex].id}
-            id={availableOperators[operatorIndex].id}
-            name={`${availableOperators[operatorIndex].lastName}, ${availableOperators[operatorIndex].firstName}`}
-            dailyHours={availableOperators[operatorIndex].totalHours}
-            weeklyHours={availableOperators[operatorIndex].weeklyHours}
+            key={availableOperators[op].user_id}
+            id={availableOperators[op].user_id}
+            name={`${availableOperators[op].last_name}, ${availableOperators[op].first_name}`}
+            dailyHours={availableOperators[op].total_daily_minutes / 60}
+            weeklyHours={availableOperators[op].total_weekly_minutes / 60}
             onClickAssignShift={this.handleClickAssignShift} />
         );
       }
@@ -361,24 +365,26 @@ class AdminShiftsDay extends React.Component {
   }
   renderUnavailableOperatorElements() {
     const unavailableOperatorElements = [];
-    const availableOperators = this.state.availableOperators;
-    for (let operatorIndex = 0; operatorIndex < availableOperators.length; operatorIndex++) {
-      if (!availableOperators[operatorIndex]['availability']['available']) {
+    const unavailableOperators = this.state.availableOperators;
+    for (let op in unavailableOperators) {
+      if (!unavailableOperators[op]['available']) {
         unavailableOperatorElements.push(
           <AdminUnavailableOperator
-            key={availableOperators[operatorIndex].id}
-            id={availableOperators[operatorIndex].id}
-            name={`${availableOperators[operatorIndex].lastName}, ${availableOperators[operatorIndex].firstName}`}
-            unavailableReasons={availableOperators[operatorIndex]['availability']['reasons']} />
+            key={unavailableOperators[op].user_id}
+            id={unavailableOperators[op].user_id}
+            name={`${unavailableOperators[op].last_name}, ${unavailableOperators[op].first_name}`}
+            unavailableReasons={unavailableOperators[op]['unavailable_reasons']} />
         );
       }
     }
     if (unavailableOperatorElements.length) {
       return (
         <React.Fragment>
-          <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Unavailable Operators</h6>
-          <div className="availableOperatorElements d-flex flex-column">
-            {unavailableOperatorElements}
+          <div className="unavailableOperatorsContainer d-flex flex-column">
+            <h6 className="availableOperatorsHeader card-title d-flex justify-content-center align-items-end border py-1 m-0 mt-1">Unavailable Operators</h6>
+            <div className="availableOperatorElements d-flex flex-column">
+              {unavailableOperatorElements}
+            </div>
           </div>
         </React.Fragment>
       );
@@ -389,55 +395,38 @@ class AdminShiftsDay extends React.Component {
       <div>
         <TopMenuAdminDay userId={this.props.userId} title="Admin" page='day' date={this.state.date} onClickDayOfWeek={this.handleClickGoToDay}/>
         <div className="selectShiftsButtonContainer d-flex w-100 px-5">
-          {/* <button className="btn btn-primary m-2" onClick={this.autopopulateAndFetchData}> AUTO POPULATE </button> */}
+          <button className="btn btn-primary m-2" onClick={this.autopopulateAndFetchData}> AUTO POPULATE </button>
           <button
             className={`selectShiftsButton btn btn-success border m-2`}
             onClick={this.handleClickAssignShifts}>
             Select Shifts to Assign
           </button>
-          {/* <button
-            className={`selectShiftsButton btn btn-danger border m-2`}
-            onClick={this.handleClickUnassignShifts}>
-            Select Shift to Unassign
-          </button> */}
-          <div className="selectModeContainer d-flex flex-fill justify-content-center align-items-center">
-            {this.renderSelectModeHeader()}
-          </div>
-          <div className="cancelButtonContainer d-flex ml-auto">
-            {this.renderAssignCancelButton()}
-            {this.renderUnAssignCancelButton()}
-          </div>
+          {this.renderAssignCancelButtonAndHeader()}
         </div>
-        <div className="main-container d-flex px-5 h-100">
-          <div className="busHoursShiftsAvailableOperatorsContainer d-flex flex-column col-10 p-0">
-            <div className="shiftAndBusLineContainer d-flex">
-              <div className="bus-line-container container d-flex flex-column align-items-center p-0">
-                <div className="adminLineHeader lineHeaderContainer d-flex justify-content-center align-items-end border w-100">
-                  <h5 className="m-0">Lines</h5>
-                </div>
-                {this.renderLineComponents()}
+        <div className="mainContainer d-flex px-5 h-100">
+          <div className="shiftAndBusLineContainer d-flex col-10 p-0">
+            <div className="busLineContainer container d-flex flex-column align-items-center p-0">
+              <div className="adminLineHeader lineHeaderContainer d-flex justify-content-center align-items-end border w-100">
+                <h5 className="m-0">Lines</h5>
               </div>
-              <div className="hours-populated-shifts-container d-flex flex-column border-right col-11 p-0">
-                <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border">
-                  <HoursOfOperation />
-                </div>
-                {this.renderShiftComponents()}
+              {this.renderLineComponents()}
+            </div>
+            <div className="hoursPopulatedShiftsContainer d-flex flex-column flex-grow-1 border-right p-0">
+              <div className="adminHoursRow adminShiftRows view-hours-container d-flex align-items-end border">
+                <HoursOfOperation />
               </div>
+              {this.renderShiftComponents()}
             </div>
           </div>
           <div className="shiftDetailsAndAvailableOperatorsContainer d-flex flex-column col-2 p-0 ml-1">
             <div className="ShiftDetailsContainer d-flex flex-column">
               {this.renderShiftDetailsComponent()}
             </div>
-            <div className="availableOperatorsContainer d-flex flex-column">
-              {this.renderAvailableOperatorElements()}
-            </div>
-            <div className="unavailableOperatorsContainer d-flex flex-column">
-              {this.renderUnavailableOperatorElements()}
-            </div>
+            {this.renderAvailableOperatorElements()}
+            {this.renderUnavailableOperatorElements()}
           </div>
         </div>
-        <AdminConfirmModal
+        <AdminConfirmModal // modal to confirm assign/unassign
           assign={this.state.selectingAssign}
           unassign={this.state.selectingUnassign}
           rounds={this.state.roundsToUnassign}
