@@ -10,8 +10,10 @@ $firstName = $data['first_name'];
 $role = $data['role'];
 $status = $data['status'];
 $specialRouteOK = intval($data['special_route_ok']);
+$phone = $data['phone'];
+$email = $data['email'];
+$cellProvider = $data['cell_provider'];
 
-print($uciNetId);
 function getSessionIds($conn) {
   $sessionIdQuery = "SELECT 
                      id 
@@ -47,7 +49,7 @@ function getUserId($conn, $uciNetId) {
   return $userIdData[0]['id'];
 }
 
-function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId) {
+function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId, $email, $phone, $cellProvider) {
   $addUserQuery = "INSERT INTO user (
     uci_net_id,
     last_name,
@@ -71,11 +73,11 @@ function addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, 
     '',
     '$status',
     '$role',
-    $specialRouteOK,
-    0,
+    '$specialRouteOK',
+    '$phone',
+    '$email',
     '',
-    '',
-    '',
+    '$cellProvider',
     '',
     null)";
 
@@ -110,7 +112,7 @@ function addUserToSessionAvailability($conn, $userId, $sessionIdData) {
 
 $sessionIdData = getSessionIds($conn);
 print_r($sessionIdData);
-addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId);
+addUser($conn, $specialRouteOK, $status, $role, $firstName, $lastName, $uciNetId, $email, $phone, $cellProvider);
 $userId = getUserId($conn, $uciNetId);
 print_r($userId);
 addUserToSessionAvailability($conn, $userId, $sessionIdData);

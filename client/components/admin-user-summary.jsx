@@ -151,7 +151,7 @@ class AdminUserSummary extends React.Component {
 
   render() {
     if (!this.state.userDetails) {
-      return <div>No Data Available</div>;
+      return <div>Loading</div>;
     }
     return (
       <React.Fragment>
@@ -203,7 +203,7 @@ class AdminUserSummary extends React.Component {
                         <td></td>
                         <td className='pb-2'>{user['status']}</td>
                         <td></td>
-                        <td className='pb-2'>{parseInt(user['special_route_ok']) === 1 ? 'authorized' : 'no'}</td>
+                        <td className='pb-2'>{parseInt(user['special_route_ok']) === 1 ? 'yes' : 'no'}</td>
                         <td></td>
                         <td className='pb-2'>{user['phone']}</td>
                         <td></td>
@@ -299,7 +299,7 @@ class AdminUserSummary extends React.Component {
               </div>
               <div className="m-2">
                 <div>Cell Provider</div>
-                <input type='text' className ='form-control' name="cellProvider" value={this.state.email} contentEditable="true" onChange={this.handleFormEntry} />
+                <input type='text' className ='form-control' name="cellProvider" value={this.state.cellProvider} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
                 <button className="btn-success mr-2" type='submit'>Submit</button>
