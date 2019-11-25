@@ -13,17 +13,19 @@ export default class LiveFieldStatus extends React.Component {
       currentSession: null,
       currentDayOfTheWeek: null,
       displayCurrentDate: null,
-      dateToCompare: null
+      dateToCompare: null,
+      currentTime: null,
+      prevShift: null,
+      currentShift: null,
+      upcomingShift: null,
+      driverName: null
     };
-    this.getDriversForToday = this.getDriversForToday.bind(this);
-    // this.getRoundTableInfo = this.getRoundTableInfo.bind(this);
-    this.displayShifts = this.displayShifts.bind(this);
+    this.organizeDriversForToday = this.organizeDriversForToday.bind(this);
+    this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
   }
 
   componentDidMount() {
-    this.getAllLinesBusesInfo();
-    this.getRoundTableInfo();
-    this.getAllSessions();
+    this.getAllData();
     this.checkCurrentDay();
   }
 
@@ -35,6 +37,7 @@ export default class LiveFieldStatus extends React.Component {
     let yyyy = d.getFullYear();
     let displayCurrentDate = mm + '/' + dd + '/' + yyyy;
     let dateToCompare = yyyy + '-' + mm + '-' + dd;
+
     switch (currentDayOfTheWeek) {
       case 0:
         currentDayOfTheWeek = 'Sunday'
@@ -65,8 +68,10 @@ export default class LiveFieldStatus extends React.Component {
     })
   }
 
-  getDriversForToday() {
+  organizeDriversForToday() {
     const { roundInfoToday } = this.state;
+    const { allSessionsInfo } = this.state;
+    const { dateToCompare } = this.state;
     let userID = '';
     let driversForToday = [];
     console.log(roundInfoToday.length);
@@ -82,6 +87,7 @@ export default class LiveFieldStatus extends React.Component {
         driverInfo.userID = roundInfoToday[i].userID;
         driverInfo.busID = roundInfoToday[i].busID;
         driverInfo.specialDriver = roundInfoToday[i].special_route_ok;
+        driverInfo.sessionID = roundInfoToday[i].session_id;
         driverInfo.date = roundInfoToday[i].date;
         driverInfo.shifts.push(roundInfoToday[i].shifts);
         driversForToday.push(driverInfo);
@@ -90,55 +96,88 @@ export default class LiveFieldStatus extends React.Component {
       userID = roundInfoToday[i].userID;
       console.log(driversForToday);
     }
+    allSessionsInfo.forEach(session => {
+      let yearToCompare = parseInt(dateToCompare.slice(0, 4));
+      let monthToCompare = parseInt(dateToCompare.slice(5, 7));
+      let dayToCompare = parseInt(dateToCompare.slice(8, 10));
+      const currentDateTotal = yearToCompare + monthToCompare + dayToCompare;
+      const splitSessionStartDate = session.startDateString.split('-');
+      const splitSessionEndDate = session.endDateString.split('-');
+      console.log(yearToCompare, monthToCompare, dayToCompare, splitSessionStartDate);
+      const startDateNum = splitSessionStartDate.filter(str => parseInt(str));
+      const endDateNum = splitSessionEndDate.filter(str => parseInt(str));
+      const sessionStartDateTotal = startDateNum[0] + startDateNum[1] + startDateNum[2];
+      const sessionEndDateTotal = endDateNum[0] + endDateNum[1] + endDateNum[2];
+
+      if (currentDateTotal >= sessionStartDateTotal && currentDateTotal <= sessionEndDateTotal) {
+        let currentSession = session.id;
+        this.setState({
+          currentSession
+        })
+      }
+    })
     this.setState({
       driversForToday
-    }, this.displayShifts);
+    }, this.checkAndDisplayShifts);
   }
 
-  displayShifts() {
+  checkAndDisplayShifts() {
     const { driversForToday } = this.state;
     const { dateToCompare } = this.state;
     const currentTime = new Date().toLocaleTimeString();
-    console.log(currentTime);
-    // driversForToday.forEach(driver => {
-
-    // })
+    let currentHour = new Date().getHours() + '';
+    let currentMin = new Date().getMinutes() + '';
+    if (currentHour.length === 1) {
+      currentHour = '0' + currentHour;
+    } else if (currentMin.length === 1) {
+      currentMin = '0' + currentMin;
+    }
+    const current24Time = currentHour + '' + currentMin;
+    console.log(current24Time);
+    driversForToday.forEach(driver => {
+      driver.shifts.forEach(shift => {
+        const current24TimeInt = parseInt(current24Time);
+        if (parseInt(shift[1]) < current24TimeInt) {
+          this.setState({
+            prevShift: `${shift[0]} - ${shift[1]}`
+          })
+        } else if (parseInt(shift[0]) > current24TimeInt) {
+          this.setState({
+            upcomingShift: `${shift[0]} - ${shift[1]}`
+          })
+        } else if (current24TimeInt > parseInt(shift[0]) && current24TimeInt < parseInt(shift[1])) {
+          this.setState({
+            currentShift: `${shift[0]} - ${shift[1]}`
+          })
+        }
+        this.setState({
+          driverName: driver.name
+        })
+      })
+    })
   }
 
-  getRoundTableInfo() {
+  getAllData() {
     const rounds = { rounds: 1 };
     const init = {
       method: 'POST',
       body: JSON.stringify(rounds)
-    };
-    fetch(`api/admin-lines-buses.php`, init)
-      .then(response => response.json())
-      .then(roundInfoToday => {
+    }
+    let fetchAllLinesBusesInfo = fetch(`api/admin-lines-buses.php`);
+    let fetchAllSessionsInfo = fetch(`api/admin-lines-buses-sessions.php`);
+    let fetchRoundTableInfo = fetch(`api/admin-lines-buses.php`, init);
+
+    Promise.all([fetchAllLinesBusesInfo, fetchAllSessionsInfo, fetchRoundTableInfo])
+      .then(data => Promise.all(data.map(response => response.json())))
+      .then(allData => {
+        let allLinesBusesInfo = allData[0];
+        let allSessionsInfo = allData[1];
+        let roundInfoToday = allData[2];
         this.setState({
+          allLinesBusesInfo,
+          allSessionsInfo,
           roundInfoToday
-        }, this.getDriversForToday)
-      })
-      .catch(error => console.error(error));
-  }
-
-  getAllLinesBusesInfo() {
-    fetch(`api/admin-lines-buses.php`)
-      .then(response => response.json())
-      .then(allLinesBusesInfo => {
-        this.setState({
-          allLinesBusesInfo
-        })
-      })
-      .catch(error => console.error(error));
-  }
-
-  getAllSessions() {
-    fetch(`api/admin-lines-buses-sessions.php`)
-      .then(response => response.json())
-      .then(allSessionsInfo => {
-        this.setState({
-          allSessionsInfo
-        })
+        }, this.organizeDriversForToday)
       })
       .catch(error => console.error(error));
   }
@@ -146,7 +185,7 @@ export default class LiveFieldStatus extends React.Component {
   render() {
     const { allLinesBusesInfo } = this.state;
     const { allSessionsInfo } = this.state;
-    const { roundInfo } = this.state;
+    const { roundInfoToday } = this.state;
     return (
       <>
       <div className="container-fluid">
@@ -222,19 +261,19 @@ export default class LiveFieldStatus extends React.Component {
                                     <td>{bus.busNumber}</td>
                                     <td>{`AE-${bus.vehicleID}`}</td>
                                     <td>
-                                      {`Shift Time`}
+                                      {this.state.prevShift}
                                       <br />
-                                      {`Operator Name`}
+                                      {this.state.driverName}
                                     </td>
                                     <td>
-                                      {`Shift Time`}
+                                      {this.state.currentShift}
                                       <br />
-                                      {`Operator Name`}
+                                      {this.state.driverName}
                                     </td>
                                     <td>
-                                      {`Shift Time`}
+                                      {this.state.upcomingShift}
                                       <br />
-                                      {`Operator Name`}
+                                      {this.state.driverName}
                                     </td>
                                   </tr>
                                 );

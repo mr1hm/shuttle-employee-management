@@ -159,15 +159,19 @@ $query = "SELECT
                      rd.`session_id`,
                      rd.`bus_info_id` AS busID,
                      rd.`date`,
-                     CONCAT(`start_time`, ',', `end_time`) AS shifts,
+                     CONCAT(rd.`start_time`, ',', rd.`end_time`) AS shifts,
                      rd.`status`,
                      u.`first_name`,
                      u.`last_name`,
                      u.`nickname`,
                      u.`role`,
-                     u.`special_route_ok`
+                     u.`special_route_ok`,
+                     bi.`route_id`,
+                     r.`line_name`
               FROM `round` AS rd
               LEFT JOIN `user` AS u ON u.`id` = rd.`user_id`
+              LEFT JOIN (SELECT `id`, `route_id` FROM `bus_info`) AS bi ON bi.`id` = rd.`bus_info_id`
+              LEFT JOIN (SELECT `id`, `line_name` FROM `route`) AS r ON r.`id` = bi.`route_id`
               WHERE rd.`date` = '$date'";
     // $query = "SELECT u.`id`,
     //                  u.`first_name`,
