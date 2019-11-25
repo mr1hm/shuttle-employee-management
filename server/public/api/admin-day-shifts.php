@@ -16,7 +16,9 @@ $query = "SELECT
           us.first_name,
           us.special_route_ok,
           rd.date,
-          rd.status
+          rd.status,
+          rd.bus_info_id,
+          rd.session_id
           FROM route AS rt
           JOIN bus_info AS bi ON bi.route_id = rt.id
           JOIN round AS rd ON rd.bus_info_id = bi.id
@@ -61,11 +63,14 @@ for ($data_index = 0; $data_index < count($data); $data_index++){
                     [
                         'id' => (int) $current_data['round_id'],
                         'start' => (int) $current_data['round_start'],
-                        'end' => (int) $current_data['round_end']
+                        'end' => (int) $current_data['round_end'],
+                        'bus_info_id' => (int)$current_data['bus_info_id']
                         ]
                 ],
                 'start_time' => (int) $current_data['round_start'],
-                'end_time' => (int) $current_data['round_end']
+                'end_time' => (int) $current_data['round_end'],
+                'bus_info_id' => (int) $current_data['bus_info_id'],
+                'session_id' => (int) $current_data['session_id']
             ];
             break;
         }
@@ -103,7 +108,8 @@ for ($group_index = 0; $group_index < count($grouped_data); $group_index++) {
             $shifts[$shift_index - 1]['rounds'][] = [
                 'id' => $shift['round_id'],
                 'start' => $shift['start_time'],
-                'end' => $shift['end_time']
+                'end' => $shift['end_time'],
+                'bus_info_id' => $shift['bus_info_id']
             ];
             array_splice($shifts, $shift_index, 1);
             $shift_index--;
