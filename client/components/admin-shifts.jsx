@@ -96,7 +96,6 @@ class AdminShiftsDay extends React.Component {
     })
       .then(response => response.json())
       .then(data => {
-        console.log('available operators: ', data);
         this.setState({
           availableOperators: data,
           roundsSelected: roundsSelected,
@@ -124,7 +123,6 @@ class AdminShiftsDay extends React.Component {
   }
   // click handler for the confirm modal to assign shift
   handleClickAssignShiftConfirm(id, assignStatus) {
-    console.log('date to assign: ', this.state.date);
     const data = {
       method: 'POST',
       body: JSON.stringify({
@@ -158,7 +156,10 @@ class AdminShiftsDay extends React.Component {
       body: JSON.stringify({
         'user_id': 1,
         'unassign_id': id,
+        'date': this.state.date,
         'rounds': rounds,
+        'round_times': this.state.shiftsToUnassign,
+        'shifts': this.state.shiftsSelected,
         'assign_status': assignStatus
       }),
       headers: { 'Content-Type': 'application/json' }
@@ -190,6 +191,9 @@ class AdminShiftsDay extends React.Component {
   // sets which rounds(an array of round ids) and shifts(an array of shift times)
   // to unassign before confirming with modal
   handleClickUnassignShift(rounds, shifts) {
+    console.log('rounds: ', rounds);
+    console.log('shifts: ', shifts);
+    console.log('shiftsSelected: ', this.state.shiftsSelected);
     this.setState({
       selectingUnassign: true,
       roundsToUnassign: rounds,
@@ -320,6 +324,7 @@ class AdminShiftsDay extends React.Component {
           key={shift.roundId}
           userName={shift.userName}
           userId={shift.userId}
+          busInfoId={shift.bus_info_id}
           lineBus = {shift.lineBus}
           shiftTime={shift.shiftTime}
           rounds={shift.rounds}

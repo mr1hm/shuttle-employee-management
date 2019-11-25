@@ -24,7 +24,6 @@ export default class AdminConfirmModal extends React.Component {
     this.props.onClickConfirmUnassign(this.props.operator.id, this.state.assignStatus);
   }
   handleAssignStatusChange(e) {
-    console.log('assigntype: ', e.target.value);
     this.setState({
       assignStatus: e.target.value
     });
