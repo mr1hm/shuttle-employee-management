@@ -23,9 +23,12 @@ class AdminOperatorAvailability extends React.Component {
       operatorDetails: null,
       parameter: false,
       sessionId: '',
-      sessionName: 'Winter 2020'
+      sessionChoices: [],
+      sessionName: ''
+
     };
     this.getOperatorDetails = this.getOperatorDetails.bind(this);
+    this.getSessions = this.getSessions.bind(this);
     this.showAddUserModal = this.showAddUserModal.bind(this);
     this.showSelectSessionModal = this.showSelectSessionModal.bind(this);
     this.processSessionSelection = this.processSessionSelection.bind(this);
@@ -130,6 +133,7 @@ class AdminOperatorAvailability extends React.Component {
 
   componentDidMount() {
     this.getOperatorDetails();
+    this.getSessions();
   }
 
   editUser(event) {
@@ -161,6 +165,26 @@ class AdminOperatorAvailability extends React.Component {
         this.setState({
           operatorDetails: data
         });
+      })
+      .catch(error => { throw (error); });
+  }
+
+  getSessions() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/sessions.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          sessionChoices: data
+        }, () => {
+          console.log('sessionChoices after fetch', JSON.stringify(this.state.sessionChoices));
+        }
+        );
       })
       .catch(error => { throw (error); });
   }
@@ -256,6 +280,7 @@ class AdminOperatorAvailability extends React.Component {
       .catch(error => { throw (error); });
   }
   render() {
+    var hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
     if (!this.state.operatorDetails) {
       return <div>No Data Available</div>;
     }
@@ -414,38 +439,7 @@ class AdminOperatorAvailability extends React.Component {
               </div>
               <div className="m-2">
                 <div>Minimum Available Hours</div>
-                <select name="minAvailHours" defaultValue={this.state.minAvailHours} onChange={this.handleFormEntry}>
-                  <option value='5'>5</option>
-                  <option value='6'>6</option>
-                  <option value='7'>7</option>
-                  <option value='8'>8</option>
-                  <option value='9'>9</option>
-                  <option value='10'>10</option>
-                  <option value='11'>11</option>
-                  <option value='12'>12</option>
-                  <option value='13'>13</option>
-                  <option value='14'>14</option>
-                  <option value='15'>15</option>
-                  <option value='16'>16</option>
-                  <option value='17'>17</option>
-                  <option value='18'>18</option>
-                  <option value='19'>19</option>
-                  <option value='20'>20</option>
-                  <option value='21'>21</option>
-                  <option value='22'>22</option>
-                  <option value='23'>23</option>
-                  <option value='24'>24</option>
-                  <option value='25'>25</option>
-                  <option value='26'>26</option>
-                  <option value='27'>27</option>
-                  <option value='28'>28</option>
-                  <option value='29'>29</option>
-                  <option value='30'>30</option>
-                  <option value='31'>31</option>
-                  <option value='32'>32</option>
-                  <option value='33'>33</option>
-                  <option value='34'>34</option>
-                  <option value='35'>35</option>
+                <select name="minAvailHours" defaultValue={this.state.minAvailHours} onChange={this.handleFormEntry}>{hours.map(index => (<option key={index} value={'' + index}>{index}</option>))}
                 </select>
               </div>
               <div className="m-2">
@@ -464,11 +458,8 @@ class AdminOperatorAvailability extends React.Component {
             <form onSubmit={this.processSessionSelection}>
               <div className="m-2">
                 <div>Select Session to Display</div>
-                <select name="sessionId" onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='5'>Fall 2019</option>
-                  <option value='6'>Winter 2020</option>
-                  <option value='7'>Spring 2020</option>
+                <select name="sessionId" onChange={this.handleFormEntry} defaultValue={this.state.sessionName}>
+                  {this.state.sessionChoices.map((session, index) => (<option key={index} value={session['id']}>{session['name']}</option>))}
                 </select>
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
