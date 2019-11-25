@@ -16,6 +16,8 @@ export default class LiveFieldStatus extends React.Component {
       dateToCompare: null
     };
     this.getDriversForToday = this.getDriversForToday.bind(this);
+    // this.getRoundTableInfo = this.getRoundTableInfo.bind(this);
+    this.displayShifts = this.displayShifts.bind(this);
   }
 
   componentDidMount() {
@@ -67,36 +69,44 @@ export default class LiveFieldStatus extends React.Component {
     const { roundInfoToday } = this.state;
     let userID = '';
     let driversForToday = [];
+    console.log(roundInfoToday.length);
     for (let i = 0; i < roundInfoToday.length; ++i) {
       let driver = driversForToday.find(driver => driver.userID === userID);
       if (driver === undefined) {
-        let driverInfo = { startTimes: [], endTimes: [] };
+        let driverInfo = { shifts: [] };
         if (!roundInfoToday[i].nickname) {
           driverInfo.name = roundInfoToday[i].first_name + ' ' + roundInfoToday[i].last_name;
         } else {
           driverInfo.name = roundInfoToday[i].first_name + ` ${roundInfoToday[i].nickname} ` + roundInfoToday[i].last_name;
         }
-        driverInfo.userID = roundInfoToday[i].id;
-        driverInfo.busID = roundInfoToday[i].bus_info_id;
-        driverInfo.specialDriver = roundInfoToday[i].specialDriver;
-        driverInfo.startTimes.push(roundInfoToday[i].startTimes);
-        driverInfo.endTimes.push(roundInfoToday[i].endTimes);
+        driverInfo.userID = roundInfoToday[i].userID;
+        driverInfo.busID = roundInfoToday[i].busID;
+        driverInfo.specialDriver = roundInfoToday[i].special_route_ok;
+        driverInfo.date = roundInfoToday[i].date;
+        driverInfo.shifts.push(roundInfoToday[i].shifts);
         driversForToday.push(driverInfo);
       }
-      if (driver) {
-        driver.startTimes.push(roundInfoToday[i].startTimes);
-        driver.endTimes.push(roundInfoToday[i].endTimes);
-      }
-      userID = roundInfoToday[i].id;
+      if (driver) driver.shifts.push(roundInfoToday[i].shifts);
+      userID = roundInfoToday[i].userID;
       console.log(driversForToday);
-      this.setState({
-        driversForToday
-      });
     }
+    this.setState({
+      driversForToday
+    }, this.displayShifts);
   }
 
-  getRoundTableInfo(rounds) {
-    rounds = {rounds: 1};
+  displayShifts() {
+    const { driversForToday } = this.state;
+    const { dateToCompare } = this.state;
+    const currentTime = new Date().toLocaleTimeString();
+    console.log(currentTime);
+    // driversForToday.forEach(driver => {
+
+    // })
+  }
+
+  getRoundTableInfo() {
+    const rounds = { rounds: 1 };
     const init = {
       method: 'POST',
       body: JSON.stringify(rounds)

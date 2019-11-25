@@ -154,21 +154,36 @@ $query = "SELECT
 } else if ($method === 'POST' && (isset($bodyData['rounds']))) {
 
     $date = date('Y-m-d');
-    $query = "SELECT u.`id`,
+    $query = "SELECT rd.`id` AS roundID,
+                     rd.`user_id` AS userID,
+                     rd.`session_id`,
+                     rd.`bus_info_id` AS busID,
+                     rd.`date`,
+                     CONCAT(`start_time`, ',', `end_time`) AS shifts,
+                     rd.`status`,
                      u.`first_name`,
                      u.`last_name`,
                      u.`nickname`,
-                     u.`special_route_ok`,
                      u.`role`,
-                     rd.`startTimes`,
-                     rd.`endTimes`,
-                     rd.`date`,
-                     rd.`bus_info_id`,
-              IF (u.`special_route_ok` = 1, 'True', 'False') AS specialDriver
-              FROM `user` AS u
-              LEFT JOIN (SELECT `id`, `date`, `bus_info_id`, `user_id`, GROUP_CONCAT(`start_time`) AS startTimes,
-              GROUP_CONCAT(`end_time`) AS endTimes FROM `round` GROUP BY `id`) AS rd ON rd.`user_id` = u.`id`
+                     u.`special_route_ok`
+              FROM `round` AS rd
+              LEFT JOIN `user` AS u ON u.`id` = rd.`user_id`
               WHERE rd.`date` = '$date'";
+    // $query = "SELECT u.`id`,
+    //                  u.`first_name`,
+    //                  u.`last_name`,
+    //                  u.`nickname`,
+    //                  u.`special_route_ok`,
+    //                  u.`role`,
+    //                  rd.`startTimes`,
+    //                  rd.`endTimes`,
+    //                  rd.`date`,
+    //                  rd.`bus_info_id`,
+    //           IF (u.`special_route_ok` = 1, 'True', 'False') AS specialDriver
+    //           FROM `user` AS u
+    //           LEFT JOIN (SELECT `id`, `date`, `bus_info_id`, `user_id`, GROUP_CONCAT(`start_time`) AS startTimes,
+    //           GROUP_CONCAT(`end_time`) AS endTimes FROM `round` GROUP BY `id`) AS rd ON rd.`user_id` = u.`id`
+    //           WHERE rd.`date` = '$date'";
 
             //   $query = "SELECT
             // bi.`id` AS 'busID',
@@ -205,11 +220,9 @@ $query = "SELECT
 
     $data = [];
     while ($row = mysqli_fetch_assoc($result)) {
-      // if ($row['daysActive'] !== NULL) {
-      //   $row['daysActive'] = explode(',', $row['daysActive']);
-      // } else {
-      //   $row['daysActive'] = [];
-      // }
+      if ($row['shifts'] !== NULL) {
+        $row['shifts'] = explode(',', $row['shifts']);
+      }
       $data[] = $row;
     }
 
