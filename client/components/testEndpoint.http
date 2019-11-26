@@ -8,3 +8,17 @@ POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.p
 ###
 
 GET http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+
+###
+
+GET http://localhost/519_anteater_express/server/public/api/admin-lines-buses-sessions.php
+#get sessions
+
+###
+
+POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+content-type: application/json
+
+{
+  "rounds": "1"
+}

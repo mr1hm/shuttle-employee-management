@@ -1,14 +1,13 @@
 import React from 'react';
 import './admin-shifts-display.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 class AdminClickedShiftDetailsAside extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       roundIdsChecked: [],
-      roundTimesChecked: []
+      roundTimesChecked: [],
+      rounds: []
     };
     this.handleClickUnassignSubmit = this.handleClickUnassignSubmit.bind(this);
     this.onRoundCheckboxChange = this.onRoundCheckboxChange.bind(this);
@@ -16,6 +15,7 @@ class AdminClickedShiftDetailsAside extends React.Component {
   onRoundCheckboxChange(e) {
     let roundIds = this.state.roundIdsChecked;
     let roundTimes = this.state.roundTimesChecked;
+    let rounds = this.state.rounds;
     if (e.target.checked) {
       roundIds.push(e.target.id);
       roundTimes.push(e.target.value);

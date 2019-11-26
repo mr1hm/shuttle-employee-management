@@ -96,19 +96,40 @@ $query = "SELECT
     $rounds = $bodyData['rounds'];
     $endTime = $bodyData['end_time'];
     $daysActive = $bodyData['daysActive'];
-    $gap = $bodyData['gap'];
-    $gapDuration = $bodyData['gapDuration'];
+    // $gap = $bodyData['gap'];
+    // $gapDuration = $bodyData['gapDuration'];
     $openingDuration = $bodyData['opening_duration'];
     $closingDuration = $bodyData['closing_duration'];
     $query = "UPDATE `bus_info`
-                SET `bus_number` = '$busNumber', `start_time` = '$startTime', `rounds` = '$rounds', `end_time` = '$endTime', `daysActive` = '$daysActive', `gap` = '$gap',
-                    `gapDuration` = $gapDuration, `opening_duration` = '$openingDuration', `closing_duration` = '$closingDuration'
+                SET `bus_number` = '$busNumber', `start_time` = '$startTime', `rounds` = '$rounds', `end_time` = '$endTime', `opening_duration` = '$openingDuration', `closing_duration` = '$closingDuration'
                 WHERE `bus_info`.`id` = '$busID'";
 
 } else if ($method === 'DELETE' && (isset($bodyData['id']))) {
 
     $busID = $bodyData['id'];
     $query = "DELETE FROM `bus_info` WHERE `id` = $busID";
+
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('mysql error bus_info table ' . mysqli_error($conn));
+    }
+
+    $query = "DELETE FROM `busGaps` WHERE `bus_id` = $busID";
+
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('mysql error busGaps table ' . mysqli_error($conn));
+    }
+
+    $query = "DELETE FROM `busDaysActive` WHERE `bus_id` = $busID";
+
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('mysql error busDaysActive table ' . mysqli_error($conn));
+    }
 
 } else if ($method === 'DELETE' && (isset($bodyData['routeID']))) { // deletes line and buses that were on that line
 
@@ -130,7 +151,71 @@ $query = "SELECT
 
   require_once 'admin-lines-buses-sessions.php';
 
-}
+} else if ($method === 'POST' && (isset($bodyData['rounds']))) {
+
+    $date = date('Y-m-d');
+    $query = "SELECT u.`id`,
+                     u.`first_name`,
+                     u.`last_name`,
+                     u.`nickname`,
+                     u.`special_route_ok`,
+                     u.`role`,
+                     rd.`startTimes`,
+                     rd.`endTimes`,
+                     rd.`date`,
+                     rd.`bus_info_id`,
+              IF (u.`special_route_ok` = 1, 'True', 'False') AS specialDriver
+              FROM `user` AS u
+              LEFT JOIN (SELECT `id`, `date`, `bus_info_id`, `user_id`, GROUP_CONCAT(`start_time`) AS startTimes,
+              GROUP_CONCAT(`end_time`) AS endTimes FROM `round` GROUP BY `id`) AS rd ON rd.`user_id` = u.`id`
+              WHERE rd.`date` = '$date'";
+
+            //   $query = "SELECT
+            // bi.`id` AS 'busID',
+            // bi.`bus_number`,
+            // rt.`id` AS 'real_route_id',
+            // bi.`rounds`,
+            // rt.`roundDuration`,
+            // bi.`start_time`,
+            // bi.`end_time`,
+            // bg.`gapStartTimes`,
+            // bg.`gapDurations`,
+            // rt.`line_name`,
+            // rt.`status`,
+            // bi.`opening_duration`,
+            // bi.`closing_duration`,
+            // bi.`vehicle_id`,
+            // bd.`daysActive`,
+            // rt.`public`,
+            // rt.`regularService`,
+            // rt.`specialDriver`,
+            // s.`id` AS sessionID,
+            // IF (rt.`specialDriver` = 1, 'True', 'False') AS specialDriver
+            // FROM `route` AS rt
+            // LEFT JOIN `bus_info` AS bi ON bi.`route_id` = rt.`id`
+            // LEFT JOIN `session` AS s ON s.`id` = rt.`session_id`
+            // LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`gapStartTime`) AS gapStartTimes, GROUP_CONCAT(`gapDuration`) AS gapDurations FROM `busGaps` GROUP BY `bus_id`) AS bg ON bg.`bus_id` = bi.`id`
+            // LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`daysActive`) AS daysActive FROM `busDaysActive` GROUP BY `bus_id`) AS bd ON bd.`bus_id` = bi.`id`
+            // ORDER BY line_name";
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('mysql error ' . mysqli_error($conn));
+    }
+
+    $data = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+      // if ($row['daysActive'] !== NULL) {
+      //   $row['daysActive'] = explode(',', $row['daysActive']);
+      // } else {
+      //   $row['daysActive'] = [];
+      // }
+      $data[] = $row;
+    }
+
+    print(json_encode($data));
+
+  }
 
 $result = mysqli_query($conn, $query);
 
@@ -181,6 +266,8 @@ if($method === 'GET') {
     unset($row['daysActive']);
     unset($row['gapStartTime']);
     unset($row['gapDuration']);
+    unset($row['gapStartTimes']);
+    unset($row['gapDurations']);
     unset($row['opening_duration']);
     unset($row['closing_duration']);
     unset($row['vehicle_id']);
@@ -200,6 +287,7 @@ if($method === 'GET') {
   print(json_encode($data));
 
 }
+
 if ($method === 'POST' && (isset($bodyData['line_name']))) {
 
     $query = "SELECT * FROM `route`";
@@ -215,22 +303,6 @@ if ($method === 'POST' && (isset($bodyData['line_name']))) {
     }
 
     print(json_encode($data));
-
-} else if ($method === 'POST' && (isset($bodyData['route_id']))) {
-
-    // $query = "SELECT * FROM `bus_info`";
-    // $result = mysqli_query($conn, $query);
-
-    // if (!$result) {
-    //   throw new Exception('mysql error ' . mysqli_error($conn));
-    // }
-
-    // $data = [];
-    // while ($row = mysqli_fetch_assoc($result)) {
-    //   $data = $row;
-    // }
-
-    // print(json_encode($data));
 
 } else if ($method === 'POST' && (isset($bodyData['id']))) {
 

@@ -16,6 +16,7 @@ function validParameters () {
 
 global $conn;
 if (validParameters()) {
+  ob_start();
   $date = $_GET['date'];
   $shift = json_decode($_GET['round_time'], true);
   $line_bus = $_GET['line_bus'];
@@ -42,3 +43,5 @@ if (validParameters()) {
   ob_clean();
   print(json_encode($operators));
 }
+
+?>

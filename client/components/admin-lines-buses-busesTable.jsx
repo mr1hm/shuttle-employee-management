@@ -3,6 +3,7 @@ import RouteBusDisplay from './route-bus-display';
 import EditBusModal from './admin-lines-buses-editBus';
 import AdminRoutes from './admin-lines-buses';
 import GapsModal from './admin-lines-buses-viewGaps';
+import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPaperPlane, faDivide } from '@fortawesome/free-solid-svg-icons';
 
@@ -14,12 +15,14 @@ export default class BusesTable extends React.Component {
       editBusClicked: false,
       checkLinesBusesInfo: null,
       prevDeletedBus: null,
-      showGapsModal: false
+      showGapsModal: false,
+      deleteBusClicked: false
     };
     this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
     this.closeEditBus = this.closeEditBus.bind(this);
     this.deleteBus = this.deleteBus.bind(this);
     this.handleGapsModal = this.handleGapsModal.bind(this);
+    this.handleDeleteBusClicked = this.handleDeleteBusClicked.bind(this);
   }
 
   // checkForActiveBuses() {
@@ -73,15 +76,21 @@ export default class BusesTable extends React.Component {
     });
   }
 
+  handleDeleteBusClicked() {
+    this.setState({
+      deleteBusClicked: !this.state.deleteBusClicked
+    })
+  }
+
   render() {
     const { line } = this.props;
     const { busInfo } = this.props;
-    console.log(busInfo);
+    const deleteStatus = 'bus';
     if (this.state.showGapsModal) {
       return (
         <>
         <GapsModal busGapInfo={this.props.busInfo} handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.props.linesBusesInfo} />
-        <tbody>
+        <tbody className="busTable">
           <tr className="busTableInfo">
             <td className="busNumber" rowSpan="3">
               <RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay>
@@ -95,7 +104,7 @@ export default class BusesTable extends React.Component {
               <br /> */}
               <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
             </td>
-            <td className="d-flex justify-content-center">
+              <td className="d-flex justify-content-center busTableEditBtnTd">
               <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
             </td>
           </tr>
@@ -117,7 +126,7 @@ export default class BusesTable extends React.Component {
     }
     if (line.activeBuses.length === 0) {
       return (
-        <tbody>
+        <tbody className="busTable">
           <tr>
             <td className="busNumber" rowSpan="3">THERE ARE NO ACTIVE BUSES</td>
           </tr>
@@ -130,7 +139,9 @@ export default class BusesTable extends React.Component {
       );
     }
     return (
-      <tbody>
+      <>
+      {this.state.deleteBusClicked ? <DeleteConfirmationModal deleteBus={this.deleteBus} handleDeleteBusClicked={this.handleDeleteBusClicked} deleteStatus={deleteStatus} busInfo={busInfo} handleDeleteLine={this.handleDeleteLine} deleteLine={this.deleteLine} line={line} /> : null}
+      <tbody className="busTable">
         <tr className="busTableInfo">
           <td className="busNumber" rowSpan="3">
             <RouteBusDisplay bus={busInfo.busNumber}></RouteBusDisplay>
@@ -144,7 +155,7 @@ export default class BusesTable extends React.Component {
             <br/> */}
             <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
           </td>
-          <td className="d-flex justify-content-center">
+          <td className="d-flex justify-content-center busTableEditBtnTd">
             <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
           </td>
         </tr>
@@ -155,10 +166,11 @@ export default class BusesTable extends React.Component {
           <td></td>
           <td>{`${busInfo.gapDuration}min`}</td>
           <td className="d-flex justify-content-center">
-            <button onClick={() => this.deleteBus(busInfo.busID)} className="busTableDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
+            <button onClick={this.handleDeleteBusClicked} className="busTableDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
           </td>
         </tr>
       </tbody>
+      </>
     );
   }
 }

@@ -15,6 +15,9 @@ import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
 import TradeSwap from './trade-swap';
 import TradeNotification from './trade-notification';
+import AdminUserSummary from './admin-user-summary';
+import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
+import MasterFieldStatus from './admin-lines-buses-masterFieldStatus';
 
 class App extends React.Component {
   constructor(props) {
@@ -53,6 +56,8 @@ class App extends React.Component {
       return (
         <React.Fragment>
           <Switch>
+            <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
+            <Route path="/masterfieldstatus/" render={props => <MasterFieldStatus {...props} />} />
             <Route exact path={['/', '/welcome/']} render={props => <Welcome {...props} userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId ? this.state.userId : 17} get={this.getUserID} />} />
             <Route path="/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
@@ -63,6 +68,7 @@ class App extends React.Component {
             <Route path="/admin-day/" render={props => <AdminShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/operator-availability/" render={props => <OperatorAvailability userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/admin-operator-availability/" render={props => <AdminOperatorAvailability userId={this.state.userId ? this.state.userId : 17} />} />
+            <Route path="/admin-user-summary/" render={props => <AdminUserSummary userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/trade-swap/" render={props => <TradeSwap {...props} shiftDetails={this.state.shiftDetails} />} />
             <Route path="/trade-notification/" render={props => <TradeNotification {...props} userId={this.state.userId ? this.state.userId : 17} shiftDetails={this.state.shiftDetails} />} />
           </Switch>
@@ -73,6 +79,8 @@ class App extends React.Component {
       return (
         <React.Fragment>
           <Switch>
+            <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
+            <Route path="/masterfieldstatus/" render={props => <MasterFieldStatus {...props} />} />
             <Route exact path={['/', '/login/']} render={props => <Login {...props} onClick={this.setLoginProps} onChange={this.getUserID} />} />
             <Route path="/welcome/" render={props => <Welcome {...props} />}/>
             <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId} />}/>
@@ -84,6 +92,7 @@ class App extends React.Component {
             <Route path = "/admin-day/" render={props => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
             <Route path="/admin-routes/" render={props => <AdminRoutes {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/operator-availability/" render={props => <OperatorAvailability {...props}/>}/>
+            <Route path="/admin-user-summary/" render={props => <AdminUserSummary {...props}/>}/>
             <Route path="/admin-operator-availability/" render={props => <AdminOperatorAvailability {...props}/>}/>
             <Route path="/trade-swap/" render={props => <TradeSwap {...props}/>} />
           </Switch>

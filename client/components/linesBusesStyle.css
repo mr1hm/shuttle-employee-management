@@ -81,23 +81,146 @@
   line-height: 0;
 }
 
-table.busTable thead th {
+table.busTable thead tr th {
   border-bottom: 1px solid #FFA804;
 }
 
-/* table.gapsModalTable tbody tr {
+table.busTable tbody {
+  border-top: 2px solid #FFA804;
+}
+
+table.liveFieldStatusTable tbody {
+  border-top: 1px solid #FFA804;
+}
+
+table.liveFieldStatusTable thead tr th {
   border-bottom: 1px solid #FFA804;
+}
+
+table.liveFieldStatusTable td {
+  vertical-align: middle;
+}
+
+/* table.liveFieldStatusTable tbody tr {
+  border-top: 2px solid #FFA804;
 } */
 
+.busTableEditBtnTd {
+  border-top: none!important;
+}
+
 .addLineBtn,
-.liveFieldStatusBtn,
-.masterFieldStatusBtn,
 .newSessionBtn {
   color: #FFA804;
   background-color: rgb(23, 2, 61);
   border: 1px solid #FFA804;
   height: 23px;
-  line-height: 0;
+  line-height: 0.6;
+}
+
+.addLineCard {
+  width: 98%;
+  border: 1px solid #FFA804;
+}
+
+.addLineRoundDurationDescription {
+  font-size: 10px;
+}
+
+.routeBusDisplayLineName {
+  margin-bottom: 0px;
+  margin-top: 8px;
+}
+
+.liveFieldStatusBtn,
+.masterFieldStatusBtn {
+  color: #FFA804;
+  background-color: rgb(23, 2, 61);
+  border: 1px solid #FFA804;
+  height: 23px;
+  line-height: 0.6;
+}
+
+.liveFieldStatusHeader,
+.adminLinesBusesHeader {
+  background-color: rgb(150, 149, 149);
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 2px solid #FFA804;
+  height: 125px;
+}
+
+.liveFieldStatusFooter,
+.adminLinesBusesFooter {
+  background-color: rgb(150, 149, 149);
+  color: rgba(255, 255, 255, 0.9);
+  border-top: 2px solid #FFA804;
+  height: 125px;
+  margin-top: 25px;
+}
+
+.liveFieldStatusTable {
+  width: 100%;
+}
+
+.liveFieldStatusParentContainer {
+  max-width: 100%;
+}
+
+.anteaterMascot {
+  width: 175px;
+  height: 100px;
+
+}
+
+.liveFieldStatusHeaderTitle {
+  text-shadow: -1px 0 rgba(0, 0, 0, 1), 0 2px rgba(0, 0, 0, 1), 2px 0 rgba(0, 0, 0, 1), 0 -1px rgba(0, 0, 0, 1);
+  margin-top: -50px;
+  margin-left: 100px;
+  font-weight: 600;
+}
+
+.liveFieldStatusTableContainer {
+  height: 350px;
+  overflow: scroll;
+  border: 1px solid black;
+  border-radius: .25rem;
+  max-width: 65vw;
+}
+
+.liveFieldStatusSessionName {
+  font-size: 36px;
+  margin-top: 50px;
+  color: rgb(121, 132, 235);
+  font-weight: 700;
+}
+
+.liveFieldStatusLineName {
+  font-weight: 600;
+  /* font-size: 16px; */
+}
+
+.liveFieldStatusStartDate,
+.liveFieldStatusEndDate {
+  font-weight: 500;
+}
+
+.liveFieldStatusStartDateSpan {
+  margin-right: 18px;
+}
+
+.minHoursReqLabel {
+  font-weight: 600;
+}
+
+.liveFieldStatusTitle,
+.adminLinesBusesTitle {
+  border-bottom: 1px solid #FFA804;
+  margin-top: 25px;
+  font-weight: 800;
+}
+
+.liveFieldStatusContentContainer {
+  max-width: 80%;
 }
 
 .lineNameInput,
@@ -113,9 +236,24 @@ table.busTable thead th {
 .sessionNameInput,
 .sessionStartDateInput,
 .sessionEndDateInput,
-.sessionNotesInput {
+.sessionNotesInput,
+.sessionOperatorInfoInput {
   border-radius: .25rem;
   height: 23px;
+}
+
+.minHoursRequiredCol {
+  border-top: 1px solid #FFA804;
+  margin-top: 10px;
+}
+
+.minHoursReqLabel {
+  margin-top: 10px;
+}
+
+.addSessionLineCard {
+  border: 1px solid #FFA804;
+  width: 98%;
 }
 
 .sessionNameExists {
@@ -133,6 +271,10 @@ table.busTable thead th {
 
 .sessionNameSpan {
   margin: 0;
+}
+
+.mascot {
+  background-image: "/Users/kevinihm/lfz/519_anteater_express/server/public/assets/images/mascot/anteater.png"
 }
 
 .addNewBusCard {
@@ -179,16 +321,21 @@ table.busTable thead th {
   border: 1px solid black;
 }
 
+/* tbody.busTable:nth-child(2) {
+  border-top: 1px solid #FFA804!important;
+} */
+
 .gapsModal {
   position: fixed;
   width: 75%;
   height: 300px;
   z-index: 1;
-  left: 12%;
-  bottom: 25%;
+  left: 17%;
+  bottom: 30%;
   border: 2px solid black;
-  background-color: rgb(150, 149, 149);
+  background-color: rgba(150, 149, 149, 0.9);
   border-radius: 5px;
+  overflow: scroll;
 }
 
 .gapModalTableHeader {
@@ -257,13 +404,14 @@ table.busTable thead th {
 }
 
 .addNewLineNameExists {
-  font-weight: 700;
+  /* font-weight: 700; */
   color: red;
 }
 
 .addNewLineName {
-  font-weight: 700;
+  /* font-weight: 700; */
   color: green;
+  font-size: 10px;
 }
 
 .editLineInputRow input {
