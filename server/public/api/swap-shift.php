@@ -41,12 +41,6 @@ if (!$result) {
   throw new Exception("Sql error" . mysqli_error($conn));
 }
 
-// $query = "UPDATE `round` SET `user_id` =  "
-
-// $query = "UPDATE `round` SET `user_id` = {$target_id} WHERE `id` = {$user_round}";
-// $result = mysqli_query($conn, $query);
-
-
 if (mysqli_affected_rows($conn) < 1) {
   throw new Exception("No rows affected");
 }

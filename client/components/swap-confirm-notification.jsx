@@ -28,9 +28,6 @@ class SwapConfirmNotification extends React.Component {
   swapShift() {
     const ownShift = this.state.ownShift;
     const shiftsToSwap = this.state.shiftsToSwap;
-    console.log('OwnShift', ownShift);
-    console.log('shiftsToSwap', shiftsToSwap);
-    // const { selectedRoundsToSwap } = this.state;
     const body = {
       target_id: shiftsToSwap[0].user_id,
       user_id: shiftsToSwap[0].target_user_id,
