@@ -9,6 +9,7 @@ class SwapConfirmNotification extends React.Component {
       ownShift: [],
       shiftsToSwap: []
     };
+    this.swapShift = this.swapShift.bind(this);
   }
   componentDidMount() {
     fetch(`/api/get-final-swap-confirmation.php?id=${this.props.userId}`)
@@ -23,6 +24,27 @@ class SwapConfirmNotification extends React.Component {
         );
       })
       .catch(error => console.error('Fetch failed', error));
+  }
+  swapShift() {
+    const ownShift = this.state.ownShift;
+    const shiftsToSwap = this.state.shiftsToSwap;
+    console.log('OwnShift', ownShift);
+    console.log('shiftsToSwap', shiftsToSwap);
+    // const { selectedRoundsToSwap } = this.state;
+    const body = {
+      target_id: shiftsToSwap[0].user_id,
+      user_id: shiftsToSwap[0].target_user_id,
+      original_rounds: ownShift,
+      target_rounds: shiftsToSwap
+    };
+    fetch('/api/swap-shift.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    })
+      .catch(err => console.error(err.message));
 
   }
   render() {
@@ -85,6 +107,14 @@ class SwapConfirmNotification extends React.Component {
             );
           })
           }
+          <div className="row mt-5">
+            <div className="col text-center">
+              <button type="button" onClick={this.swapShift} className="btn btn-lg btn-primary w-25">Accept</button>
+            </div>
+            <div className="col text-center">
+              <button type="button" className="btn btn-lg btn-danger w-25">Decline</button>
+            </div>
+          </div>
         </>
       );
     }
