@@ -1,5 +1,6 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
+import { Link } from 'react-router-dom';
 import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, createDateStringFromDateObject } from '../lib/time-functions';
 
 class SwapConfirmNotification extends React.Component {
@@ -106,7 +107,9 @@ class SwapConfirmNotification extends React.Component {
           }
           <div className="row mt-5">
             <div className="col text-center">
-              <button type="button" onClick={this.swapShift} className="btn btn-lg btn-primary w-25">Accept</button>
+              <Link to="/welcome/">
+                <button type="button" onClick={this.swapShift} className="btn btn-lg btn-primary w-25">Accept</button>
+              </Link>
             </div>
             <div className="col text-center">
               <button type="button" className="btn btn-lg btn-danger w-25">Decline</button>
