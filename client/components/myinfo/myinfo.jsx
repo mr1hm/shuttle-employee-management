@@ -24,6 +24,8 @@ class MyInfo extends React.Component {
     this.updateUserInDatabase = this.updateUserInDatabase.bind(this);
   }
 
+  // Guessing it would be a good idea to replace lines 28-38
+  // componentWillMount is depreciated
   updateUserId() {
     if (!this.state.userId) {
       this.setState({
@@ -69,8 +71,10 @@ class MyInfo extends React.Component {
       .catch(error => { throw (error); });
   }
 
+  // probably a good idea to avoid updating user id this way
+  // see line 80
   fetchCellProvider() {
-    fetch(`/api/my-info-cell-provider.php`, {
+    fetch(`/api/cell-provider.php`, {
       method: 'GET'
     })
       .then(response => {

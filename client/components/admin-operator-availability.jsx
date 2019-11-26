@@ -1,7 +1,6 @@
 import React from 'react';
 import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
-import AddUserModal from './admin-add-user-modal';
 import EditUserModal from './admin-edit-user-modal';
 import SelectSessionModal from './admin-select-session-modal';
 
@@ -94,14 +93,6 @@ class AdminOperatorAvailability extends React.Component {
       minAvailHours: '',
       availSubmissionDate: ''
     });
-  }
-
-  processSessionSelection(event) {
-    event.preventDefault();
-    this.setState({
-      selectSession: false
-    });
-    this.getOperatorDetails();
   }
 
   closeSelectSessionModal() {
@@ -201,6 +192,14 @@ class AdminOperatorAvailability extends React.Component {
     });
   }
 
+  processSessionSelection(event) {
+    event.preventDefault();
+    this.setState({
+      selectSession: false
+    });
+    this.getOperatorDetails();
+  }
+
   showAddUserModal() {
     this.setState({
       addUser: true
@@ -291,9 +290,7 @@ class AdminOperatorAvailability extends React.Component {
         </div>
         <div className="addButton" style={{ fontWeight: 'bold', fontSize: '1.5em' }}>{this.state.sessionName}</div>
         <div className="addButton d-flex justify-content-end mt-3">
-          <div>{this.state.SessionId}</div>
           <button type="button" className="btn btn-primary btn ml-3" onClick={this.showSelectSessionModal}>Select Session</button>
-          <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAddUserModal}>Add User</button>
         </div>
         <table className= 'mt-4'>
           <thead>
@@ -306,13 +303,11 @@ class AdminOperatorAvailability extends React.Component {
               <th></th>
               <th>Role</th>
               <th></th>
-              <th>Status</th>
-              <th></th>
               <th>Special Route</th>
               <th></th>
-              <th>Min Avail. Hrs</th>
+              <th>Minimum Hrs</th>
               <th></th>
-              <th>Avail. Submission Date</th>
+              <th>Submission Date</th>
               <th></th>
               <th>Submitted</th>
               <th></th>
@@ -324,21 +319,19 @@ class AdminOperatorAvailability extends React.Component {
               this.state.operatorDetails.map((operator, index) => {
                 return (
                   <tr key={index} className='pb-2'>
-                    <td className='pb-2'>{operator['uci_net_id']}</td>
+                    <td className='pb-2'>{operator.uci_net_id}</td>
                     <td></td>
-                    <td className='pb-2'>{operator['last_name']}</td>
+                    <td className='pb-2'>{operator.last_name}</td>
                     <td></td>
-                    <td className='pb-2'>{operator['first_name']}</td>
+                    <td className='pb-2'>{operator.first_name}</td>
                     <td></td>
-                    <td className='pb-2'>{operator['role']}</td>
+                    <td className='pb-2'>{operator.role}</td>
                     <td></td>
-                    <td className='pb-2'>{operator['status']}</td>
+                    <td className='pb-2'>{operator.special_route_ok}</td>
                     <td></td>
-                    <td className='pb-2'>{operator['special_route_ok']}</td>
+                    <td className='pb-2'>{operator.min_avail_hours}</td>
                     <td></td>
-                    <td className='pb-2'>{operator['min_avail_hours']}</td>
-                    <td></td>
-                    <td className='pb-2'>{operator['avail_end_date']}</td>
+                    <td className='pb-2'>{operator.avail_end_date}</td>
                     <td></td>
                     <td className='pb-2'>{this.submittedStatus(operator)}</td>
                     <td></td>
@@ -351,54 +344,6 @@ class AdminOperatorAvailability extends React.Component {
             }
           </tbody>
         </table>
-        <AddUserModal showAddUserModal={this.state.addUser}>
-          <div className="d-flex justify-content-center">
-            <form onSubmit={this.addUserToDatabase}>
-              <div className="mt-5 ml-2 mr-2 mb-2">
-                <div>UCI-ID</div>
-                <input type='text' className ='form-control' name="userId" value={this.state.userId} contentEditable="true" onChange={this.handleFormEntry} />
-              </div>
-              <div className="m-2">
-                <div>First Name</div>
-                <input type='text' className ='form-control' name="firstName" value={this.state.firstName} contentEditable="true" onChange={this.handleFormEntry} />
-              </div>
-              <div className="m-2">
-                <div>Last Name</div>
-                <input type='text' className ='form-control' name="lastName" value={this.state.lastName} contentEditable="true" onChange={this.handleFormEntry} />
-              </div>
-              <div className="m-2">
-                <div>Role</div>
-                <select name="role" value={this.state.role} onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='operator'>operator</option>
-                  <option value='operations'>operations</option>
-                  <option value='trainer'>trainer</option>
-                  <option value='trainee'>trainer</option>
-                </select>
-              </div>
-              <div className="m-2">
-                <div>Status</div>
-                <select name="status" value={this.state.status} onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='active'>active</option>
-                  <option value='inactive'>inactive</option>
-                </select>
-              </div>
-              <div className="m-2">
-                <div>Special Route OK</div>
-                <select name="specialRouteOK" value={this.state.specialRouteOK} onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='0'>0</option>
-                  <option value='1'>1</option>
-                </select>
-              </div>
-              <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
-                <button className="btn-success mr-2" type='submit'>Submit</button>
-                <button className="btn-danger ml-2" type='reset' onClick={this.closeAddUserModalClearInfo} >Cancel</button>
-              </div>
-            </form>
-          </div>
-        </AddUserModal>
         <EditUserModal showEditUserModal={this.state.editUser}>
           <div className="d-flex justify-content-center">
             <form onSubmit={this.updateUserInDatabase}>
@@ -408,34 +353,15 @@ class AdminOperatorAvailability extends React.Component {
               </div>
               <div className="m-2">
                 <div>First Name</div>
-                <input type='text' name="firstName" defaultValue={this.state.firstName} contentEditable="true" onChange={this.handleFormEntry} />
+                <div>{this.state.firstName}</div>
               </div>
               <div className="m-2">
                 <div>Last Name</div>
-                <input type='text' name="lastName" defaultValue={this.state.lastName} contentEditable="true" onChange={this.handleFormEntry} />
+                <div>{this.state.lastName}</div>
               </div>
               <div className="m-2">
                 <div>Role</div>
-                <select name="role" defaultValue={this.state.role} onChange={this.handleFormEntry}>
-                  <option value='operator'>operator</option>
-                  <option value='operations'>operations</option>
-                  <option value='trainer'>trainer</option>
-                  <option value='trainee'>trainee</option>
-                </select>
-              </div>
-              <div className="m-2">
-                <div>Status</div>
-                <select name="status" defaultValue={this.state.status} onChange={this.handleFormEntry}>
-                  <option value='active'>active</option>
-                  <option value='inactive'>inactive</option>
-                </select>
-              </div>
-              <div className="m-2">
-                <div>Special Route OK</div>
-                <select name="specialRouteOK" defaultValue={this.state.specialRouteOK} onChange={this.handleFormEntry}>
-                  <option value='0'>0</option>
-                  <option value='1'>1</option>
-                </select>
+                <div>{this.state.role}</div>
               </div>
               <div className="m-2">
                 <div>Minimum Available Hours</div>

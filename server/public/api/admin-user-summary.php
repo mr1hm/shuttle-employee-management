@@ -7,6 +7,7 @@ require_once 'db_connection.php';
 $data = getBodyData();
 
   $usersQuery = "SELECT 
+                id,
                 uci_net_id,
                 last_name,
                 first_name, 
