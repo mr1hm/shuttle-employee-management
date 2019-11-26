@@ -1,4 +1,5 @@
 import React from 'react';
+// import { start } from 'repl';
 
 export default class LiveFieldStatus extends React.Component {
   constructor(props) {
@@ -13,12 +14,13 @@ export default class LiveFieldStatus extends React.Component {
       currentSession: null,
       currentDayOfTheWeek: null,
       displayCurrentDate: null,
+      displayCurrentTime: null,
       dateToCompare: null,
       currentTime: null,
       prevShift: null,
       currentShift: null,
       upcomingShift: null,
-      driverName: null
+      driverNameAndVehicleID: null
     };
     this.organizeDriversForToday = this.organizeDriversForToday.bind(this);
     this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
@@ -31,6 +33,7 @@ export default class LiveFieldStatus extends React.Component {
 
   checkCurrentDay() {
     const d = new Date();
+    const displayCurrentTime = d.toLocaleTimeString();
     let currentDayOfTheWeek = d.getDay();
     let dd = String(d.getDate()).padStart(2, '0');
     let mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -64,17 +67,34 @@ export default class LiveFieldStatus extends React.Component {
     this.setState({
       currentDayOfTheWeek,
       displayCurrentDate,
+      displayCurrentTime,
       dateToCompare
     })
   }
 
+  getCurrentSession() {
+    allSessionsInfo.forEach(session => {
+      let yearToCompare = dateToCompare.slice(0, 4);
+      let monthToCompare = dateToCompare.slice(5, 7);
+      let dayToCompare = dateToCompare.slice(8, 10);
+      const currentDateTotal = yearToCompare + monthToCompare + dayToCompare;
+      const splitSessionStartDate = session.startDateString.split('-');
+      const compareSessionStartDate = splitSessionStartDate.join('');
+      const splitSessionEndDate = session.endDateString.split('-');
+      const compareSessionEndDate = splitSessionEndDate.join('');
+      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate)
+      const compareStartDates = parseInt(currentDateTotal) > parseInt(compareSessionStartDate) ? true : false;
+      const compareEndDates = parseInt(currentDateTotal) < parseInt(compareSessionEndDate) ? true : false;
+
+      if (compareStartDates && compareEndDates) this.setState({ currentSession: session });
+    })
+  }
+
   organizeDriversForToday() {
-    const { roundInfoToday } = this.state;
-    const { allSessionsInfo } = this.state;
-    const { dateToCompare } = this.state;
+    const { roundInfoToday, allSessionsInfo, dateToCompare } = this.state;
     let userID = '';
     let driversForToday = [];
-    console.log(roundInfoToday.length);
+    let timeConverted = [];
     for (let i = 0; i < roundInfoToday.length; ++i) {
       let driver = driversForToday.find(driver => driver.userID === userID);
       if (driver === undefined) {
@@ -89,28 +109,44 @@ export default class LiveFieldStatus extends React.Component {
         driverInfo.specialDriver = roundInfoToday[i].special_route_ok;
         driverInfo.sessionID = roundInfoToday[i].session_id;
         driverInfo.date = roundInfoToday[i].date;
-        driverInfo.shifts.push(roundInfoToday[i].shifts);
+        driverInfo.busNumber = roundInfoToday[i].bus_number;
+        driverInfo.vehicleID = roundInfoToday[i].vehicle_id;
+        roundInfoToday[i].shifts.forEach(time => {
+          let standardTime = null;
+          let formattedStandardTime = null;
+          if (time.length === 3) {
+            standardTime = time.split('');
+            standardTime = standardTime.splice(1, 0, ':');
+            standardTime = standardTime.join('');
+            console.log(standardTime);
+            timeConverted.push(standardTime);
+          } else {
+            standardTime = time.split('');
+            standardTime = standardTime.splice(2, 0, ':')
+            standardTime = standardTime.join('');
+            console.log(standardTime);
+            timeConverted.push(standardTime);
+          }
+        })
+        driverInfo.shifts.push(timeConverted);
         driversForToday.push(driverInfo);
       }
       if (driver) driver.shifts.push(roundInfoToday[i].shifts);
       userID = roundInfoToday[i].userID;
-      console.log(driversForToday);
     }
     allSessionsInfo.forEach(session => {
-      let yearToCompare = parseInt(dateToCompare.slice(0, 4));
-      let monthToCompare = parseInt(dateToCompare.slice(5, 7));
-      let dayToCompare = parseInt(dateToCompare.slice(8, 10));
+      let yearToCompare = dateToCompare.slice(0, 4);
+      let monthToCompare = dateToCompare.slice(5, 7);
+      let dayToCompare = dateToCompare.slice(8, 10);
       const currentDateTotal = yearToCompare + monthToCompare + dayToCompare;
       const splitSessionStartDate = session.startDateString.split('-');
+      const compareSessionStartDate = splitSessionStartDate.join('');
       const splitSessionEndDate = session.endDateString.split('-');
-      console.log(yearToCompare, monthToCompare, dayToCompare, splitSessionStartDate);
-      const startDateNum = splitSessionStartDate.filter(str => parseInt(str));
-      const endDateNum = splitSessionEndDate.filter(str => parseInt(str));
-      const sessionStartDateTotal = startDateNum[0] + startDateNum[1] + startDateNum[2];
-      const sessionEndDateTotal = endDateNum[0] + endDateNum[1] + endDateNum[2];
+      const compareSessionEndDate = splitSessionEndDate.join('');
+      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate)
 
-      if (currentDateTotal >= sessionStartDateTotal && currentDateTotal <= sessionEndDateTotal) {
-        let currentSession = session.id;
+      if (parseInt(currentDateTotal) > parseInt(compareSessionStartDate) && parseInt(currentDateTotal) < parseInt(compareSessionEndDate)) {
+        const currentSession = session;
         this.setState({
           currentSession
         })
@@ -150,8 +186,9 @@ export default class LiveFieldStatus extends React.Component {
             currentShift: `${shift[0]} - ${shift[1]}`
           })
         }
+        const driverNameAndVehicleID = { driverName: driver.name, vehicleID: driver.vehicleID};
         this.setState({
-          driverName: driver.name
+          driverNameAndVehicleID
         })
       })
     })
@@ -183,9 +220,8 @@ export default class LiveFieldStatus extends React.Component {
   }
 
   render() {
-    const { allLinesBusesInfo } = this.state;
-    const { allSessionsInfo } = this.state;
-    const { roundInfoToday } = this.state;
+    const { allLinesBusesInfo, allSessionsInfo, roundInfoToday, currentSession, driverNameAndVehicleID } = this.state;
+    if (!currentSession || !driverNameAndVehicleID) return <div>LOADING</div>;
     return (
       <>
       <div className="container-fluid">
@@ -208,102 +244,98 @@ export default class LiveFieldStatus extends React.Component {
         </div>
         <div className="row">
           <div className="col-12 d-flex justify-content-center">
-            <h5>{this.state.currentDayOfTheWeek}</h5>
+            <span className="liveFieldStatusCurrentDay">{this.state.currentDayOfTheWeek}</span>
           </div>
           <div className="col d-flex justify-content-center">
-            <h6>{this.state.displayCurrentDate}</h6>
+            <span className="liveFieldStatusCurrentDateAndTime">{this.state.displayCurrentDate} : {this.state.displayCurrentTime}</span>
           </div>
         </div>
       </div>
-      {allSessionsInfo.map((session, index) => {
-        return (
-          <div key={session.name + index} className="container liveFieldStatusParentContainer">
-            <div className="row">
-              <div className="col-2"></div>
-              <div className="col d-flex ml-5">
-                <h2 className="liveFieldStatusSessionName">{session.name}</h2>
-              </div>
-              <div className="col d-inline-flex align-items-end justify-content-end">
-                <div>
-                  <span className="liveFieldStatusStartDateSpan"><i className="liveFieldStatusStartDate">Start Date</i>: {session.startDateString}</span>
-                  <span><i className="liveFieldStatusEndDate">End Date</i>: {session.endDateString}</span>
-                </div>
-              </div>
-              <div className="col-2 d-inline-flex align-items-end">
-
+        <div className="container liveFieldStatusParentContainer">
+          <div className="row">
+            <div className="col-2"></div>
+            <div className="col d-flex ml-5">
+              <h2 className="liveFieldStatusSessionName">{currentSession.name}</h2>
+            </div>
+            <div className="col d-inline-flex align-items-end justify-content-end">
+              <div>
+                <span className="liveFieldStatusStartDateSpan"><i className="liveFieldStatusStartDate">Start Date</i>: {currentSession.startDateString}</span>
+                <span><i className="liveFieldStatusEndDate">End Date</i>: {currentSession.endDateString}</span>
               </div>
             </div>
-            <div className="container liveFieldStatusTableContainer">
-              <div className="row">
-                <table className="table liveFieldStatusTable">
-                  <thead>
-                    <tr>
-                      <th scope="col">Line</th>
-                      <th scope="col">Bus Number</th>
-                      <th scope="col">Vehicle</th>
-                      <th scope="col">Previous Shift</th>
-                      <th scope="col">Current Shift</th>
-                      <th scope="col">Upcoming Shift</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allLinesBusesInfo.map((lineBusData, index) => {
-                      let activeBusesLength = lineBusData.activeBuses.length;
-                      let lineName = lineBusData.line_name;
-                      if (session.id == lineBusData.sessionID) {
-                        return (
-                          <React.Fragment key={lineBusData.line_name + index}>
-                            {lineBusData.activeBuses.map((bus, index) => {
-                              if (bus.daysActive.includes(this.state.currentDayOfTheWeek)) {
-                                return (
-                                  <tr key={bus.busID + index}>
-                                    <td className="liveFieldStatusLineName">{lineName}</td>
-                                    <td>{bus.busNumber}</td>
-                                    <td>{`AE-${bus.vehicleID}`}</td>
-                                    <td>
-                                      {this.state.prevShift}
-                                      <br />
-                                      {this.state.driverName}
-                                    </td>
-                                    <td>
-                                      {this.state.currentShift}
-                                      <br />
-                                      {this.state.driverName}
-                                    </td>
-                                    <td>
-                                      {this.state.upcomingShift}
-                                      <br />
-                                      {this.state.driverName}
-                                    </td>
-                                  </tr>
-                                );
-                              } else {
-                                if (!activeBusesLength) {
-                                  return (
-                                    <tr key={bus.busID + index}>
-                                      <td className="liveFieldStatusLineName">{lineBusData.line_name}</td>
-                                      <td>No Bus</td>
-                                      <td>N/A</td>
-                                      <td>N/A</td>
-                                      <td>N/A</td>
-                                      <td>N/A</td>
-                                    </tr>
-                                  );
-                                }
-                              }
-                            })}
-                          </React.Fragment>
-                        );
-                      }
-                    })
-                    }
-                  </tbody>
-                </table>
-              </div>
+            <div className="col-2 d-inline-flex align-items-end">
+
             </div>
           </div>
-        );
-      })}
+          <div className="container liveFieldStatusTableContainer">
+            <div className="row">
+              <table className="table liveFieldStatusTable">
+                <thead>
+                  <tr>
+                    <th scope="col">Line</th>
+                    <th scope="col">Bus Number</th>
+                    <th scope="col">Vehicle</th>
+                    <th scope="col">Previous Shift</th>
+                    <th scope="col">Current Shift</th>
+                    <th scope="col">Upcoming Shift</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allLinesBusesInfo.map((lineBusData, index) => {
+                    let activeBusesLength = lineBusData.activeBuses.length;
+                    let lineName = lineBusData.line_name;
+                    if (currentSession.id == lineBusData.sessionID) {
+                      return (
+                        <React.Fragment key={lineBusData.line_name + index}>
+                          {lineBusData.activeBuses.map((bus, index) => {
+                            if (bus.daysActive.includes(this.state.currentDayOfTheWeek)) {
+                              return (
+                                <tr key={bus.busID + index}>
+                                  <td className="liveFieldStatusLineName">{lineName}</td>
+                                  <td>{bus.busNumber}</td>
+                                  <td>{`AE-${this.state.driverNameAndVehicleID.vehicleID}`}</td>
+                                  <td>
+                                    {this.state.prevShift}
+                                    <br />
+                                    {this.state.driverNameAndVehicleID.driverName}
+                                  </td>
+                                  <td>
+                                    {this.state.currentShift}
+                                    <br />
+                                    {this.state.driverName}
+                                  </td>
+                                  <td>
+                                    {this.state.upcomingShift}
+                                    <br />
+                                    {this.state.driverName}
+                                  </td>
+                                </tr>
+                              );
+                            } else {
+                              if (!activeBusesLength) {
+                                return (
+                                  <tr key={bus.busID + index}>
+                                    <td className="liveFieldStatusLineName">{lineBusData.line_name}</td>
+                                    <td>No Bus</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                  </tr>
+                                );
+                              }
+                            }
+                          })}
+                        </React.Fragment>
+                      );
+                    }
+                  })
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="container-fluid">
         <footer>
