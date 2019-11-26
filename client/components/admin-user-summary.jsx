@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import AddUserModal from './admin-add-user-modal';
@@ -19,6 +20,7 @@ class AdminUserSummary extends React.Component {
       addUser: false,
       editUser: false,
       userDetails: [],
+      cellProviderList: [],
       active: ''
 
     };
@@ -94,6 +96,24 @@ class AdminUserSummary extends React.Component {
 
   componentDidMount() {
     this.getOperatorDetails();
+    this.getCellProviders();
+  }
+
+  getCellProviders() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/cell-provider.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          cellProviderList: data
+        });
+      })
+      .catch(error => { throw (error); });
   }
 
   getOperatorDetails() {
@@ -125,17 +145,6 @@ class AdminUserSummary extends React.Component {
     });
   }
 
-  toggleActiveAndAllUsers() {
-    if (this.state.active) {
-      return (
-        <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAllUsers}>Show All Users</button>
-      );
-    } else {
-      return (
-        <button type="button" className="btn btn-primary btn ml-3" onClick={this.showActiveUsers}>Show Active Users</button>
-      );
-    }
-  }
 
   showActiveUsers() {
     this.setState({
@@ -148,6 +157,19 @@ class AdminUserSummary extends React.Component {
       active: false
     });
   }
+
+  toggleActiveAndAllUsers() {
+    if (this.state.active) {
+      return (
+        <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAllUsers}>Show All Users</button>
+      );
+    } else {
+      return (
+        <button type="button" className="btn btn-primary btn ml-3" onClick={this.showActiveUsers}>Show Active Users</button>
+      );
+    }
+  }
+
 
   render() {
     if (!this.state.userDetails) {
@@ -193,26 +215,26 @@ class AdminUserSummary extends React.Component {
                   if (user['status'] === 'active') {
                     return (
                       <tr key={index} className='pb-2'>
-                        <td className='pb-2'>{user['uci_net_id']}</td>
+                        <td className='pb-2'>{user.uci_net_id}</td>
                         <td></td>
-                        <td className='pb-2'>{user['last_name']}</td>
+                        <td className='pb-2'>{user.last_name}</td>
                         <td></td>
-                        <td className='pb-2'>{user['first_name']}</td>
+                        <td className='pb-2'>{user.first_name}</td>
                         <td></td>
-                        <td className='pb-2'>{user['role']}</td>
+                        <td className='pb-2'>{user.role}</td>
                         <td></td>
-                        <td className='pb-2'>{user['status']}</td>
+                        <td className='pb-2'>{user.status}</td>
                         <td></td>
-                        <td className='pb-2'>{parseInt(user['special_route_ok']) === 1 ? 'yes' : 'no'}</td>
+                        <td className='pb-2'>{parseInt(user.special_route_ok) === 1 ? 'yes' : 'no'}</td>
                         <td></td>
-                        <td className='pb-2'>{user['phone']}</td>
+                        <td className='pb-2'>{user.phone}</td>
                         <td></td>
-                        <td className='pb-2'>{user['email']}</td>
+                        <td className='pb-2'>{user.email}</td>
                         <td></td>
-                        <td className='pb-2'>{user['cell_provider']}</td>
+                        <td className='pb-2'>{user.cell_provider}</td>
                         <td></td>
                         <td className='pb-2'>
-                          <input onClick={this.editUser} id ={index} value="change" type='button'/>
+                          <Link to="/myinfo/" id={parseInt(user.id)}><input value="change" type='button'/> </Link>
                         </td>
                       </tr>
                     );
@@ -220,26 +242,26 @@ class AdminUserSummary extends React.Component {
                 } else {
                   return (
                     <tr key={index} className='pb-2'>
-                      <td className='pb-2'>{user['uci_net_id']}</td>
+                      <td className='pb-2'>{user.uci_net_id}</td>
                       <td></td>
-                      <td className='pb-2'>{user['last_name']}</td>
+                      <td className='pb-2'>{user.last_name}</td>
                       <td></td>
-                      <td className='pb-2'>{user['first_name']}</td>
+                      <td className='pb-2'>{user.first_name}</td>
                       <td></td>
-                      <td className='pb-2'>{user['role']}</td>
+                      <td className='pb-2'>{user.role}</td>
                       <td></td>
-                      <td className='pb-2'>{user['status']}</td>
+                      <td className='pb-2'>{user.status}</td>
                       <td></td>
-                      <td className='pb-2'>{parseInt(user['special_route_ok']) === 1 ? 'yes' : 'no'}</td>
+                      <td className='pb-2'>{parseInt(user.special_route_ok) === 1 ? 'yes' : 'no'}</td>
                       <td></td>
-                      <td className='pb-2'>{user['phone']}</td>
+                      <td className='pb-2'>{user.phone}</td>
                       <td></td>
-                      <td className='pb-2'>{user['email']}</td>
+                      <td className='pb-2'>{user.email}</td>
                       <td></td>
-                      <td className='pb-2'>{user['cell_provider']}</td>
+                      <td className='pb-2'>{user.cell_provider}</td>
                       <td></td>
                       <td className='pb-2'>
-                        <input onClick={this.editUser} id ={index} value="change" type='button'/>
+                        <Link to="/myinfo/" id={parseInt(user.id)}><input value="change" type='button'/> </Link>
                       </td>
                     </tr>
                   );
@@ -291,7 +313,7 @@ class AdminUserSummary extends React.Component {
               </div>
               <div className="m-2">
                 <div>Phone</div>
-                <input type='text' className ='form-control' name="phone" value={this.state.phone} contentEditable="true" onChange={this.handleFormEntry} />
+                <input type='text' className ='form-control' name="phone" pattern="^[0-9]{10}$" required defaultValue={this.state.phone} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="m-2">
                 <div>Email</div>
@@ -299,7 +321,9 @@ class AdminUserSummary extends React.Component {
               </div>
               <div className="m-2">
                 <div>Cell Provider</div>
-                <input type='text' className ='form-control' name="cellProvider" value={this.state.cellProvider} contentEditable="true" onChange={this.handleFormEntry} />
+                <select className="form-control" type="text" name='cellProvider' onChange={this.handleFormEntry} defaultValue={this.state.cellProvider}>
+                  {this.state.cellProviderList.map((provider, index) => <option key={index} value={provider.cell_provider}>{provider.cell_provider}</option>)}
+                </select>
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
                 <button className="btn-success mr-2" type='submit'>Submit</button>

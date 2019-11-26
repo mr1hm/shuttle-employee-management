@@ -39,8 +39,7 @@ function getAllActiveOperators($conn, $session) {
   $allActiveOperatorsQuery = "SELECT 
                               us.uci_net_id,
                               us.first_name, 
-                              us.last_name,                                     
-                              us.role,
+                              us.last_name,                     us.role,
                               us.status,
                               us.special_route_ok,
                               osa.min_avail_hours,
@@ -48,7 +47,7 @@ function getAllActiveOperators($conn, $session) {
                               osa.session_id
                               FROM user AS us
                               JOIN operator_session_avail AS osa ON us.id = osa.user_id
-                              WHERE us.role != 'admin' AND us.role != 'super_admin' AND osa.session_id = $session";
+                              WHERE us.role != 'admin' AND us.role != 'super_admin' AND us.status = 'active' AND osa.session_id = $session";
 
   $allActiveResult = mysqli_query($conn, $allActiveOperatorsQuery);
   if (!$allActiveResult) {
