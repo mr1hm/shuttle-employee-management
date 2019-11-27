@@ -34,7 +34,7 @@ class OperatorAvailability extends React.Component {
       // this will eventually come in through props with auth system
       userId: 45,
       // not sure how this will arrive or if this requires logic to address
-      sessionId: 6,
+      sessionId: '',
       sessionName: ''
     };
 
@@ -203,6 +203,8 @@ class OperatorAvailability extends React.Component {
   }
 
   getEnteredAvailability() {
+    console.log('inside entered availability: ', this.state.userId);
+    console.log('inside entered availability: ', this.state.sessionId);
     const data = {
       method: 'POST',
       body: JSON.stringify({
@@ -273,14 +275,10 @@ class OperatorAvailability extends React.Component {
   }
 
   handleFormEntry(event) {
-    if (event.target.name === 'sessionId') {
-      var index = event.nativeEvent.target.selectedIndex;
-      this.setState({
-        sessionName: event.nativeEvent.target[index].text
-      });
-    }
+    var index = event.nativeEvent.target.selectedIndex;
     this.setState({
-      [event.target.name]: event.target.value
+      sessionName: event.nativeEvent.target[index].text,
+      sessionId: event.target.value
     });
   }
 
@@ -564,7 +562,8 @@ class OperatorAvailability extends React.Component {
               <div className="m-2">
                 <div>Select Session to Display</div>
                 <select name="sessionId" onChange={this.handleFormEntry} defaultValue={this.state.sessionName}>
-                  {this.state.sessionChoices.map((session, index) => (<option key={index} defaultValue={session.id}>{session.name}</option>))}
+                  <option></option>
+                  {this.state.sessionChoices.map((session, index) => (<option key={index} value={session['id']}>{session['name']}</option>))}
                 </select>
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">

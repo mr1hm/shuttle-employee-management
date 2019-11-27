@@ -385,6 +385,7 @@ class AdminOperatorAvailability extends React.Component {
               <div className="m-2">
                 <div>Select Session to Display</div>
                 <select name="sessionId" onChange={this.handleFormEntry} defaultValue={this.state.sessionName}>
+                  <option></option>
                   {this.state.sessionChoices.map((session, index) => (<option key={index} value={session['id']}>{session['name']}</option>))}
                 </select>
               </div>
