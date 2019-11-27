@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class MasterFieldStatus extends React.Component {
+export default class MasterSchedule extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
