@@ -1,9 +1,9 @@
 import React from 'react';
-// import { start } from 'repl';
 
 export default class LiveFieldStatus extends React.Component {
   constructor(props) {
     super(props);
+    this.timeConverted = [];
     this.state = {
       allLinesBusesInfo: [],
       allSessionsInfo: [],
@@ -17,11 +17,13 @@ export default class LiveFieldStatus extends React.Component {
       displayCurrentTime: null,
       dateToCompare: null,
       currentTime: null,
-      prevShift: null,
-      currentShift: null,
-      upcomingShift: null,
-      driverNameAndVehicleID: null
+      driverNameAndVehicleID: null,
+      driverName: null,
+      vehicleID: null
     };
+    this.prevShift = null;
+    this.currentShift = null;
+    this.upcomingShift = null;
     this.organizeDriversForToday = this.organizeDriversForToday.bind(this);
     this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
   }
@@ -90,15 +92,85 @@ export default class LiveFieldStatus extends React.Component {
     })
   }
 
+  findCurrentShift() {
+    const { roundInfoToday } = this.state;
+    let hh = new Date().getHours();
+    let mm = new Date().getMinutes();
+    let time = hh + '' + mm;
+    let currentTime = parseInt(time);
+    console.log(currentTime);
+    for (let i = 0; i < roundInfoToday.length; ++i) {
+      if (currentTime > roundInfoToday[i].shifts[0] && currentTime < roundInfoToday[i].shifts[1]) {
+          this.prevShift = {
+            name: `${roundInfoToday[i - 1].first_name} ${roundInfoToday[i - 1].last_name}`,
+            startTime: `${roundInfoToday[i - 1].shifts[0][0]}${roundInfoToday[i - 1].shifts[0][1]}:${roundInfoToday[i - 1].shifts[0][2]}${roundInfoToday[i - 1].shifts[0][3]}`,
+            endTime: `${roundInfoToday[i - 1].shifts[1][0]}${roundInfoToday[i - 1].shifts[1][1]}:${roundInfoToday[i - 1].shifts[1][2]}${roundInfoToday[i - 1].shifts[1][3]}`,
+            vehicleID: roundInfoToday[i - 1].vehicle_id,
+            busNumber: roundInfoToday[i - 1].bus_number,
+            lineName: roundInfoToday[i - 1].line_name
+          };
+        console.log(this.prevShift);
+          this.currentShift = {
+            name: `${roundInfoToday[i].first_name} ${roundInfoToday[i].last_name}`,
+            startTime: `${roundInfoToday[i].shifts[0][0]}${roundInfoToday[i].shifts[0][1]}:${roundInfoToday[i].shifts[0][2]}${roundInfoToday[i].shifts[0][3]}`,
+            endTime: `${roundInfoToday[i].shifts[1][0]}${roundInfoToday[i].shifts[1][1]}:${roundInfoToday[i].shifts[1][2]}${roundInfoToday[i].shifts[1][3]}`,
+            vehicleID: roundInfoToday[i].vehicle_id,
+            busNumber: roundInfoToday[i - 1].bus_number,
+            lineName: roundInfoToday[i - 1].line_name
+          };
+          console.log(this.currentShift);
+          this.upcomingShift = {
+            name: roundInfoToday[i + 1].first_name + ' ' + roundInfoToday[i + 1].last_name,
+            startTime: `${roundInfoToday[i + 1].shifts[0][0]}${roundInfoToday[i + 1].shifts[0][1]}:${roundInfoToday[i + 1].shifts[0][2]}${roundInfoToday[i].shifts[0][3]}`,
+            endTime: `${roundInfoToday[i + 1].shifts[1][0]}${roundInfoToday[i + 1].shifts[1][1]}:${roundInfoToday[i + 1].shifts[1][2]}${roundInfoToday[i].shifts[1][3]}`,
+            vehicleID: roundInfoToday[i + 1].vehicle_id,
+            busNumber: roundInfoToday[i - 1].bus_number,
+            lineName: roundInfoToday[i - 1].line_name
+          };
+        console.log(this.upcomingShift);
+      } else {
+        this.prevShift = {
+          name: `NOT SCHEDULED`,
+          startTime: `NA`,
+          endTime: `NA`,
+          vehicleID: `NA`,
+          busNumber: `NA`,
+          lineName: `NA`
+        };
+        console.log(this.prevShift);
+        this.currentShift = {
+          name: `NOT SCHEDULED`,
+          startTime: `NA`,
+          endTime: `NA`,
+          vehicleID: `NA`,
+          busNumber: `NA`,
+          lineName: `NA`
+        };
+        console.log(this.currentShift);
+        this.upcomingShift = {
+          name: 'NOT SCHEDULED',
+          startTime: 'NA',
+          endTime: 'NA',
+          vehicleID: `NA`,
+          busNumber: `NA`,
+          lineName: `NA`
+        };
+        console.log(this.upcomingShift);
+      }
+    }
+  }
+
   organizeDriversForToday() {
+    this.findCurrentShift();
     const { roundInfoToday, allSessionsInfo, dateToCompare } = this.state;
     let userID = '';
     let driversForToday = [];
     let timeConverted = [];
+    let roundID = null;
     for (let i = 0; i < roundInfoToday.length; ++i) {
       let driver = driversForToday.find(driver => driver.userID === userID);
-      if (driver === undefined) {
-        let driverInfo = { shifts: [] };
+      if (!driver) {
+        let driverInfo = { shifts: [], formattedShifts: [] };
         if (!roundInfoToday[i].nickname) {
           driverInfo.name = roundInfoToday[i].first_name + ' ' + roundInfoToday[i].last_name;
         } else {
@@ -111,28 +183,39 @@ export default class LiveFieldStatus extends React.Component {
         driverInfo.date = roundInfoToday[i].date;
         driverInfo.busNumber = roundInfoToday[i].bus_number;
         driverInfo.vehicleID = roundInfoToday[i].vehicle_id;
+        driverInfo.roundID = roundInfoToday[i].roundID;
+        driverInfo.shifts.push(roundInfoToday[i].shifts);
+        driversForToday.push(driverInfo);
+
         roundInfoToday[i].shifts.forEach(time => {
-          let standardTime = null;
-          let formattedStandardTime = null;
           if (time.length === 3) {
-            standardTime = time.split('');
-            standardTime = standardTime.splice(1, 0, ':');
-            standardTime = standardTime.join('');
-            console.log(standardTime);
-            timeConverted.push(standardTime);
-          } else {
-            standardTime = time.split('');
-            standardTime = standardTime.splice(2, 0, ':')
-            standardTime = standardTime.join('');
-            console.log(standardTime);
-            timeConverted.push(standardTime);
+            let formattedTime = time[0] + time[1] + ':' + time[2] + time[3];
+            console.log(formattedTime);
+            timeConverted.push(formattedTime);
+            userID = roundInfoToday[i].userID;
+          } else if (time.length === 4) {
+            let formattedTime = time[0] + time[1] + ':' + time[2] + time[3];
+            console.log(formattedTime);
+            timeConverted.push(formattedTime);
+            userID = roundInfoToday[i].userID;
+          }
+          if (timeConverted.length === 2) {
+            driverInfo.formattedShifts.push(timeConverted);
+            timeConverted = [];
           }
         })
-        driverInfo.shifts.push(timeConverted);
-        driversForToday.push(driverInfo);
+      } else {
+        driver.shifts.push(roundInfoToday[i].shifts);
+        for (let z = 0; z < roundInfoToday[i].shifts.length; ++z) {
+          let splitTime = roundInfoToday[i].shifts[z].split('');
+          splitTime.splice(-2, 0, ':');
+          let formattedTime = splitTime.join('');
+          timeConverted.push(formattedTime);
+        }
+        driver.formattedShifts.push(timeConverted);
+        timeConverted = [];
+        userID = roundInfoToday[i].userID;
       }
-      if (driver) driver.shifts.push(roundInfoToday[i].shifts);
-      userID = roundInfoToday[i].userID;
     }
     allSessionsInfo.forEach(session => {
       let yearToCompare = dateToCompare.slice(0, 4);
@@ -147,9 +230,7 @@ export default class LiveFieldStatus extends React.Component {
 
       if (parseInt(currentDateTotal) > parseInt(compareSessionStartDate) && parseInt(currentDateTotal) < parseInt(compareSessionEndDate)) {
         const currentSession = session;
-        this.setState({
-          currentSession
-        })
+        this.setState({ currentSession })
       }
     })
     this.setState({
@@ -170,28 +251,6 @@ export default class LiveFieldStatus extends React.Component {
     }
     const current24Time = currentHour + '' + currentMin;
     console.log(current24Time);
-    driversForToday.forEach(driver => {
-      driver.shifts.forEach(shift => {
-        const current24TimeInt = parseInt(current24Time);
-        if (parseInt(shift[1]) < current24TimeInt) {
-          this.setState({
-            prevShift: `${shift[0]} - ${shift[1]}`
-          })
-        } else if (parseInt(shift[0]) > current24TimeInt) {
-          this.setState({
-            upcomingShift: `${shift[0]} - ${shift[1]}`
-          })
-        } else if (current24TimeInt > parseInt(shift[0]) && current24TimeInt < parseInt(shift[1])) {
-          this.setState({
-            currentShift: `${shift[0]} - ${shift[1]}`
-          })
-        }
-        const driverNameAndVehicleID = { driverName: driver.name, vehicleID: driver.vehicleID};
-        this.setState({
-          driverNameAndVehicleID
-        })
-      })
-    })
   }
 
   getAllData() {
@@ -221,7 +280,7 @@ export default class LiveFieldStatus extends React.Component {
 
   render() {
     const { allLinesBusesInfo, allSessionsInfo, roundInfoToday, currentSession, driverNameAndVehicleID } = this.state;
-    if (!currentSession || !driverNameAndVehicleID) return <div>LOADING</div>;
+    if (!currentSession) return <div>LOADING</div>;
     return (
       <>
       <div className="container-fluid">
@@ -293,21 +352,21 @@ export default class LiveFieldStatus extends React.Component {
                                 <tr key={bus.busID + index}>
                                   <td className="liveFieldStatusLineName">{lineName}</td>
                                   <td>{bus.busNumber}</td>
-                                  <td>{`AE-${this.state.driverNameAndVehicleID.vehicleID}`}</td>
+                                  <td>{this.currentShift ? `AE-${this.currentShift.vehicleID}` : `NA`}</td>
                                   <td>
-                                    {this.state.prevShift}
+                                    {`${this.prevShift.startTime} - ${this.prevShift.endTime}`}
                                     <br />
-                                    {this.state.driverNameAndVehicleID.driverName}
+                                    {`${this.prevShift.name}`}
                                   </td>
                                   <td>
-                                    {this.state.currentShift}
+                                    {`${this.currentShift.startTime} - ${this.currentShift.endTime}`}
                                     <br />
-                                    {this.state.driverName}
+                                    {`${this.currentShift.name}`}
                                   </td>
                                   <td>
-                                    {this.state.upcomingShift}
+                                    {`${this.upcomingShift.startTime} - ${this.upcomingShift.endTime}`}
                                     <br />
-                                    {this.state.driverName}
+                                    {`${this.upcomingShift.name}`}
                                   </td>
                                 </tr>
                               );

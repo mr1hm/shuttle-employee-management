@@ -174,7 +174,8 @@ $query = "SELECT
               LEFT JOIN `user` AS u ON u.`id` = rd.`user_id`
               LEFT JOIN (SELECT `id`, `route_id`, `vehicle_id`, `bus_number` FROM `bus_info`) AS bi ON bi.`id` = rd.`bus_info_id`
               LEFT JOIN (SELECT `id`, `line_name` FROM `route`) AS r ON r.`id` = bi.`route_id`
-              WHERE rd.`date` = '$date'";
+              WHERE rd.`date` = '$date'
+              ORDER BY rd.`start_time` ASC";
     // $query = "SELECT u.`id`,
     //                  u.`first_name`,
     //                  u.`last_name`,
@@ -228,6 +229,11 @@ $query = "SELECT
     while ($row = mysqli_fetch_assoc($result)) {
       if ($row['shifts'] !== NULL) {
         $row['shifts'] = explode(',', $row['shifts']);
+        // foreach($row['shifts'] as $value) {
+        //   if (strlen($value) === 3) {
+        //     $formattedTime =
+        //   }
+        // }
       }
       $data[] = $row;
     }

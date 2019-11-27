@@ -194,11 +194,12 @@ table.liveFieldStatusTable td {
 .liveFieldStatusCurrentDay {
   font-size: 20px;
   font-weight: 500;
+  margin-top: 40px;
 }
 
 .liveFieldStatusSessionName {
   font-size: 36px;
-  margin-top: 50px;
+  margin-top: 10px;
   color: rgb(121, 132, 235);
   font-weight: 700;
 }
