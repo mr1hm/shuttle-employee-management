@@ -1,4 +1,5 @@
 import React from 'react';
+import { getZeroPaddedNumber } from '../lib/time-functions';
 
 export default class LiveFieldStatus extends React.Component {
   constructor(props) {
@@ -21,9 +22,31 @@ export default class LiveFieldStatus extends React.Component {
       driverName: null,
       vehicleID: null
     };
-    this.prevShift = null;
-    this.currentShift = null;
-    this.upcomingShift = null;
+    this.allShifts = [];
+    // this.prevShift = {
+    //   name: `NOT SCHEDULED`,
+    //   startTime: `NA`,
+    //   endTime: `NA`,
+    //   vehicleID: `NA`,
+    //   busNumber: `NA`,
+    //   lineName: `NA`
+    // };
+    // this.currentShift = {
+    //   name: `NOT SCHEDULED`,
+    //   startTime: `NA`,
+    //   endTime: `NA`,
+    //   vehicleID: `NA`,
+    //   busNumber: `NA`,
+    //   lineName: `NA`
+    // };
+    // this.upcomingShift = {
+    //   name: 'NOT SCHEDULED',
+    //   startTime: 'NA',
+    //   endTime: 'NA',
+    //   vehicleID: `NA`,
+    //   busNumber: `NA`,
+    //   lineName: `NA`
+    // };
     this.organizeDriversForToday = this.organizeDriversForToday.bind(this);
     this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
   }
@@ -45,25 +68,25 @@ export default class LiveFieldStatus extends React.Component {
 
     switch (currentDayOfTheWeek) {
       case 0:
-        currentDayOfTheWeek = 'Sunday'
+        currentDayOfTheWeek = 'Sunday';
         break;
       case 1:
-        currentDayOfTheWeek = 'Monday'
+        currentDayOfTheWeek = 'Monday';
         break;
       case 2:
-        currentDayOfTheWeek = 'Tuesday'
+        currentDayOfTheWeek = 'Tuesday';
         break;
       case 3:
-        currentDayOfTheWeek = 'Wednesday'
+        currentDayOfTheWeek = 'Wednesday';
         break;
       case 4:
-        currentDayOfTheWeek = 'Thursday'
+        currentDayOfTheWeek = 'Thursday';
         break;
       case 5:
-        currentDayOfTheWeek = 'Friday'
+        currentDayOfTheWeek = 'Friday';
         break;
       case 6:
-        currentDayOfTheWeek = 'Saturday'
+        currentDayOfTheWeek = 'Saturday';
         break;
     }
     this.setState({
@@ -71,7 +94,7 @@ export default class LiveFieldStatus extends React.Component {
       displayCurrentDate,
       displayCurrentTime,
       dateToCompare
-    })
+    });
   }
 
   getCurrentSession() {
@@ -84,84 +107,103 @@ export default class LiveFieldStatus extends React.Component {
       const compareSessionStartDate = splitSessionStartDate.join('');
       const splitSessionEndDate = session.endDateString.split('-');
       const compareSessionEndDate = splitSessionEndDate.join('');
-      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate)
-      const compareStartDates = parseInt(currentDateTotal) > parseInt(compareSessionStartDate) ? true : false;
-      const compareEndDates = parseInt(currentDateTotal) < parseInt(compareSessionEndDate) ? true : false;
+      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate);
+      const compareStartDates = parseInt(currentDateTotal) > parseInt(compareSessionStartDate);
+      const compareEndDates = parseInt(currentDateTotal) < parseInt(compareSessionEndDate);
 
       if (compareStartDates && compareEndDates) this.setState({ currentSession: session });
-    })
+    });
   }
 
-  findCurrentShift() {
+  findCurrentShift(id) {
+    // debugger;
     const { roundInfoToday } = this.state;
-    let hh = new Date().getHours();
-    let mm = new Date().getMinutes();
+    let hh = getZeroPaddedNumber(new Date().getHours());
+    let mm = getZeroPaddedNumber(new Date().getMinutes());
     let time = hh + '' + mm;
     let currentTime = parseInt(time);
     console.log(currentTime);
-    for (let i = 0; i < roundInfoToday.length; ++i) {
-      if (currentTime > roundInfoToday[i].shifts[0] && currentTime < roundInfoToday[i].shifts[1]) {
-          this.prevShift = {
-            name: `${roundInfoToday[i - 1].first_name} ${roundInfoToday[i - 1].last_name}`,
-            startTime: `${roundInfoToday[i - 1].shifts[0][0]}${roundInfoToday[i - 1].shifts[0][1]}:${roundInfoToday[i - 1].shifts[0][2]}${roundInfoToday[i - 1].shifts[0][3]}`,
-            endTime: `${roundInfoToday[i - 1].shifts[1][0]}${roundInfoToday[i - 1].shifts[1][1]}:${roundInfoToday[i - 1].shifts[1][2]}${roundInfoToday[i - 1].shifts[1][3]}`,
-            vehicleID: roundInfoToday[i - 1].vehicle_id,
-            busNumber: roundInfoToday[i - 1].bus_number,
-            lineName: roundInfoToday[i - 1].line_name
-          };
-        console.log(this.prevShift);
-          this.currentShift = {
-            name: `${roundInfoToday[i].first_name} ${roundInfoToday[i].last_name}`,
-            startTime: `${roundInfoToday[i].shifts[0][0]}${roundInfoToday[i].shifts[0][1]}:${roundInfoToday[i].shifts[0][2]}${roundInfoToday[i].shifts[0][3]}`,
-            endTime: `${roundInfoToday[i].shifts[1][0]}${roundInfoToday[i].shifts[1][1]}:${roundInfoToday[i].shifts[1][2]}${roundInfoToday[i].shifts[1][3]}`,
-            vehicleID: roundInfoToday[i].vehicle_id,
-            busNumber: roundInfoToday[i - 1].bus_number,
-            lineName: roundInfoToday[i - 1].line_name
-          };
-          console.log(this.currentShift);
-          this.upcomingShift = {
-            name: roundInfoToday[i + 1].first_name + ' ' + roundInfoToday[i + 1].last_name,
-            startTime: `${roundInfoToday[i + 1].shifts[0][0]}${roundInfoToday[i + 1].shifts[0][1]}:${roundInfoToday[i + 1].shifts[0][2]}${roundInfoToday[i].shifts[0][3]}`,
-            endTime: `${roundInfoToday[i + 1].shifts[1][0]}${roundInfoToday[i + 1].shifts[1][1]}:${roundInfoToday[i + 1].shifts[1][2]}${roundInfoToday[i].shifts[1][3]}`,
-            vehicleID: roundInfoToday[i + 1].vehicle_id,
-            busNumber: roundInfoToday[i - 1].bus_number,
-            lineName: roundInfoToday[i - 1].line_name
-          };
-        console.log(this.upcomingShift);
-      } else {
-        this.prevShift = {
-          name: `NOT SCHEDULED`,
-          startTime: `NA`,
-          endTime: `NA`,
-          vehicleID: `NA`,
-          busNumber: `NA`,
-          lineName: `NA`
-        };
-        console.log(this.prevShift);
-        this.currentShift = {
-          name: `NOT SCHEDULED`,
-          startTime: `NA`,
-          endTime: `NA`,
-          vehicleID: `NA`,
-          busNumber: `NA`,
-          lineName: `NA`
-        };
-        console.log(this.currentShift);
-        this.upcomingShift = {
-          name: 'NOT SCHEDULED',
-          startTime: 'NA',
-          endTime: 'NA',
-          vehicleID: `NA`,
-          busNumber: `NA`,
-          lineName: `NA`
-        };
-        console.log(this.upcomingShift);
+    const currentBusID = roundInfoToday.filter(round => round.busID === id);
+    console.log(currentBusID);
+    for (let i = 0; i < currentBusID.length; ++i) {
+      let busNumber = [];
+      let lineName = [];
+      if (currentTime >= currentBusID[i].shifts[0] && currentTime <= currentBusID[i].shifts[1]) {
+        busNumber.push(currentBusID[i].bus_number);
+        lineName.push(currentBusID[i].line_name);
+
+        let timeArr = currentBusID[i].shifts[0].split('');
+        let timeArr2 = currentBusID[i].shifts[1].split('');
+        timeArr.splice(-2, 0, ':');
+        timeArr2.splice(-2, 0, ':');
+        let formattedStartTime = timeArr.join('');
+        let formattedEndTime = timeArr2.join('');
+
+        // const roundBusNumber = busNumber.find(num => currentBusID[i].bus_number === num);
+        // const roundLineName = lineName.find(name => currentBusID[i].line_name === name);
+        // if (roundBusNumber && roundLineName) {
+
+        // }
+        // if (currentBusID[i].line_name)
+        this.allShifts.push(
+          {
+            prevShift: {
+              name: currentBusID[i - 1] ? `${currentBusID[i - 1].first_name} ${currentBusID[i - 1].last_name}` : `NA`,
+              startTime: currentBusID[i - 1] ? `${currentBusID[i - 1].shifts[0][0]}${currentBusID[i - 1].shifts[0][1]}:${currentBusID[i - 1].shifts[0][2]}${currentBusID[i - 1].shifts[0][3]}` : `NA`,
+              endTime: currentBusID[i - 1] ? `${currentBusID[i - 1].shifts[1][0]}${currentBusID[i - 1].shifts[1][1]}:${currentBusID[i - 1].shifts[1][2]}${currentBusID[i - 1].shifts[1][3]}` : `NA`,
+              vehicleID: currentBusID[i - 1] ? currentBusID[i - 1].vehicle_id : `NA`,
+              busNumber: currentBusID[i - 1] ? currentBusID[i - 1].bus_number : `NA`,
+              lineName: currentBusID[i - 1] ? currentBusID[i - 1].line_name : `NA`,
+              busID: currentBusID[i - 1] ? currentBusID[i - 1].busID : `NA`
+            },
+            currentShift: {
+              name: `${currentBusID[i].first_name} ${currentBusID[i].last_name}`,
+              startTime: `${formattedStartTime}`,
+              endTime: `${formattedEndTime}`,
+              vehicleID: currentBusID[i].vehicle_id,
+              busNumber: currentBusID[i].bus_number,
+              lineName: currentBusID[i].line_name,
+              busID: currentBusID[i].busID
+            },
+            upcomingShift: {
+              name: currentBusID[i + 1] ? currentBusID[i + 1].first_name + ' ' + currentBusID[i + 1].last_name : `NA`,
+              startTime: currentBusID[i + 1] ? `${currentBusID[i + 1].shifts[0][0]}${currentBusID[i + 1].shifts[0][1]}:${currentBusID[i + 1].shifts[0][2]}${currentBusID[i].shifts[0][3]}` : `NA`,
+              endTime: currentBusID[i + 1] ? `${currentBusID[i + 1].shifts[1][0]}${currentBusID[i + 1].shifts[1][1]}:${currentBusID[i + 1].shifts[1][2]}${currentBusID[i].shifts[1][3]}` : `NA`,
+              vehicleID: currentBusID[i + 1] ? currentBusID[i + 1].vehicle_id : `NA`,
+              busNumber: currentBusID[i + 1] ? currentBusID[i + 1].bus_number : `NA`,
+              lineName: currentBusID[i + 1] ? currentBusID[i + 1].line_name : `NA`,
+              busID: currentBusID[i + 1] ? currentBusID[i + 1].busID : `NA`
+            }
+          });
+        console.log(this.allShifts);
+        break;
+        // console.log('previous:', this.prevShift);
+        // this.currentShift.push(currentBusID[i].busID: {
+        //   name: `${currentBusID[i].first_name} ${currentBusID[i].last_name}`,
+        //   startTime: `${formattedStartTime}`,
+        //   endTime: `${formattedEndTime}`,
+        //   vehicleID: currentBusID[i].vehicle_id,
+        //   busNumber: currentBusID[i].bus_number,
+        //   lineName: currentBusID[i].line_name,
+        //   busID: currentBusID[i].busID
+        // });
+        // console.log('current:', this.currentShift);
+        // this.upcomingShift.push(currentBusID[i + 1].busID: {
+        //   name: currentBusID[i + 1].first_name + ' ' + currentBusID[i + 1].last_name,
+        //   startTime: `${currentBusID[i + 1].shifts[0][0]}${currentBusID[i + 1].shifts[0][1]}:${currentBusID[i + 1].shifts[0][2]}${currentBusID[i].shifts[0][3]}`,
+        //   endTime: `${currentBusID[i + 1].shifts[1][0]}${currentBusID[i + 1].shifts[1][1]}:${currentBusID[i + 1].shifts[1][2]}${currentBusID[i].shifts[1][3]}`,
+        //   vehicleID: currentBusID[i + 1].vehicle_id,
+        //   busNumber: currentBusID[i + 1].bus_number,
+        //   lineName: currentBusID[i + 1].line_name,
+        //   busID: currentBusID[i + 1].busID
+        // });
+        // console.log('upcoming:', this.upcomingShift);
       }
     }
   }
 
   organizeDriversForToday() {
-    this.findCurrentShift();
+    this.checkBusID();
     const { roundInfoToday, allSessionsInfo, dateToCompare } = this.state;
     let userID = '';
     let driversForToday = [];
@@ -203,7 +245,7 @@ export default class LiveFieldStatus extends React.Component {
             driverInfo.formattedShifts.push(timeConverted);
             timeConverted = [];
           }
-        })
+        });
       } else {
         driver.shifts.push(roundInfoToday[i].shifts);
         for (let z = 0; z < roundInfoToday[i].shifts.length; ++z) {
@@ -226,13 +268,13 @@ export default class LiveFieldStatus extends React.Component {
       const compareSessionStartDate = splitSessionStartDate.join('');
       const splitSessionEndDate = session.endDateString.split('-');
       const compareSessionEndDate = splitSessionEndDate.join('');
-      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate)
+      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate);
 
       if (parseInt(currentDateTotal) > parseInt(compareSessionStartDate) && parseInt(currentDateTotal) < parseInt(compareSessionEndDate)) {
         const currentSession = session;
-        this.setState({ currentSession })
+        this.setState({ currentSession });
       }
-    })
+    });
     this.setState({
       driversForToday
     }, this.checkAndDisplayShifts);
@@ -258,7 +300,7 @@ export default class LiveFieldStatus extends React.Component {
     const init = {
       method: 'POST',
       body: JSON.stringify(rounds)
-    }
+    };
     let fetchAllLinesBusesInfo = fetch(`api/admin-lines-buses.php`);
     let fetchAllSessionsInfo = fetch(`api/admin-lines-buses-sessions.php`);
     let fetchRoundTableInfo = fetch(`api/admin-lines-buses.php`, init);
@@ -273,9 +315,48 @@ export default class LiveFieldStatus extends React.Component {
           allLinesBusesInfo,
           allSessionsInfo,
           roundInfoToday
-        }, this.organizeDriversForToday)
+        }, this.organizeDriversForToday);
       })
       .catch(error => console.error(error));
+  }
+
+  checkBusID() {
+    const { roundInfoToday } = this.state;
+    let busID = [];
+    let lineName = [];
+    // debugger;
+    // return (
+    roundInfoToday.map((round, index) => {
+      if (!busID.find(id => id === round.busID)) {
+        busID.push(round.busID);
+        this.findCurrentShift(round.busID);
+        // lineName.push(round.line_name);
+        // this.currentShift.vehicleID = round.vehicle_id;
+        // return (
+        //   <tr key={round.busID + index}>
+        //     <td className="liveFieldStatusLineName">{round.line_name}</td>
+        //     <td>{round.bus_number}</td>
+        //     <td>{this.currentShift ? `AE-${this.currentShift.vehicleID}` : `NA`}</td>
+        //     <td>
+        //       {`${this.prevShift.startTime} - ${this.prevShift.endTime}`}
+        //       <br />
+        //       {`${this.prevShift.name}`}
+        //     </td>
+        //     <td>
+        //       {`${this.currentShift.startTime} - ${this.currentShift.endTime}`}
+        //       <br />
+        //       {`${this.currentShift.name}`}
+        //     </td>
+        //     <td>
+        //       {`${this.upcomingShift.startTime} - ${this.upcomingShift.endTime}`}
+        //       <br />
+        //       {`${this.upcomingShift.name}`}
+        //     </td>
+        //   </tr>
+        // );
+      }
+    });
+    // );
   }
 
   render() {
@@ -287,7 +368,7 @@ export default class LiveFieldStatus extends React.Component {
         <header>
           <div className="row liveFieldStatusHeader">
             <div className="col">
-              <img className="anteaterMascot" src={require("../../server/public/assets/images/mascot/anteater.png")} alt="anteater mascot" />
+              <img className="anteaterMascot" src={require('../../server/public/assets/images/mascot/anteater.png')} alt="anteater mascot" />
               <h3 className="liveFieldStatusHeaderTitle">Anteater<br /> Express</h3>
             </div>
             <div className="col d-flex justify-content-end align-items-end">
@@ -295,21 +376,21 @@ export default class LiveFieldStatus extends React.Component {
             </div>
           </div>
         </header>
-      <div className="container liveFieldStatusContentContainer">
-        <div className="row">
-          <div className="col d-inline-flex">
-            <h1 className="liveFieldStatusTitle">Live Field Status</h1>
+        <div className="container liveFieldStatusContentContainer">
+          <div className="row">
+            <div className="col d-inline-flex">
+              <h1 className="liveFieldStatusTitle">Live Field Status</h1>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-12 d-flex justify-content-center">
+              <span className="liveFieldStatusCurrentDay">{this.state.currentDayOfTheWeek}</span>
+            </div>
+            <div className="col d-flex justify-content-center">
+              <span className="liveFieldStatusCurrentDateAndTime">{this.state.displayCurrentDate} : {this.state.displayCurrentTime}</span>
+            </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col-12 d-flex justify-content-center">
-            <span className="liveFieldStatusCurrentDay">{this.state.currentDayOfTheWeek}</span>
-          </div>
-          <div className="col d-flex justify-content-center">
-            <span className="liveFieldStatusCurrentDateAndTime">{this.state.displayCurrentDate} : {this.state.displayCurrentTime}</span>
-          </div>
-        </div>
-      </div>
         <div className="container liveFieldStatusParentContainer">
           <div className="row">
             <div className="col-2"></div>
@@ -340,18 +421,45 @@ export default class LiveFieldStatus extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {allLinesBusesInfo.map((lineBusData, index) => {
-                    let activeBusesLength = lineBusData.activeBuses.length;
-                    let lineName = lineBusData.line_name;
+                  {this.allShifts.map((shift, index) => {
+                    return (
+                      <tr key={shift.prevShift.busID + index}>
+                        <td className="liveFieldStatusLineName">{shift.prevShift.lineName}</td>
+                        <td>{shift.prevShift.busNumber}</td>
+                        <td>{shift.currentShift ? `AE-${shift.currentShift.vehicleID}` : `NA`}</td>
+                        <td>
+                          {`${shift.prevShift.startTime} - ${shift.prevShift.endTime}`}
+                          <br />
+                          {`${shift.prevShift.name}`}
+                        </td>
+                        <td>
+                          {`${shift.currentShift.startTime} - ${shift.currentShift.endTime}`}
+                          <br />
+                          {`${shift.currentShift.name}`}
+                        </td>
+                        <td>
+                          {`${shift.upcomingShift.startTime} - ${shift.upcomingShift.endTime}`}
+                          <br />
+                          {`${shift.upcomingShift.name}`}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {/* {allLinesBusesInfo.map((lineBusData, index) => {
+                    let lineName = [];
                     if (currentSession.id == lineBusData.sessionID) {
                       return (
                         <React.Fragment key={lineBusData.line_name + index}>
-                          {lineBusData.activeBuses.map((bus, index) => {
-                            if (bus.daysActive.includes(this.state.currentDayOfTheWeek)) {
+                          {roundInfoToday.map((round, index) => {
+                            console.log('rd', round.date);
+                            console.log('date', this.state.dateToCompare);
+                            if (!lineName.find(name => round.line_name === name) && (round.date === this.state.dateToCompare)) {
+                              lineName.push(round.line_name);
                               return (
-                                <tr key={bus.busID + index}>
-                                  <td className="liveFieldStatusLineName">{lineName}</td>
-                                  <td>{bus.busNumber}</td>
+                                // this.checkBusID();
+                                <tr key={round.roundID + index}>
+                                  <td className="liveFieldStatusLineName">{round.line_name}</td>
+                                  <td>{round.bus_number}</td>
                                   <td>{this.currentShift ? `AE-${this.currentShift.vehicleID}` : `NA`}</td>
                                   <td>
                                     {`${this.prevShift.startTime} - ${this.prevShift.endTime}`}
@@ -371,25 +479,26 @@ export default class LiveFieldStatus extends React.Component {
                                 </tr>
                               );
                             } else {
-                              if (!activeBusesLength) {
-                                return (
-                                  <tr key={bus.busID + index}>
-                                    <td className="liveFieldStatusLineName">{lineBusData.line_name}</td>
-                                    <td>No Bus</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                  </tr>
-                                );
-                              }
+                              return null;
+                              // if (!lineBusData.activeBuses.length) {
+                              //   return (
+                              //     <tr key={round.roundID + index}>
+                              //       <td className="liveFieldStatusLineName">{lineBusData.line_name}</td>
+                              //       <td>No Bus</td>
+                              //       <td>N/A</td>
+                              //       <td>N/A</td>
+                              //       <td>N/A</td>
+                              //       <td>N/A</td>
+                              //     </tr>
+                              //   );
+                              // }
                             }
                           })}
                         </React.Fragment>
                       );
                     }
                   })
-                  }
+                  } */}
                 </tbody>
               </table>
             </div>
