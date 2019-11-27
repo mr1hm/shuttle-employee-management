@@ -31,8 +31,6 @@ class HamburgerMenu extends React.Component {
       .catch(error => console.error('Fetch failed', error));
   }
   componentDidUpdate(prevProps, prevState) {
-    console.log('prev: ', prevProps.notificationCount);
-    console.log('this: ', this.props.notificationCount);
     if (prevProps.notificationCount !== this.props.notificationCount) {
       this.getNotifications();
     }

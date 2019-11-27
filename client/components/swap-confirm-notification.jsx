@@ -1,5 +1,6 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
+import { Link } from 'react-router-dom';
 import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, createDateStringFromDateObject } from '../lib/time-functions';
 
 class SwapConfirmNotification extends React.Component {
@@ -9,6 +10,7 @@ class SwapConfirmNotification extends React.Component {
       ownShift: [],
       shiftsToSwap: []
     };
+    this.swapShift = this.swapShift.bind(this);
   }
   componentDidMount() {
     fetch(`/api/get-final-swap-confirmation.php?id=${this.props.userId}`)
@@ -23,6 +25,24 @@ class SwapConfirmNotification extends React.Component {
         );
       })
       .catch(error => console.error('Fetch failed', error));
+  }
+  swapShift() {
+    const ownShift = this.state.ownShift;
+    const shiftsToSwap = this.state.shiftsToSwap;
+    const body = {
+      target_id: shiftsToSwap[0].user_id,
+      user_id: shiftsToSwap[0].target_user_id,
+      original_rounds: ownShift,
+      target_rounds: shiftsToSwap
+    };
+    fetch('/api/swap-shift.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    })
+      .catch(err => console.error(err.message));
 
   }
   render() {
@@ -64,8 +84,8 @@ class SwapConfirmNotification extends React.Component {
             <div className="col-3">{calcShiftLenghtInHourMinFormat(ownShift.start_time, ownShift.end_time)}</div>
           </div>
 
-          <div className="row justify-content-center">
-            <div className="col-3 ml-3 mt-3 mb-3">
+          <div className="row justify-content-center text-center">
+            <div className="col-2 ml-3 mt-3 mb-3">
               <h3>WITH</h3>
             </div>
           </div>
@@ -85,6 +105,16 @@ class SwapConfirmNotification extends React.Component {
             );
           })
           }
+          <div className="row mt-5">
+            <div className="col text-center">
+              <Link to="/welcome/">
+                <button type="button" onClick={this.swapShift} className="btn btn-lg btn-primary w-25">Accept</button>
+              </Link>
+            </div>
+            <div className="col text-center">
+              <button type="button" className="btn btn-lg btn-danger w-25">Decline</button>
+            </div>
+          </div>
         </>
       );
     }
