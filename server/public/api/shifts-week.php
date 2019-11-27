@@ -10,12 +10,10 @@ if (!empty($_GET['id'])) {
   $id = intval($id);
 }
 $startDate = $_GET['startDate'];
-$startDate = intval($startDate);
 $endDate = $_GET['endDate'];
-$endDate = intval($endDate);
 
-$query = "SELECT * FROM `round` WHERE `user_id`= {$id} AND (`date` >= {$startDate} AND `date` <= {$endDate})
-ORDER BY `date` ASC";
+$query = "SELECT * FROM `round` WHERE `user_id`= {$id} AND (`date` >= '$startDate' AND `date` <= '$endDate')
+ORDER BY `date`, `start_time` ASC";
 
 $result = mysqli_query($conn, $query);
 
