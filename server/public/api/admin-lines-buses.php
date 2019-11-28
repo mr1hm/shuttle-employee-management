@@ -240,6 +240,14 @@ $query = "SELECT
 
     print(json_encode($data));
 
+  } else if ($method === 'POST' && (isset($bodyData['masterSchedule']))) {
+
+    $date = date('Y-m-d');
+    $query = "SELECT CONCAT(rd.`start_time`, ',', rd.`end_time`) AS shifts,
+              CONCAT(u.`first_name`, ' ',u.`last_name`) AS fullName,
+              FROM `round` AS rd
+              LEFT JOIN user AS u on u.`id` = rd.`user_id`
+              WHERE rd.`date` = $date";
   }
 
 $result = mysqli_query($conn, $query);

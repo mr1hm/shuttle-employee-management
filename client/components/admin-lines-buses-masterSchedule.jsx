@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class MasterFieldStatus extends React.Component {
+export default class MasterSchedule extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,6 +20,30 @@ export default class MasterFieldStatus extends React.Component {
       upcomingShift: null,
       driverName: null
     };
+    this.prevShift = {
+      name: `NOT SCHEDULED`,
+      startTime: `NA`,
+      endTime: `NA`,
+      vehicleID: `NA`,
+      busNumber: `NA`,
+      lineName: `NA`
+    };
+    this.currentShift = {
+      name: `NOT SCHEDULED`,
+      startTime: `NA`,
+      endTime: `NA`,
+      vehicleID: `NA`,
+      busNumber: `NA`,
+      lineName: `NA`
+    };
+    this.upcomingShift = {
+      name: 'NOT SCHEDULED',
+      startTime: 'NA',
+      endTime: 'NA',
+      vehicleID: `NA`,
+      busNumber: `NA`,
+      lineName: `NA`
+    };
     this.organizeDriversForToday = this.organizeDriversForToday.bind(this);
     this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
   }
@@ -27,6 +51,54 @@ export default class MasterFieldStatus extends React.Component {
   componentDidMount() {
     this.getAllData();
     this.checkCurrentDay();
+  }
+
+  findCurrentShift() {
+    const { roundInfoToday } = this.state;
+    let hh = new Date().getHours();
+    let mm = new Date().getMinutes();
+    let time = hh + '' + mm;
+    let currentTime = parseInt(time);
+    console.log(currentTime);
+    for (let i = 0; i < roundInfoToday.length; ++i) {
+      if (currentTime > roundInfoToday[i].shifts[0] && currentTime < roundInfoToday[i].shifts[1]) {
+
+        let timeArr = roundInfoToday[i].shifts[0].split('');
+        let timeArr2 = roundInfoToday[i].shifts[1].split('');
+        timeArr.splice(-2, 0, ':');
+        timeArr2.splice(-2, 0, ':');
+        let formattedStartTime = timeArr.join('');
+        let formattedEndTime = timeArr2.join('');
+
+        this.prevShift = {
+          name: `${roundInfoToday[i - 1].first_name} ${roundInfoToday[i - 1].last_name}`,
+          startTime: `${roundInfoToday[i - 1].shifts[0][0]}${roundInfoToday[i - 1].shifts[0][1]}:${roundInfoToday[i - 1].shifts[0][2]}${roundInfoToday[i - 1].shifts[0][3]}`,
+          endTime: `${roundInfoToday[i - 1].shifts[1][0]}${roundInfoToday[i - 1].shifts[1][1]}:${roundInfoToday[i - 1].shifts[1][2]}${roundInfoToday[i - 1].shifts[1][3]}`,
+          vehicleID: roundInfoToday[i - 1].vehicle_id,
+          busNumber: roundInfoToday[i - 1].bus_number,
+          lineName: roundInfoToday[i - 1].line_name
+        };
+        console.log(this.prevShift);
+        this.currentShift = {
+          name: `${roundInfoToday[i].first_name} ${roundInfoToday[i].last_name}`,
+          startTime: `${formattedStartTime}`,
+          endTime: `${formattedEndTime}`,
+          vehicleID: roundInfoToday[i].vehicle_id,
+          busNumber: roundInfoToday[i - 1].bus_number,
+          lineName: roundInfoToday[i - 1].line_name
+        };
+        console.log(this.currentShift);
+        this.upcomingShift = {
+          name: roundInfoToday[i + 1].first_name + ' ' + roundInfoToday[i + 1].last_name,
+          startTime: `${roundInfoToday[i + 1].shifts[0][0]}${roundInfoToday[i + 1].shifts[0][1]}:${roundInfoToday[i + 1].shifts[0][2]}${roundInfoToday[i].shifts[0][3]}`,
+          endTime: `${roundInfoToday[i + 1].shifts[1][0]}${roundInfoToday[i + 1].shifts[1][1]}:${roundInfoToday[i + 1].shifts[1][2]}${roundInfoToday[i].shifts[1][3]}`,
+          vehicleID: roundInfoToday[i + 1].vehicle_id,
+          busNumber: roundInfoToday[i - 1].bus_number,
+          lineName: roundInfoToday[i - 1].line_name
+        };
+        console.log(this.upcomingShift);
+      }
+    }
   }
 
   checkCurrentDay() {
@@ -40,35 +112,36 @@ export default class MasterFieldStatus extends React.Component {
 
     switch (currentDayOfTheWeek) {
       case 0:
-        currentDayOfTheWeek = 'Sunday'
+        currentDayOfTheWeek = 'Sunday';
         break;
       case 1:
-        currentDayOfTheWeek = 'Monday'
+        currentDayOfTheWeek = 'Monday';
         break;
       case 2:
-        currentDayOfTheWeek = 'Tuesday'
+        currentDayOfTheWeek = 'Tuesday';
         break;
       case 3:
-        currentDayOfTheWeek = 'Wednesday'
+        currentDayOfTheWeek = 'Wednesday';
         break;
       case 4:
-        currentDayOfTheWeek = 'Thursday'
+        currentDayOfTheWeek = 'Thursday';
         break;
       case 5:
-        currentDayOfTheWeek = 'Friday'
+        currentDayOfTheWeek = 'Friday';
         break;
       case 6:
-        currentDayOfTheWeek = 'Saturday'
+        currentDayOfTheWeek = 'Saturday';
         break;
     }
     this.setState({
       currentDayOfTheWeek,
       displayCurrentDate,
       dateToCompare
-    })
+    });
   }
 
   organizeDriversForToday() {
+    this.findCurrentShift();
     const { roundInfoToday } = this.state;
     const { allSessionsInfo } = this.state;
     const { dateToCompare } = this.state;
@@ -118,21 +191,21 @@ export default class MasterFieldStatus extends React.Component {
         if (parseInt(shift[1]) < current24TimeInt) {
           this.setState({
             prevShift: `${shift[0]} - ${shift[1]}`
-          })
+          });
         } else if (parseInt(shift[0]) > current24TimeInt) {
           this.setState({
             upcomingShift: `${shift[0]} - ${shift[1]}`
-          })
+          });
         } else if (current24TimeInt > parseInt(shift[0]) && current24TimeInt < parseInt(shift[1])) {
           this.setState({
             currentShift: `${shift[0]} - ${shift[1]}`
-          })
+          });
         }
         this.setState({
           driverName: driver.name
-        })
-      })
-    })
+        });
+      });
+    });
   }
 
   getAllData() {
@@ -140,7 +213,7 @@ export default class MasterFieldStatus extends React.Component {
     const init = {
       method: 'POST',
       body: JSON.stringify(rounds)
-    }
+    };
     let fetchAllLinesBusesInfo = fetch(`api/admin-lines-buses.php`);
     let fetchAllSessionsInfo = fetch(`api/admin-lines-buses-sessions.php`);
     let fetchRoundTableInfo = fetch(`api/admin-lines-buses.php`, init);
@@ -155,7 +228,7 @@ export default class MasterFieldStatus extends React.Component {
           allLinesBusesInfo,
           allSessionsInfo,
           roundInfoToday
-        }, this.organizeDriversForToday)
+        }, this.organizeDriversForToday);
       })
       .catch(error => console.error(error));
   }
@@ -170,7 +243,7 @@ export default class MasterFieldStatus extends React.Component {
           <header>
             <div className="row liveFieldStatusHeader">
               <div className="col">
-                <img className="anteaterMascot" src={require("../../server/public/assets/images/mascot/anteater.png")} alt="anteater mascot" />
+                <img className="anteaterMascot" src={require('../../server/public/assets/images/mascot/anteater.png')} alt="anteater mascot" />
                 <h3 className="liveFieldStatusHeaderTitle">Anteater<br /> Express</h3>
               </div>
               <div className="col d-flex justify-content-end align-items-end">
@@ -244,9 +317,9 @@ export default class MasterFieldStatus extends React.Component {
                                           {this.state.driverName}
                                         </td>
                                         <td>
-                                          {this.state.currentShift}
+                                          {`${this.currentShift.startTime} - ${this.currentShift.endTime}`}
                                           <br />
-                                          {this.state.driverName}
+                                          {this.currentShift.name}
                                         </td>
                                         <td>
                                           {this.state.upcomingShift}

@@ -12,6 +12,7 @@ import Lines from './admin-lines-buses-lines';
 import CreateSession from './admin-lines-buses-createSession';
 import OperationsHistory from './admin-lines-buses-operationsHistory';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
+import MasterSchedule from './admin-lines-buses-masterSchedule';
 import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -466,7 +467,7 @@ class AdminRoutes extends React.Component {
                     onClick={this.toggleLiveFieldStatus}
                     className="btn btn-outline-dark w-100 liveFieldStatusBtn">
                     Live Field View
-                </Link>
+                  </Link>
                 </div>
               </div>
               <div className="row">
@@ -652,20 +653,19 @@ class AdminRoutes extends React.Component {
                   Live Field View
                 </Link>
               </div>
-              {/* <div className="col d-flex align-items-end">
-                <br />
+              <div className="col d-flex align-items-end">
                 <Link to={{
-                  pathname: `/masterfieldstatus`,
+                  pathname: `/masterschedule`,
                   state: {
                     linesBusesInfo,
                     sessions
                   }
                 }}
-                onClick={this.toggleMasterFieldStatus}
-                className="btn btn-outline-dark w-100 masterFieldStatusBtn">
-                  Master Field View
-                </Link>
-              </div> */}
+                  onClick={this.toggleMasterFieldStatus}
+                  className="btn btn-outline-dark w-100 masterScheduleBtn">
+                  Master Schedule
+                  </Link>
+              </div>
             </div>
             <div className="row">
               {this.state.sessionSelected && this.state.currentSession !== 'All Sessions'
