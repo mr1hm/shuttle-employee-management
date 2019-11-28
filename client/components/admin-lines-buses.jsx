@@ -412,7 +412,7 @@ class AdminRoutes extends React.Component {
             <header>
               <div className="row adminLinesBusesHeader">
                 <div className="col">
-                  <img className="anteaterMascot" src={require("../../server/public/assets/images/mascot/anteater.png")} alt="anteater mascot" />
+                  <img className="anteaterMascot" src={require('../../server/public/assets/images/mascot/anteater.png')} alt="anteater mascot" />
                   <h3 className="liveFieldStatusHeaderTitle">Anteater<br /> Express</h3>
                 </div>
                 <div className="col d-flex justify-content-end align-items-end">
@@ -464,9 +464,22 @@ class AdminRoutes extends React.Component {
                       sessions
                     }
                   }}
-                    onClick={this.toggleLiveFieldStatus}
-                    className="btn btn-outline-dark w-100 liveFieldStatusBtn">
+                  onClick={this.toggleLiveFieldStatus}
+                  className="btn btn-outline-dark w-100 liveFieldStatusBtn">
                     Live Field View
+                  </Link>
+                </div>
+                <div className="col d-flex align-items-end">
+                  <Link to={{
+                    pathname: `/masterschedule`,
+                    state: {
+                      linesBusesInfo,
+                      sessions
+                    }
+                  }}
+                  onClick={this.toggleMasterFieldStatus}
+                  className="btn btn-outline-dark w-100 masterScheduleBtn">
+                    Master Schedule
                   </Link>
                 </div>
               </div>
@@ -595,7 +608,7 @@ class AdminRoutes extends React.Component {
           <header>
             <div className="row adminLinesBusesHeader">
               <div className="col">
-                <img className="anteaterMascot" src={require("../../server/public/assets/images/mascot/anteater.png")} alt="anteater mascot" />
+                <img className="anteaterMascot" src={require('../../server/public/assets/images/mascot/anteater.png')} alt="anteater mascot" />
                 <h3 className="liveFieldStatusHeaderTitle">Anteater<br /> Express</h3>
               </div>
               <div className="col d-flex justify-content-end align-items-end">
@@ -661,10 +674,10 @@ class AdminRoutes extends React.Component {
                     sessions
                   }
                 }}
-                  onClick={this.toggleMasterFieldStatus}
-                  className="btn btn-outline-dark w-100 masterScheduleBtn">
+                onClick={this.toggleMasterFieldStatus}
+                className="btn btn-outline-dark w-100 masterScheduleBtn">
                   Master Schedule
-                  </Link>
+                </Link>
               </div>
             </div>
             <div className="row">
