@@ -141,38 +141,6 @@ export default class MasterSchedule extends React.Component {
     });
   }
 
-  // organizeDriversForToday() {
-  //   // this.findCurrentShift();
-  //   const { roundInfoToday } = this.state;
-  //   const { allSessionsInfo } = this.state;
-  //   const { dateToCompare } = this.state;
-  //   let userID = '';
-  //   let driversForToday = [];
-  //   for (let i = 0; i < roundInfoToday.length; ++i) {
-  //     let driver = driversForToday.find(driver => driver.userID === userID);
-  //     if (driver === undefined) {
-  //       let driverInfo = { shifts: [] };
-  //       if (!roundInfoToday[i].nickname) {
-  //         driverInfo.name = roundInfoToday[i].first_name + ' ' + roundInfoToday[i].last_name;
-  //       } else {
-  //         driverInfo.name = roundInfoToday[i].first_name + ` ${roundInfoToday[i].nickname} ` + roundInfoToday[i].last_name;
-  //       }
-  //       driverInfo.userID = roundInfoToday[i].userID;
-  //       driverInfo.busID = roundInfoToday[i].busID;
-  //       driverInfo.specialDriver = roundInfoToday[i].special_route_ok;
-  //       driverInfo.sessionID = roundInfoToday[i].session_id;
-  //       driverInfo.date = roundInfoToday[i].date;
-  //       driverInfo.shifts.push(roundInfoToday[i].shifts);
-  //       driversForToday.push(driverInfo);
-  //     }
-  //     if (driver) driver.shifts.push(roundInfoToday[i].shifts);
-  //     userID = roundInfoToday[i].userID;
-  //   }
-  //   this.setState({
-  //     driversForToday
-  //   }, this.checkAndDisplayShifts);
-  // }
-
   checkAndDisplayShifts() {
     const { driversForToday } = this.state;
     const { dateToCompare } = this.state;
