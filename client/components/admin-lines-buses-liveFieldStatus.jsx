@@ -116,7 +116,7 @@ export default class LiveFieldStatus extends React.Component {
   }
 
   findCurrentShift(id) {
-    // debugger;
+
     const { roundInfoToday } = this.state;
     let hh = getZeroPaddedNumber(new Date().getHours());
     let mm = getZeroPaddedNumber(new Date().getMinutes());
@@ -128,7 +128,7 @@ export default class LiveFieldStatus extends React.Component {
     for (let i = 0; i < currentBusID.length; ++i) {
       let busNumber = [];
       let lineName = [];
-      if (currentTime >= currentBusID[i].shifts[0] && currentTime <= currentBusID[i].shifts[1]) {
+      if (currentTime >= currentBusID[i].shifts[0] && currentTime <= currentBusID[i].shifts[1] && currentBusID[i].line_name !== null) {
         busNumber.push(currentBusID[i].bus_number);
         lineName.push(currentBusID[i].line_name);
 
@@ -139,12 +139,6 @@ export default class LiveFieldStatus extends React.Component {
         let formattedStartTime = timeArr.join('');
         let formattedEndTime = timeArr2.join('');
 
-        // const roundBusNumber = busNumber.find(num => currentBusID[i].bus_number === num);
-        // const roundLineName = lineName.find(name => currentBusID[i].line_name === name);
-        // if (roundBusNumber && roundLineName) {
-
-        // }
-        // if (currentBusID[i].line_name)
         this.allShifts.push(
           {
             prevShift: {
@@ -177,27 +171,6 @@ export default class LiveFieldStatus extends React.Component {
           });
         console.log(this.allShifts);
         break;
-        // console.log('previous:', this.prevShift);
-        // this.currentShift.push(currentBusID[i].busID: {
-        //   name: `${currentBusID[i].first_name} ${currentBusID[i].last_name}`,
-        //   startTime: `${formattedStartTime}`,
-        //   endTime: `${formattedEndTime}`,
-        //   vehicleID: currentBusID[i].vehicle_id,
-        //   busNumber: currentBusID[i].bus_number,
-        //   lineName: currentBusID[i].line_name,
-        //   busID: currentBusID[i].busID
-        // });
-        // console.log('current:', this.currentShift);
-        // this.upcomingShift.push(currentBusID[i + 1].busID: {
-        //   name: currentBusID[i + 1].first_name + ' ' + currentBusID[i + 1].last_name,
-        //   startTime: `${currentBusID[i + 1].shifts[0][0]}${currentBusID[i + 1].shifts[0][1]}:${currentBusID[i + 1].shifts[0][2]}${currentBusID[i].shifts[0][3]}`,
-        //   endTime: `${currentBusID[i + 1].shifts[1][0]}${currentBusID[i + 1].shifts[1][1]}:${currentBusID[i + 1].shifts[1][2]}${currentBusID[i].shifts[1][3]}`,
-        //   vehicleID: currentBusID[i + 1].vehicle_id,
-        //   busNumber: currentBusID[i + 1].bus_number,
-        //   lineName: currentBusID[i + 1].line_name,
-        //   busID: currentBusID[i + 1].busID
-        // });
-        // console.log('upcoming:', this.upcomingShift);
       }
     }
   }
@@ -324,39 +297,12 @@ export default class LiveFieldStatus extends React.Component {
     const { roundInfoToday } = this.state;
     let busID = [];
     let lineName = [];
-    // debugger;
-    // return (
     roundInfoToday.map((round, index) => {
       if (!busID.find(id => id === round.busID)) {
         busID.push(round.busID);
         this.findCurrentShift(round.busID);
-        // lineName.push(round.line_name);
-        // this.currentShift.vehicleID = round.vehicle_id;
-        // return (
-        //   <tr key={round.busID + index}>
-        //     <td className="liveFieldStatusLineName">{round.line_name}</td>
-        //     <td>{round.bus_number}</td>
-        //     <td>{this.currentShift ? `AE-${this.currentShift.vehicleID}` : `NA`}</td>
-        //     <td>
-        //       {`${this.prevShift.startTime} - ${this.prevShift.endTime}`}
-        //       <br />
-        //       {`${this.prevShift.name}`}
-        //     </td>
-        //     <td>
-        //       {`${this.currentShift.startTime} - ${this.currentShift.endTime}`}
-        //       <br />
-        //       {`${this.currentShift.name}`}
-        //     </td>
-        //     <td>
-        //       {`${this.upcomingShift.startTime} - ${this.upcomingShift.endTime}`}
-        //       <br />
-        //       {`${this.upcomingShift.name}`}
-        //     </td>
-        //   </tr>
-        // );
       }
     });
-    // );
   }
 
   render() {
