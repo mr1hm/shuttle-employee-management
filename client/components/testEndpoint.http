@@ -22,3 +22,11 @@ content-type: application/json
 {
   "rounds": "1"
 }
+
+###
+POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+content-type: application/json
+
+{
+  "date": "2019-11-27"
+}
