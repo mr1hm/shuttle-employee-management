@@ -61,6 +61,8 @@ export default class MasterSchedule extends React.Component {
     for (let i = 0; i < roundInfoToday.length; ++i) {
       const name = `${roundInfoToday[i].first_name} ${roundInfoToday[i].last_name}`;
       const role = roundInfoToday[i].role;
+      const startTimeToCompare = roundInfoToday[i].shifts[0].start;
+      const endTimeToCompare = roundInfoToday[i].shifts[roundInfoToday[i].shifts.length - 1].end;
       let startTime = roundInfoToday[i].shifts[0].start;
       let endTime = roundInfoToday[i].shifts[roundInfoToday[i].shifts.length - 1].end;
       let startTimeSplit = startTime.split('');
@@ -72,12 +74,13 @@ export default class MasterSchedule extends React.Component {
       const lineName = roundInfoToday[i].line_name;
       const busNumber = roundInfoToday[i].bus_number;
       const vehicleID = roundInfoToday[i].vehicle_id;
-      if (parseInt(startTime) < 1200) {
+      if (parseInt(startTimeToCompare) < 1200) {
         startTime = `${startTime} AM`;
       } else {
         startTime = `${startTime} PM`;
       }
-      if (parseInt(endTime) < 1200) {
+      debugger;
+      if (parseInt(endTimeToCompare) < 1200) {
         endTime = `${endTime} AM`;
       } else {
         endTime = `${endTime} PM`;
