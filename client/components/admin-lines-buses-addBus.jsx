@@ -21,7 +21,7 @@ export default class AddBus extends React.Component {
         closing_duration: null,
         session_id: this.props.line.sessionID,
         userID: 1,
-        date: 1566100800,
+        date: 1575281400,
         status: 'unscheduled'
       },
       newBusAdded: false,

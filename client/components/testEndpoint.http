@@ -28,5 +28,5 @@ POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.p
 content-type: application/json
 
 {
-  "date": "2019-11-27"
+  "date": "2019-12-02"
 }
