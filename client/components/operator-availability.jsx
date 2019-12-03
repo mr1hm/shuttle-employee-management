@@ -21,8 +21,8 @@ class OperatorAvailability extends React.Component {
       },
       sessionChoices: [],
       availabilityInfo: [],
-      // this will eventually come in through props with auth system
-      role: 'operator',
+      minimumAvailability: null,
+      role: '',
       show: false,
       clear: false,
       submit: false,
@@ -32,10 +32,12 @@ class OperatorAvailability extends React.Component {
       selectedStartTime: null,
       selectedEndTime: null,
       // this will eventually come in through props with auth system
-      userId: 45,
+      userId: 9,
       // not sure how this will arrive or if this requires logic to address
-      sessionId: '',
-      sessionName: ''
+      // waiting to see what will be available from auth system
+      // for now just set default values for sessionId and sessionName
+      sessionId: 5,
+      sessionName: 'Fall 2019'
     };
 
     this.timeIndex = { '6:00 am': 0, '6:15 am': 1, '6:30 am': 2, '6:45 am': 3, '7:00 am': 4, '7:15 am': 5, '7:30 am': 6, '7:45 am': 7, '8:00 am': 8, '8:15 am': 9, '8:30 am': 10, '8:45 am': 11, '9:00 am': 12, '9:15 am': 13, '9:30 am': 14, '9:45 am': 15, '10:00 am': 16, '10:15 am': 17, '10:30 am': 18, '10:45 am': 19, '11:00 am': 20, '11:15 am': 21, '11:30 am': 22, '11:45 am': 23, '12:00 pm': 24, '12:15 pm': 25, '12:30 pm': 26, '12:45 pm': 27, '1:00 pm': 28, '1:15 pm': 29, '1:30 pm': 30, '1:45 pm': 31, '2:00 pm': 32, '2:15 pm': 33, '2:30 pm': 34, '2:45 pm': 35, '3:00 pm': 36, '3:15 pm': 37, '3:30 pm': 38, '3:45 pm': 39, '4:00 pm': 40, '4:15 pm': 41, '4:30 pm': 42, '4:45 pm': 43, '5:00 pm': 44, '5:15 pm': 45, '5:30 pm': 46, '5:45 pm': 47, '6:00 pm': 48, '6:15 pm': 49, '6:30 pm': 50, '6:45 pm': 51, '7:00 pm': 52, '7:15 pm': 53, '7:30 pm': 54, '7:45 pm': 55, '8:00 pm': 56, '8:15 pm': 57, '8:30 pm': 58, '8:45 pm': 59, '9:00 pm': 60, '9:15 pm': 61, '9:30 pm': 62, '9:45 pm': 63, '10:00 pm': 64, '10:15 pm': 65, '10:30 pm': 66, '10:45 pm': 67, '11:00 pm': 68, '11:15 pm': 69, '11:30 pm': 70, '11:45 pm': 71, '12:00 am': 72 };
@@ -53,7 +55,7 @@ class OperatorAvailability extends React.Component {
     this.showSubmitModal = this.showSubmitModal.bind(this);
     this.showSelectSessionModal = this.showSelectSessionModal.bind(this);
     this.closeSelectSessionModal = this.closeSelectSessionModal.bind(this);
-    this.processSessionSelection = this.processSessionSelection.bind(this);
+    // this.processSessionSelection = this.processSessionSelection.bind(this);
 
     this.getEnteredAvailability = this.getEnteredAvailability.bind(this);
     this.getAvailablityInfo = this.getAvailablityInfo.bind(this);
@@ -128,15 +130,21 @@ class OperatorAvailability extends React.Component {
     });
   }
 
-  closeSelectSessionModal() {
+  closeSelectSessionModal(event) {
+    event.preventDefault();
     this.setState({
       selectSession: false
     });
   }
 
   componentDidMount() {
-    this.getEnteredAvailability();
-    this.getAvailablityInfo();
+    var sessionId = this.state.sessionId;
+    Promise.all([this.getEnteredAvailability(sessionId), this.getAvailablityInfo(sessionId)]).then(results => {
+      this.setState({
+        availability: results[0],
+        availabilityInfo: results[1]
+      });
+    });
     this.getSessions();
   }
 
@@ -202,46 +210,31 @@ class OperatorAvailability extends React.Component {
     }
   }
 
-  getEnteredAvailability() {
-    console.log('inside entered availability: ', this.state.userId);
-    console.log('inside entered availability: ', this.state.sessionId);
+  getEnteredAvailability(sessionId) {
+    console.log(sessionId);
     const data = {
       method: 'POST',
       body: JSON.stringify({
         'user_id': this.state.userId,
-        'session_id': this.state.sessionId
+        'session_id': sessionId
       }),
       headers: { 'Content-Type': 'application/json' }
     };
-    fetch(`/api/operator-entered-availability.php`, data)
-      .then(response => response.json())
-      .then(data => {
-        this.setState({
-          availability: data
-        });
-      })
-      .catch(error => { throw (error); });
+    return fetch(`/api/operator-entered-availability.php`, data)
+      .then(response => response.json());
   }
 
-  getAvailablityInfo() {
-    console.log('session id: ', this.state.sessionId);
+  getAvailablityInfo(sessionId) {
     const data = {
       method: 'POST',
       body: JSON.stringify({
-        'session_id': this.state.sessionId
+        'session_id': sessionId,
+        'user_id': this.state.userId
       }),
       headers: { 'Content-Type': 'application/json' }
     };
-    fetch(`/api/operator-availability-info.php`, data)
-      .then(response => response.json())
-      .then(data => {
-        this.setState({
-          availabilityInfo: data
-        }, () => {
-          console.log('availability info: ', JSON.stringify(this.state.availabilityInfo));
-        });
-      })
-      .catch(error => { throw (error); });
+    return fetch(`/api/operator-availability-info.php`, data)
+      .then(response => response.json());
   }
 
   getSessions() {
@@ -256,10 +249,7 @@ class OperatorAvailability extends React.Component {
       .then(data => {
         this.setState({
           sessionChoices: data
-        }, () => {
-          console.log('sessionChoices after fetch', JSON.stringify(this.state.sessionChoices));
-        }
-        );
+        });
       })
       .catch(error => { throw (error); });
   }
@@ -276,9 +266,17 @@ class OperatorAvailability extends React.Component {
 
   handleFormEntry(event) {
     var index = event.nativeEvent.target.selectedIndex;
+    var updatedSessionId = event.target.value;
+    var updatedName = event.nativeEvent.target[index].text;
+    Promise.all([this.getEnteredAvailability(updatedSessionId), this.getAvailablityInfo(updatedSessionId)]).then(results => {
+      this.setState({
+        availability: results[0],
+        availabilityInfo: results[1]
+      });
+    });
     this.setState({
-      sessionName: event.nativeEvent.target[index].text,
-      sessionId: event.target.value
+      sessionName: updatedName,
+      sessionId: updatedSessionId
     });
   }
 
@@ -318,15 +316,6 @@ class OperatorAvailability extends React.Component {
       });
 
     }
-  }
-
-  processSessionSelection(event) {
-    event.preventDefault();
-    this.setState({
-      selectSession: false
-    });
-    this.getEnteredAvailability();
-    this.getAvailablityInfo();
   }
 
   setEndTime(event) {
@@ -402,36 +391,40 @@ class OperatorAvailability extends React.Component {
   }
 
   submitOrMessage() {
-    var todaysDate = new Date();
-    var currentTimestamp = Date.parse(todaysDate);
-    var totalAvailability = this.totalEnteredAvailability();
-    var availabilityEndDate = parseInt(this.state.availabilityInfo.avail_end_date);
-    var minimumAvailability;
-    if (this.state.role === 'operator') {
-      minimumAvailability = parseInt(this.state.availabilityInfo.min_operator_hours) * 60;
-    }
-    if (this.state.role === 'operations') {
-      minimumAvailability = parseInt(this.state.availabilityInfo.min_operations_hours) * 60;
-    }
-    if (this.state.role === 'trainer') {
-      minimumAvailability = parseInt(this.state.availabilityInfo.min_trainer_hours) * 60;
-    }
-    if (this.state.role === 'trainee') {
-      minimumAvailability = parseInt(this.state.availabilityInfo.min_trainee_hours) * 60;
-    }
+    if (this.state.availabilityInfo.length) {
+      var todaysDate = new Date();
+      var currentTimestamp = Date.parse(todaysDate);
 
-    if (currentTimestamp < availabilityEndDate && totalAvailability >= minimumAvailability) {
-      return (
-        <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>{totalAvailability / 60} / {minimumAvailability / 60} hrs SUBMIT</button>
-      );
-    } if (currentTimestamp < availabilityEndDate && totalAvailability < minimumAvailability) {
-      return (
-        <button type="button" className="btn btn-dark btn-sm mr-4">{totalAvailability / 60} / {minimumAvailability / 60} hrs ENTER MORE</button>
-      );
-    } else {
-      return (
-        <button type="button" className="btn btn-dark btn-sm mr-4">Too late to Submit</button>
-      );
+      var totalAvailability = this.totalEnteredAvailability();
+
+      var minimumAvailability;
+
+      if (this.state.availabilityInfo[0].role === 'operator') {
+        minimumAvailability = parseInt(this.state.availabilityInfo[0].min_operator_hours) * 60;
+      }
+      if (this.state.availabilityInfo[0].role === 'operations') {
+        minimumAvailability = parseInt(this.state.availabilityInfo[0].min_operations_hours) * 60;
+      }
+      if (this.state.availabilityInfo[0].role === 'trainer') {
+        minimumAvailability = parseInt(this.state.availabilityInfo[0].min_trainer_hours) * 60;
+      }
+      if (this.state.availabilityInfo[0].role === 'trainee') {
+        minimumAvailability = parseInt(this.state.availabilityInfo[0].min_trainee_hours) * 60;
+      }
+
+      if (currentTimestamp >= parseInt(this.state.availabilityInfo[0].avail_start_date) && currentTimestamp <= parseInt(this.state.availabilityInfo[0].avail_end_date) && totalAvailability >= minimumAvailability) {
+        return (
+          <button type="button" className="btn btn-primary btn-sm mr-5" onClick={this.showSubmitModal}>{totalAvailability / 60} / {minimumAvailability / 60} hrs SUBMIT</button>
+        );
+      } if (currentTimestamp >= parseInt(this.state.availabilityInfo[0].avail_start_date) && currentTimestamp <= parseInt(this.state.availabilityInfo[0].avail_end_date) && totalAvailability < minimumAvailability) {
+        return (
+          <button type="button" className="btn btn-dark btn-sm mr-4">{totalAvailability / 60} / {minimumAvailability / 60} hrs ENTER MORE</button>
+        );
+      } else {
+        return (
+          <button type="button" className="btn btn-dark btn-sm mr-4">Submission Closed</button>
+        );
+      }
     }
   }
 
@@ -463,7 +456,7 @@ class OperatorAvailability extends React.Component {
   render() {
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-    if (!this.state.availabilityInfo) {
+    if (!this.state.availabilityInfo.length) {
       return <div>No Data Available</div>;
     }
 
@@ -504,6 +497,7 @@ class OperatorAvailability extends React.Component {
           </table>
           <div style={{ width: '5%' }}></div>
         </div>
+
         <SelectAvailabilityModal day={this.state.day} show={this.state.show} close={this.hideShiftModal} deleteShift={this.deleteShift}>
           <div className="d-flex">
             <div className="mr-2">
@@ -558,17 +552,16 @@ class OperatorAvailability extends React.Component {
 
         <SelectSessionModal showSelectSessionModal={this.state.selectSession}>
           <div className="d-flex justify-content-center">
-            <form onSubmit={this.processSessionSelection}>
+            <form onSubmit={this.closeSelectSessionModal}>
               <div className="m-2">
-                <div>Select Session to Display</div>
-                <select name="sessionId" onChange={this.handleFormEntry} defaultValue={this.state.sessionName}>
-                  <option></option>
+                <div className="mb-2" style={{ fontWeight: 'bold' }}>MY SESSIONS</div>
+                <select name="sessionId" onChange={this.handleFormEntry}>
+                  <option>Select Session</option>
                   {this.state.sessionChoices.map((session, index) => (<option key={index} value={session['id']}>{session['name']}</option>))}
                 </select>
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
-                <button className="btn-success mr-2" type='submit'>Submit</button>
-                <button className="btn-danger ml-2" type='reset' onClick={this.closeSelectSessionModal} >Cancel</button>
+                <button className="btn-success mr-2" type='submit'>Close</button>
               </div>
             </form>
           </div>

@@ -4,8 +4,8 @@ set_exception_handler('error_handler');
 require_once("db_connection.php");
 
 $data = getBodyData();
-$id = $data['user_id'];
-$session = $data['session_id'];
+$id = intval($data['user_id']);
+$session = intval($data['session_id']);
 
 $availability = [
   'Sunday' => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
