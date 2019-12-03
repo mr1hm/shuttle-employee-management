@@ -17,10 +17,12 @@ class SwapConfirmNotification extends React.Component {
       .then(response => response.json())
       .then(data => {
         const shiftsToSwap = data;
-        const lastShift = shiftsToSwap.pop();
+        const ownShift = shiftsToSwap.filter(oneShift => oneShift.user_id === this.props.userId);
+        const otherPersonShifts = shiftsToSwap.filter(oneShift => oneShift.user_id !== this.props.userId);
+        // const lastShift = shiftsToSwap.pop();
         this.setState({
-          ownShift: lastShift,
-          shiftsToSwap: shiftsToSwap
+          ownShift: ownShift,
+          shiftsToSwap: otherPersonShifts
         }
         );
       })
@@ -48,7 +50,7 @@ class SwapConfirmNotification extends React.Component {
   render() {
     const ownShift = this.state.ownShift;
     const shiftsToSwap = this.state.shiftsToSwap;
-    if (typeof ownShift === 'undefined' || shiftsToSwap.length === 0) {
+    if (typeof ownShift === 'undefined' || shiftsToSwap.length === 0 || ownShift.length === 0) {
       return null;
     } else {
       return (
@@ -72,8 +74,23 @@ class SwapConfirmNotification extends React.Component {
               <h4>Shift Length</h4>
             </div>
           </div>
+          {ownShift.map(oneShift => {
+            return (
+              <div key={oneShift.id} className="row text-center justify-content-center">
+                <div className="col-2">
+                  {createDateStringFromDateObject(parseInt(oneShift.shift_date) * 1000)}
+                </div>
+                <div className="col-4 d-flex justify-content-center">
+                  <RouteBusDisplay route={oneShift.line_name} bus={oneShift.bus_info_id} />
+                </div>
+                <div className="col-3">{convertMilitaryTime(oneShift.start_time) + '-' + convertMilitaryTime(oneShift.end_time)}</div>
+                <div className="col-3">{calcShiftLenghtInHourMinFormat(oneShift.start_time, oneShift.end_time)}</div>
+              </div>
+            );
+          })
+          }
 
-          <div className="row text-center justify-content-center">
+          {/* <div className="row text-center justify-content-center">
             <div className="col-2">
               {createDateStringFromDateObject(parseInt(ownShift.shift_date) * 1000)}
             </div>
@@ -82,7 +99,7 @@ class SwapConfirmNotification extends React.Component {
             </div>
             <div className="col-3">{ownShift.length === 0 ? ownShift.start_time + '-' + ownShift.end_time : convertMilitaryTime(ownShift.start_time) + '-' + convertMilitaryTime(ownShift.end_time)}</div>
             <div className="col-3">{calcShiftLenghtInHourMinFormat(ownShift.start_time, ownShift.end_time)}</div>
-          </div>
+          </div> */}
 
           <div className="row justify-content-center text-center">
             <div className="col-2 ml-3 mt-3 mb-3">
