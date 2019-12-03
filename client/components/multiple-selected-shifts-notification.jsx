@@ -50,6 +50,12 @@ class MultipleSelectedShiftsSwap extends React.Component {
 
   render() {
     const shifts = this.state.shifts;
+    const today = new Date();
+    const dateString = `${today.getFullYear()}-${getZeroPaddedNumber(today.getMonth() + 1)}-${getZeroPaddedNumber(today.getDate())}`;
+    let roundIds = [];
+    for (let integerI = 0; integerI < shifts.length; integerI++) {
+      roundIds.push(this.props.shifts[integerI].round_id);
+    }
     if (shifts.length === 0) {
       return null;
     } else {
@@ -64,7 +70,16 @@ class MultipleSelectedShiftsSwap extends React.Component {
           <div className="col-2">{convertMilitaryTime(shifts[0].start_time) + '-' + convertMilitaryTime(shifts[shifts.length - 1].end_time)}</div>
           <div className="col-2">{calcShiftLenghtInHourMinFormat(shifts[0].start_time, shifts[shifts.length - 1].end_time)}</div>
           <div className="col-2">
-            <button type="button" className="btn btn-dark">Swap</button>
+            <Link to={{
+              pathname: '/shifts/month/shifts-month/' + dateString,
+              state: {
+                swapFlag: roundIds
+              }
+            }}
+            className="btn btn-dark">
+              Swap
+            </Link>
+            {/* <button type="button" className="btn btn-dark">Swap</button> */}
           </div>
           <div className="col-2">
             <button onClick={this.removeShift} type="button" className="btn btn-danger">Remove Shift</button>

@@ -12,10 +12,18 @@ class SwapConfirmation extends React.Component {
     this.swapShift = this.swapShift.bind(this);
   }
   componentDidMount() {
-    const selectedShift = this.props.allShifts.filter(oneShift => this.props.selectedRoundId === oneShift.round_id);
-    this.setState({
-      selectedRoundsToSwap: selectedShift
-    });
+    if (Array.isArray(this.props.selectedRoundId)) {
+      const selectedShift = this.props.allShifts;
+      this.setState({
+        selectedRoundsToSwap: selectedShift
+      });
+      console.log(selectedShift);
+    } else {
+      const selectedShift = this.props.allShifts.filter(oneShift => this.props.selectedRoundId === oneShift.round_id);
+      this.setState({
+        selectedRoundsToSwap: selectedShift
+      });
+    }
   }
   swapShift() {
     const { selectedRoundsToSwap } = this.state;
