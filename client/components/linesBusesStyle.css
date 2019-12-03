@@ -191,6 +191,16 @@ table.liveFieldStatusTable td {
   font-size: 12px;
 }
 
+.masterScheduleCurrentDateAndTime {
+  font-size: 12px;
+}
+
+.masterScheduleCurrentDay {
+  font-size: 20px;
+  font-weight: 500;
+  margin-top: 40px;
+}
+
 .liveFieldStatusCurrentDay {
   font-size: 20px;
   font-weight: 500;
@@ -204,7 +214,8 @@ table.liveFieldStatusTable td {
   font-weight: 700;
 }
 
-.liveFieldStatusLineName {
+.liveFieldStatusLineName,
+.masterScheduleLineName {
   font-weight: 600;
   /* font-size: 16px; */
 }

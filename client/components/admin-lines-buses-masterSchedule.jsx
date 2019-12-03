@@ -7,7 +7,6 @@ export default class MasterSchedule extends React.Component {
       allLinesBusesInfo: [],
       allSessionsInfo: [],
       roundInfoToday: [],
-      // driversForToday: [],
       currentLines: null,
       currentBuses: null,
       currentSession: null,
@@ -21,33 +20,8 @@ export default class MasterSchedule extends React.Component {
       driverName: null
     };
     this.allShifts = [];
-    // this.prevShift = {
-    //   name: `NOT SCHEDULED`,
-    //   startTime: `NA`,
-    //   endTime: `NA`,
-    //   vehicleID: `NA`,
-    //   busNumber: `NA`,
-    //   lineName: `NA`
-    // };
-    // this.currentShift = {
-    //   name: `NOT SCHEDULED`,
-    //   startTime: `NA`,
-    //   endTime: `NA`,
-    //   vehicleID: `NA`,
-    //   busNumber: `NA`,
-    //   lineName: `NA`
-    // };
-    // this.upcomingShift = {
-    //   name: 'NOT SCHEDULED',
-    //   startTime: 'NA',
-    //   endTime: 'NA',
-    //   vehicleID: `NA`,
-    //   busNumber: `NA`,
-    //   lineName: `NA`
-    // };
-    // this.organizeDriversForToday = this.organizeDriversForToday.bind(this);
     this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
-    this.findCurrentShift = this.findCurrentShift.bind(this);
+    this.compareCurrentTimeAndDisplayShifts = this.compareCurrentTimeAndDisplayShifts.bind(this);
   }
 
   componentDidMount() {
@@ -55,50 +29,67 @@ export default class MasterSchedule extends React.Component {
     this.checkCurrentDay();
   }
 
-  findCurrentShift() {
+  getCurrentSession() {
+    const { allSessionsInfo } = this.state;
+    const { dateToCompare } = this.state;
+    allSessionsInfo.forEach(session => {
+      let yearToCompare = dateToCompare.slice(0, 4);
+      let monthToCompare = dateToCompare.slice(5, 7);
+      let dayToCompare = dateToCompare.slice(8, 10);
+      const currentDateTotal = yearToCompare + monthToCompare + dayToCompare;
+      const splitSessionStartDate = session.startDateString.split('-');
+      const compareSessionStartDate = splitSessionStartDate.join('');
+      const splitSessionEndDate = session.endDateString.split('-');
+      const compareSessionEndDate = splitSessionEndDate.join('');
+      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate);
+      const compareStartDates = parseInt(currentDateTotal) > parseInt(compareSessionStartDate);
+      const compareEndDates = parseInt(currentDateTotal) < parseInt(compareSessionEndDate);
+
+      if (compareStartDates && compareEndDates) this.setState({ currentSession: session });
+    });
+  }
+
+  compareCurrentTimeAndDisplayShifts() {
+    this.getCurrentSession();
     const { roundInfoToday } = this.state;
+    let d = new Date();
     let hh = new Date().getHours();
     let mm = new Date().getMinutes();
     let time = hh + '' + mm;
     let currentTime = parseInt(time);
     console.log(currentTime);
-    console.log(roundInfoToday);
     for (let i = 0; i < roundInfoToday.length; ++i) {
-      let userID = null;
-      for (let z = 0; z < roundInfoToday[i].shifts.length; ++z) {
-        const name = roundInfoToday[i].first_name + roundInfoToday[i].last_name;
-        const lineName = roundInfoToday[i].line_name;
-        const busNumber = roundInfoToday[i].bus_number;
-        const startShift = roundInfoToday[i].shifts[0].start;
-        const endShift = roundInfoToday[i].shifts[roundInfoToday[i].shifts.length - 1].end;
-        const vehicleID = roundInfoToday[i].vehicle_id;
-        let startTime = parseInt(roundInfoToday[i].shifts[z].start);
-        let endTime = parseInt(roundInfoToday[i].shifts[z].end);
-        if (currentTime > startTime && currentTime < endTime) {
-
-          let timeArr = roundInfoToday[i].shifts[z].start.split('');
-          let timeArr2 = roundInfoToday[i].shifts[z].start.split('');
-          timeArr.splice(-2, 0, ':');
-          timeArr2.splice(-2, 0, ':');
-          let formattedStartTime = timeArr.join('');
-          let formattedEndTime = timeArr2.join('');
-
-          if (roundInfoToday[i].userID !== userID) {
-            this.allShifts.push(
-              {
-                name,
-                lineName,
-                busNumber,
-                fullShift: `${startShift} - ${endShift}`,
-                userID: roundInfoToday[i].userID,
-                vehicleID
-              }
-            );
-            userID = roundInfoToday[i].userID;
-          }
-        }
+      const name = `${roundInfoToday[i].first_name} ${roundInfoToday[i].last_name}`;
+      const role = roundInfoToday[i].role;
+      const startTimeToCompare = roundInfoToday[i].shifts[0].start;
+      const endTimeToCompare = roundInfoToday[i].shifts[roundInfoToday[i].shifts.length - 1].end;
+      let startTime = roundInfoToday[i].shifts[0].start;
+      let endTime = roundInfoToday[i].shifts[roundInfoToday[i].shifts.length - 1].end;
+      let startTimeSplit = startTime.split('');
+      let endTimeSplit = endTime.split('');
+      startTimeSplit.splice(-2, 0, ':');
+      endTimeSplit.splice(-2, 0, ':');
+      startTime = startTimeSplit.join('');
+      endTime = endTimeSplit.join('');
+      const lineName = roundInfoToday[i].line_name;
+      const busNumber = roundInfoToday[i].bus_number;
+      const vehicleID = roundInfoToday[i].vehicle_id;
+      if (parseInt(startTimeToCompare) < 1200) {
+        startTime = `${startTime} AM`;
+      } else {
+        startTime = `${startTime} PM`;
       }
+      debugger;
+      if (parseInt(endTimeToCompare) < 1200) {
+        endTime = `${endTime} AM`;
+      } else {
+        endTime = `${endTime} PM`;
+      }
+      const driver = { name, role, startTime, endTime, lineName, busNumber, vehicleID };
+      this.allShifts.push(driver);
     }
+    let localTime = d.toLocaleTimeString();
+    this.setState({ currentTime: localTime });
     console.log(this.allShifts);
   }
 
@@ -140,38 +131,6 @@ export default class MasterSchedule extends React.Component {
       dateToCompare
     });
   }
-
-  // organizeDriversForToday() {
-  //   // this.findCurrentShift();
-  //   const { roundInfoToday } = this.state;
-  //   const { allSessionsInfo } = this.state;
-  //   const { dateToCompare } = this.state;
-  //   let userID = '';
-  //   let driversForToday = [];
-  //   for (let i = 0; i < roundInfoToday.length; ++i) {
-  //     let driver = driversForToday.find(driver => driver.userID === userID);
-  //     if (driver === undefined) {
-  //       let driverInfo = { shifts: [] };
-  //       if (!roundInfoToday[i].nickname) {
-  //         driverInfo.name = roundInfoToday[i].first_name + ' ' + roundInfoToday[i].last_name;
-  //       } else {
-  //         driverInfo.name = roundInfoToday[i].first_name + ` ${roundInfoToday[i].nickname} ` + roundInfoToday[i].last_name;
-  //       }
-  //       driverInfo.userID = roundInfoToday[i].userID;
-  //       driverInfo.busID = roundInfoToday[i].busID;
-  //       driverInfo.specialDriver = roundInfoToday[i].special_route_ok;
-  //       driverInfo.sessionID = roundInfoToday[i].session_id;
-  //       driverInfo.date = roundInfoToday[i].date;
-  //       driverInfo.shifts.push(roundInfoToday[i].shifts);
-  //       driversForToday.push(driverInfo);
-  //     }
-  //     if (driver) driver.shifts.push(roundInfoToday[i].shifts);
-  //     userID = roundInfoToday[i].userID;
-  //   }
-  //   this.setState({
-  //     driversForToday
-  //   }, this.checkAndDisplayShifts);
-  // }
 
   checkAndDisplayShifts() {
     const { driversForToday } = this.state;
@@ -235,15 +194,16 @@ export default class MasterSchedule extends React.Component {
           allLinesBusesInfo,
           allSessionsInfo,
           roundInfoToday
-        }, this.findCurrentShift);
+        }, this.compareCurrentTimeAndDisplayShifts);
       })
       .catch(error => console.error(error));
   }
 
   render() {
-    const { allLinesBusesInfo } = this.state;
-    const { allSessionsInfo } = this.state;
-    const { roundInfoToday } = this.state;
+    const { currentSession } = this.state;
+    if (!currentSession) {
+      return <div>LOADING...</div>;
+    }
     return (
       <>
         <div className="container-fluid">
@@ -266,60 +226,61 @@ export default class MasterSchedule extends React.Component {
             </div>
             <div className="row">
               <div className="col-12 d-flex justify-content-center">
-                <h5>{this.state.currentDayOfTheWeek}</h5>
+                <span className="masterScheduleCurrentDay">{this.state.currentDayOfTheWeek}</span>
               </div>
               <div className="col d-flex justify-content-center">
-                <h6>{this.state.displayCurrentDate}</h6>
+                <span className="masterScheduleCurrentDateAndTime">{this.state.displayCurrentDate} : {this.state.currentTime} </span>
               </div>
             </div>
           </div>
-          {allSessionsInfo.map((session, index) => {
-            return (
-              <div key={session.name + index} className="container liveFieldStatusParentContainer">
-                <div className="row">
-                  <div className="col-2"></div>
-                  <div className="col d-flex ml-5">
-                    <h2 className="liveFieldStatusSessionName">{session.name}</h2>
-                  </div>
-                  <div className="col d-inline-flex align-items-end justify-content-end">
-                    <div>
-                      <span className="liveFieldStatusStartDateSpan"><i className="liveFieldStatusStartDate">Start Date</i>: {session.startDateString}</span>
-                      <span><i className="liveFieldStatusEndDate">End Date</i>: {session.endDateString}</span>
-                    </div>
-                  </div>
-                  <div className="col-2 d-inline-flex align-items-end">
-
-                  </div>
-                </div>
-                <div className="container liveFieldStatusTableContainer">
-                  <div className="row">
-                    <table className="table liveFieldStatusTable">
-                      <thead>
-                        <tr>
-                          <th scope="col">Line</th>
-                          <th scope="col">Bus Number</th>
-                          <th scope="col">Vehicle</th>
-                          <th scope="col">Today's Shifts</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {this.allShifts.map((driver, index) => {
-                          return (
-                            <tr key={driver.userID + index}>
-                              <td>{driver.lineName}</td>
-                              <td>{driver.busNumber}</td>
-                              <td>{driver.vehicleID}</td>
-                              <td>{driver.fullShift}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+          <div className="container liveFieldStatusParentContainer">
+            <div className="row">
+              <div className="col-2"></div>
+              <div className="col d-flex ml-5">
+                <h2 className="liveFieldStatusSessionName">{currentSession.name}</h2>
+              </div>
+              <div className="col d-inline-flex align-items-end justify-content-end">
+                <div>
+                  <span className="liveFieldStatusStartDateSpan"><i className="liveFieldStatusStartDate">Start Date</i>: {currentSession.startDateString}</span>
+                  <span><i className="liveFieldStatusEndDate">End Date</i>: {currentSession.endDateString}</span>
                 </div>
               </div>
-            );
-          })}
+              <div className="col-2 d-inline-flex align-items-end">
+
+              </div>
+            </div>
+            <div className="container liveFieldStatusTableContainer">
+              <div className="row">
+                <table className="table liveFieldStatusTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">Line</th>
+                      <th scope="col">Bus Number</th>
+                      <th scope="col">Vehicle</th>
+                      <th scope="col">Driver</th>
+                      <th scope="col">Full Shift</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.allShifts.map((driver, index) => {
+                      if (!driver.lineName || !driver.busNumber || !driver.vehicleID) {
+                        return null;
+                      }
+                      return (
+                        <tr key={driver.role + index}>
+                          <td className="masterScheduleLineName">{driver.lineName}</td>
+                          <td>{driver.busNumber}</td>
+                          <td>{`AE-${driver.vehicleID}`}</td>
+                          <td>{driver.name}</td>
+                          <td>{`${driver.startTime} - ${driver.endTime}`}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="container-fluid">
           <footer>

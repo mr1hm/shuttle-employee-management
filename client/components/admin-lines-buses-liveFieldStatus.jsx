@@ -23,30 +23,6 @@ export default class LiveFieldStatus extends React.Component {
       vehicleID: null
     };
     this.allShifts = [];
-    // this.prevShift = {
-    //   name: `NOT SCHEDULED`,
-    //   startTime: `NA`,
-    //   endTime: `NA`,
-    //   vehicleID: `NA`,
-    //   busNumber: `NA`,
-    //   lineName: `NA`
-    // };
-    // this.currentShift = {
-    //   name: `NOT SCHEDULED`,
-    //   startTime: `NA`,
-    //   endTime: `NA`,
-    //   vehicleID: `NA`,
-    //   busNumber: `NA`,
-    //   lineName: `NA`
-    // };
-    // this.upcomingShift = {
-    //   name: 'NOT SCHEDULED',
-    //   startTime: 'NA',
-    //   endTime: 'NA',
-    //   vehicleID: `NA`,
-    //   busNumber: `NA`,
-    //   lineName: `NA`
-    // };
     this.organizeDriversForToday = this.organizeDriversForToday.bind(this);
     this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
   }
@@ -391,60 +367,6 @@ export default class LiveFieldStatus extends React.Component {
                       </tr>
                     );
                   })}
-                  {/* {allLinesBusesInfo.map((lineBusData, index) => {
-                    let lineName = [];
-                    if (currentSession.id == lineBusData.sessionID) {
-                      return (
-                        <React.Fragment key={lineBusData.line_name + index}>
-                          {roundInfoToday.map((round, index) => {
-                            console.log('rd', round.date);
-                            console.log('date', this.state.dateToCompare);
-                            if (!lineName.find(name => round.line_name === name) && (round.date === this.state.dateToCompare)) {
-                              lineName.push(round.line_name);
-                              return (
-                                // this.checkBusID();
-                                <tr key={round.roundID + index}>
-                                  <td className="liveFieldStatusLineName">{round.line_name}</td>
-                                  <td>{round.bus_number}</td>
-                                  <td>{this.currentShift ? `AE-${this.currentShift.vehicleID}` : `NA`}</td>
-                                  <td>
-                                    {`${this.prevShift.startTime} - ${this.prevShift.endTime}`}
-                                    <br />
-                                    {`${this.prevShift.name}`}
-                                  </td>
-                                  <td>
-                                    {`${this.currentShift.startTime} - ${this.currentShift.endTime}`}
-                                    <br />
-                                    {`${this.currentShift.name}`}
-                                  </td>
-                                  <td>
-                                    {`${this.upcomingShift.startTime} - ${this.upcomingShift.endTime}`}
-                                    <br />
-                                    {`${this.upcomingShift.name}`}
-                                  </td>
-                                </tr>
-                              );
-                            } else {
-                              return null;
-                              // if (!lineBusData.activeBuses.length) {
-                              //   return (
-                              //     <tr key={round.roundID + index}>
-                              //       <td className="liveFieldStatusLineName">{lineBusData.line_name}</td>
-                              //       <td>No Bus</td>
-                              //       <td>N/A</td>
-                              //       <td>N/A</td>
-                              //       <td>N/A</td>
-                              //       <td>N/A</td>
-                              //     </tr>
-                              //   );
-                              // }
-                            }
-                          })}
-                        </React.Fragment>
-                      );
-                    }
-                  })
-                  } */}
                 </tbody>
               </table>
             </div>
