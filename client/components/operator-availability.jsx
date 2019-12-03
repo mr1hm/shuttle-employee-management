@@ -225,7 +225,6 @@ class OperatorAvailability extends React.Component {
   }
 
   getAvailablityInfo(sessionId) {
-    console.log(sessionId);
     const data = {
       method: 'POST',
       body: JSON.stringify({
@@ -318,13 +317,6 @@ class OperatorAvailability extends React.Component {
 
     }
   }
-
-  // processSessionSelection(event) {
-  //   event.preventDefault();
-  //   this.setState({
-  //     selectSession: false
-  //   });
-  // }
 
   setEndTime(event) {
     const storedEndTimeIndex = this.timeIndex[this.state.selectedEndTime];
@@ -562,14 +554,14 @@ class OperatorAvailability extends React.Component {
           <div className="d-flex justify-content-center">
             <form onSubmit={this.closeSelectSessionModal}>
               <div className="m-2">
-                <div>Select Session to Display</div>
-                <select name="sessionId" onChange={this.handleFormEntry} defaultValue={this.state.sessionName}>
-                  <option></option>
+                <div className="mb-2" style={{ fontWeight: 'bold' }}>MY SESSIONS</div>
+                <select name="sessionId" onChange={this.handleFormEntry}>
+                  <option>Select Session</option>
                   {this.state.sessionChoices.map((session, index) => (<option key={index} value={session['id']}>{session['name']}</option>))}
                 </select>
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
-                <button className="btn-success mr-2" type='submit' >Close</button>
+                <button className="btn-success mr-2" type='submit'>Close</button>
               </div>
             </form>
           </div>
