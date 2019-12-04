@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import NotificationShift from './trade-notification-shift';
 import SwapConfirmation from './swap-confirmation-modal';
 import SwapConfirmNotification from './swap-confirm-notification';
+import MultipleSelectedShiftsSwap from './multiple-selected-shifts-notification';
 
 class TradeNotification extends React.Component {
   constructor(props) {
@@ -115,23 +116,28 @@ class TradeNotification extends React.Component {
               <h4>Shift Length</h4>
             </div>
           </div>
-          {this.state.newShifts.map(oneShift => {
-            return (
-              <NotificationShift
-                key={oneShift.id}
-                shift_date={oneShift.shift_date}
-                line_name={oneShift.line_name}
-                bus_info_id={oneShift.bus_info_id}
-                start_time={oneShift.start_time}
-                end_time={oneShift.end_time}
-                target_user_id={oneShift.target_user_id}
-                round_id={oneShift.round_id}
-                removeShift={this.removeShift}
-                giveShifttoSelectedDriver={this.giveShifttoSelectedDriver}
-                type={oneShift.type}
-              />
-            );
-          })}
+          {this.state.newShifts.length === 1 ? (
+
+            this.state.newShifts.map(oneShift => {
+              return (
+                <NotificationShift
+                  key={oneShift.id}
+                  shift_date={oneShift.shift_date}
+                  line_name={oneShift.line_name}
+                  bus_info_id={oneShift.bus_info_id}
+                  start_time={oneShift.start_time}
+                  end_time={oneShift.end_time}
+                  target_user_id={oneShift.target_user_id}
+                  round_id={oneShift.round_id}
+                  removeShift={this.removeShift}
+                  giveShifttoSelectedDriver={this.giveShifttoSelectedDriver}
+                  type={oneShift.type}
+                />
+              );
+            })
+          ) : (
+            <MultipleSelectedShiftsSwap shifts={this.state.newShifts} />
+          )}
           <div>
             <SwapConfirmNotification userId={this.props.userId} />
           </div>

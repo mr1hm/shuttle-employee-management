@@ -13,8 +13,13 @@ $target_rounds = $input['target_rounds'];
 
 mysqli_query($conn, "START TRANSACTION");
 
-  $query = "UPDATE `transaction` SET `status` = 'accepted' WHERE `target_round_id` = {$original_rounds['round_id']}";
+foreach ($original_rounds as $round) {
+  $query = "UPDATE `transaction` SET `status` = 'accepted' WHERE `target_round_id` = {$round['round_id']}";
   $result = mysqli_query($conn, $query);
+}
+
+  // $query = "UPDATE `transaction` SET `status` = 'accepted' WHERE `target_round_id` = {$original_rounds['round_id']}";
+  // $result = mysqli_query($conn, $query);
 
 if (!$result) {
   throw new Exception("Sql error" . mysqli_error($conn));
@@ -27,8 +32,12 @@ if (!$result) {
   throw new Exception("Sql error" . mysqli_error($conn));
 }
 
-$query = "UPDATE `round` SET `user_id` = {$target_id} WHERE `id` = {$original_rounds['round_id']}";
-$result = mysqli_query($conn, $query);
+foreach ($original_rounds as $round) {
+  $query = "UPDATE `round` SET `user_id` = {$target_id} WHERE `id` = {$round['round_id']}";
+  $result = mysqli_query($conn, $query);
+}
+// $query = "UPDATE `round` SET `user_id` = {$target_id} WHERE `id` = {$original_rounds['round_id']}";
+// $result = mysqli_query($conn, $query);
 if (!$result) {
   throw new Exception("Sql error" . mysqli_error($conn));
 }

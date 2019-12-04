@@ -12,9 +12,22 @@ if(!$id){
   throw new Exception("Invalid round ID");
 }
 
-$query = "UPDATE `transaction` SET `status` = 'declined' WHERE `round_id`=$id";
-
-$result = mysqli_query($conn, $query);
+if (is_array($id)) {
+  foreach($id as $oneId) {
+    $query = "UPDATE `transaction` SET `status` = 'declined' WHERE `round_id`=$oneId";
+    $result = mysqli_query($conn, $query);
+  }
+  if (!$result) {
+    throw new Exception("Sql error" . mysqli_error($conn));
+  }
+}
+else {
+  $query = "UPDATE `transaction` SET `status` = 'declined' WHERE `round_id`=$id";
+  $result = mysqli_query($conn, $query);
+  if (!$result) {
+    throw new Exception("Sql error" . mysqli_error($conn));
+  }
+}
 
 if(mysqli_affected_rows($conn) < 1){
   throw new Exception('table unaffected');
