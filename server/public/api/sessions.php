@@ -7,7 +7,9 @@ $data = getBodyData();
 
 $sessionQuery = "SELECT 
               id,
-              name
+              name,
+              startDateString,
+              endDateString
               FROM session";
 
 $result = mysqli_query($conn, $sessionQuery);
