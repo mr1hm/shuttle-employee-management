@@ -3,6 +3,7 @@ import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import EditUserModal from './admin-edit-user-modal';
 import SelectSessionModal from './admin-select-session-modal';
+import { getDateString } from '../lib/time-functions';
 
 class AdminOperatorAvailability extends React.Component {
   constructor(props) {
@@ -28,71 +29,14 @@ class AdminOperatorAvailability extends React.Component {
     };
     this.getOperatorDetails = this.getOperatorDetails.bind(this);
     this.getSessions = this.getSessions.bind(this);
-    this.showAddUserModal = this.showAddUserModal.bind(this);
     this.showSelectSessionModal = this.showSelectSessionModal.bind(this);
     this.processSessionSelection = this.processSessionSelection.bind(this);
     this.closeSelectSessionModal = this.closeSelectSessionModal.bind(this);
-    this.addUserToDatabase = this.addUserToDatabase.bind(this);
     this.updateUserInDatabase = this.updateUserInDatabase.bind(this);
     this.handleFormEntry = this.handleFormEntry.bind(this);
     this.editUser = this.editUser.bind(this);
-    this.closeAddUserModal = this.closeAddUserModal.bind(this);
     this.closeEditUserModal = this.closeEditUserModal.bind(this);
     this.closeEditUserModalClearInfo = this.closeEditUserModalClearInfo.bind(this);
-    this.closeAddUserModalClearInfo = this.closeAddUserModalClearInfo.bind(this);
-  }
-
-  addUserToDatabase(event) {
-    event.preventDefault();
-    this.closeAddUserModal();
-    const data = {
-      method: 'POST',
-      body: JSON.stringify({
-        'uci_net_id': this.state.userId,
-        'last_name': this.state.lastName,
-        'first_name': this.state.firstName,
-        'role': this.state.role,
-        'status': this.state.status,
-        'special_route_ok': this.state.specialRouteOK
-      }),
-      headers: { 'Content-Type': 'application/json' }
-    };
-    fetch('/api/add-user.php', data)
-      .then(response => { })
-      .then(data => {
-        this.getOperatorDetails();
-        this.setState({
-          userId: '',
-          lastName: '',
-          firstName: '',
-          role: '',
-          status: '',
-          specialRouteOK: '',
-          minAvailHours: '',
-          availSubmissionDate: ''
-        });
-      })
-      .catch(error => { throw (error); });
-  }
-
-  closeAddUserModal() {
-    this.setState({
-      addUser: false
-    });
-  }
-
-  closeAddUserModalClearInfo() {
-    this.closeAddUserModal();
-    this.setState({
-      userId: '',
-      lastName: '',
-      firstName: '',
-      role: '',
-      status: '',
-      specialRouteOK: '',
-      minAvailHours: '',
-      availSubmissionDate: ''
-    });
   }
 
   closeSelectSessionModal() {
@@ -123,7 +67,6 @@ class AdminOperatorAvailability extends React.Component {
   }
 
   componentDidMount() {
-    this.getOperatorDetails();
     this.getSessions();
   }
 
@@ -137,7 +80,7 @@ class AdminOperatorAvailability extends React.Component {
       status: this.state.operatorDetails[index]['status'],
       specialRouteOK: this.state.operatorDetails[index]['special_route_ok'],
       minAvailHours: this.state.operatorDetails[index]['min_avail_hours'],
-      availSubmissionDate: this.state.operatorDetails[index]['avail_end_date']
+      availSubmissionDate: this.state.operatorDetails[index]['availEndDateString']
     });
     this.showEditUserModal();
   }
@@ -172,10 +115,7 @@ class AdminOperatorAvailability extends React.Component {
       .then(data => {
         this.setState({
           sessionChoices: data
-        }, () => {
-          console.log('sessionChoices after fetch', JSON.stringify(this.state.sessionChoices));
-        }
-        );
+        }, this.setDefaultSession);
       })
       .catch(error => { throw (error); });
   }
@@ -200,9 +140,16 @@ class AdminOperatorAvailability extends React.Component {
     this.getOperatorDetails();
   }
 
-  showAddUserModal() {
-    this.setState({
-      addUser: true
+  setDefaultSession() {
+    var dateToday = new Date();
+    var date = getDateString(dateToday);
+    this.state.sessionChoices.forEach(element => {
+      if (element.startDateString <= date && date <= element.endDateString) {
+        this.setState({
+          sessionId: element.id,
+          sessionName: element.name
+        }, this.getOperatorDetails);
+      }
     });
   }
 
@@ -215,12 +162,6 @@ class AdminOperatorAvailability extends React.Component {
   showEditUserModal() {
     this.setState({
       editUser: true
-    });
-  }
-
-  showParameterModal() {
-    this.setState({
-      parameter: true
     });
   }
 
@@ -256,7 +197,7 @@ class AdminOperatorAvailability extends React.Component {
         'status': this.state.status,
         'special_route_ok': this.state.specialRouteOK,
         'min_avail_hours': this.state.minAvailHours,
-        'avail_end_date': this.state.availSubmissionDate,
+        'availEndDateString': this.state.availSubmissionDate,
         'session_id': this.state.sessionId
       }),
       headers: { 'Content-Type': 'application/json' }
@@ -280,9 +221,12 @@ class AdminOperatorAvailability extends React.Component {
   }
   render() {
     var hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
+    var tableheaderContent = ['Last Name', 'First Name', 'User Id', 'Role', 'Special Route', 'Minimum Hrs', 'Submission Date', 'Submitted', 'Change'];
+
     if (!this.state.operatorDetails) {
-      return <div>No Data Available</div>;
+      return <div>Loading</div>;
     }
+
     return (
       <React.Fragment>
         <div className='nav'>
@@ -295,23 +239,7 @@ class AdminOperatorAvailability extends React.Component {
         <table className= 'mt-4'>
           <thead>
             <tr>
-              <th>User Id</th>
-              <th></th>
-              <th >Last Name</th>
-              <th></th>
-              <th>First Name</th>
-              <th></th>
-              <th>Role</th>
-              <th></th>
-              <th>Special Route</th>
-              <th></th>
-              <th>Minimum Hrs</th>
-              <th></th>
-              <th>Submission Date</th>
-              <th></th>
-              <th>Submitted</th>
-              <th></th>
-              <th>Change</th>
+              {tableheaderContent.map((title, index) => (<th key={index}>{title}</th>))}
             </tr>
           </thead>
           <tbody>
@@ -319,22 +247,14 @@ class AdminOperatorAvailability extends React.Component {
               this.state.operatorDetails.map((operator, index) => {
                 return (
                   <tr key={index} className='pb-2'>
-                    <td className='pb-2'>{operator.uci_net_id}</td>
-                    <td></td>
                     <td className='pb-2'>{operator.last_name}</td>
-                    <td></td>
                     <td className='pb-2'>{operator.first_name}</td>
-                    <td></td>
+                    <td className='pb-2'>{operator.uci_net_id}</td>
                     <td className='pb-2'>{operator.role}</td>
-                    <td></td>
-                    <td className='pb-2'>{operator.special_route_ok}</td>
-                    <td></td>
+                    <td className='pb-2'>{operator.special_route_ok === '1' ? 'yes' : 'no'}</td>
                     <td className='pb-2'>{operator.min_avail_hours}</td>
-                    <td></td>
-                    <td className='pb-2'>{operator.avail_end_date}</td>
-                    <td></td>
+                    <td className='pb-2'>{operator.availEndDateString}</td>
                     <td className='pb-2'>{this.submittedStatus(operator)}</td>
-                    <td></td>
                     <td className='pb-2'>
                       <input onClick={this.editUser} id ={index} value="change" type='button'/>
                     </td>
@@ -344,41 +264,45 @@ class AdminOperatorAvailability extends React.Component {
             }
           </tbody>
         </table>
+
         <EditUserModal showEditUserModal={this.state.editUser}>
           <div className="d-flex justify-content-center">
             <form onSubmit={this.updateUserInDatabase}>
               <div className="mt-5 ml-2 mr-2 mb-2">
-                <div>UCI-ID</div>
+                <div className="editTitle">UCI-ID</div>
                 <div>{this.state.userId}</div>
               </div>
               <div className="m-2">
-                <div>First Name</div>
+                <div className="editTitle">First Name</div>
                 <div>{this.state.firstName}</div>
               </div>
               <div className="m-2">
-                <div>Last Name</div>
+                <div className="editTitle">Last Name</div>
                 <div>{this.state.lastName}</div>
               </div>
               <div className="m-2">
-                <div>Role</div>
+                <div className="editTitle">Role</div>
                 <div>{this.state.role}</div>
               </div>
               <div className="m-2">
-                <div>Minimum Available Hours</div>
-                <select name="minAvailHours" defaultValue={this.state.minAvailHours} onChange={this.handleFormEntry}>{hours.map(index => (<option key={index} value={'' + index}>{index}</option>))}
+                <div className="editTitle">Minimum Available Hours</div>
+                <select name="minAvailHours" defaultValue={this.state.minAvailHours} onChange={this.handleFormEntry}>
+                  <option></option>
+                  {hours.map(index => (<option key={index} value={'' + index}>{index}</option>))}
                 </select>
               </div>
               <div className="m-2">
-                <div>Availability Submission Date</div>
+                <div className="editTitle">Availability Submission Date</div>
                 <input type='text' name="availSubmissionDate" defaultValue={this.state.availSubmissionDate} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
                 <button className="btn-success mr-2" type='submit'>Submit</button>
-                <button className="btn-danger ml-2" type='reset' onClick={this.closeEditUserModalClearInfo} >Cancel</button>
+                <button className="btn-danger ml-2" type='reset' onClick={this.closeEditUserModalClearInfo}>Cancel</button>
               </div>
             </form>
           </div>
         </EditUserModal>
+
         <SelectSessionModal showSelectSessionModal={this.state.selectSession}>
           <div className="d-flex justify-content-center">
             <form onSubmit={this.processSessionSelection}>
@@ -396,6 +320,7 @@ class AdminOperatorAvailability extends React.Component {
             </form>
           </div>
         </SelectSessionModal>
+
       </React.Fragment>
     );
   }

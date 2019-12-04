@@ -3,6 +3,7 @@ import './shifts-week.css';
 import HoursOfOperationWeek from './hours-of-operation-week';
 import ShiftsWeekDay from './shifts-week-day';
 import TopMenuShift from '../../topmenu/topmenu-shift';
+import WeekListItem from './shifts-week-list-item';
 import {
   getDateString,
   adjustUTCSecondsToLocalTimestamp
@@ -41,8 +42,8 @@ class ShiftsWeek extends React.Component {
       .then(response => response.json())
       .then(data => {
         let weekWithShifts = this.generateArrayOfFullWeek(week, data);
+        console.log('data: ', data);
         console.log('week: ', weekWithShifts);
-        console.log('data', data);
         this.setState({
           week: weekWithShifts,
           data: data
@@ -58,8 +59,44 @@ class ShiftsWeek extends React.Component {
       }
     }
     let weekDataArray = Object.values(weekObj);
-    console.log('weekDataArray:', weekDataArray);
     return weekDataArray;
+  }
+  renderShiftList() {
+    return (
+      <table className='table table-striped text-center'>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Line/#</th>
+            <th>Start-End</th>
+            <th>Rounds</th>
+            <th>Shift Hours</th>
+            <th>Post Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            this.state.week.map((day, index) => {
+              const elements = [];
+              const shifts = day.shifts;
+              for (let shiftIndex = 0; shiftIndex < shifts.length; shiftIndex++) {
+                elements.push(
+                  < WeekListItem
+                    dateString={day.round_date}
+                    key={shifts[shiftIndex].roundID}
+                    shifts={shifts[shiftIndex]}
+                    view={this.props.view}
+                    openRouteDetails={this.props.openRouteDetails}
+                  />
+                );
+              }
+              return elements;
+            })
+          }
+        </tbody>
+      </table>
+    );
   }
   componentDidMount() {
     this.initializeWeekData();
@@ -86,8 +123,10 @@ class ShiftsWeek extends React.Component {
               );
             })}
           </div>
+          <div className="weekList">
+            {this.renderShiftList()}
+          </div>
         </div>
-
       </React.Fragment>
     );
   }

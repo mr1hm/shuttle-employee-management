@@ -5,6 +5,7 @@ import SelectAvailabilityModal from './operator-availability-modal';
 import ErrorModal from './operator-error-modal';
 import SubmitModal from './operator-submit-modal';
 import SelectSessionModal from './admin-select-session-modal';
+import { getDateString } from '../lib/time-functions';
 
 class OperatorAvailability extends React.Component {
   constructor(props) {
@@ -20,9 +21,9 @@ class OperatorAvailability extends React.Component {
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
       sessionChoices: [],
-      availabilityInfo: [],
-      // this will eventually come in through props with auth system
-      role: 'operator',
+      availabilityInfo: null,
+      minimumAvailability: null,
+      role: '',
       show: false,
       clear: false,
       submit: false,
@@ -32,8 +33,7 @@ class OperatorAvailability extends React.Component {
       selectedStartTime: null,
       selectedEndTime: null,
       // this will eventually come in through props with auth system
-      userId: 45,
-      // not sure how this will arrive or if this requires logic to address
+      userId: 9,
       sessionId: '',
       sessionName: ''
     };
@@ -53,10 +53,11 @@ class OperatorAvailability extends React.Component {
     this.showSubmitModal = this.showSubmitModal.bind(this);
     this.showSelectSessionModal = this.showSelectSessionModal.bind(this);
     this.closeSelectSessionModal = this.closeSelectSessionModal.bind(this);
-    this.processSessionSelection = this.processSessionSelection.bind(this);
 
     this.getEnteredAvailability = this.getEnteredAvailability.bind(this);
-    this.getAvailablityInfo = this.getAvailablityInfo.bind(this);
+    this.getAvailabilityInfo = this.getAvailabilityInfo.bind(this);
+    this.getEnteredAvailabilityToStart = this.getEnteredAvailabilityToStart.bind(this);
+    this.getAvailabilityInfoToStart = this.getAvailabilityInfoToStart.bind(this);
 
     this.handleFormEntry = this.handleFormEntry.bind(this);
 
@@ -128,15 +129,14 @@ class OperatorAvailability extends React.Component {
     });
   }
 
-  closeSelectSessionModal() {
+  closeSelectSessionModal(event) {
+    event.preventDefault();
     this.setState({
       selectSession: false
     });
   }
 
   componentDidMount() {
-    this.getEnteredAvailability();
-    this.getAvailablityInfo();
     this.getSessions();
   }
 
@@ -202,18 +202,16 @@ class OperatorAvailability extends React.Component {
     }
   }
 
-  getEnteredAvailability() {
-    console.log('inside entered availability: ', this.state.userId);
-    console.log('inside entered availability: ', this.state.sessionId);
+  getEnteredAvailability(sessionId) {
     const data = {
       method: 'POST',
       body: JSON.stringify({
         'user_id': this.state.userId,
-        'session_id': this.state.sessionId
+        'session_id': sessionId
       }),
       headers: { 'Content-Type': 'application/json' }
     };
-    fetch(`/api/operator-entered-availability.php`, data)
+    return fetch(`/api/operator-entered-availability.php`, data)
       .then(response => response.json())
       .then(data => {
         this.setState({
@@ -223,23 +221,59 @@ class OperatorAvailability extends React.Component {
       .catch(error => { throw (error); });
   }
 
-  getAvailablityInfo() {
-    console.log('session id: ', this.state.sessionId);
+  getEnteredAvailabilityToStart() {
     const data = {
       method: 'POST',
       body: JSON.stringify({
+        'user_id': this.state.userId,
         'session_id': this.state.sessionId
       }),
       headers: { 'Content-Type': 'application/json' }
     };
-    fetch(`/api/operator-availability-info.php`, data)
+    return fetch(`/api/operator-entered-availability.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          availability: data
+        });
+      })
+      .catch(error => { throw (error); });
+  }
+
+  getAvailabilityInfo(sessionId) {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'session_id': sessionId,
+        'user_id': this.state.userId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    return fetch(`/api/operator-availability-info.php`, data)
       .then(response => response.json())
       .then(data => {
         this.setState({
           availabilityInfo: data
-        }, () => {
-          console.log('availability info: ', JSON.stringify(this.state.availabilityInfo));
         });
+      })
+      .catch(error => { throw (error); });
+  }
+
+  getAvailabilityInfoToStart() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'session_id': this.state.sessionId,
+        'user_id': this.state.userId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    return fetch(`/api/operator-availability-info.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          availabilityInfo: data
+        }, this.getEnteredAvailabilityToStart);
       })
       .catch(error => { throw (error); });
   }
@@ -256,10 +290,7 @@ class OperatorAvailability extends React.Component {
       .then(data => {
         this.setState({
           sessionChoices: data
-        }, () => {
-          console.log('sessionChoices after fetch', JSON.stringify(this.state.sessionChoices));
-        }
-        );
+        }, this.setDefaultSession);
       })
       .catch(error => { throw (error); });
   }
@@ -276,9 +307,13 @@ class OperatorAvailability extends React.Component {
 
   handleFormEntry(event) {
     var index = event.nativeEvent.target.selectedIndex;
+    var updatedSessionId = event.target.value;
+    var updatedName = event.nativeEvent.target[index].text;
+    this.getAvailabilityInfo(updatedSessionId);
+    this.getEnteredAvailability(updatedSessionId);
     this.setState({
-      sessionName: event.nativeEvent.target[index].text,
-      sessionId: event.target.value
+      sessionName: updatedName,
+      sessionId: updatedSessionId
     });
   }
 
@@ -320,13 +355,17 @@ class OperatorAvailability extends React.Component {
     }
   }
 
-  processSessionSelection(event) {
-    event.preventDefault();
-    this.setState({
-      selectSession: false
+  setDefaultSession() {
+    var dateToday = new Date();
+    var date = getDateString(dateToday);
+    this.state.sessionChoices.forEach(element => {
+      if (element.startDateString <= date && date <= element.endDateString) {
+        this.setState({
+          sessionId: element.id,
+          sessionName: element.name
+        }, this.getAvailabilityInfoToStart);
+      }
     });
-    this.getEnteredAvailability();
-    this.getAvailablityInfo();
   }
 
   setEndTime(event) {
@@ -402,36 +441,40 @@ class OperatorAvailability extends React.Component {
   }
 
   submitOrMessage() {
-    var todaysDate = new Date();
-    var currentTimestamp = Date.parse(todaysDate);
-    var totalAvailability = this.totalEnteredAvailability();
-    var availabilityEndDate = parseInt(this.state.availabilityInfo.avail_end_date);
-    var minimumAvailability;
-    if (this.state.role === 'operator') {
-      minimumAvailability = parseInt(this.state.availabilityInfo.min_operator_hours) * 60;
-    }
-    if (this.state.role === 'operations') {
-      minimumAvailability = parseInt(this.state.availabilityInfo.min_operations_hours) * 60;
-    }
-    if (this.state.role === 'trainer') {
-      minimumAvailability = parseInt(this.state.availabilityInfo.min_trainer_hours) * 60;
-    }
-    if (this.state.role === 'trainee') {
-      minimumAvailability = parseInt(this.state.availabilityInfo.min_trainee_hours) * 60;
-    }
+    if (this.state.availabilityInfo) {
+      var dateToday = new Date();
+      var date = getDateString(dateToday);
 
-    if (currentTimestamp < availabilityEndDate && totalAvailability >= minimumAvailability) {
-      return (
-        <button type="button" className="btn btn-primary btn-sm mr-4" onClick={this.showSubmitModal}>{totalAvailability / 60} / {minimumAvailability / 60} hrs SUBMIT</button>
-      );
-    } if (currentTimestamp < availabilityEndDate && totalAvailability < minimumAvailability) {
-      return (
-        <button type="button" className="btn btn-dark btn-sm mr-4">{totalAvailability / 60} / {minimumAvailability / 60} hrs ENTER MORE</button>
-      );
-    } else {
-      return (
-        <button type="button" className="btn btn-dark btn-sm mr-4">Too late to Submit</button>
-      );
+      var totalAvailability = this.totalEnteredAvailability();
+
+      var minimumAvailability;
+
+      if (this.state.availabilityInfo[0].role === 'operator') {
+        minimumAvailability = parseInt(this.state.availabilityInfo[0].min_operator_hours) * 60;
+      }
+      if (this.state.availabilityInfo[0].role === 'operations') {
+        minimumAvailability = parseInt(this.state.availabilityInfo[0].min_operations_hours) * 60;
+      }
+      if (this.state.availabilityInfo[0].role === 'trainer') {
+        minimumAvailability = parseInt(this.state.availabilityInfo[0].min_trainer_hours) * 60;
+      }
+      if (this.state.availabilityInfo[0].role === 'trainee') {
+        minimumAvailability = parseInt(this.state.availabilityInfo[0].min_trainee_hours) * 60;
+      }
+
+      if (date >= this.state.availabilityInfo[0].availStartDateString && date <= this.state.availabilityInfo[0].availEndDateString && totalAvailability >= minimumAvailability) {
+        return (
+          <button type="button" className="btn btn-primary btn-sm mr-5" onClick={this.showSubmitModal}>{totalAvailability / 60} / {minimumAvailability / 60} hrs SUBMIT</button>
+        );
+      } if (date >= this.state.availabilityInfo[0].availStartDateString && date <= this.state.availabilityInfo[0].availEndDateString && totalAvailability < minimumAvailability) {
+        return (
+          <button type="button" className="btn btn-dark btn-sm mr-4">{totalAvailability / 60} / {minimumAvailability / 60} hrs ENTER MORE</button>
+        );
+      } else {
+        return (
+          <button type="button" className="btn btn-dark btn-sm mr-4">Submission Closed</button>
+        );
+      }
     }
   }
 
@@ -464,7 +507,7 @@ class OperatorAvailability extends React.Component {
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     if (!this.state.availabilityInfo) {
-      return <div>No Data Available</div>;
+      return <div>Loading</div>;
     }
 
     return (
@@ -504,6 +547,7 @@ class OperatorAvailability extends React.Component {
           </table>
           <div style={{ width: '5%' }}></div>
         </div>
+
         <SelectAvailabilityModal day={this.state.day} show={this.state.show} close={this.hideShiftModal} deleteShift={this.deleteShift}>
           <div className="d-flex">
             <div className="mr-2">
@@ -558,17 +602,16 @@ class OperatorAvailability extends React.Component {
 
         <SelectSessionModal showSelectSessionModal={this.state.selectSession}>
           <div className="d-flex justify-content-center">
-            <form onSubmit={this.processSessionSelection}>
+            <form onSubmit={this.closeSelectSessionModal}>
               <div className="m-2">
-                <div>Select Session to Display</div>
-                <select name="sessionId" onChange={this.handleFormEntry} defaultValue={this.state.sessionName}>
-                  <option></option>
+                <div className="mb-2" style={{ fontWeight: 'bold' }}>MY SESSIONS</div>
+                <select name="sessionId" onChange={this.handleFormEntry}>
+                  <option>Select Session</option>
                   {this.state.sessionChoices.map((session, index) => (<option key={index} value={session['id']}>{session['name']}</option>))}
                 </select>
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
-                <button className="btn-success mr-2" type='submit'>Submit</button>
-                <button className="btn-danger ml-2" type='reset' onClick={this.closeSelectSessionModal} >Cancel</button>
+                <button className="btn-success mr-2" type='submit'>Close</button>
               </div>
             </form>
           </div>

@@ -293,7 +293,7 @@ function returnWeekInfoArray(dateString) {
   return weekArray;
 }
 
-export { getWorkingHours, getLocalDateString, getDateString, getZeroPaddedNumber, getUTCYearMonthDateDay, returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { globalDayOfWeek, globalDayOfWeekShort, globalMonth, getWorkingHours, getLocalDateString, getDateString, getZeroPaddedNumber, getUTCYearMonthDateDay, returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
   createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };
