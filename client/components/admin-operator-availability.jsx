@@ -3,6 +3,7 @@ import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import EditUserModal from './admin-edit-user-modal';
 import SelectSessionModal from './admin-select-session-modal';
+import { getDateString } from '../lib/time-functions';
 
 class AdminOperatorAvailability extends React.Component {
   constructor(props) {
@@ -123,7 +124,6 @@ class AdminOperatorAvailability extends React.Component {
   }
 
   componentDidMount() {
-    this.getOperatorDetails();
     this.getSessions();
   }
 
@@ -137,7 +137,7 @@ class AdminOperatorAvailability extends React.Component {
       status: this.state.operatorDetails[index]['status'],
       specialRouteOK: this.state.operatorDetails[index]['special_route_ok'],
       minAvailHours: this.state.operatorDetails[index]['min_avail_hours'],
-      availSubmissionDate: this.state.operatorDetails[index]['avail_end_date']
+      availSubmissionDate: this.state.operatorDetails[index]['availEndDateString']
     });
     this.showEditUserModal();
   }
@@ -172,10 +172,7 @@ class AdminOperatorAvailability extends React.Component {
       .then(data => {
         this.setState({
           sessionChoices: data
-        }, () => {
-          console.log('sessionChoices after fetch', JSON.stringify(this.state.sessionChoices));
-        }
-        );
+        }, this.setDefaultSession);
       })
       .catch(error => { throw (error); });
   }
@@ -198,6 +195,19 @@ class AdminOperatorAvailability extends React.Component {
       selectSession: false
     });
     this.getOperatorDetails();
+  }
+
+  setDefaultSession() {
+    var dateToday = new Date();
+    var date = getDateString(dateToday);
+    this.state.sessionChoices.forEach(element => {
+      if (element.startDateString <= date && date <= element.endDateString) {
+        this.setState({
+          sessionId: element.id,
+          sessionName: element.name
+        }, this.getOperatorDetails);
+      }
+    });
   }
 
   showAddUserModal() {
@@ -256,7 +266,7 @@ class AdminOperatorAvailability extends React.Component {
         'status': this.state.status,
         'special_route_ok': this.state.specialRouteOK,
         'min_avail_hours': this.state.minAvailHours,
-        'avail_end_date': this.state.availSubmissionDate,
+        'availEndDateString': this.state.availSubmissionDate,
         'session_id': this.state.sessionId
       }),
       headers: { 'Content-Type': 'application/json' }
@@ -331,7 +341,7 @@ class AdminOperatorAvailability extends React.Component {
                     <td></td>
                     <td className='pb-2'>{operator.min_avail_hours}</td>
                     <td></td>
-                    <td className='pb-2'>{operator.avail_end_date}</td>
+                    <td className='pb-2'>{operator.availEndDateString}</td>
                     <td></td>
                     <td className='pb-2'>{this.submittedStatus(operator)}</td>
                     <td></td>
@@ -348,28 +358,30 @@ class AdminOperatorAvailability extends React.Component {
           <div className="d-flex justify-content-center">
             <form onSubmit={this.updateUserInDatabase}>
               <div className="mt-5 ml-2 mr-2 mb-2">
-                <div>UCI-ID</div>
+                <div style={{ fontWeight: 'bold' }}>UCI-ID</div>
                 <div>{this.state.userId}</div>
               </div>
               <div className="m-2">
-                <div>First Name</div>
+                <div style={{ fontWeight: 'bold' }}>First Name</div>
                 <div>{this.state.firstName}</div>
               </div>
               <div className="m-2">
-                <div>Last Name</div>
+                <div style={{ fontWeight: 'bold' }}>Last Name</div>
                 <div>{this.state.lastName}</div>
               </div>
               <div className="m-2">
-                <div>Role</div>
+                <div style={{ fontWeight: 'bold' }}>Role</div>
                 <div>{this.state.role}</div>
               </div>
               <div className="m-2">
-                <div>Minimum Available Hours</div>
-                <select name="minAvailHours" defaultValue={this.state.minAvailHours} onChange={this.handleFormEntry}>{hours.map(index => (<option key={index} value={'' + index}>{index}</option>))}
+                <div style={{ fontWeight: 'bold' }}>Minimum Available Hours</div>
+                <select name="minAvailHours" defaultValue={this.state.minAvailHours} onChange={this.handleFormEntry}>
+                  <option></option>
+                  {hours.map(index => (<option key={index} value={'' + index}>{index}</option>))}
                 </select>
               </div>
               <div className="m-2">
-                <div>Availability Submission Date</div>
+                <div style={{ fontWeight: 'bold' }}>Availability Submission Date</div>
                 <input type='text' name="availSubmissionDate" defaultValue={this.state.availSubmissionDate} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">

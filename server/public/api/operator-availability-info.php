@@ -85,6 +85,7 @@ function combineParameters($generalParameters, $individualParameters, $role) {
     }
   }
   $generalParameters[0]['role'] = $role[0]['role'];
+  
   print(json_encode($generalParameters));
 }
 

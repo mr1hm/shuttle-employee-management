@@ -5,14 +5,8 @@ set_exception_handler('error_handler');
 require_once 'db_connection.php';
 
 $data = getBodyData();
-$session = $data['session_id'];
-if ($session === '') {
-  $session = 6;
-} else {
-  $session = intval($session);
-}
+$session = intval($data['session_id']);
 
-// function OK
 function getOperatorsWithSubmittedAvailability($conn, $session) {
   
   $operatorsWithAvailabilityQuery = "SELECT 
@@ -34,16 +28,16 @@ function getOperatorsWithSubmittedAvailability($conn, $session) {
   return $opsAvailabilityData;
 }
 
-// function OK
 function getAllActiveOperators($conn, $session) {
   $allActiveOperatorsQuery = "SELECT 
                               us.uci_net_id,
                               us.first_name, 
-                              us.last_name,                     us.role,
+                              us.last_name,                     
+                              us.role,
                               us.status,
                               us.special_route_ok,
                               osa.min_avail_hours,
-                              osa.avail_end_date,
+                              osa.availEndDateString,
                               osa.session_id
                               FROM user AS us
                               JOIN operator_session_avail AS osa ON us.id = osa.user_id
@@ -58,17 +52,17 @@ function getAllActiveOperators($conn, $session) {
     $row['submitted'] = 0;
     $allActiveData[] = $row;
   }
+
   return $allActiveData;
 }
 
-// function OK
 function getSessionAvailabilityDetails($conn, $session) {
   $sessionQuery = "SELECT
                    min_operator_hours,
                    min_operations_hours,
                    min_trainer_hours,
                    min_trainee_hours,
-                   avail_end_date
+                   availEndDateString
                    FROM session
                    WHERE id = $session";
 
@@ -84,7 +78,6 @@ while ($row = mysqli_fetch_assoc($sessionAvailabilityResult)) {
 return $sessionAvailabilityData;
 }
 
-// function OK
 function submissionStatus($allActiveData, $opsAvailabilityData) {
   for ($index = 0; $index < count($allActiveData); $index++) {
     $flag = 0;
@@ -98,6 +91,7 @@ function submissionStatus($allActiveData, $opsAvailabilityData) {
       $allActiveData[$index]['submitted'] = 1;
     }
   }
+
   return $allActiveData;
 }
 
@@ -114,8 +108,8 @@ function populateDefaults($submissionStatusData, $sessionAvailabilityData) {
          $submissionStatusData[$index]['min_avail_hours'] = $sessionAvailabilityData[0]['min_trainee_hours'];
        }
      }
-     if(!$submissionStatusData[$index]['avail_end_date']) {
-       $submissionStatusData[$index]['avail_end_date'] = $sessionAvailabilityData[0]['avail_end_date'];
+     if(!$submissionStatusData[$index]['availEndDateString']) {
+       $submissionStatusData[$index]['availEndDateString'] = $sessionAvailabilityData[0]['availEndDateString'];
      }
    }
    print(json_encode($submissionStatusData));

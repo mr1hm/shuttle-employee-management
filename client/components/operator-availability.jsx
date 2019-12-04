@@ -5,9 +5,7 @@ import SelectAvailabilityModal from './operator-availability-modal';
 import ErrorModal from './operator-error-modal';
 import SubmitModal from './operator-submit-modal';
 import SelectSessionModal from './admin-select-session-modal';
-import {
-  getDateString
-} from '../lib/time-functions';
+import { getDateString } from '../lib/time-functions';
 
 class OperatorAvailability extends React.Component {
   constructor(props) {
