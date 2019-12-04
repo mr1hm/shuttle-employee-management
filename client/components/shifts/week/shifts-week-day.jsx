@@ -117,8 +117,6 @@ class ShiftsWeekDay extends React.Component {
   calculateWidthOfShift(startTime, endTime, range) {
     const rangeHrs = getWorkingHours(range.start, range.end);
     const shiftHrs = getWorkingHours(startTime, endTime);
-    console.log('shift times: ', startTime, endTime);
-    console.log('shifthrs: ', shiftHrs);
     const ratio = shiftHrs / rangeHrs;
     const width = ratio.toFixed(2) * 100 + '%';
     return width;

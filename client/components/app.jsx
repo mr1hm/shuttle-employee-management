@@ -60,7 +60,7 @@ class App extends React.Component {
             <Route path="/masterscheudle/" render={props => <MasterSchedule {...props} />} />
             <Route exact path={['/', '/welcome/']} render={props => <Welcome {...props} userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId ? this.state.userId : 17} get={this.getUserID} />} />
-            <Route path="/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
+            <Route path="/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek openRouteDetails={this.openRouteDetails} userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/day/shifts-day/:date?" render={props => <ShiftsDay openRouteDetails={this.openRouteDetails} {...props} userId={this.state.userId ? this.state.userId : 17} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
             <Route path={`/shifts/month/shifts-month/:date`} render={props => <ShiftsMonth userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/available/:date?" render={props => <ShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />} />
