@@ -14,7 +14,10 @@ function getOperatorsWithSubmittedAvailability($conn, $session) {
                                      FROM operator_availability AS oa 
                                      INNER JOIN user AS us 
                                      ON us.id = oa.user_id 
-                                     WHERE status = 'active' AND us.role != 'admin' AND us.role != 'super_admin' AND oa.session_id = $session";
+                                     WHERE status = 'active' 
+                                     AND us.role != 'admin' 
+                                     AND us.role != 'super_admin' 
+                                     AND oa.session_id = $session";
 
   $opsAvailabilityResult = mysqli_query($conn, $operatorsWithAvailabilityQuery);
   if (!$opsAvailabilityResult) {
@@ -41,7 +44,11 @@ function getAllActiveOperators($conn, $session) {
                               osa.session_id
                               FROM user AS us
                               JOIN operator_session_avail AS osa ON us.id = osa.user_id
-                              WHERE us.role != 'admin' AND us.role != 'super_admin' AND us.status = 'active' AND osa.session_id = $session";
+                              WHERE us.role != 'admin' 
+                              AND us.role != 'super_admin' 
+                              AND us.status = 'active' 
+                              AND osa.session_id = $session
+                              ORDER BY us.last_name ASC";
 
   $allActiveResult = mysqli_query($conn, $allActiveOperatorsQuery);
   if (!$allActiveResult) {
