@@ -139,16 +139,15 @@ class AdminUserSummary extends React.Component {
     });
   }
 
-  showAddUserModal() {
-    this.setState({
-      addUser: true
-    });
-  }
-
-
   showActiveUsers() {
     this.setState({
       active: true
+    });
+  }
+
+  showAddUserModal() {
+    this.setState({
+      addUser: true
     });
   }
 
@@ -170,8 +169,8 @@ class AdminUserSummary extends React.Component {
     }
   }
 
-
   render() {
+    var tableheaderContent = ['Last Name', 'First Name', 'User Id', 'Role', 'Status', 'Special Route', 'Phone', 'Email', 'Cell Provider', 'Change'];
     if (!this.state.userDetails) {
       return <div>Loading</div>;
     }
@@ -187,25 +186,7 @@ class AdminUserSummary extends React.Component {
         <table className= 'mt-4'>
           <thead>
             <tr>
-              <th>User Id</th>
-              <th></th>
-              <th >Last Name</th>
-              <th></th>
-              <th>First Name</th>
-              <th></th>
-              <th>Role</th>
-              <th></th>
-              <th>Status</th>
-              <th></th>
-              <th>Special Route</th>
-              <th></th>
-              <th>Phone</th>
-              <th></th>
-              <th>Email</th>
-              <th></th>
-              <th>Cell Provider</th>
-              <th></th>
-              <th>Change</th>
+              {tableheaderContent.map((title, index) => (<th key={index}>{title}</th>))}
             </tr>
           </thead>
           <tbody>
@@ -215,24 +196,15 @@ class AdminUserSummary extends React.Component {
                   if (user['status'] === 'active') {
                     return (
                       <tr key={index} className='pb-2'>
-                        <td className='pb-2'>{user.uci_net_id}</td>
-                        <td></td>
                         <td className='pb-2'>{user.last_name}</td>
-                        <td></td>
                         <td className='pb-2'>{user.first_name}</td>
-                        <td></td>
+                        <td className='pb-2'>{user.uci_net_id}</td>
                         <td className='pb-2'>{user.role}</td>
-                        <td></td>
                         <td className='pb-2'>{user.status}</td>
-                        <td></td>
                         <td className='pb-2'>{parseInt(user.special_route_ok) === 1 ? 'yes' : 'no'}</td>
-                        <td></td>
                         <td className='pb-2'>{user.phone}</td>
-                        <td></td>
                         <td className='pb-2'>{user.email}</td>
-                        <td></td>
                         <td className='pb-2'>{user.cell_provider}</td>
-                        <td></td>
                         <td className='pb-2'>
                           <Link to="/myinfo/" id={parseInt(user.id)}><input value="change" type='button'/> </Link>
                         </td>
@@ -242,24 +214,15 @@ class AdminUserSummary extends React.Component {
                 } else {
                   return (
                     <tr key={index} className='pb-2'>
-                      <td className='pb-2'>{user.uci_net_id}</td>
-                      <td></td>
                       <td className='pb-2'>{user.last_name}</td>
-                      <td></td>
                       <td className='pb-2'>{user.first_name}</td>
-                      <td></td>
+                      <td className='pb-2'>{user.uci_net_id}</td>
                       <td className='pb-2'>{user.role}</td>
-                      <td></td>
                       <td className='pb-2'>{user.status}</td>
-                      <td></td>
                       <td className='pb-2'>{parseInt(user.special_route_ok) === 1 ? 'yes' : 'no'}</td>
-                      <td></td>
                       <td className='pb-2'>{user.phone}</td>
-                      <td></td>
                       <td className='pb-2'>{user.email}</td>
-                      <td></td>
                       <td className='pb-2'>{user.cell_provider}</td>
-                      <td></td>
                       <td className='pb-2'>
                         <Link to="/myinfo/" id={parseInt(user.id)}><input value="change" type='button'/> </Link>
                       </td>
@@ -270,6 +233,7 @@ class AdminUserSummary extends React.Component {
             }
           </tbody>
         </table>
+
         <AddUserModal showAddUserModal={this.state.addUser}>
           <div className="d-flex justify-content-center">
             <form onSubmit={this.addUserToDatabase}>
@@ -332,6 +296,7 @@ class AdminUserSummary extends React.Component {
             </form>
           </div>
         </AddUserModal>
+
       </React.Fragment>
     );
   }
