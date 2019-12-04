@@ -23,7 +23,7 @@ class OperatorAvailability extends React.Component {
         'Saturday': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
       sessionChoices: [],
-      availabilityInfo: [],
+      availabilityInfo: null,
       minimumAvailability: null,
       role: '',
       show: false,
@@ -55,10 +55,11 @@ class OperatorAvailability extends React.Component {
     this.showSubmitModal = this.showSubmitModal.bind(this);
     this.showSelectSessionModal = this.showSelectSessionModal.bind(this);
     this.closeSelectSessionModal = this.closeSelectSessionModal.bind(this);
-    // this.processSessionSelection = this.processSessionSelection.bind(this);
 
     this.getEnteredAvailability = this.getEnteredAvailability.bind(this);
-    this.getAvailablityInfo = this.getAvailablityInfo.bind(this);
+    this.getAvailabilityInfo = this.getAvailabilityInfo.bind(this);
+    this.getEnteredAvailabilityToStart = this.getEnteredAvailabilityToStart.bind(this);
+    this.getAvailabilityInfoToStart = this.getAvailabilityInfoToStart.bind(this);
 
     this.handleFormEntry = this.handleFormEntry.bind(this);
 
@@ -138,13 +139,6 @@ class OperatorAvailability extends React.Component {
   }
 
   componentDidMount() {
-    var sessionId = this.state.sessionId;
-    Promise.all([this.getEnteredAvailability(sessionId), this.getAvailablityInfo(sessionId)]).then(results => {
-      this.setState({
-        availability: results[0],
-        availabilityInfo: results[1]
-      });
-    });
     this.getSessions();
   }
 
@@ -211,7 +205,6 @@ class OperatorAvailability extends React.Component {
   }
 
   getEnteredAvailability(sessionId) {
-    console.log(sessionId);
     const data = {
       method: 'POST',
       body: JSON.stringify({
@@ -221,10 +214,35 @@ class OperatorAvailability extends React.Component {
       headers: { 'Content-Type': 'application/json' }
     };
     return fetch(`/api/operator-entered-availability.php`, data)
-      .then(response => response.json());
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          availability: data
+        });
+      })
+      .catch(error => { throw (error); });
   }
 
-  getAvailablityInfo(sessionId) {
+  getEnteredAvailabilityToStart() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'user_id': this.state.userId,
+        'session_id': this.state.sessionId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    return fetch(`/api/operator-entered-availability.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          availability: data
+        });
+      })
+      .catch(error => { throw (error); });
+  }
+
+  getAvailabilityInfo(sessionId) {
     const data = {
       method: 'POST',
       body: JSON.stringify({
@@ -234,7 +252,32 @@ class OperatorAvailability extends React.Component {
       headers: { 'Content-Type': 'application/json' }
     };
     return fetch(`/api/operator-availability-info.php`, data)
-      .then(response => response.json());
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          availabilityInfo: data
+        });
+      })
+      .catch(error => { throw (error); });
+  }
+
+  getAvailabilityInfoToStart() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'session_id': this.state.sessionId,
+        'user_id': this.state.userId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    return fetch(`/api/operator-availability-info.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          availabilityInfo: data
+        }, this.getEnteredAvailabilityToStart);
+      })
+      .catch(error => { throw (error); });
   }
 
   getSessions() {
@@ -268,12 +311,8 @@ class OperatorAvailability extends React.Component {
     var index = event.nativeEvent.target.selectedIndex;
     var updatedSessionId = event.target.value;
     var updatedName = event.nativeEvent.target[index].text;
-    Promise.all([this.getEnteredAvailability(updatedSessionId), this.getAvailablityInfo(updatedSessionId)]).then(results => {
-      this.setState({
-        availability: results[0],
-        availabilityInfo: results[1]
-      });
-    });
+    this.getAvailabilityInfo(updatedSessionId);
+    this.getEnteredAvailability(updatedSessionId);
     this.setState({
       sessionName: updatedName,
       sessionId: updatedSessionId
@@ -326,7 +365,7 @@ class OperatorAvailability extends React.Component {
         this.setState({
           sessionId: element.id,
           sessionName: element.name
-        });
+        }, this.getAvailabilityInfoToStart);
       }
     });
   }
@@ -404,9 +443,9 @@ class OperatorAvailability extends React.Component {
   }
 
   submitOrMessage() {
-    if (this.state.availabilityInfo.length) {
-      var todaysDate = new Date();
-      var currentTimestamp = Date.parse(todaysDate);
+    if (this.state.availabilityInfo) {
+      var dateToday = new Date();
+      var date = getDateString(dateToday);
 
       var totalAvailability = this.totalEnteredAvailability();
 
@@ -425,11 +464,11 @@ class OperatorAvailability extends React.Component {
         minimumAvailability = parseInt(this.state.availabilityInfo[0].min_trainee_hours) * 60;
       }
 
-      if (currentTimestamp >= parseInt(this.state.availabilityInfo[0].avail_start_date) && currentTimestamp <= parseInt(this.state.availabilityInfo[0].avail_end_date) && totalAvailability >= minimumAvailability) {
+      if (date >= this.state.availabilityInfo[0].availStartDateString && date <= this.state.availabilityInfo[0].availEndDateString && totalAvailability >= minimumAvailability) {
         return (
           <button type="button" className="btn btn-primary btn-sm mr-5" onClick={this.showSubmitModal}>{totalAvailability / 60} / {minimumAvailability / 60} hrs SUBMIT</button>
         );
-      } if (currentTimestamp >= parseInt(this.state.availabilityInfo[0].avail_start_date) && currentTimestamp <= parseInt(this.state.availabilityInfo[0].avail_end_date) && totalAvailability < minimumAvailability) {
+      } if (date >= this.state.availabilityInfo[0].availStartDateString && date <= this.state.availabilityInfo[0].availEndDateString && totalAvailability < minimumAvailability) {
         return (
           <button type="button" className="btn btn-dark btn-sm mr-4">{totalAvailability / 60} / {minimumAvailability / 60} hrs ENTER MORE</button>
         );
@@ -469,7 +508,7 @@ class OperatorAvailability extends React.Component {
   render() {
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-    if (!this.state.availabilityInfo.length) {
+    if (!this.state.availabilityInfo) {
       return <div>Loading</div>;
     }
 

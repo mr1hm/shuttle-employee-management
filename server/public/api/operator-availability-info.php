@@ -9,8 +9,8 @@ $userId = intval($data['user_id']);
 
 function getGeneralParameters($conn, $sessionId) {
   $generalParametersQuery = "SELECT
-                             avail_start_date,
-                             avail_end_date,
+                             availStartDateString,
+                             availEndDateString,
                              min_operator_hours,
                              min_operations_hours,
                              min_trainer_hours,
@@ -53,7 +53,7 @@ $result = mysqli_query($conn, $roleQuery);
 function getIndividualParameters($conn, $userId, $sessionId) {
   $individualParametersQuery = "SELECT
                                 min_avail_hours,
-                                avail_end_date
+                                availEndDateString
                                 FROM 
                                 operator_session_avail
                                 WHERE
@@ -77,15 +77,14 @@ function combineParameters($generalParameters, $individualParameters, $role) {
   $roleDetails = ["operator" => "min_operator_hours", "operations" => "min_operator_hours", "trainer" => "min_trainer_hours", "trainee" => "minimum_trainee_hours"];
   $roleType = $role[0]['role'];
   if($individualParameters) {
-    if ($individualParameters[0]['avail_end_date']) {
-      $generalParameters[0]['avail_end_date'] = $individualParameters[0]['avail_end_date'];
+    if ($individualParameters[0]['availEndDateString']) {
+      $generalParameters[0]['availEndDateString'] = $individualParameters[0]['availEndDateString'];
     }
     if ($individualParameters[0]['min_avail_hours']) {
       $generalParameters[0][$roleDetails[$roleType]] = $individualParameters[0]['min_avail_hours'];
     }
   }
   $generalParameters[0]['role'] = $role[0]['role'];
-
   print(json_encode($generalParameters));
 }
 
