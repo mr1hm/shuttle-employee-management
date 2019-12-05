@@ -3,6 +3,38 @@ require_once(__DIR__.'/start_up.php');
 require_once(__DIR__.'/../config/auth.php');
 require_once(ENCRYPT);
 
+// Remove sensitive data from user before sending to client
+function cleanUser(&$user) {
+  unset($user['password']);
+  unset($user['userId']);
+}
+
+function getRequestUser() {
+  $user = null;
+
+  if(isset($_SESSION['user'])) {
+      $user = getUserFromSession();
+  } else if(isset($_SERVER[AUTH_HEADER])) {
+      $user = getUserFromToken($_SERVER[AUTH_HEADER]);
+  }
+
+  return $user;
+}
+
+// If permitted roles is left empty a user with any role may access
+// Otherwise user role must exist in permitted roles to access
+function userHasPermission($user = null, $permittedRoles = []) {
+  if(!$user || !isset($user['roles']) || !is_array($user['roles'])){
+    return false;
+  }
+
+  if((!count($permittedRoles) && count($user['roles'])) || !empty(array_intersect($permittedRoles, $user['roles']))) {
+    return true;
+  }
+
+  return false;
+}
+
 function login($email, $password) {
   $loginError = 'Invalid email or password';
   $user = getUserByEmail($email, $loginError);
@@ -16,19 +48,39 @@ function login($email, $password) {
   return $user;
 }
 
+function getUserFromToken($token = null) {
+  if(!$token) return null;
+
+  $userData = decrypt($token);
+
+  return getUserById($userData['userId']);
+}
+
+function getUserFromSession() {
+  if(!isset($_SESSION['user'])) {
+    return null;
+  }
+
+  return getUserById($_SESSION['user']['userId']);
+}
+
 function getUserByEmail($email, $errorMsg) {
-  return getUser('email=?', $email, $errorMsg);
+  return getUserFromDb('email=?', $email, $errorMsg);
+}
+
+function getUserById($id) {
+  return getUserFromDb('u.id=?', $id);
 }
 
 function getUserByUciNetId($netId) {
-  $user = getUser('uci_net_id=?', $netId);
+  $user = getUserFromDb('uci_net_id=?', $netId);
 
   unset($user['password']);
   
   return $user;
 }
 
-function getUser($where, $value, $errorMsg = 'Not Authorized') {
+function getUserFromDb($where, $value, $errorMsg = 'Not Authorized') {
   global $mysqli;
 
   $stmt = $mysqli->prepare(buildQuery($where));
@@ -54,19 +106,19 @@ function getUser($where, $value, $errorMsg = 'Not Authorized') {
 }
 
 function buildQuery($where) {
-  return "SELECT uci_net_id AS uciNetId, `password`, email, CONCAT(first_name, ' ', last_name) AS `name`, CONCAT('[', GROUP_CONCAT('\"', r.mid, '\"'), ']') AS roles
+  return "SELECT u.id AS userId, uci_net_id AS uciNetId, `password`, email, CONCAT(first_name, ' ', last_name) AS `name`, CONCAT('[', GROUP_CONCAT('\"', r.mid, '\"'), ']') AS roles
     FROM `user` AS u
     LEFT JOIN user_roles as ur
     ON u.id=ur.user_id
     LEFT JOIN roles AS r
     ON ur.role_id=r.id
     WHERE $where
-    GROUP BY uciNetId, `password`, name, email";
+    GROUP BY userId, uciNetId, `password`, name, email";
 }
 
 function buildUserSessionData($user) {
   return [
-    'uciNetId' => $user['uciNetId'],
+    'userId' => $user['userId'],
     'ts' => time()
   ];
 }
