@@ -1,5 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import auth from '../hoc/auth';
 import MyInfo from './myinfo/myinfo';
 import ShiftsWeek from './shifts/week/shifts-week';
 import ShiftsDay from './shifts/day/shifts-day';
@@ -50,7 +51,17 @@ class App extends React.Component {
   openRouteDetails(id, date) {
     this.setState({ shiftId: id, date: date });
   }
+
   render() {
+    return (
+      <Switch>
+        <Route exact path={['/', '/login']} component={auth(Login, '/welcome', true)} />
+        <Route path="/welcome" component={auth(Welcome)}/>
+      </Switch>
+    );
+  }
+
+  renderOld() {
     const userStateId = parseInt(this.state.userId);
     if (this.state.userLogin === true) {
       return (
@@ -81,7 +92,6 @@ class App extends React.Component {
           <Switch>
             <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
             <Route path="/masterschedule/" render={props => <MasterSchedule {...props} />} />
-            <Route exact path={['/', '/login/']} render={props => <Login {...props} onClick={this.setLoginProps} onChange={this.getUserID} />} />
             <Route path="/welcome/" render={props => <Welcome {...props} />}/>
             <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId} />}/>
             <Route path = "/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting} />}/>

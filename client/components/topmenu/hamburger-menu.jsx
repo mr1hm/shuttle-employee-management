@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import './hamburger-menu.css';
@@ -20,18 +21,23 @@ class HamburgerMenu extends React.Component {
     this.getNotifications();
   }
   getNotifications() {
-    const ID = this.props.userId ? this.props.userId : 17;
-    fetch(`/api/get-notifications.php?id=${ID}`)
-      .then(response => response.json())
-      .then(shiftsArrayOfObjects => {
-        this.setState({
-          notificationCount: parseInt(shiftsArrayOfObjects.length)
-        });
-      })
-      .catch(error => console.error('Fetch failed', error));
+    const { userId } = this.props;
+
+    if (userId) {
+      fetch(`/api/get-notifications.php?id=${userId}`)
+        .then(response => response.json())
+        .then(shiftsArrayOfObjects => {
+          console.log('shiftsArrayOfObjects:', shiftsArrayOfObjects);
+          this.setState({
+            notificationCount: parseInt(shiftsArrayOfObjects.length)
+          });
+        })
+        .catch(error => console.error('Fetch failed', error));
+    }
   }
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.notificationCount !== this.props.notificationCount) {
+    if (prevProps.notificationCount !== this.props.notificationCount ||
+      prevProps.userId !== this.props.userId) {
       this.getNotifications();
     }
   }
@@ -62,4 +68,12 @@ class HamburgerMenu extends React.Component {
     );
   }
 }
-export default HamburgerMenu;
+
+function mapStateToProps(state) {
+  console.log('State:', state);
+  return {
+    userId: state.user.uciNetId
+  };
+}
+
+export default connect(mapStateToProps)(HamburgerMenu);

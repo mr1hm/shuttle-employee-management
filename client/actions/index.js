@@ -1,21 +1,46 @@
+import axios from '../lib/axios';
 import types from './types';
-import { formatPostData } from '../lib/redux_functions';
+import { throwApiError } from '../lib/redux_functions';
+
+export const onLoadCheckAuth = async dispatch => {
+  const token = localStorage.getItem('uciToken') || null;
+  if (document.cookie.indexOf('PHPSESSID') !== -1 || token) {
+    dispatch({ type: types.TEMP_LOGIN });
+
+    const headers = {};
+
+    if (token) {
+      headers['X-Access-Token'] = token;
+    }
+
+    const { data } = await axios.get('/api/on_load_auth_check.php', { headers });
+
+    if (data) {
+      dispatch({
+        type: types.USER_LOGIN,
+        user: data
+      });
+    } else {
+      dispatch({
+        type: types.USER_LOGOUT
+      });
+    }
+  }
+};
 
 export const userLogin = credentials => async dispatch => {
   try {
-    const postData = formatPostData(credentials);
+    const { data: { token = null, ...user } } = await axios.post('/api/login-page.php', credentials);
 
-    const resp = await fetch('/api/login-page.php', {
-      method: 'post',
-      body: postData
-    });
-    const user = await resp.json();
+    if (token) {
+      localStorage.setItem('uciToken', token);
+    }
 
     dispatch({
       type: types.USER_LOGIN,
       user
     });
   } catch (error) {
-    return error;
+    throwApiError(error, 'Error logging in');
   }
 };
