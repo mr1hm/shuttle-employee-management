@@ -24,10 +24,9 @@ class HamburgerMenu extends React.Component {
     const { userId } = this.props;
 
     if (userId) {
-      fetch(`/api/get-notifications.php?id=${userId}`)
+      fetch(`/api/get-notifications.php`)
         .then(response => response.json())
         .then(shiftsArrayOfObjects => {
-          console.log('shiftsArrayOfObjects:', shiftsArrayOfObjects);
           this.setState({
             notificationCount: parseInt(shiftsArrayOfObjects.length)
           });

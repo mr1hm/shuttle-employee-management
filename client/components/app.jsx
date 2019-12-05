@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import auth from '../hoc/auth';
+import * as auth from '../hoc/auth_config';
 import MyInfo from './myinfo/myinfo';
 import ShiftsWeek from './shifts/week/shifts-week';
 import ShiftsDay from './shifts/day/shifts-day';
@@ -55,8 +55,8 @@ class App extends React.Component {
   render() {
     return (
       <Switch>
-        <Route exact path={['/', '/login']} component={auth(Login, '/welcome', true)} />
-        <Route path="/welcome" component={auth(Welcome)}/>
+        <Route exact path={['/', '/login']} component={auth.all(Login, '/welcome', true)} />
+        <Route path="/welcome" component={auth.all(Welcome)}/>
       </Switch>
     );
   }
