@@ -12,7 +12,6 @@ class Round extends React.Component {
     this.toggleSelectShift = this.toggleSelectShift.bind(this);
   }
   toggleSelectShift() {
-
     this.setState({ clicked: !this.state.clicked });
     const { id } = this.state;
     this.props.selectShift(id);
