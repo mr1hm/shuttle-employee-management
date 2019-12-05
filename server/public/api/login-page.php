@@ -1,7 +1,9 @@
 <?php
-  require_once('start_up.php');
+  require_once('../../lib/start_up.php');
+  require_once(AUTH);
 
-  $error_msg = 'Email password combination do not match';
+  $rememberMe = false;
+
   $errors = [];
 
   if(isset($_POST['email'])) {
@@ -20,47 +22,19 @@
     throw new ApiError(['errors' => $errors], 422);
   }
 
-  $stmt = $mysqli->prepare('
-    SELECT uci_net_id AS uciNetId, `password`, email, CONCAT(first_name, " ", last_name) AS `name`, CONCAT("[", GROUP_CONCAT(JSON_OBJECT("mid", r.mid, "name", r.display_name)), "]") AS roles
-    FROM `user` AS u
-    LEFT JOIN user_roles as ur
-    ON u.id=ur.user_id
-    LEFT JOIN roles AS r
-    ON ur.role_id=r.id
-    WHERE email=?
-    GROUP BY uciNetId, `password`, name, email
-  ');
-
-  if(!$stmt) {
-    throw new ApiError(null, 500, $mysqli->error);
+  if(isset($_POST['rememberMe'])) {
+    $rememberMe = $_POST['rememberMe'] === 'true';
   }
 
-  $stmt->bind_param('s', $email);
-  $stmt->execute();
-
-  $result = $stmt->get_result();
-
-  if(!$result->num_rows) {
-    throw new ApiError(null, 401, $error_msg);
-  }
-
-  $user = $result->fetch_assoc();
-
-  $password_match = password_verify($password, $user['password']);
-
-  if(!$password_match) {
-    throw new ApiError(null, 401, $error_msg);
-  }
-
-  $user['roles'] = $roles = json_decode($user['roles'], 1);
-
-  if(count($roles) === 1 && $roles[0]['mid'] === null) {
-    $user['roles'] = [];
-  }
+  $user = login($email, $password);
 
   unset($user['password']);
 
-  $SESSION['user'] = $user;
+  $_SESSION['user'] = buildUserSessionData($user);
 
-  send($user, 201);
+  if($rememberMe) {
+    $user['token'] = encrypt($_SESSION['user']);
+  }
+
+  send($user);
 ?>
