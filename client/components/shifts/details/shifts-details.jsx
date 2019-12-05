@@ -63,7 +63,7 @@ class ShiftsDetails extends React.Component {
     } else if (checkedRounds.length === 0) {
       checkedRounds.push(id);
       this.setState({ checkedRounds: checkedRounds });
-    } else if (checkedRounds.includes(idBeforeGivenId) || checkedRounds.includes(idAfterGivenId) && checkedRounds.length !== 0) {
+    } else if (checkedRounds.includes(idBeforeGivenId) || checkedRounds.includes(idAfterGivenId)) {
       checkedRounds.push(id);
       this.setState({ checkedRounds: checkedRounds });
     } else {
@@ -193,6 +193,7 @@ class ShiftsDetails extends React.Component {
                         startTime={shift.start_time}
                         endTime={shift.end_time}
                         selected={this.state.selectAll}
+                        checkedRounds={this.state.checkedRounds}
                       />
                     );
                   })}

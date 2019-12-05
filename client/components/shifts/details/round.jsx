@@ -12,9 +12,17 @@ class Round extends React.Component {
     this.toggleSelectShift = this.toggleSelectShift.bind(this);
   }
   toggleSelectShift() {
-    this.setState({ clicked: !this.state.clicked });
     const { id } = this.state;
-    this.props.selectShift(id);
+    const idInt = parseInt(id);
+    const idBeforeGivenId = JSON.stringify(idInt - 1);
+    const idAfterGivenId = JSON.stringify(idInt + 1);
+    const alreadySelectedIds = this.props.checkedRounds;
+    if (alreadySelectedIds.includes(idBeforeGivenId) || alreadySelectedIds.includes(idAfterGivenId) || alreadySelectedIds.length === 0 || alreadySelectedIds.includes(id)) {
+      this.setState({ clicked: !this.state.clicked });
+      this.props.selectShift(id);
+    } else {
+      this.props.selectShift(id);
+    }
   }
   componentDidUpdate(prevProps, prevState) {
   }
