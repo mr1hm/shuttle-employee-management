@@ -9,7 +9,6 @@ export default class LiveFieldStatus extends React.Component {
       allLinesBusesInfo: [],
       allSessionsInfo: [],
       roundInfoToday: [],
-      driversForToday: [],
       currentLines: null,
       currentBuses: null,
       currentSession: null,
@@ -20,11 +19,12 @@ export default class LiveFieldStatus extends React.Component {
       currentTime: null,
       driverNameAndVehicleID: null,
       driverName: null,
-      vehicleID: null
+      vehicleID: null,
+      allShifts: []
     };
-    this.allShifts = [];
-    this.organizeDriversForToday = this.organizeDriversForToday.bind(this);
-    this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
+    this.getAllData = this.getAllData.bind(this);
+    this.findCurrentShift = this.findCurrentShift.bind(this);
+    this.getCurrentSession = this.getCurrentSession.bind(this);
   }
 
   componentDidMount() {
@@ -73,7 +73,26 @@ export default class LiveFieldStatus extends React.Component {
     });
   }
 
+  formatTime(militaryTime) {
+    let hh = getZeroPaddedNumber(new Date().getHours());
+    let mm = getZeroPaddedNumber(new Date().getMinutes());
+    let time = hh + '' + mm;
+    let currentTime = parseInt(time);
+    let timeToCompare = parseInt(militaryTime);
+    let timeArr = militaryTime.split('');
+    timeArr.splice(-2, 0, ':');
+    let formattedTime = timeArr.join('');
+    if (timeToCompare < 1200) {
+      formattedTime += ' AM';
+    } else if (timeToCompare >= 1200) {
+      formattedTime += ' PM';
+    }
+    return formattedTime;
+  }
+
   getCurrentSession() {
+    const { allSessionsInfo } = this.state;
+    const { dateToCompare } = this.state;
     allSessionsInfo.forEach(session => {
       let yearToCompare = dateToCompare.slice(0, 4);
       let monthToCompare = dateToCompare.slice(5, 7);
@@ -87,7 +106,7 @@ export default class LiveFieldStatus extends React.Component {
       const compareStartDates = parseInt(currentDateTotal) > parseInt(compareSessionStartDate);
       const compareEndDates = parseInt(currentDateTotal) < parseInt(compareSessionEndDate);
 
-      if (compareStartDates && compareEndDates) this.setState({ currentSession: session });
+      if (compareStartDates && compareEndDates) this.setState({ currentSession: session }, this.findCurrentShift);
     });
   }
 
@@ -98,157 +117,66 @@ export default class LiveFieldStatus extends React.Component {
     let mm = getZeroPaddedNumber(new Date().getMinutes());
     let time = hh + '' + mm;
     let currentTime = parseInt(time);
-    console.log(currentTime);
-    const currentBusID = roundInfoToday.filter(round => round.busID === id);
-    console.log(currentBusID);
-    for (let i = 0; i < currentBusID.length; ++i) {
-      let busNumber = [];
-      let lineName = [];
-      if (currentTime >= currentBusID[i].shifts[0] && currentTime <= currentBusID[i].shifts[1] && currentBusID[i].line_name !== null) {
-        busNumber.push(currentBusID[i].bus_number);
-        lineName.push(currentBusID[i].line_name);
-
-        let timeArr = currentBusID[i].shifts[0].split('');
-        let timeArr2 = currentBusID[i].shifts[1].split('');
-        timeArr.splice(-2, 0, ':');
-        timeArr2.splice(-2, 0, ':');
-        let formattedStartTime = timeArr.join('');
-        let formattedEndTime = timeArr2.join('');
-
-        this.allShifts.push(
-          {
-            prevShift: {
-              name: currentBusID[i - 1] ? `${currentBusID[i - 1].first_name} ${currentBusID[i - 1].last_name}` : `NA`,
-              startTime: currentBusID[i - 1] ? `${currentBusID[i - 1].shifts[0][0]}${currentBusID[i - 1].shifts[0][1]}:${currentBusID[i - 1].shifts[0][2]}${currentBusID[i - 1].shifts[0][3]}` : `NA`,
-              endTime: currentBusID[i - 1] ? `${currentBusID[i - 1].shifts[1][0]}${currentBusID[i - 1].shifts[1][1]}:${currentBusID[i - 1].shifts[1][2]}${currentBusID[i - 1].shifts[1][3]}` : `NA`,
-              vehicleID: currentBusID[i - 1] ? currentBusID[i - 1].vehicle_id : `NA`,
-              busNumber: currentBusID[i - 1] ? currentBusID[i - 1].bus_number : `NA`,
-              lineName: currentBusID[i - 1] ? currentBusID[i - 1].line_name : `NA`,
-              busID: currentBusID[i - 1] ? currentBusID[i - 1].busID : `NA`
-            },
-            currentShift: {
-              name: `${currentBusID[i].first_name} ${currentBusID[i].last_name}`,
-              startTime: `${formattedStartTime}`,
-              endTime: `${formattedEndTime}`,
-              vehicleID: currentBusID[i].vehicle_id,
-              busNumber: currentBusID[i].bus_number,
-              lineName: currentBusID[i].line_name,
-              busID: currentBusID[i].busID
-            },
-            upcomingShift: {
-              name: currentBusID[i + 1] ? currentBusID[i + 1].first_name + ' ' + currentBusID[i + 1].last_name : `NA`,
-              startTime: currentBusID[i + 1] ? `${currentBusID[i + 1].shifts[0][0]}${currentBusID[i + 1].shifts[0][1]}:${currentBusID[i + 1].shifts[0][2]}${currentBusID[i].shifts[0][3]}` : `NA`,
-              endTime: currentBusID[i + 1] ? `${currentBusID[i + 1].shifts[1][0]}${currentBusID[i + 1].shifts[1][1]}:${currentBusID[i + 1].shifts[1][2]}${currentBusID[i].shifts[1][3]}` : `NA`,
-              vehicleID: currentBusID[i + 1] ? currentBusID[i + 1].vehicle_id : `NA`,
-              busNumber: currentBusID[i + 1] ? currentBusID[i + 1].bus_number : `NA`,
-              lineName: currentBusID[i + 1] ? currentBusID[i + 1].line_name : `NA`,
-              busID: currentBusID[i + 1] ? currentBusID[i + 1].busID : `NA`
-            }
-          });
-        console.log(this.allShifts);
-        break;
-      }
-    }
-  }
-
-  organizeDriversForToday() {
-    this.checkBusID();
-    const { roundInfoToday, allSessionsInfo, dateToCompare } = this.state;
-    let userID = '';
-    let driversForToday = [];
-    let timeConverted = [];
-    let roundID = null;
+    const allShifts = [];
     for (let i = 0; i < roundInfoToday.length; ++i) {
-      let driver = driversForToday.find(driver => driver.userID === userID);
-      if (!driver) {
-        let driverInfo = { shifts: [], formattedShifts: [] };
-        if (!roundInfoToday[i].nickname) {
-          driverInfo.name = roundInfoToday[i].first_name + ' ' + roundInfoToday[i].last_name;
-        } else {
-          driverInfo.name = roundInfoToday[i].first_name + ` ${roundInfoToday[i].nickname} ` + roundInfoToday[i].last_name;
-        }
-        driverInfo.userID = roundInfoToday[i].userID;
-        driverInfo.busID = roundInfoToday[i].busID;
-        driverInfo.specialDriver = roundInfoToday[i].special_route_ok;
-        driverInfo.sessionID = roundInfoToday[i].session_id;
-        driverInfo.date = roundInfoToday[i].date;
-        driverInfo.busNumber = roundInfoToday[i].bus_number;
-        driverInfo.vehicleID = roundInfoToday[i].vehicle_id;
-        driverInfo.roundID = roundInfoToday[i].roundID;
-        driverInfo.shifts.push(roundInfoToday[i].shifts);
-        driversForToday.push(driverInfo);
-
-        roundInfoToday[i].shifts.forEach(time => {
-          if (time.length === 3) {
-            let formattedTime = time[0] + time[1] + ':' + time[2] + time[3];
-            console.log(formattedTime);
-            timeConverted.push(formattedTime);
-            userID = roundInfoToday[i].userID;
-          } else if (time.length === 4) {
-            let formattedTime = time[0] + time[1] + ':' + time[2] + time[3];
-            console.log(formattedTime);
-            timeConverted.push(formattedTime);
-            userID = roundInfoToday[i].userID;
-          }
-          if (timeConverted.length === 2) {
-            driverInfo.formattedShifts.push(timeConverted);
-            timeConverted = [];
-          }
-        });
-      } else {
-        driver.shifts.push(roundInfoToday[i].shifts);
-        for (let z = 0; z < roundInfoToday[i].shifts.length; ++z) {
-          let splitTime = roundInfoToday[i].shifts[z].split('');
-          splitTime.splice(-2, 0, ':');
-          let formattedTime = splitTime.join('');
-          timeConverted.push(formattedTime);
-        }
-        driver.formattedShifts.push(timeConverted);
-        timeConverted = [];
-        userID = roundInfoToday[i].userID;
+      for (let z = 0; z < roundInfoToday[i].shifts.length; ++z) {
+        const driver = roundInfoToday[i];
+        const startTime = parseInt(roundInfoToday[i].shifts[z].start);
+        const endTime = parseInt(roundInfoToday[i].shifts[z].end);
+        const compareStartTime = currentTime >= startTime;
+        const compareEndTime = currentTime <= endTime;
+        if (compareStartTime && compareEndTime) {
+          allShifts.push(
+            {
+              currentShift: {
+                name: driver.shifts[z].name,
+                startTime: this.formatTime(driver.shifts[z].start),
+                endTime: this.formatTime(driver.shifts[z].end),
+                vehicleID: driver.vehicle_id,
+                busNumber: driver.bus_number,
+                lineName: driver.line_name,
+                busID: driver.busID,
+                role: driver.shifts[z].role
+              },
+              prevShift: {
+                name: z !== 0 ? driver.shifts[z].name : `NA`,
+                startTime: z !== 0 ? this.formatTime(driver.shifts[z - 1].start) : `NA`,
+                endTime: z !== 0 ? this.formatTime(driver.shifts[z - 1].end) : `NA`,
+                vehicleID: z !== 0 ? driver.vehicle_id : `NA`,
+                busNumber: z !== 0 ? driver.bus_number : `NA`,
+                lineName: z !== 0 ? driver.line_name : `NA`,
+                busID: z !== 0 ? driver.busID : `NA`,
+                role: z !== 0 ? driver.shifts[z].role : `NA`
+              },
+              upcomingShift: {
+                name: z !== roundInfoToday[i].shifts.length - 1 ? driver.shifts[z + 1].name : `NA`,
+                startTime: z !== roundInfoToday[i].shifts.length - 1 ? this.formatTime(driver.shifts[z + 1].start) : `NA`,
+                endTime: z !== roundInfoToday[i].shifts.length - 1 ? this.formatTime(driver.shifts[z + 1].end) : `NA`,
+                vehicleID: z !== roundInfoToday[i].shifts.length - 1 ? driver.vehicle_id : `NA`,
+                busNumber: z !== roundInfoToday[i].shifts.length - 1 ? driver.busNumber : `NA`,
+                lineName: z !== roundInfoToday[i].shifts.length - 1 ? driver.lineName : `NA`,
+                busID: z !== roundInfoToday[i].shifts.length - 1 ? driver.busID : `NA`,
+                role: z !== roundInfoToday[i].shifts.length - 1 ? driver.shifts[z].role : `NA`
+              }
+            }
+          );
+          break;
+        } // ADD ELSE STATEMENT TO ADD CONDITION IF YOU WANT TO SHOW THAT THERE ARE NO CURRENT SHIFTS.
       }
     }
-    allSessionsInfo.forEach(session => {
-      let yearToCompare = dateToCompare.slice(0, 4);
-      let monthToCompare = dateToCompare.slice(5, 7);
-      let dayToCompare = dateToCompare.slice(8, 10);
-      const currentDateTotal = yearToCompare + monthToCompare + dayToCompare;
-      const splitSessionStartDate = session.startDateString.split('-');
-      const compareSessionStartDate = splitSessionStartDate.join('');
-      const splitSessionEndDate = session.endDateString.split('-');
-      const compareSessionEndDate = splitSessionEndDate.join('');
-      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate);
-
-      if (parseInt(currentDateTotal) > parseInt(compareSessionStartDate) && parseInt(currentDateTotal) < parseInt(compareSessionEndDate)) {
-        const currentSession = session;
-        this.setState({ currentSession });
-      }
-    });
-    this.setState({
-      driversForToday
-    }, this.checkAndDisplayShifts);
-  }
-
-  checkAndDisplayShifts() {
-    const { driversForToday } = this.state;
-    const { dateToCompare } = this.state;
-    const currentTime = new Date().toLocaleTimeString();
-    let currentHour = new Date().getHours() + '';
-    let currentMin = new Date().getMinutes() + '';
-    if (currentHour.length === 1) {
-      currentHour = '0' + currentHour;
-    } else if (currentMin.length === 1) {
-      currentMin = '0' + currentMin;
-    }
-    const current24Time = currentHour + '' + currentMin;
-    console.log(current24Time);
+    this.setState({ allShifts });
   }
 
   getAllData() {
-    const rounds = { rounds: 1 };
+    const d = new Date();
+    let dd = String(d.getDate()).padStart(2, '0');
+    let mm = String(d.getMonth() + 1).padStart(2, '0');
+    let yyyy = d.getFullYear();
+    let dateToCompare = yyyy + '-' + mm + '-' + dd;
+    const date = { date: dateToCompare };
     const init = {
       method: 'POST',
-      body: JSON.stringify(rounds)
+      body: JSON.stringify(date)
     };
     let fetchAllLinesBusesInfo = fetch(`api/admin-lines-buses.php`);
     let fetchAllSessionsInfo = fetch(`api/admin-lines-buses-sessions.php`);
@@ -264,26 +192,16 @@ export default class LiveFieldStatus extends React.Component {
           allLinesBusesInfo,
           allSessionsInfo,
           roundInfoToday
-        }, this.organizeDriversForToday);
+        }, this.getCurrentSession);
       })
       .catch(error => console.error(error));
   }
 
-  checkBusID() {
-    const { roundInfoToday } = this.state;
-    let busID = [];
-    let lineName = [];
-    roundInfoToday.map((round, index) => {
-      if (!busID.find(id => id === round.busID)) {
-        busID.push(round.busID);
-        this.findCurrentShift(round.busID);
-      }
-    });
-  }
-
   render() {
-    const { allLinesBusesInfo, allSessionsInfo, roundInfoToday, currentSession, driverNameAndVehicleID } = this.state;
+    const { currentSession, allShifts } = this.state;
     if (!currentSession) return <div>LOADING</div>;
+    console.log('current session:', currentSession);
+    console.log('all shifts:', allShifts);
     return (
       <>
       <div className="container-fluid">
@@ -343,26 +261,27 @@ export default class LiveFieldStatus extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.allShifts.map((shift, index) => {
+                  {allShifts.map((shift, index) => {
+                    console.log(shift);
                     return (
                       <tr key={shift.prevShift.busID + index}>
-                        <td className="liveFieldStatusLineName">{shift.prevShift.lineName}</td>
-                        <td>{shift.prevShift.busNumber}</td>
+                        <td className="liveFieldStatusLineName">{shift.currentShift.lineName}</td>
+                        <td>{shift.currentShift.busNumber}</td>
                         <td>{shift.currentShift ? `AE-${shift.currentShift.vehicleID}` : `NA`}</td>
                         <td>
                           {`${shift.prevShift.startTime} - ${shift.prevShift.endTime}`}
                           <br />
-                          {`${shift.prevShift.name}`}
+                          {`${shift.prevShift.name} (${shift.prevShift.role})`}
                         </td>
                         <td>
                           {`${shift.currentShift.startTime} - ${shift.currentShift.endTime}`}
                           <br />
-                          {`${shift.currentShift.name}`}
+                          {`${shift.currentShift.name} (${shift.currentShift.role})`}
                         </td>
                         <td>
                           {`${shift.upcomingShift.startTime} - ${shift.upcomingShift.endTime}`}
                           <br />
-                          {`${shift.upcomingShift.name}`}
+                          {`${shift.upcomingShift.name} (${shift.upcomingShift.role})`}
                         </td>
                       </tr>
                     );

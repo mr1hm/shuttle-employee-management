@@ -59,6 +59,7 @@ export default class MasterSchedule extends React.Component {
     let currentTime = parseInt(time);
     console.log(currentTime);
     for (let i = 0; i < roundInfoToday.length; ++i) {
+      // const shiftInfo = roundInfoToday[i];
       const name = `${roundInfoToday[i].first_name} ${roundInfoToday[i].last_name}`;
       const role = roundInfoToday[i].role;
       const startTimeToCompare = roundInfoToday[i].shifts[0].start;
@@ -79,7 +80,6 @@ export default class MasterSchedule extends React.Component {
       } else {
         startTime = `${startTime} PM`;
       }
-      debugger;
       if (parseInt(endTimeToCompare) < 1200) {
         endTime = `${endTime} AM`;
       } else {
@@ -175,10 +175,10 @@ export default class MasterSchedule extends React.Component {
     let yyyy = d.getFullYear();
     let dateToday = yyyy + '-' + mm + '-' + dd;
 
-    const rounds = { date: dateToday };
+    const body = { masterSchedule: dateToday };
     const init = {
       method: 'POST',
-      body: JSON.stringify(rounds)
+      body: JSON.stringify(body)
     };
     let fetchAllLinesBusesInfo = fetch(`api/admin-lines-buses.php`);
     let fetchAllSessionsInfo = fetch(`api/admin-lines-buses-sessions.php`);
