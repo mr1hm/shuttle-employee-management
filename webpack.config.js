@@ -43,7 +43,11 @@ module.exports = {
     historyApiFallback: true,
     watchContentBase: true,
     stats: 'minimal',
-
+    watchOptions: {
+      ignored: [
+        path.resolve(__dirname, 'server')
+      ]
+    },
     proxy: {
       '/api': {
         target: 'http://localhost',
