@@ -28,13 +28,13 @@
 
   $user = login($email, $password);
 
-  unset($user['password']);
-
   $_SESSION['user'] = buildUserSessionData($user);
 
   if($rememberMe) {
     $user['token'] = encrypt($_SESSION['user']);
   }
+
+  cleanUser($user);
 
   send($user);
 ?>
