@@ -1,16 +1,13 @@
 <?php
-// TODO Update to use li/start_up.php file for Class base mysql
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once('db_connection.php');
+require_once('../../lib/start_up.php');
+require_once(AUTH);
 
-$id = $_GET['id'];
+$user = getRequestUser();
 
-if(!$id){
-  throw new Exception("Invalid user ID");
+if(!$user) {
+  throw new ApiError(null, 401, 'Not Authorized');
 }
 
-// TODO Update to prepared statement and find user id with uci_net_id can be done with join
 $query = "SELECT t.`id`, t.`user_id`, t.`target_user_id`, t.`date` as request_date, t.`type`, t.`comment`, t.`status`,
 r.`user_id`, r.`date` as shift_date, r.`start_time`, r.`end_time`, r.`bus_info_id`, r.`id` as 'round_id',
 bi.`bus_number`,
@@ -24,15 +21,16 @@ bi.`bus_number`,
           ON  t.`round_id` = r.`id`
           JOIN `bus_info` AS bi
           ON r.`bus_info_id` = bi.`id`
-          WHERE `target_user_id` = {$id} AND t.`status` = 'pending' AND t.`type` != 'swap-confirm'";
+          WHERE `target_user_id` = $user[userId] AND t.`status` = 'pending' AND t.`type` != 'swap-confirm'";
 
-$result = mysqli_query($conn, $query);
 $output = [];
 
-while($row = mysqli_fetch_assoc($result)){
-  $output[] = $row;
+if($result = $mysqli->query($query)) {
+  while($row = $result->fetch_assoc()) {
+    $output[] = $row;
+  }
+
+  send($output);
+} else {
+  throw new ApiError(null, 500, 'Error retrieving user notifications');
 }
-
-print_r(json_encode($output));
-
-?>
