@@ -151,8 +151,7 @@ $query = "SELECT
 
   require_once 'admin-lines-buses-sessions.php';
 
-} else if ($method === 'POST' && (isset($bodyData['rounds']))) {
-
+} else if ($method === 'POST' && (isset($bodyData['rounds']))) { // PROBABLY DONT NEED THIS ANYMORE
     $date = date('Y-m-d');
     $query = "SELECT rd.`id` AS roundID,
                      rd.`user_id` AS userID,
@@ -234,6 +233,118 @@ $query = "SELECT
     $data = [];
     $busID = NULL;
     $userID = NULL;
+    $routeID = NULL;
+    while ($row = mysqli_fetch_assoc($result)) {
+      if ($routeID !== $row['route_id']) {
+        $routeID = $row['route_id'];
+        $shift = [];
+        $shift['start'] = $row['start_time'];
+        $shift['end'] = $row['end_time'];
+        $shift['userID'] = $row['userID'];
+        $shift['name'] = "{$row['first_name']} {$row['last_name']}";
+        $shift['role'] = $row['role'];
+        unset($row['start_time']);
+        unset($row['end_time']);
+        unset($row['userID']);
+        unset($row['first_name']);
+        unset($row['last_name']);
+        unset($row['role']);
+        $row['shifts'][] = $shift;
+        $data[] = $row;
+      } else if ($routeID === $row['route_id']) {
+        $lastInsertedRow = count($data) - 1;
+        $shift = [];
+        $shift['start'] = $row['start_time'];
+        $shift['end'] = $row['end_time'];
+        $shift['userID'] = $row['userID'];
+        $shift['name'] = "{$row['first_name']} {$row['last_name']}";
+        $shift['role'] = $row['role'];
+        unset($row['start_time']);
+        unset($row['end_time']);
+        unset($row['userID']);
+        unset($row['first_name']);
+        unset($row['last_name']);
+        unset($row['role']);
+        $data[$lastInsertedRow]['shifts'][] = $shift;
+      }
+      // if ($busID !== $row['busID'] && $userID !== $row['userID']) {
+      //   $busID = $row['busID'];
+      //   $userID = $row['userID'];
+      //   $shift = [];
+      //   $shift['start'] = $row['start_time'];
+      //   $shift['end'] = $row['end_time'];
+      //   unset($row['start_time']);
+      //   unset($row['end_time']);
+      //   $row['shifts'][] = $shift;
+      //   $data[] = $row;
+      // } else if ($busID === $row['busID'] && $userID === $row['userID']) {
+      //   $lastRow = count($data) - 1;
+      //   $shift = [];
+      //   $shift['start'] = $row['start_time'];
+      //   $shift['end'] = $row['end_time'];
+      //   $data[$lastRow]['shifts'][] = $shift;
+      // }
+
+      // if ($userID !== $row['userID'] && $row['busID'] === $busID) {
+      //   $userID = $row['userID'];
+      //   foreach ($data as $key => $value) {
+      //     $idToCompare = $value['busID'];
+      //     if ($idToCompare == $row['busID']) {
+      //       $shift = [];
+      //       $shift['start'] = $row['start_time'];
+      //       $shift['end'] = $row['end_time'];
+      //       unset($row['start_time']);
+      //       unset($row['end_time']);
+      //       $row['shifts'][] = $shift;
+      //     }
+      //   }
+        // $userID = $row['userID'];
+        // $shift = [];
+        // $shift['start'] = $row['start_time'];
+        // $shift['end'] = $row['end_time'];
+        // unset($row['start_time']);
+        // unset($row['end_time']);
+        // $row['shifts'][] = $shift;
+        // $data[] = $row;
+    }
+
+    print(json_encode($data));
+    exit;
+
+} else if ($method === 'POST' && (isset($bodyData['masterSchedule']))) {
+    $date = $bodyData['masterSchedule'];
+    $query = "SELECT rd.`id` AS roundID,
+                     rd.`user_id` AS userID,
+                     rd.`session_id`,
+                     rd.`bus_info_id` AS busID,
+                     rd.`date`,
+                     rd.`start_time`,
+                     rd.`end_time`,
+                     rd.`status`,
+                     u.`first_name`,
+                     u.`last_name`,
+                     u.`nickname`,
+                     u.`role`,
+                     u.`special_route_ok`,
+                     bi.`route_id`,
+                     bi.`vehicle_id`,
+                     bi.`bus_number`,
+                     r.`line_name`
+              FROM `round` AS rd
+              LEFT JOIN `user` AS u ON u.`id` = rd.`user_id`
+              LEFT JOIN (SELECT `id`, `route_id`, `vehicle_id`, `bus_number` FROM `bus_info`) AS bi ON bi.`id` = rd.`bus_info_id`
+              LEFT JOIN (SELECT `id`, `line_name` FROM `route`) AS r ON r.`id` = bi.`route_id`
+              WHERE rd.`date` = '$date'";
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('mysql error ' . mysqli_error($conn));
+    }
+
+    $data = [];
+    $busID = NULL;
+    $userID = NULL;
+    $routeID = NULL;
     while ($row = mysqli_fetch_assoc($result)) {
       if ($busID !== $row['busID'] && $userID !== $row['userID']) {
         $busID = $row['busID'];
@@ -255,7 +366,7 @@ $query = "SELECT
     }
 
     print(json_encode($data));
-
+    exit;
 }
 
 $result = mysqli_query($conn, $query);
