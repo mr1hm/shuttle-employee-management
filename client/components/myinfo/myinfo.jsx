@@ -25,7 +25,6 @@ class MyInfo extends React.Component {
   }
 
   componentDidMount() {
-    console.log('Info COmponent Mounted:');
     this.props.getUserData();
     // this.fetchCellProvider();
   }
