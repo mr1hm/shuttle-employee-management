@@ -19,7 +19,10 @@ class Round extends React.Component {
     const idBeforeGivenId = JSON.stringify(idInt - 1);
     const idAfterGivenId = JSON.stringify(idInt + 1);
     const alreadySelectedIds = this.props.checkedRounds;
-    if (alreadySelectedIds.includes(idBeforeGivenId) || alreadySelectedIds.includes(idAfterGivenId) || alreadySelectedIds.length === 0 || alreadySelectedIds.includes(id)) {
+    if (alreadySelectedIds.includes(id) && alreadySelectedIds.includes(idBeforeGivenId) && alreadySelectedIds.includes(idAfterGivenId)) {
+      this.setState({ consecutiveModalFlag: 1 });
+      this.props.selectShift(id);
+    } else if (alreadySelectedIds.includes(idBeforeGivenId) || alreadySelectedIds.includes(idAfterGivenId) || alreadySelectedIds.length === 0 || alreadySelectedIds.includes(id)) {
       this.setState({ clicked: !this.state.clicked });
       this.props.selectShift(id);
     } else {
