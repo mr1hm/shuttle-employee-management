@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { userLogin } from '../../actions';
-import TopMenuGeneral from '../topmenu/topmenu-general';
 import './login.css';
 
 class Login extends React.Component {
@@ -56,7 +55,6 @@ class Login extends React.Component {
 
     return (
       <>
-        <TopMenuGeneral title="LOGIN" />
         <div className="container mt-5 d-flex justify-content-center">
           <form className="w-50" encType="multipart/form-data" onSubmit={this.checkLoginInfo}>
             <div className="form-group">
