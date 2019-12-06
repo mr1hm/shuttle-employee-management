@@ -11,6 +11,7 @@ class SwapConfirmNotification extends React.Component {
       shiftsToSwap: []
     };
     this.swapShift = this.swapShift.bind(this);
+    this.declineShift = this.declineShift.bind(this);
   }
   componentDidMount() {
     fetch(`/api/get-final-swap-confirmation.php?id=${this.props.userId}`)
@@ -45,8 +46,27 @@ class SwapConfirmNotification extends React.Component {
       body: JSON.stringify(body)
     })
       .catch(err => console.error(err.message));
-
   }
+
+  declineShift() {
+    const ownShift = this.state.ownShift;
+    const shiftsToSwap = this.state.shiftsToSwap;
+    const body = {
+      target_id: shiftsToSwap[0].user_id,
+      user_id: shiftsToSwap[0].target_user_id,
+      original_rounds: ownShift,
+      target_rounds: shiftsToSwap
+    };
+    fetch('/api/decline-swap-shift.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    })
+      .catch(err => console.error(err.message));
+  }
+
   render() {
     const ownShift = this.state.ownShift;
     const shiftsToSwap = this.state.shiftsToSwap;
@@ -129,7 +149,9 @@ class SwapConfirmNotification extends React.Component {
               </Link>
             </div>
             <div className="col text-center">
-              <button type="button" className="btn btn-lg btn-danger w-25">Decline</button>
+              <Link to="/welcome/">
+                <button type="button" onClick={this.declineShift} className="btn btn-lg btn-danger w-25">Decline</button>
+              </Link>
             </div>
           </div>
         </>
