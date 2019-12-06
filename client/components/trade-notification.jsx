@@ -17,12 +17,12 @@ class TradeNotification extends React.Component {
       notificationCount: 0
     };
     this.removeShift = this.removeShift.bind(this);
-    this.giveShifttoSelectedDriver = this.giveShifttoSelectedDriver.bind(this);
+    this.giveShiftToSelectedDriver = this.giveShiftToSelectedDriver.bind(this);
   }
   componentDidMount() {
     const selectedRoundId = this.props.location.state.swapFlag ? this.props.location.state.swapFlag : 0;
     const swapShift = this.props.shiftDetails;
-    fetch(`/api/get-notifications.php?id=${this.props.userId}`)
+    fetch(`/api/get-notifications.php`)
       .then(response => response.json())
       .then(shiftsArrayOfObjects => {
         this.setState({
@@ -34,7 +34,7 @@ class TradeNotification extends React.Component {
       })
       .catch(error => console.error('Fetch failed', error));
   }
-  giveShifttoSelectedDriver(roundID, targetID) {
+  giveShiftToSelectedDriver(roundID, targetID) {
     const selectedDriverToTradeWith = {
       user_id: this.props.userId,
       target_id: targetID,
@@ -127,7 +127,7 @@ class TradeNotification extends React.Component {
                 target_user_id={oneShift.target_user_id}
                 round_id={oneShift.round_id}
                 removeShift={this.removeShift}
-                giveShifttoSelectedDriver={this.giveShifttoSelectedDriver}
+                giveShifttoSelectedDriver={this.giveShiftToSelectedDriver}
                 type={oneShift.type}
               />
             );
