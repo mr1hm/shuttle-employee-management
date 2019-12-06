@@ -1,6 +1,6 @@
 import React from 'react';
 import './shifts-month.css';
-import { getLocalDateString } from '../../../lib/time-functions';
+import { getDateString } from '../../../lib/time-functions';
 
 class DayOfMonth extends React.Component {
   renderDate() {
@@ -18,7 +18,7 @@ class DayOfMonth extends React.Component {
       };
       for (var shiftIndex = 0; shiftIndex < this.props.shiftsArray.length; shiftIndex++) {
         const shiftDateString = this.props.shiftsArray[shiftIndex].date;
-        const thisDayDateString = getLocalDateString(this.props.dayObj);
+        const thisDayDateString = getDateString(this.props.dayObj);
         if (shiftDateString === thisDayDateString) {
           dayTypeClasses[this.props.shiftsArray[shiftIndex].status] = true;
         }
