@@ -37,5 +37,5 @@ POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.p
 content-type: application/json
 
 {
-  "masterSchedule": "2019-12-05"
+  "masterSchedule": "2019-12-08"
 }
