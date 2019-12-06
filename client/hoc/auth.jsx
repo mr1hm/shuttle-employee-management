@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-export default (allowedRoles = []) => (WrappedComponent, path = '/login', redirectOnAuth = false) => {
+export default (allowedRoles = []) => (WrappedComponent, to = '/login') => {
   class Auth extends React.Component {
     componentDidMount() {
       this.checkAuth();
@@ -14,8 +14,8 @@ export default (allowedRoles = []) => (WrappedComponent, path = '/login', redire
     checkAuth() {
       const { auth, history } = this.props;
 
-      if (auth === redirectOnAuth || (!redirectOnAuth && auth !== 'pending' && !this.userHasRole())) {
-        history.push(path);
+      if (!auth || (auth !== 'pending' && !this.userHasRole())) {
+        history.push(to);
       }
     }
 
@@ -34,6 +34,10 @@ export default (allowedRoles = []) => (WrappedComponent, path = '/login', redire
     }
 
     render() {
+      const { auth } = this.props;
+
+      if (auth === 'pending' || !auth || (auth && auth !== 'pending' && !this.userHasRole())) return null;
+
       return <WrappedComponent {...this.props} />;
     }
   }
