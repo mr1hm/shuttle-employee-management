@@ -43,9 +43,6 @@ export default class Lines extends React.Component {
         specialDriverRequired
       });
     }
-    // if (prevProps.sessions.length !== this.props.sessions.length || prevProps.linesBusesInfo.length !== this.props.linesBusesInfo.length) {
-    //   this.getSessionName();
-    // }
   }
 
   componentDidMount() {
@@ -85,8 +82,8 @@ export default class Lines extends React.Component {
 
   deleteLine(lineID, sessionID) {
     let busIDArr = [];
-    let busIDs = this.props.line.activeBuses.forEach(buses => { // another bug. if deleting line from All Sessions tab, it will get/render all the lines from only that session.
-      busIDArr.push(buses.busID); // DELETES BUS AS WELL - IT WORKS!!d
+    let busIDs = this.props.line.activeBuses.forEach(buses => {
+      busIDArr.push(buses.busID);
     });
     console.log(busIDArr);
     const body = {
@@ -101,7 +98,7 @@ export default class Lines extends React.Component {
       .then(response => response.json())
       .then(deletedLine => {
         this.setState({
-          deletedLineName: this.props.line.line_name // not working
+          deletedLineName: this.props.line.line_name
         });
         if (this.props.currentSession === 'All Sessions') {
           this.props.getLinesBusesInfo();

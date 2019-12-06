@@ -29,12 +29,10 @@ export default class Operations extends React.Component {
             </select>
           </div>
           <div className="col d-flex align-items-end">
-            {/* <label>View</label> */}
             <br />
             <button onClick={} className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
           </div>
           <div className="col d-flex align-items-end">
-            {/* <label>View</label> */}
             <br />
             <button className="btn btn-outline-dark w-100 masterFieldStatusBtn">Master Field View</button>
           </div>
@@ -87,7 +85,6 @@ export default class Operations extends React.Component {
                     <option>active</option>
                     <option>inactive</option>
                   </select>
-                  {/* <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" /> */}
                 </div>
                 <div className="col">
                   <label>

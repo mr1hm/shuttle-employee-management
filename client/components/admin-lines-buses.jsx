@@ -16,7 +16,7 @@ import MasterSchedule from './admin-lines-buses-masterSchedule';
 import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faBus, faCaretDown, faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
@@ -75,7 +75,6 @@ class AdminRoutes extends React.Component {
 
   componentDidMount() {
     this.getAllSessions();
-    // this.getLinesBusesInfo();
   }
 
   handleAddNewSessionClick() {
@@ -241,15 +240,6 @@ class AdminRoutes extends React.Component {
           }
         }));
       }
-      //   else if (this.state.newLine.session_id === 'Fall 2019' || this.state.newLine.session_id === 'Winter 2020' || this.state.newLine.session_id === 'Summer 2020') {
-      //   let sessionInfo = this.state.sessions.find(session => session.name === value);
-      //   this.setState(prevState => ({
-      //     newLine: {
-      //       ...prevState.newLine,
-      //       session_id: sessionInfo.id
-      //     }
-      //   }));
-      // }
     });
     this.checkIfLineExists(value);
     console.log(value);
@@ -333,8 +323,6 @@ class AdminRoutes extends React.Component {
       fetch('api/admin-lines-buses.php')
         .then(response => response.json())
         .then(linesBusesInfo => {
-          // console.log(this.state.linesBusesInfo);
-          console.log('getlinesbusesinfo: ', linesBusesInfo);
           this.setState({
             linesBusesInfo: linesBusesInfo
           });
@@ -428,8 +416,6 @@ class AdminRoutes extends React.Component {
               </div>
             </div>
           </div>
-          {/* <TopMenuGeneral userId={this.props.userId} title="ADMIN - Lines/Buses" /> */}
-          {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
           <div className="container-fluid mt-2">
             <div className="container operationsContainer">
               <h4 className="operationsHeader mt-2">Operations</h4>
@@ -455,7 +441,6 @@ class AdminRoutes extends React.Component {
                     : <button className="btn btn-outline-dark w-100 addLineBtn" onClick={() => this.handleAddLineButton()}>Add New Line</button>}
                 </div>
                 <div className="col d-flex align-items-end">
-                  {/* <label>View</label> */}
                   <br />
                   <Link to={{
                     pathname: `/livefieldstatus`,
@@ -529,7 +514,6 @@ class AdminRoutes extends React.Component {
                           <option>active</option>
                           <option>inactive</option>
                         </select>
-                        {/* <input onChange={this.handleAddLineChange} className="col border border-primary" type="text" name="status" /> */}
                       </div>
                       <div className="col">
                         <label>
@@ -624,9 +608,6 @@ class AdminRoutes extends React.Component {
             </div>
           </div>
         </div>
-        {/* {this.state.liveFieldStatus ? <LiveFieldStatus liveFieldStatus={this.state.liveFieldStatus} /> : null} */}
-        {/* <TopMenuGeneral title="ADMIN - Lines/Buses" /> */}
-        {/* {this.state.showGapsModal ? <GapsModal handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.state.linesBusesInfo} /> : null} */}
         <div className="container-fluid mt-2">
           <div className="container operationsContainer">
             <h4 className="operationsHeader mt-2">Operations</h4>
@@ -652,7 +633,6 @@ class AdminRoutes extends React.Component {
                   : <button className="btn btn-outline-dark w-100 addLineBtn" onClick={() => this.handleAddLineButton()}>Add New Line</button>}
               </div>
               <div className="col d-flex align-items-end">
-                {/* <label>View</label> */}
                 <br />
                 <Link to={{
                   pathname: `/livefieldstatus`,
@@ -688,7 +668,6 @@ class AdminRoutes extends React.Component {
             </div>
             {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
             <h4 className="operationsHistory mt-2">Operations History</h4>
-            {console.log(this.state.linesBusesInfo)}
             <OperationsHistory getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
           </div>
         </div>
