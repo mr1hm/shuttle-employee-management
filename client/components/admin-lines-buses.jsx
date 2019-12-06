@@ -217,14 +217,13 @@ class AdminRoutes extends React.Component {
   handleAddLineChange(e) {
     const name = e.target.name;
     const value = e.target.value;
-    let sessionFind = this.state.sessions.find(session => session.name === this.state.newLine.session_id);
-    console.log('session found ', sessionFind);
     this.setState(prevState => ({
       newLine: {
         ...prevState.newLine,
         [name]: value
       }
     }), () => {
+      const sessionFind = this.state.sessions.find(session => session.name === this.state.newLine.session_id);
       if (this.state.currentSession !== 'All Sessions') {
         this.setState(prevState => ({
           newLine: {
@@ -233,6 +232,7 @@ class AdminRoutes extends React.Component {
           }
         }));
       } else if (sessionFind) {
+        console.log('session found ', sessionFind);
         this.setState(prevState => ({
           newLine: {
             ...prevState.newLine,

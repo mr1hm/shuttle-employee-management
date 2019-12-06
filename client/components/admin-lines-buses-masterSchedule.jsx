@@ -54,43 +54,13 @@ export default class MasterSchedule extends React.Component {
     });
   }
 
-  formatTime(militaryTime) {
-    let time = militaryTime;
-    let splitTime = militaryTime.split('');
-    splitTime.splice(-2, 0, ':');
-    let formattedTime = splitTime.join('');
-    let parsedTime = parseInt(militaryTime);
-    if (parsedTime >= 1200) {
-      formattedTime += ' PM';
-    } else {
-      formattedTime += ' AM';
-    }
-    return formattedTime;
-    // if (militaryTime.length === 3) {
-    //   militaryTime = '0' + time;
-    // }
-    // let convertToStandardTime = militaryTime.split('');
-    // let spliceHours = convertToStandardTime.splice(0, 2);
-    // let hours = parseInt(spliceHours.join(''));
-    // console.log(hours);
-    // if (hours > 12) {
-    //   let diff = hours - 12;
-    //   convertToStandardTime.unshift(diff);
-    //   let standardTime = convertToStandardTime.join('');
-    //   console.log(standardTime);
-    //   return standardTime;
-    // } else {
-    //   return formattedTime;
-    // }
-  }
-
   handleDateChange(e) {
     const name = e.target.name;
     const value = e.target.value;
     let reformatValue = value.split('/');
 
     let month = reformatValue[0];
-    let year = reformatValue[2];
+    // let year = reformatValue[2];
     let day = reformatValue[1];
     reformatValue[0] = reformatValue[2];
     reformatValue[1] = month;
@@ -269,9 +239,6 @@ export default class MasterSchedule extends React.Component {
     if (!currentSession) {
       return <div>LOADING...</div>;
     }
-    // if (allShifts.length === 0) {
-    //   return <div>LOADING...</div>;
-    // }
     return (
       <>
         <div className="container-fluid">
