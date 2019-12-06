@@ -57,7 +57,9 @@ class ShiftsDetails extends React.Component {
     const idBeforeGivenId = JSON.stringify(idInt - 1);
     const idAfterGivenId = JSON.stringify(idInt + 1);
     const { checkedRounds } = this.state;
-    if (checkedRounds.includes(id)) {
+    if (checkedRounds.includes(id) && checkedRounds.includes(idBeforeGivenId) && checkedRounds.includes(idAfterGivenId)) {
+      this.setState({ checkedRounds: checkedRounds });
+    } else if (checkedRounds.includes(id)) {
       checkedRounds.splice(checkedRounds.indexOf(id), 1);
       this.setState({ checkedRounds: checkedRounds });
     } else if (checkedRounds.length === 0) {
