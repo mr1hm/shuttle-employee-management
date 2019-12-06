@@ -1,5 +1,5 @@
 <?php
-  require_once('../../lib/start_up.php');
+  require_once('../../lib/startup.php');
   require_once(AUTH);
 
   $rememberMe = false;

@@ -1,5 +1,5 @@
 <?php
-require('../../lib/start_up.php');
+require('../../lib/startup.php');
 require(AUTH);
 
 $user = getRequestUser();

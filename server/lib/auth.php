@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__.'/start_up.php');
+require_once(__DIR__.'/startup.php');
 require_once(__DIR__.'/../config/auth.php');
 require_once(ENCRYPT);
 
