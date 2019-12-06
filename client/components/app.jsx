@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import * as auth from '../hoc/auth_config';
+import onAuthRedirect from '../hoc/on_auth_redirect';
 import MyInfo from './myinfo/myinfo';
 import ShiftsWeek from './shifts/week/shifts-week';
 import ShiftsDay from './shifts/day/shifts-day';
@@ -19,6 +20,7 @@ import TradeNotification from './trade-notification';
 import AdminUserSummary from './admin-user-summary';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
 import MasterSchedule from './admin-lines-buses-masterSchedule';
+import NotFound from './errors/not_found';
 
 class App extends React.Component {
   constructor(props) {
@@ -55,22 +57,24 @@ class App extends React.Component {
   render() {
     return (
       <Switch>
-        <Route exact path={['/', '/login']} component={auth.all(Login, '/welcome', true)} />
-        <Route path="/welcome" component={auth.all(Welcome)}/>
+        <Route exact path={['/', '/login']} component={onAuthRedirect(Login, '/welcome')} />
+        <Route path="/welcome" component={auth.all(Welcome, '/login')} />
+        <Route path="/live-field-status" component={auth.operations(LiveFieldStatus, '/welcome')} />
+        <Route path="/my-info" component={auth.all(MyInfo)} />
+        <Route path="/trade-notifications" component={auth.all(TradeNotification)} />
+        <Route component={NotFound} />
       </Switch>
     );
   }
-
+  // <Route path="/trade-notification" render={props => <TradeNotification {...props} shiftDetails={this.state.shiftDetails} />} />
   renderOld() {
     const userStateId = parseInt(this.state.userId);
     if (this.state.userLogin === true) {
       return (
         <React.Fragment>
           <Switch>
-            <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
             <Route path="/masterscheudle/" render={props => <MasterSchedule {...props} />} />
-            <Route exact path={['/', '/welcome/']} render={props => <Welcome {...props} userId={this.state.userId ? this.state.userId : 17} />} />
-            <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId ? this.state.userId : 17} get={this.getUserID} />} />
+            
             <Route path="/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
             <Route path="/shifts/day/shifts-day/:date?" render={props => <ShiftsDay openRouteDetails={this.openRouteDetails} {...props} userId={this.state.userId ? this.state.userId : 17} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
             <Route path={`/shifts/month/shifts-month/:date`} render={props => <ShiftsMonth userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
@@ -81,7 +85,6 @@ class App extends React.Component {
             <Route path="/admin-operator-availability/" render={props => <AdminOperatorAvailability userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/admin-user-summary/" render={props => <AdminUserSummary userId={this.state.userId ? this.state.userId : 17} />} />
             <Route path="/trade-swap/" render={props => <TradeSwap {...props} shiftDetails={this.state.shiftDetails} />} />
-            <Route path="/trade-notification/" render={props => <TradeNotification {...props} userId={this.state.userId ? this.state.userId : 17} shiftDetails={this.state.shiftDetails} />} />
           </Switch>
         </React.Fragment>
       );
