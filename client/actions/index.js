@@ -16,15 +16,31 @@ export const onLoadCheckAuth = async dispatch => {
     const { data } = await axios.get('/api/on_load_auth_check.php', { headers });
 
     if (data) {
-      dispatch({
+      return dispatch({
         type: types.USER_LOGIN,
         user: data
       });
-    } else {
-      dispatch({
-        type: types.USER_LOGOUT
-      });
     }
+  }
+
+  dispatch({
+    type: types.USER_LOGOUT
+  });
+};
+
+export const getUserData = () => async dispatch => {
+  try {
+    const { data } = await axios.get('/api/user-info.php');
+
+    dispatch({
+      type: types.GET_USER_PROFILE,
+      profile: data
+    });
+  } catch (error) {
+    dispatch({
+      type: types.GET_USER_PROFILE_ERROR,
+      error: 'Error loading user profile'
+    });
   }
 };
 
