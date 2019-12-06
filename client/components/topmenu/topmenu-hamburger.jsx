@@ -25,8 +25,8 @@ class TopMenuHamburger extends React.Component {
     const dateString = `${today.getFullYear()}-${getZeroPaddedNumber(today.getMonth() + 1)}-${getZeroPaddedNumber(today.getDate())}`;
     return (
       <HamburgerMenu notificationCount={this.props.notificationCount} count={this.state.numberOfShifts}>
-        <Link to={{ pathname: '/trade-notification/', state: { newShiftsAndSelectedDriver: this.props.tradeNotification } }}>Notifications</Link>
-        <Link to="/myinfo/">My Info</Link>
+        <Link to={{ pathname: '/trade-notifications', state: { newShiftsAndSelectedDriver: this.props.tradeNotification } }}>Notifications</Link>
+        <Link to="/my-info">My Info</Link>
         <Link to={`/shifts/day/shifts-day/${dateString}`}>Day</Link>
         <Link to={`/shifts/week/shifts-week/${dateString}`}>Week</Link>
         <Link to={`/shifts/month/shifts-month/${dateString}`}>Month</Link>

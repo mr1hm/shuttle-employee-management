@@ -69,7 +69,6 @@ class HamburgerMenu extends React.Component {
 }
 
 function mapStateToProps(state) {
-  console.log('State:', state);
   return {
     userId: state.user.uciNetId
   };
