@@ -67,7 +67,8 @@ class ShiftsDetails extends React.Component {
       checkedRounds.push(id);
       this.setState({ checkedRounds: checkedRounds });
     } else {
-      alert('Must select consecutive shift times');
+      // this.setState({ consecutiveModalFlag: 1 });
+      // alert('Must select consecutive shift times');
     }
   }
   selectAllRounds() {
