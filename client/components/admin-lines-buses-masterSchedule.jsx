@@ -1,4 +1,5 @@
 import React from 'react';
+import { convertMilitaryTime } from '../lib/time-functions';
 
 export default class MasterSchedule extends React.Component {
   constructor(props) {
@@ -142,11 +143,11 @@ export default class MasterSchedule extends React.Component {
             line_name,
             bus_number,
             vehicle_id,
-            start: this.formatTime(start),
+            start: convertMilitaryTime(start),
             userID,
             name,
             role,
-            end: this.formatTime(rounds[j].end)
+            end: convertMilitaryTime(rounds[j].end)
           });
         } else if (rounds[j].userID !== rounds[h].userID) {
           const { start, userID, name, role } = rounds[h];
@@ -154,11 +155,11 @@ export default class MasterSchedule extends React.Component {
             line_name,
             bus_number,
             vehicle_id,
-            start: this.formatTime(start),
+            start: convertMilitaryTime(start),
             userID,
             name,
             role,
-            end: this.formatTime(rounds[j - 1].end)
+            end: convertMilitaryTime(rounds[j - 1].end)
           });
           h = j;
         }

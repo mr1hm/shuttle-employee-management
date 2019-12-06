@@ -1,5 +1,5 @@
 import React from 'react';
-import { getZeroPaddedNumber } from '../lib/time-functions';
+import { getZeroPaddedNumber, convertMilitaryTime } from '../lib/time-functions';
 
 export default class LiveFieldStatus extends React.Component {
   constructor(props) {
