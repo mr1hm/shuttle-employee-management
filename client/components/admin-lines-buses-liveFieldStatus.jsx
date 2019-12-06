@@ -301,11 +301,3 @@ export default class LiveFieldStatus extends React.Component {
     );
   }
 }
-
-// function BusVehicleID(props) {
-//   const { linesBusesInfo } = props.location.state;
-//   const { sessions } = props.location.state;
-//   return (
-//     linesBusesInfo.map()
-//   );
-// }

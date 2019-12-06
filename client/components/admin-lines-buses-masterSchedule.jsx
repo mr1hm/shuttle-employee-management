@@ -17,7 +17,8 @@ export default class MasterSchedule extends React.Component {
       prevShift: null,
       currentShift: null,
       upcomingShift: null,
-      driverName: null
+      driverName: null,
+      allShifts: []
     };
     this.allShifts = [];
     this.checkAndDisplayShifts = this.checkAndDisplayShifts.bind(this);
@@ -49,48 +50,87 @@ export default class MasterSchedule extends React.Component {
     });
   }
 
+  formatTime(militaryTime) {
+    let time = militaryTime;
+    let splitTime = militaryTime.split('');
+    splitTime.splice(-2, 0, ':');
+    let formattedTime = splitTime.join('');
+    let parsedTime = parseInt(militaryTime);
+    if (parsedTime >= 1200) {
+      formattedTime += ' PM';
+    } else {
+      formattedTime += ' AM';
+    }
+    return formattedTime;
+    // if (militaryTime.length === 3) {
+    //   militaryTime = '0' + time;
+    // }
+    // let convertToStandardTime = militaryTime.split('');
+    // let spliceHours = convertToStandardTime.splice(0, 2);
+    // let hours = parseInt(spliceHours.join(''));
+    // console.log(hours);
+    // if (hours > 12) {
+    //   let diff = hours - 12;
+    //   convertToStandardTime.unshift(diff);
+    //   let standardTime = convertToStandardTime.join('');
+    //   console.log(standardTime);
+    //   return standardTime;
+    // } else {
+    //   return formattedTime;
+    // }
+  }
+
   compareCurrentTimeAndDisplayShifts() {
     this.getCurrentSession();
     const { roundInfoToday } = this.state;
-    let d = new Date();
+    const d = new Date();
     let hh = new Date().getHours();
     let mm = new Date().getMinutes();
     let time = hh + '' + mm;
     let currentTime = parseInt(time);
     console.log(currentTime);
-    for (let i = 0; i < roundInfoToday.length; ++i) {
-      // const shiftInfo = roundInfoToday[i];
-      const name = `${roundInfoToday[i].first_name} ${roundInfoToday[i].last_name}`;
-      const role = roundInfoToday[i].role;
-      const startTimeToCompare = roundInfoToday[i].shifts[0].start;
-      const endTimeToCompare = roundInfoToday[i].shifts[roundInfoToday[i].shifts.length - 1].end;
-      let startTime = roundInfoToday[i].shifts[0].start;
-      let endTime = roundInfoToday[i].shifts[roundInfoToday[i].shifts.length - 1].end;
-      let startTimeSplit = startTime.split('');
-      let endTimeSplit = endTime.split('');
-      startTimeSplit.splice(-2, 0, ':');
-      endTimeSplit.splice(-2, 0, ':');
-      startTime = startTimeSplit.join('');
-      endTime = endTimeSplit.join('');
-      const lineName = roundInfoToday[i].line_name;
-      const busNumber = roundInfoToday[i].bus_number;
-      const vehicleID = roundInfoToday[i].vehicle_id;
-      if (parseInt(startTimeToCompare) < 1200) {
-        startTime = `${startTime} AM`;
-      } else {
-        startTime = `${startTime} PM`;
+
+    // Loop through roundInfoToday
+    // For each object in roundInfoToday store the line name, and Vehicle ID
+    // loop through the rounds in that object
+    // condense each shift by start time, end time, userID
+
+    const shifts = [];
+    for (let i = 0; i < roundInfoToday.length; i++) {
+      const { line_name, bus_number, vehicle_id, shifts: rounds } = roundInfoToday[i];
+
+      for (let j = 0, h = 0; j < rounds.length; j++) {
+        if (j === rounds.length - 1) {
+          const { start, userID, name, role } = rounds[h];
+          shifts.push({
+            line_name,
+            bus_number,
+            vehicle_id,
+            start: this.formatTime(start),
+            userID,
+            name,
+            role,
+            end: this.formatTime(rounds[j].end)
+          });
+        } else if (rounds[j].userID !== rounds[h].userID) {
+          const { start, userID, name, role } = rounds[h];
+          shifts.push({
+            line_name,
+            bus_number,
+            vehicle_id,
+            start: this.formatTime(start),
+            userID,
+            name,
+            role,
+            end: this.formatTime(rounds[j - 1].end)
+          });
+          h = j;
+        }
       }
-      if (parseInt(endTimeToCompare) < 1200) {
-        endTime = `${endTime} AM`;
-      } else {
-        endTime = `${endTime} PM`;
-      }
-      const driver = { name, role, startTime, endTime, lineName, busNumber, vehicleID };
-      this.allShifts.push(driver);
     }
     let localTime = d.toLocaleTimeString();
-    this.setState({ currentTime: localTime });
-    console.log(this.allShifts);
+    console.log('ALL SHIFTS: ', shifts);
+    this.setState({ allShifts: shifts, currentTime: localTime });
   }
 
   checkCurrentDay() {
@@ -200,8 +240,11 @@ export default class MasterSchedule extends React.Component {
   }
 
   render() {
-    const { currentSession } = this.state;
+    const { currentSession, allShifts } = this.state;
     if (!currentSession) {
+      return <div>LOADING...</div>;
+    }
+    if (allShifts.length === 0) {
       return <div>LOADING...</div>;
     }
     return (
@@ -262,17 +305,14 @@ export default class MasterSchedule extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {this.allShifts.map((driver, index) => {
-                      if (!driver.lineName || !driver.busNumber || !driver.vehicleID) {
-                        return null;
-                      }
+                    {allShifts.map((driver, index) => {
                       return (
                         <tr key={driver.role + index}>
-                          <td className="masterScheduleLineName">{driver.lineName}</td>
-                          <td>{driver.busNumber}</td>
-                          <td>{`AE-${driver.vehicleID}`}</td>
+                          <td className="masterScheduleLineName">{driver.line_name}</td>
+                          <td>{driver.bus_number}</td>
+                          <td>{`AE-${driver.vehicle_id}`}</td>
                           <td>{driver.name}</td>
-                          <td>{`${driver.startTime} - ${driver.endTime}`}</td>
+                          <td>{`${driver.start} - ${driver.end}`}</td>
                         </tr>
                       );
                     })}
