@@ -175,7 +175,7 @@ class AdminRoutes extends React.Component {
     });
   }
 
-  addNewLine(newLine, e) { // bug in Winter 2020 session. Special Driver is automatically set to true no matter if the box is checked or not when adding a new line.
+  addNewLine(newLine, e) {
     e.preventDefault();
     const init = {
       method: 'POST',

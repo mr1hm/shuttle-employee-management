@@ -73,23 +73,6 @@ export default class LiveFieldStatus extends React.Component {
     });
   }
 
-  formatTime(militaryTime) {
-    let hh = getZeroPaddedNumber(new Date().getHours());
-    let mm = getZeroPaddedNumber(new Date().getMinutes());
-    let time = hh + '' + mm;
-    let currentTime = parseInt(time);
-    let timeToCompare = parseInt(militaryTime);
-    let timeArr = militaryTime.split('');
-    timeArr.splice(-2, 0, ':');
-    let formattedTime = timeArr.join('');
-    if (timeToCompare < 1200) {
-      formattedTime += ' AM';
-    } else if (timeToCompare >= 1200) {
-      formattedTime += ' PM';
-    }
-    return formattedTime;
-  }
-
   getCurrentSession() {
     const { allSessionsInfo } = this.state;
     const { dateToCompare } = this.state;
@@ -130,8 +113,8 @@ export default class LiveFieldStatus extends React.Component {
             {
               currentShift: {
                 name: driver.shifts[z].name,
-                startTime: this.formatTime(driver.shifts[z].start),
-                endTime: this.formatTime(driver.shifts[z].end),
+                startTime: convertMilitaryTime(driver.shifts[z].start),
+                endTime: convertMilitaryTime(driver.shifts[z].end),
                 vehicleID: driver.vehicle_id,
                 busNumber: driver.bus_number,
                 lineName: driver.line_name,
@@ -140,8 +123,8 @@ export default class LiveFieldStatus extends React.Component {
               },
               prevShift: {
                 name: z !== 0 ? driver.shifts[z].name : `NA`,
-                startTime: z !== 0 ? this.formatTime(driver.shifts[z - 1].start) : `NA`,
-                endTime: z !== 0 ? this.formatTime(driver.shifts[z - 1].end) : `NA`,
+                startTime: z !== 0 ? convertMilitaryTime(driver.shifts[z - 1].start) : `NA`,
+                endTime: z !== 0 ? convertMilitaryTime(driver.shifts[z - 1].end) : `NA`,
                 vehicleID: z !== 0 ? driver.vehicle_id : `NA`,
                 busNumber: z !== 0 ? driver.bus_number : `NA`,
                 lineName: z !== 0 ? driver.line_name : `NA`,
@@ -150,8 +133,8 @@ export default class LiveFieldStatus extends React.Component {
               },
               upcomingShift: {
                 name: z !== roundInfoToday[i].shifts.length - 1 ? driver.shifts[z + 1].name : `NA`,
-                startTime: z !== roundInfoToday[i].shifts.length - 1 ? this.formatTime(driver.shifts[z + 1].start) : `NA`,
-                endTime: z !== roundInfoToday[i].shifts.length - 1 ? this.formatTime(driver.shifts[z + 1].end) : `NA`,
+                startTime: z !== roundInfoToday[i].shifts.length - 1 ? convertMilitaryTime(driver.shifts[z + 1].start) : `NA`,
+                endTime: z !== roundInfoToday[i].shifts.length - 1 ? convertMilitaryTime(driver.shifts[z + 1].end) : `NA`,
                 vehicleID: z !== roundInfoToday[i].shifts.length - 1 ? driver.vehicle_id : `NA`,
                 busNumber: z !== roundInfoToday[i].shifts.length - 1 ? driver.busNumber : `NA`,
                 lineName: z !== roundInfoToday[i].shifts.length - 1 ? driver.lineName : `NA`,

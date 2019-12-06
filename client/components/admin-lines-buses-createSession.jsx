@@ -19,12 +19,11 @@ export default class CreateSession extends React.Component {
         endYear: '2020',
         notes: '',
         holidays: '',
-        reqStartDate: '',
-        reqEndDate: '',
-        minHoursReqOperator: '',
-        minHoursReqOperations: '',
-        minHoursReqTrainer: '',
-        minHoursReqTrainee: ''
+        minHoursReq: 4
+        // minHoursReqOperator: 4,
+        // minHoursReqOperations: 4,
+        // minHoursReqTrainer: 4,
+        // minHoursReqTrainee: 4
       }
     };
     this.handleNewSessionChange = this.handleNewSessionChange.bind(this);
@@ -75,7 +74,7 @@ export default class CreateSession extends React.Component {
     console.log(newStartDate);
     let newEndDate = `${endYear}-${endMonth}-${endDay}`;
     console.log(newEndDate);
-    newSession = {...newSession, startDateString: newStartDate, endDateString: newEndDate};
+    newSession = { ...newSession, startDateString: newStartDate, endDateString: newEndDate };
     // if (newSession.startDate.length === 11 && newSession.endDate.length === 11) { - USE THIS IF WE WANT TO GO BACK TO UNIX TIMESTAMPS
     //   let startDateNewFormat = newSession.startDate + ' 00:00:00 GMT';
     //   let convertStartDate = new Date(startDateNewFormat);
@@ -281,17 +280,17 @@ export default class CreateSession extends React.Component {
               </div>
             </div>
             <div className="row">
-              <div className="col-2">
+              {/* <div className="col-2">
                 <label>Operator</label>
                 <br />
                 <input className="col border border-primary sessionOperatorInfoInput" name="" type="text" />
-              </div>
-              <div className="col">
+              </div> */}
+              <div className="col-2">
                 <label>Holiday Dates</label>
                 <br />
-                <input onChange={this.handleNewSessionChange} name="holidays" className="col border border-primary sessionOperatorInfoInput" type="text" />
+                <input onChange={this.handleNewSessionChange} name="holidays" className="col border border-primary sessionOperatorInfoInput" type="date" />
               </div>
-              <div className="col">
+              {/* <div className="col">
                 <label>Required Start Date</label>
                 <br />
                 <input onChange={this.handleNewSessionChange} name="reqStartDate" className="col border border-primary sessionOperatorInfoInput" type="text" />
@@ -326,7 +325,7 @@ export default class CreateSession extends React.Component {
                 <span>Trainee</span>
                 <br />
                 <input onChange={this.handleNewSessionChange} name="minHoursReqTrainee" className="col border border-primary sessionOperatorInfoInput" type="text" />
-              </div>
+              </div> */}
               <div className="col-2">
                 <button onClick={this.handleAddLineButton} className="col btn btn-warning">CANCEL</button>
                 <br />
