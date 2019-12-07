@@ -35,6 +35,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-multiple-datepicker": "^0.1.0",
     "react-notification-badge": "^1.5.1",
     "react-router-dom": "^5.0.1",
     "url-loader": "^2.3.0"

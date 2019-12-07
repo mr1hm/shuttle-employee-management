@@ -1,4 +1,5 @@
 import React from 'react';
+import MultipleDatePicker from 'react-multiple-datepicker';
 
 export default class CreateSession extends React.Component {
   constructor(props) {
@@ -29,6 +30,7 @@ export default class CreateSession extends React.Component {
     this.handleNewSessionChange = this.handleNewSessionChange.bind(this);
     this.handleNewSessionSubmit = this.handleNewSessionSubmit.bind(this);
     this.getAllUpdatedSessions = this.getAllUpdatedSessions.bind(this);
+    this.handleNewSessionHolidays = this.handleNewSessionHolidays.bind(this);
   }
 
   handleNewSessionChange(e) {
@@ -50,6 +52,34 @@ export default class CreateSession extends React.Component {
       newSession: {
         ...prevState.newSession,
         [name]: value
+      }
+    }));
+  }
+
+  handleNewSessionHolidays(dates) {
+    console.log(dates);
+    let holidays = '';
+    let holidaysArr = [];
+    dates.forEach(d => {
+      let dd = String(d.getDate()).padStart(2, '0');
+      let mm = String(d.getMonth() + 1).padStart(2, '0');
+      let yyyy = d.getFullYear();
+      let dateToday = yyyy + '-' + mm + '-' + dd;
+      holidaysArr.push(dateToday);
+      console.log(holidaysArr);
+    });
+    holidaysArr.forEach((date, index) => {
+      if (index !== holidaysArr.length - 1) {
+        date += ', ';
+        holidays += date;
+      } else {
+        holidays += date;
+      }
+    });
+    this.setState(prevState => ({
+      newSession: {
+        ...prevState.newSession,
+        holidays
       }
     }));
   }
@@ -288,7 +318,8 @@ export default class CreateSession extends React.Component {
               <div className="col-2">
                 <label>Holiday Dates</label>
                 <br />
-                <input onChange={this.handleNewSessionChange} name="holidays" className="col border border-primary sessionOperatorInfoInput" type="date" />
+                <MultipleDatePicker onSubmit={this.handleNewSessionHolidays} />
+                {/* <input onChange={this.handleNewSessionChange} name="holidays" className="col border border-primary sessionOperatorInfoInput" type="date" /> */}
               </div>
               {/* <div className="col">
                 <label>Required Start Date</label>
