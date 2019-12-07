@@ -16,7 +16,13 @@ class AdminOperatorAvailability extends React.Component {
       status: '',
       specialRouteOK: '',
       minAvailHours: '',
+      minOperatorHours: '',
+      minOperationsHours: '',
+      minTrainerHours: '',
+      minTraineeHours: '',
       availSubmissionDate: '',
+      openDate: 'not set',
+      closeDate: 'not set',
       addUser: false,
       editUser: false,
       selectSession: false,
@@ -124,12 +130,14 @@ class AdminOperatorAvailability extends React.Component {
     if (event.target.name === 'sessionId') {
       var index = event.nativeEvent.target.selectedIndex;
       this.setState({
-        sessionName: event.nativeEvent.target[index].text
+        sessionName: event.nativeEvent.target[index].text,
+        sessionId: event.target.value
+      }, this.setOtherSessionProperties);
+    } else {
+      this.setState({
+        [event.target.name]: event.target.value
       });
     }
-    this.setState({
-      [event.target.name]: event.target.value
-    });
   }
 
   processSessionSelection(event) {
@@ -148,9 +156,28 @@ class AdminOperatorAvailability extends React.Component {
         this.setState({
           sessionId: element.id,
           sessionName: element.name
-        }, this.getOperatorDetails);
+        }, this.setOtherSessionProperties);
       }
     });
+  }
+
+  setOtherSessionProperties() {
+    console.log();
+    for (var index = 0; index < this.state.sessionChoices.length; index++) {
+      console.log(this.state.sessionChoices[index].id);
+      if (this.state.sessionChoices[index].id === this.state.sessionId) {
+        var minOperatorHrs = this.state.sessionChoices[index].min_operator_hours;
+        var minOperationsHrs = this.state.sessionChoices[index].min_operations_hours;
+        var minTraineeHrs = this.state.sessionChoices[index].min_trainee_hours;
+        var minTrainerHrs = this.state.sessionChoices[index].min_trainer_hours;
+      }
+    }
+    this.setState({
+      minOperatorHours: minOperatorHrs,
+      minOperationsHours: minOperationsHrs,
+      minTrainerHours: minTrainerHrs,
+      minTraineeHours: minTraineeHrs
+    }, this.getOperatorDetails);
   }
 
   showSelectSessionModal() {
@@ -232,10 +259,32 @@ class AdminOperatorAvailability extends React.Component {
         <div className='nav'>
           <TopMenuGeneral title="ADMIN-OPERATOR AVAILABILITY" />
         </div>
-        <div className="addButton" style={{ fontWeight: 'bold', fontSize: '1.5em' }}>{this.state.sessionName}</div>
         <div className="addButton d-flex justify-content-end mt-3">
-          <button type="button" className="btn btn-primary btn ml-3" onClick={this.showSelectSessionModal}>Select Session</button>
+          <button className="btn-sm btn-primary ml-3" onClick={this.showSelectSessionModal}>Select Session</button>
         </div>
+        <div className="addButton d-flex justify-content-start">
+          <div style={{ fontWeight: 'bold', fontSize: '1.5em' }}>{this.state.sessionName}</div>
+        </div>
+        <div className="addButton d-flex justify-content-start mt-2" style={{ backgroundColor: 'lightgray' }}>
+          <div className="mr-2 d-flex justify-content-center pr-3 pl-3 mt-3">
+            <div>
+              <div className="mr-3">Min Operator Hours: {this.state.minOperatorHours}</div>
+              <div>Min Operations Hours: {this.state.minOperationsHours}</div>
+              <div className="mr-4">Min Trainer Hours: {this.state.minTrainerHours}</div>
+              <div >Min Trainee Hours: {this.state.minTraineeHours}</div>
+              <button className="btn-secondary btn-block mt-2">Change Minimum Hours</button>
+            </div>
+          </div>
+          <div className="d-flex justify-content-center pt-5 pr-3 pl-3 pb-3 mt-3">
+            <div >
+              <div>Open Date: {this.state.openDate} </div>
+              <div>Close Date: {this.state.closeDate} </div>
+              <button className="btn-secondary btn-block mt-2">Change Dates</button>
+            </div>
+          </div>
+
+        </div>
+
         <table className= 'mt-4'>
           <thead>
             <tr>
