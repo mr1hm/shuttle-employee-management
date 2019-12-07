@@ -9,7 +9,11 @@ $sessionQuery = "SELECT
               id,
               name,
               startDateString,
-              endDateString
+              endDateString,
+              min_operator_hours,
+              min_operations_hours,
+              min_trainer_hours,
+              min_trainee_hours
               FROM session";
 
 $result = mysqli_query($conn, $sessionQuery);
