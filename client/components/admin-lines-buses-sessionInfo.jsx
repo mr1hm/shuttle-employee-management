@@ -7,10 +7,8 @@ export default class SessionInfo extends React.Component {
     super(props);
     this.state = {
       sessionInfo: null,
-      selectedSessionID: null,
-      currentSessionInfo: null
+      selectedSessionID: null
     };
-    // this.getSessionInfo = this.getSessionInfo.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -32,19 +30,13 @@ export default class SessionInfo extends React.Component {
       .catch(error => console.error(error));
   }
 
-  findCurrentSession() {
-    const { sessionData, selectedSessionID } = this.state;
-    // const currentSessionInfo = sessionData.find(session => selectedSessionID === sessionData.id);
-  }
-
   render() {
-    const { sessionData } = this.state;
-    const { sessionSelected, selectedSessionID } = this.props;
-    if (!this.props.selectedSessionID) return <div>Please select a session to see details</div>;
+    const { sessionInfo } = this.state;
+    if (!sessionInfo) return <div>Please select a session to see details</div>;
     return (
       <div className="row">
         <div className="col">
-          <span>Current Session: {}</span>
+          <span>Current Session: {sessionInfo['1'].sessionName}</span>
         </div>
       </div>
     );

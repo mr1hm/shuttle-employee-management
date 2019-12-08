@@ -553,7 +553,7 @@ class AdminRoutes extends React.Component {
                   </div>
                 </div>
               </div>
-              <h4 className="operationsHistory mt-2">Session Information</h4>
+              <h4 className="operationsHistory mt-2">Session Details</h4>
               <SessionInfo selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} linesBusesInfo={this.state.linesBusesInfo} />
             </div>
           </div>
@@ -658,7 +658,7 @@ class AdminRoutes extends React.Component {
                 ? <div className="col-2 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste Session<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
             </div>
             {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
-            <h4 className="operationsHistory mt-2">Session Information</h4>
+            <h4 className="operationsHistory mt-2">Session Details</h4>
             {!this.state.sessionSelected
               ? <SessionInfo selectedSessionID={this.state.selectedSessionID} sessionSelected={this.state.sessionSelected} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
               : <SessionInfo sessionSelected={this.state.sessionSelected} selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />}
