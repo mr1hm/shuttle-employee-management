@@ -68,6 +68,7 @@ class AdminRoutes extends React.Component {
     this.getAllSessions = this.getAllSessions.bind(this);
     this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
     this.toggleMasterFieldStatus = this.toggleMasterFieldStatus.bind(this);
+    this.resetNewLineState = this.resetNewLineState.bind(this);
   }
 
   componentDidMount() {
@@ -172,6 +173,20 @@ class AdminRoutes extends React.Component {
     });
   }
 
+  resetNewLineState() {
+    this.setState(prevState => ({
+      newLine: {
+        session_id: 5,
+        line_name: null,
+        status: 'active',
+        roundDuration: null,
+        public: 'True',
+        regularService: 'True',
+        specialDriver: 0
+      }
+    }));
+  }
+
   addNewLine(newLine, e) {
     e.preventDefault();
     const init = {
@@ -190,6 +205,7 @@ class AdminRoutes extends React.Component {
           } else {
             this.getUpdatedLines({ session_id: newLine.session_id });
           }
+          this.resetNewLineState();
         });
       })
       .catch(error => console.error(error));
@@ -403,7 +419,7 @@ class AdminRoutes extends React.Component {
           <div className="container liveFieldStatusContentContainer">
             <div className="row">
               <div className="col d-inline-flex">
-                <h1 className="adminLinesBusesTitle">Lines & Buses</h1>
+                <h1 className="adminLinesBusesTitle">Lines &amp; Buses</h1>
               </div>
             </div>
           </div>
@@ -554,7 +570,9 @@ class AdminRoutes extends React.Component {
                 </div>
               </div>
               <h4 className="operationsHistory mt-2">Session Details</h4>
-              <SessionInfo selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} linesBusesInfo={this.state.linesBusesInfo} />
+              {!this.state.sessionSelected
+                ? <SessionInfo selectedSessionID={this.state.selectedSessionID} sessionSelected={this.state.sessionSelected} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
+                : <SessionInfo sessionSelected={this.state.sessionSelected} selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />}
             </div>
           </div>
           <div className="accordion" id="accordionExample">
@@ -595,7 +613,7 @@ class AdminRoutes extends React.Component {
         <div className="container liveFieldStatusContentContainer">
           <div className="row">
             <div className="col d-inline-flex">
-              <h1 className="adminLinesBusesTitle">Lines & Buses</h1>
+              <h1 className="adminLinesBusesTitle">Lines &amp; Buses</h1>
             </div>
           </div>
         </div>
