@@ -21,16 +21,16 @@ export default class CreateSession extends React.Component {
         notes: '',
         holidays: '',
         minHoursReq: 4
-        // minHoursReqOperator: 4,
-        // minHoursReqOperations: 4,
-        // minHoursReqTrainer: 4,
-        // minHoursReqTrainee: 4
       }
     };
     this.handleNewSessionChange = this.handleNewSessionChange.bind(this);
     this.handleNewSessionSubmit = this.handleNewSessionSubmit.bind(this);
     this.getAllUpdatedSessions = this.getAllUpdatedSessions.bind(this);
     this.handleNewSessionHolidays = this.handleNewSessionHolidays.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.allSessions !== this.props.allSessions) this.setState({ sessions: this.props.allSessions });
   }
 
   handleNewSessionChange(e) {
@@ -101,9 +101,7 @@ export default class CreateSession extends React.Component {
     let endMonth = this.state.newSession.endMonth;
     let endYear = this.state.newSession.endYear;
     let newStartDate = `${startYear}-${startMonth}-${startDay}`;
-    console.log(newStartDate);
     let newEndDate = `${endYear}-${endMonth}-${endDay}`;
-    console.log(newEndDate);
     newSession = { ...newSession, startDateString: newStartDate, endDateString: newEndDate };
     // if (newSession.startDate.length === 11 && newSession.endDate.length === 11) { - USE THIS IF WE WANT TO GO BACK TO UNIX TIMESTAMPS
     //   let startDateNewFormat = newSession.startDate + ' 00:00:00 GMT';
@@ -124,8 +122,9 @@ export default class CreateSession extends React.Component {
       .then(response => response.json())
       .then(sessionInfo => {
         this.setState({
-          newSessionAdded: true
-        }, this.props.getLinesBusesInfo);
+          newSessionAdded: true,
+          sessions: this.props.allSessions
+        }, this.props.getAllSessions);
         this.props.handleAddNewSessionClick();
       })
       .catch(error => console.error(error));
@@ -135,8 +134,8 @@ export default class CreateSession extends React.Component {
   getAllUpdatedSessions() {
     fetch('api/admin-lines-buses-sessions.php')
       .then(response => response.json())
-      .then(sessionsData => {
-        console.log(sessionsData);
+      .then(sessions => {
+        this.setState({ newSessionAdded: true, sessions });
       })
       .catch(error => console.error(error));
   }

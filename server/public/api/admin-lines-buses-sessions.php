@@ -343,8 +343,13 @@ if ($method === 'POST' && (isset($bodyData['sessionInfo']))) {
     }
   }
   $data[$routeID] = $sessionInfo;
-
   $data = array_values($data);
+
+  if (!isset($routeID)) {
+    // $data = $sessionInfo;
+    $data = [];
+  }
+
   print(json_encode($data));
 }
 

@@ -431,11 +431,7 @@ class AdminRoutes extends React.Component {
                   <label className="selectSessionLabel">Select Session</label>
                   <select onChange={this.handleSessionChange} className="col border border-primary" name="currentSession">
                     <option>All Sessions</option>
-                    {this.state.sessions.map(sessionData => {
-                      return (
-                        <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
-                      );
-                    })}
+                    <Sessions getAllSessions={this.getAllSessions} allSessions={this.state.sessions} />
                   </select>
                 </div>
                 <div className="col d-flex align-items-end">
@@ -571,8 +567,8 @@ class AdminRoutes extends React.Component {
               </div>
               <h4 className="operationsHistory mt-2">Session Details</h4>
               {!this.state.sessionSelected
-                ? <SessionInfo selectedSessionID={this.state.selectedSessionID} sessionSelected={this.state.sessionSelected} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
-                : <SessionInfo sessionSelected={this.state.sessionSelected} selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />}
+                ? <SessionInfo currentSession={this.state.currentSession} selectedSessionID={this.state.selectedSessionID} sessionSelected={this.state.sessionSelected} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
+                : <SessionInfo currentSession={this.state.currentSession} sessionSelected={this.state.sessionSelected} selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />}
             </div>
           </div>
           <div className="accordion" id="accordionExample">
@@ -625,11 +621,7 @@ class AdminRoutes extends React.Component {
                 <label className="selectSessionLabel">Select Session</label>
                 <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
                   <option>All Sessions</option>
-                  {this.state.sessions.map(sessionData => {
-                    return (
-                      <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
-                    );
-                  })}
+                  <Sessions getAllSessions={this.getAllSessions} allSessions={this.state.sessions} />;
                 </select>
               </div>
               <div className="col d-flex align-items-end">
@@ -678,8 +670,8 @@ class AdminRoutes extends React.Component {
             {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
             <h4 className="operationsHistory mt-2">Session Details</h4>
             {!this.state.sessionSelected
-              ? <SessionInfo selectedSessionID={this.state.selectedSessionID} sessionSelected={this.state.sessionSelected} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
-              : <SessionInfo sessionSelected={this.state.sessionSelected} selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />}
+              ? <SessionInfo currentSession={this.state.currentSession} selectedSessionID={this.state.selectedSessionID} sessionSelected={this.state.sessionSelected} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
+              : <SessionInfo currentSession={this.state.currentSession} sessionSelected={this.state.sessionSelected} selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />}
           </div>
         </div>
         <div className="accordion" id="accordionExample">
