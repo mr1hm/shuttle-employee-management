@@ -50,7 +50,7 @@ export default class Lines extends React.Component {
   }
 
   getSessionName() {
-    let currentSession = this.props.sessions.find(session => {
+    const currentSession = this.props.sessions.find(session => {
       return this.props.line.sessionID === session.id;
     });
     this.setState({
