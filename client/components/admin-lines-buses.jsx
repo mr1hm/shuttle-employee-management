@@ -125,8 +125,10 @@ class AdminRoutes extends React.Component {
       .then(response => response.json())
       .then(deletedSession => {
         this.getAllSessions();
-      })
+        this.getLinesBusesInfo();
+      }, this.handleDeleteSessionClick)
       .catch(error => console.error(error));
+
   }
 
   handleCopySession(sessionID) {

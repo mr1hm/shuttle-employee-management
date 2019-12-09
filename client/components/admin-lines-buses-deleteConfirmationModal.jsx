@@ -6,10 +6,11 @@ export default class DeleteConfirmationModal extends React.Component {
     super(props);
     this.state = {
       sessionInfo: null,
-      routeIDArr: []
+      routeIDArr: [],
+      busIDArr: []
     };
     this.getSessionInfo = this.getSessionInfo.bind(this);
-    this.getAllRouteIDs = this.getAllRouteIDs.bind(this);
+    this.getAllRouteIDsAndBusIDs = this.getAllRouteIDsAndBusIDs.bind(this);
   }
 
   componentDidMount() {
@@ -22,7 +23,7 @@ export default class DeleteConfirmationModal extends React.Component {
     }
   }
 
-  getAllRouteIDs() {
+  getAllRouteIDsAndBusIDs() {
     const { sessionInfo } = this.state;
     let routeIDArr = [];
     sessionInfo.forEach(session => routeIDArr.push(session.routeID));

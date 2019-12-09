@@ -366,7 +366,7 @@ if ($method === 'DELETE' && isset($bodyData['sessionToDelete'])) {
     throw new Exception('delete session query error ' . mysqli_error($conn));
   }
 
-  $query = "DELETE FROM `route` WHERE `route`.`session_id` = '$sessionID";
+  $query = "DELETE FROM `route` WHERE `route`.`session_id` = '$sessionID'";
   $result = mysqli_query($conn, $query);
 
   if (!$result) {
@@ -384,7 +384,6 @@ if ($method === 'DELETE' && isset($bodyData['sessionToDelete'])) {
     }
   }
 
-  $query = "DELETE FROM `bus_info` WHERE `bus_info`.`route_id` = '$routeID'";
 }
 
 ?>
