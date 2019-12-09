@@ -313,7 +313,7 @@ export default class MasterSchedule extends React.Component {
                             <td className="masterScheduleLineName">{driver.line_name}</td>
                             <td>{driver.bus_number}</td>
                             <td>{`AE-${driver.vehicle_id}`}</td>
-                            <td>{`${driver.name} (${driver.role})`}</td>
+                            <td>{driver.name}</td>
                             <td>{`${driver.start} - ${driver.end}`}</td>
                           </tr>
                         );
