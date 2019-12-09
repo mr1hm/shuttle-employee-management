@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-export default (allowedRoles = []) => (WrappedComponent, to = '/login') => {
+export default (allowedRoles = []) => (WrappedComponent, props = {}, to = '/login') => {
   class Auth extends React.Component {
     componentDidMount() {
       this.checkAuth();
@@ -24,6 +24,8 @@ export default (allowedRoles = []) => (WrappedComponent, to = '/login') => {
 
       if (!allowedRoles.length) return true;
 
+      if (!roles) return false;
+
       for (let i = 0; i < allowedRoles.length; i++) {
         const role = allowedRoles[i];
 
@@ -38,7 +40,7 @@ export default (allowedRoles = []) => (WrappedComponent, to = '/login') => {
 
       if (auth === 'pending' || !auth || (auth && auth !== 'pending' && !this.userHasRole())) return null;
 
-      return <WrappedComponent {...this.props} />;
+      return <WrappedComponent {...this.props} {...props} />;
     }
   }
 

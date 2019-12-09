@@ -12,7 +12,7 @@ import Lines from './admin-lines-buses-lines';
 import CreateSession from './admin-lines-buses-createSession';
 import OperationsHistory from './admin-lines-buses-operationsHistory';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
-import MasterSchedule from './admin-lines-buses-masterSchedule';
+import MasterSchedule from './admin-lines-buses-master-schedule';
 import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

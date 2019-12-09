@@ -4,8 +4,7 @@ import HoursOfOperationWeek from './hours-of-operation-week';
 import ShiftsWeekDay from './shifts-week-day';
 import TopMenuShift from '../../topmenu/topmenu-shift';
 import {
-  getDateString,
-  adjustUTCSecondsToLocalTimestamp
+  getDateString
 } from '../../../lib/time-functions';
 
 class ShiftsWeek extends React.Component {
@@ -37,12 +36,10 @@ class ShiftsWeek extends React.Component {
       };
       dateObj.setUTCDate(dateObj.getUTCDate() + 1);
     }
-    fetch(`/api/shifts-week.php?startDate=${firstDayOfWeek}&endDate=${lastDayOfWeek}&id=${this.props.userId}`)
+    fetch(`/api/shifts-week.php?startDate=${firstDayOfWeek}&endDate=${lastDayOfWeek}`)
       .then(response => response.json())
       .then(data => {
         let weekWithShifts = this.generateArrayOfFullWeek(week, data);
-        console.log('week: ', weekWithShifts);
-        console.log('data', data);
         this.setState({
           week: weekWithShifts,
           data: data
@@ -58,7 +55,6 @@ class ShiftsWeek extends React.Component {
       }
     }
     let weekDataArray = Object.values(weekObj);
-    console.log('weekDataArray:', weekDataArray);
     return weekDataArray;
   }
   componentDidMount() {
@@ -76,7 +72,7 @@ class ShiftsWeek extends React.Component {
     const week = this.state.week;
     return (
       <React.Fragment>
-        <TopMenuShift userId={this.props.userId} title="WEEK" page='week' dateString={this.props.match.params.date} />
+        <TopMenuShift title="WEEK" page='week' dateString={this.props.match.params.date} />
         <div className="mainContainerWeek d-flex flex-column">
           <div className="weeksContainer px-5">
             <HoursOfOperationWeek />
