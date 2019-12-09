@@ -8,6 +8,8 @@ $data = getBodyData();
 $sessionQuery = "SELECT 
               id,
               name,
+              availStartDateString,
+              availEndDateString,
               startDateString,
               endDateString,
               min_operator_hours,
