@@ -46,8 +46,8 @@ export default class SessionInfo extends React.Component {
       sessionStart = line.sessionStart;
       sessionEnd = line.sessionEnd;
       minHoursReq = line.minHoursReq;
-      if (!line.sessionNotes) sessionNotes = line.sessionNotes;
-      if (!line.sessionHolidays) sessionHolidays = line.sessionHolidays;
+      if (line.sessionNotes) sessionNotes = line.sessionNotes;
+      if (line.sessionHolidays) sessionHolidays = line.sessionHolidays;
       if (line.activeBuses.length > 0) {
         for (let i = 0; i < line.activeBuses.length; ++i) {
           busCount++;
@@ -56,21 +56,21 @@ export default class SessionInfo extends React.Component {
     });
     return (
       <>
-      <span>Current Session: {sessionName}</span>
+        <span className="sessionInfoTitle">Current Session: </span><span className="sessionInfoValues">{sessionName}</span>
       <br/>
-      <span>Session Holidays: {sessionHolidays}</span>
+        <span className="sessionInfoTitle">Session Holidays: </span><span className="sessionInfoValues">{sessionHolidays}</span>
       <br/>
-      <span>Lines Active: {lineCount}</span>
+        <span className="sessionInfoTitle">Lines On Session: </span><span className="sessionInfoValues">{lineCount}</span>
       <br/>
-      <span>Buses Active: {busCount}</span>
+        <span className="sessionInfoTitle">Buses Active: </span><span className="sessionInfoValues">{busCount}</span>
       <br/>
-      <span>Session Start Date: {sessionStart}</span>
+        <span className="sessionInfoTitle">Session Start Date: </span><span className="sessionInfoValues">{sessionStart}</span>
       <br/>
-      <span>Session End Date: {sessionEnd}</span>
+        <span className="sessionInfoTitle">Session End Date: </span><span className="sessionInfoValues">{sessionEnd}</span>
       <br/>
-      <span>Session Notes: {sessionNotes || 'None'}</span>
+        <span className="sessionInfoTitle">Session Notes: </span><span className="sessionInfoValues">{sessionNotes || 'None'}</span>
       <br/>
-      <span>Session Minimum Hours Required: {minHoursReq}</span>
+        <span className="sessionInfoTitle">Session Minimum Hours Required: </span><span className="sessionInfoValues">{minHoursReq}</span>
       </>
     );
   }

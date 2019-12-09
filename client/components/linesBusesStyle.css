@@ -61,6 +61,14 @@
   height: 1.25em;
 }
 
+.sessionInfoTitle {
+  font-weight: 600;
+}
+
+.sessionInfoValues {
+  color: rgba(255, 255, 255, .9);
+}
+
 .operationsHistoryAddIcon {
   font-size: 13px;
   margin-right: 4px;
