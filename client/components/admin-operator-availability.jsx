@@ -3,6 +3,8 @@ import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import EditUserModal from './admin-edit-user-modal';
 import SelectSessionModal from './admin-select-session-modal';
+import ChangeDateModal from './admin-change-date-modal';
+import ChangeHoursModal from './admin-change-hours-modal';
 import { getDateString } from '../lib/time-functions';
 
 class AdminOperatorAvailability extends React.Component {
@@ -21,8 +23,10 @@ class AdminOperatorAvailability extends React.Component {
       minTrainerHours: '',
       minTraineeHours: '',
       availSubmissionDate: '',
-      openDate: 'not set',
-      closeDate: 'not set',
+      startDate: '',
+      endDate: '',
+      changeDate: false,
+      changeHours: false,
       addUser: false,
       editUser: false,
       selectSession: false,
@@ -43,8 +47,25 @@ class AdminOperatorAvailability extends React.Component {
     this.editUser = this.editUser.bind(this);
     this.closeEditUserModal = this.closeEditUserModal.bind(this);
     this.closeEditUserModalClearInfo = this.closeEditUserModalClearInfo.bind(this);
+    this.showChangeDatesModal = this.showChangeDatesModal.bind(this);
+    this.updateDateChangesInDatabase = this.updateDateChangesInDatabase.bind(this);
+    this.closeChangeHoursModal = this.closeChangeHoursModal.bind(this);
+    this.closeChangeHoursModal = this.closeChangeHoursModal.bind(this);
+    this.showChangeHoursModal = this.showChangeHoursModal.bind(this);
+    this.updateHoursInDatabase = this.updateHoursInDatabase.bind(this);
+
   }
 
+  closeChangeDateModal() {
+    this.setState({
+      changeDate: false
+    });
+  }
+  closeChangeHoursModal() {
+    this.setState({
+      changeHours: false
+    });
+  }
   closeSelectSessionModal() {
     this.setState({
       selectSession: false
@@ -144,8 +165,7 @@ class AdminOperatorAvailability extends React.Component {
     event.preventDefault();
     this.setState({
       selectSession: false
-    });
-    this.getOperatorDetails();
+    }, this.setOtherSessionProperties);
   }
 
   setDefaultSession() {
@@ -162,27 +182,41 @@ class AdminOperatorAvailability extends React.Component {
   }
 
   setOtherSessionProperties() {
-    console.log();
     for (var index = 0; index < this.state.sessionChoices.length; index++) {
-      console.log(this.state.sessionChoices[index].id);
       if (this.state.sessionChoices[index].id === this.state.sessionId) {
         var minOperatorHrs = this.state.sessionChoices[index].min_operator_hours;
         var minOperationsHrs = this.state.sessionChoices[index].min_operations_hours;
         var minTraineeHrs = this.state.sessionChoices[index].min_trainee_hours;
         var minTrainerHrs = this.state.sessionChoices[index].min_trainer_hours;
+        var availStartDate = this.state.sessionChoices[index].availStartDateString;
+        var availEndDate = this.state.sessionChoices[index].availEndDateString;
       }
     }
     this.setState({
       minOperatorHours: minOperatorHrs,
       minOperationsHours: minOperationsHrs,
       minTrainerHours: minTrainerHrs,
-      minTraineeHours: minTraineeHrs
+      minTraineeHours: minTraineeHrs,
+      startDate: availStartDate,
+      endDate: availEndDate
     }, this.getOperatorDetails);
+  }
+
+  showChangeHoursModal() {
+    this.setState({
+      changeHours: true
+    });
   }
 
   showSelectSessionModal() {
     this.setState({
       selectSession: true
+    });
+  }
+
+  showChangeDatesModal() {
+    this.setState({
+      changeDate: true
     });
   }
 
@@ -209,6 +243,40 @@ class AdminOperatorAvailability extends React.Component {
     return (
       <div style={{ ...defaultStyles, ...colorStyle }}></div>
     );
+  }
+
+  updateHoursInDatabase(event) {
+    event.preventDefault();
+    this.closeChangeHoursModal();
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'min_operator_hours': this.state.minOperatorHours,
+        'min_operations_hours': this.state.minOperationsHours,
+        'min_trainer_hours': this.state.minTrainerHours,
+        'min_trainee_hours': this.state.minTraineeHours,
+        'session_id': this.state.sessionId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch('/api/edit-minimum-hours.php', data)
+      .catch(error => { throw (error); });
+  }
+
+  updateDateChangesInDatabase(event) {
+    event.preventDefault();
+    this.closeChangeDateModal();
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'avail_start_date': this.state.startDate,
+        'avail_end_date': this.state.endDate,
+        'session_id': this.state.sessionId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch('/api/edit-availability-dates.php', data)
+      .catch(error => { throw (error); });
   }
 
   updateUserInDatabase(event) {
@@ -246,6 +314,7 @@ class AdminOperatorAvailability extends React.Component {
       })
       .catch(error => { throw (error); });
   }
+
   render() {
     var hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
     var tableheaderContent = ['Last Name', 'First Name', 'User Id', 'Role', 'Special Route', 'Minimum Hrs', 'Submission Date', 'Submitted', 'Change'];
@@ -272,14 +341,14 @@ class AdminOperatorAvailability extends React.Component {
               <div>Min Operations Hours: {this.state.minOperationsHours}</div>
               <div className="mr-4">Min Trainer Hours: {this.state.minTrainerHours}</div>
               <div >Min Trainee Hours: {this.state.minTraineeHours}</div>
-              <button className="btn-secondary btn-block mt-2">Change Minimum Hours</button>
+              <button className="btn-secondary btn-block mt-2" onClick={this.showChangeHoursModal}>Change Minimum Hours</button>
             </div>
           </div>
           <div className="d-flex justify-content-center pt-5 pr-3 pl-3 pb-3 mt-3">
             <div >
-              <div>Open Date: {this.state.openDate} </div>
-              <div>Close Date: {this.state.closeDate} </div>
-              <button className="btn-secondary btn-block mt-2">Change Dates</button>
+              <div>Open Date: {this.state.startDate} </div>
+              <div>Close Date: {this.state.endDate} </div>
+              <button className="btn-secondary btn-block mt-2" onClick={this.showChangeDatesModal}>Change Dates</button>
             </div>
           </div>
 
@@ -369,6 +438,52 @@ class AdminOperatorAvailability extends React.Component {
             </form>
           </div>
         </SelectSessionModal>
+
+        <ChangeDateModal showChangeDateModal={this.state.changeDate}>
+          <div className="d-flex justify-content-center">
+            <div>{this.state.sessionName}</div>
+            <form onSubmit={this.updateDateChangesInDatabase}>
+              <div className="m-2">
+                <div>Availability Start Date</div>
+                <input name="startDate" onChange={this.handleFormEntry} value={this.state.startDate}/>
+              </div>
+              <div className="m-2">
+                <div>Availability End Date</div>
+                <input name="endDate" onChange={this.handleFormEntry} value={this.state.endDate}/>
+              </div>
+              <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
+                <button className="btn-success mr-2" type='submit'>Close</button>
+              </div>
+            </form>
+          </div>
+        </ChangeDateModal>
+
+        <ChangeHoursModal showChangeHoursModal={this.state.changeHours}>
+          <div className="d-flex justify-content-center">
+            <div>{this.state.sessionName}</div>
+            <form onSubmit={this.updateHoursInDatabase}>
+              <div className="m-2">
+                <div>Minimum Operator Hours</div>
+                <input name="minOperatorHours" onChange={this.handleFormEntry} value={this.state.minOperatorHours}/>
+              </div>
+              <div className="m-2">
+                <div>Minimum Operations Hours</div>
+                <input name="minOperationsHours" onChange={this.handleFormEntry} value={this.state.minOperationsHours}/>
+              </div>
+              <div className="m-2">
+                <div>Minimum Trainer Hours</div>
+                <input name="minTrainerHours" onChange={this.handleFormEntry} value={this.state.minTrainerHours}/>
+              </div>
+              <div className="m-2">
+                <div>Minimum Trainee Hours</div>
+                <input name="minTraineeHours" onChange={this.handleFormEntry} value={this.state.minTraineeHours}/>
+              </div>
+              <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
+                <button className="btn-success mr-2" type='submit'>Close</button>
+              </div>
+            </form>
+          </div>
+        </ChangeHoursModal>
 
       </React.Fragment>
     );
