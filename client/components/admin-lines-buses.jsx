@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
+import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
@@ -43,14 +44,14 @@ class AdminRoutes extends React.Component {
         regularService: 'True',
         specialDriver: 0
       },
-      deleteHistory: [],
-      addHistory: [],
       newLineAdded: false,
       mostRecentRouteID: null,
       operationsHistoryMethod: null,
       originalLinesBusesInfo: null,
       liveFieldStatus: false,
-      masterFieldStatus: false
+      masterFieldStatus: false,
+      deleteSessionClicked: false,
+      deleteStatus: 'session'
     };
     this.getUpdatedLines = this.getUpdatedLines.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
@@ -69,6 +70,7 @@ class AdminRoutes extends React.Component {
     this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
     this.toggleMasterFieldStatus = this.toggleMasterFieldStatus.bind(this);
     this.resetNewLineState = this.resetNewLineState.bind(this);
+    this.handleDeleteSessionClick = this.handleDeleteSessionClick.bind(this);
   }
 
   componentDidMount() {
@@ -109,6 +111,22 @@ class AdminRoutes extends React.Component {
     }
     let sessionInfo = this.state.sessions.find(session => session.name === value);
     this.selectSession({ session_id: sessionInfo.id }, e);
+  }
+
+  handleDeleteSessionClick() {
+    this.setState({ deleteSessionClicked: !this.state.deleteSessionClicked });
+  }
+
+  deleteSession(sessionID, routeIDArr) {
+    const body = { sessionToDelete: sessionID, routeIDArr };
+    const init = { method: 'DELETE', body: JSON.stringify(body) };
+
+    fetch('api/admin-lines-buses-sessions.php', init)
+      .then(response => response.json())
+      .then(deletedSession => {
+        this.getAllSessions();
+      })
+      .catch(error => console.error(error));
   }
 
   handleCopySession(sessionID) {
@@ -337,7 +355,7 @@ class AdminRoutes extends React.Component {
         .then(response => response.json())
         .then(linesBusesInfo => {
           this.setState({
-            linesBusesInfo: linesBusesInfo
+            linesBusesInfo
           });
         })
         .catch(error => console.error(error));
@@ -384,8 +402,7 @@ class AdminRoutes extends React.Component {
   }
 
   render() {
-    const { linesBusesInfo } = this.state;
-    const { sessions } = this.state;
+    const { linesBusesInfo, sessions, deleteSessionClicked } = this.state;
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
     let largestID = 0;
@@ -434,6 +451,11 @@ class AdminRoutes extends React.Component {
                     <Sessions getAllSessions={this.getAllSessions} allSessions={this.state.sessions} />
                   </select>
                 </div>
+                {this.state.currentSession !== 'All Sessions'
+                  ? <div className="col d-flex align-items-end">
+                    < button className="btn btn-outline-dark deleteSessionBtn w-100">Delete Session</button>
+                  </div>
+                  : null}
                 <div className="col d-flex align-items-end">
                   {this.state.addNewSessionClicked ? <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark newSessionBtn w-100">Cancel</button>
                     : <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark newSessionBtn w-100">Add New Session</button>}
@@ -624,6 +646,12 @@ class AdminRoutes extends React.Component {
                   <Sessions getAllSessions={this.getAllSessions} allSessions={this.state.sessions} />;
                 </select>
               </div>
+              {this.state.currentSession !== 'All Sessions'
+                ? <div className="col d-flex align-items-end">
+                  < button className="btn btn-outline-dark deleteSessionBtn w-100" onClick={this.handleDeleteSessionClick}>Delete Session</button>
+                </div>
+                : null}
+              {deleteSessionClicked ? <DeleteConfirmationModal handleDeleteSessionClick={this.handleDeleteSessionClick} selectedSessionID={this.state.selectedSessionID} deleteStatus={this.state.deleteStatus} deleteSession={this.deleteSession} /> : null}
               <div className="col d-flex align-items-end">
                 {this.state.addNewSessionClicked ? <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark newSessionBtn w-100">Cancel</button>
                   : <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark newSessionBtn w-100">Add New Session</button>}

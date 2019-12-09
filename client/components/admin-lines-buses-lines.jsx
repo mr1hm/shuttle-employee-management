@@ -46,17 +46,17 @@ export default class Lines extends React.Component {
   }
 
   componentDidMount() {
-    this.getSessionName();
+    // this.getSessionName();
   }
 
-  getSessionName() {
-    let currentSession = this.props.sessions.find(session => {
-      return this.props.line.sessionID === session.id;
-    });
-    this.setState({
-      sessionName: currentSession.name
-    });
-  }
+  // getSessionName() {
+  //   let currentSession = this.props.sessions.find(session => {
+  //     return this.props.line.sessionID === session.id;
+  //   });
+  //   this.setState({
+  //     sessionName: currentSession.name
+  //   });
+  // }
 
   handleAddBusButtonClick() {
     this.setState({

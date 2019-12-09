@@ -319,6 +319,7 @@ if ($method === 'POST' && (isset($bodyData['sessionInfo']))) {
       $sessionInfo['minHoursReq'] = $row['minHoursReq'];
       $sessionInfo['sessionID'] = $row['sessionID'];
       $sessionInfo['lineName'] = $row['line_name'];
+      $sessionInfo['routeID'] = $row['routeID'];
       if ($row['busID'] !== NULL) {
         $buses[] = $row['busID'];
       } else {
@@ -351,6 +352,39 @@ if ($method === 'POST' && (isset($bodyData['sessionInfo']))) {
   }
 
   print(json_encode($data));
+}
+
+if ($method === 'DELETE' && isset($bodyData['sessionToDelete'])) {
+
+  $routeIDArr = $bodyData['routeIDArr'];
+  $sessionID = $bodyData['sessionToDelete'];
+
+  $query = "DELETE FROM `session` WHERE `session`.`id` = '$sessionID'";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('delete session query error ' . mysqli_error($conn));
+  }
+
+  $query = "DELETE FROM `route` WHERE `route`.`session_id` = '$sessionID";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('delete lines on session query error ' . mysqli_error($conn));
+  }
+
+  foreach($bodyData['routeIDArr'] as $value) {
+    $routeID = $value;
+
+    $query = "DELETE FROM `bus_info` WHERE `bus_info`.`route_id` = '$routeID'";
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('delete from bus_info query error ' . mysqli_error($conn));
+    }
+  }
+
+  $query = "DELETE FROM `bus_info` WHERE `bus_info`.`route_id` = '$routeID'";
 }
 
 ?>

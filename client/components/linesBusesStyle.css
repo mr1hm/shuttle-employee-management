@@ -118,7 +118,8 @@ table.liveFieldStatusTable td {
 }
 
 .addLineBtn,
-.newSessionBtn {
+.newSessionBtn,
+.deleteSessionBtn {
   color: #FFA804;
   background-color: rgb(23, 2, 61);
   border: 1px solid #FFA804;
