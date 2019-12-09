@@ -1,32 +1,41 @@
 <?php
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once('db_connection.php');
-if (!empty($_GET['id'])) {
-  $id = $_GET['id'];
-  if (!is_numeric($id)) {
-    throw new Exception('id needs to be a number');
+  require_once('../../lib/startup.php');
+  require_once(AUTH);
+  require_once(DATES);
+  set_tz_la();
+
+  $user = getRequestUser();
+
+  if(!$user) {
+    throw new ApiError(null, 401, 'Not Authorized');
   }
-  $id = intval($id);
-}
-$startDate = $_GET['startDate'];
-$endDate = $_GET['endDate'];
 
-$query = "SELECT * FROM `round` WHERE `user_id`= {$id} AND (`date` >= '$startDate' AND `date` <= '$endDate')
-ORDER BY `date`, `start_time` ASC";
+  $startDate = getLast('Sunday');
+  $endDate = getNext('Saturday');
 
-$result = mysqli_query($conn, $query);
+  if(isset($_GET['startDate']) && $_GET['endDate']) {
+    $startDate = $_GET['startDate'];
+    $endDate = $_GET['endDate'];
+  }
+
+  $stmt = $mysqli->prepare("SELECT * FROM `round` 
+                            WHERE `user_id`= ? AND (`date` >= ? AND `date` <= ?)
+                            ORDER BY `date`, `start_time` ASC");
+
+  $stmt->bind_param('iss', $user['userId'], $startDate, $endDate);
+  $stmt->execute();
+
+  $result = $stmt->get_result();
 
   if(!$result){
-    throw new Exception('mysql error ' . mysqli_error($conn));
+    throw new ApiError(null, 500, 'Error getting week\'s schedule');
   }
 
   $data = [];
-  while($row = mysqli_fetch_assoc($result)){
-
+  while($row = $result->fetch_assoc()){
     $row['posted'] = $row['status'] === 'posted' ? true: false;
     unset($row['status']);
     $data[] = $row;
   }
 
-print(json_encode($data));
+  send($data);
