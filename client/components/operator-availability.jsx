@@ -32,6 +32,7 @@ class OperatorAvailability extends React.Component {
       error: false,
       selectedStartTime: null,
       selectedEndTime: null,
+      comment: '',
       // this will eventually come in through props with auth system
       userId: 9,
       sessionId: '',
@@ -60,6 +61,7 @@ class OperatorAvailability extends React.Component {
     this.getAvailabilityInfoToStart = this.getAvailabilityInfoToStart.bind(this);
 
     this.handleFormEntry = this.handleFormEntry.bind(this);
+    this.handleCommentEntry = this.handleCommentEntry.bind(this);
 
     this.setStartTime = this.setStartTime.bind(this);
     this.setEndTime = this.setEndTime.bind(this);
@@ -317,6 +319,12 @@ class OperatorAvailability extends React.Component {
     });
   }
 
+  handleCommentEntry(event) {
+    this.setState({
+      comment: event.target.value
+    });
+  }
+
   handleSubmitModal() {
     this.updateDatabase();
     this.setState({
@@ -496,7 +504,8 @@ class OperatorAvailability extends React.Component {
       body: JSON.stringify({
         'user_id': this.state.userId,
         'availability': this.state.availability,
-        'session_id': this.state.sessionId
+        'session_id': this.state.sessionId,
+        'comment': this.state.comment
       }),
       headers: { 'Content-Type': 'application/json' }
     })
@@ -594,9 +603,17 @@ class OperatorAvailability extends React.Component {
           </div>
         </ErrorModal>
 
-        <SubmitModal day={this.state.day} submitShow={this.state.submit} submitAndClose={this.handleSubmitModal} submitCancel={this.cancelSubmitModal}>
-          <div className="d-flex justify-content-center">
-            <p className='mt-3 mb-2 ml-3 mr-3 text-align-center'>Are you sure you want to submit your available times?</p>
+        <SubmitModal day={this.state.day} submitShow={this.state.submit}>
+          <div className="d-flex flex-column">
+            <div>
+              <div className="mt-4">Comments:</div>
+              <textarea rows="4" cols="40" maxLength="150" onChange={this.handleCommentEntry}value={this.state.comment}></textarea>
+            </div>
+            <div className="mt-4 mb-2 d-flex justify-content-center">Submit your available times?</div>
+            <div className="d-flex justify-content-center">
+              <button className="btn btn-secondary center-block mb-3" onClick={this.handleSubmitModal}>Yes</button>
+              <button className="btn btn-primary center-block mb-3 ml-3" onClick={this.cancelSubmitModal}>CANCEL</button>
+            </div>
           </div>
         </SubmitModal>
 
