@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import './hamburger-menu.css';
@@ -44,7 +45,7 @@ class HamburgerMenu extends React.Component {
       })
       .catch(error => console.error('Fetch failed', error));
   }
-
+      
   render() {
     const visibleClass = this.state.open ? 'visible' : 'hidden';
     const menuNotification = (<div className="notification-badge move-notification">
@@ -72,4 +73,11 @@ class HamburgerMenu extends React.Component {
     );
   }
 }
-export default HamburgerMenu;
+
+function mapStateToProps(state) {
+  return {
+    userId: state.user.uciNetId
+  };
+}
+
+export default connect(mapStateToProps)(HamburgerMenu);

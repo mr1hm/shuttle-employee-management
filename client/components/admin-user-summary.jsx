@@ -145,7 +145,7 @@ class AdminUserSummary extends React.Component {
     });
   }
 
-  showAddUserModal() {
+  showAddUserModal(event) {
     this.setState({
       addUser: true
     });
@@ -181,7 +181,7 @@ class AdminUserSummary extends React.Component {
         </div>
         <div className="addButton d-flex justify-content-end mt-3">
           {this.toggleActiveAndAllUsers()}
-          <button type="button" className="btn btn-primary btn ml-3" onClick={this.showAddUserModal}>Add User</button>
+          <button type="button" className="btn btn-primary btn ml-3" name="addUser" onClick={this.showAddUserModal}>Add User</button>
         </div>
         <table className= 'mt-4'>
           <thead>

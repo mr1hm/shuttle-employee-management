@@ -1,19 +1,40 @@
 <?php
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once('db_connection.php');
-$email = $_POST['email'];
-$password = $_POST['password'];
-$query = "SELECT user.id FROM `user` WHERE user.email='$email'AND user.uci_net_id='$password'";
-$result = mysqli_query($conn, $query);
-if (!$result) {
-  throw new Exception('mysql error ' . mysqli_error($conn));
-}
-$data = [];
-while ($row = mysqli_fetch_assoc($result)) {
-  $data[] = $row;
-}
+  require_once('../../lib/startup.php');
+  require_once(AUTH);
 
-print(json_encode(array_values($data[0])));
+  $rememberMe = false;
 
+  $errors = [];
+
+  if(isset($_POST['email'])) {
+    $email = $_POST['email'];
+  } else {
+    $errors[] = 'Missing email';
+  }
+
+  if(isset($_POST['password'])) {
+    $password = $_POST['password'];
+  } else {
+    $errors[] = 'Missing password';
+  }
+
+  if(count($errors)) {
+    throw new ApiError(['errors' => $errors], 422);
+  }
+
+  if(isset($_POST['rememberMe'])) {
+    $rememberMe = $_POST['rememberMe'] === 'true';
+  }
+
+  $user = login($email, $password);
+
+  $_SESSION['user'] = buildUserSessionData($user);
+
+  if($rememberMe) {
+    $user['token'] = encrypt($_SESSION['user']);
+  }
+
+  cleanUser($user);
+
+  send($user);
 ?>

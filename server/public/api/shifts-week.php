@@ -1,18 +1,24 @@
 <?php
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once('db_connection.php');
-if (!empty($_GET['id'])) {
-  $id = $_GET['id'];
-  if (!is_numeric($id)) {
-    throw new Exception('id needs to be a number');
-  }
-  $id = intval($id);
-}
-$startDate = $_GET['startDate'];
-$endDate = $_GET['endDate'];
+  require_once('../../lib/startup.php');
+  require_once(AUTH);
+  require_once(DATES);
+  set_tz_la();
 
-$query = "SELECT
+  $user = getRequestUser();
+
+  if(!$user) {
+    throw new ApiError(null, 401, 'Not Authorized');
+  }
+
+  $startDate = getLast('Sunday');
+  $endDate = getNext('Saturday');
+
+  if(isset($_GET['startDate']) && $_GET['endDate']) {
+    $startDate = $_GET['startDate'];
+    $endDate = $_GET['endDate'];
+  }
+
+  $stmt = $mysqli->prepare("SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
             rd.`start_time`,
@@ -37,13 +43,16 @@ $query = "SELECT
             `route` AS rt
           ON
             rt.id = bi.`route_id`
-          WHERE `user_id`= {$id} AND (`date` >= '$startDate' AND `date` <= '$endDate')
-ORDER BY `date`, `start_time` ASC";
+          WHERE `user_id`= ? AND (`date` >= ? AND `date` <= ?)
+          ORDER BY `date`, `start_time` ASC");
 
-$result = mysqli_query($conn, $query);
+  $stmt->bind_param('iss', $user['userId'], $startDate, $endDate);
+  $stmt->execute();
+
+  $result = $stmt->get_result();
 
   if(!$result){
-    throw new Exception('mysql error ' . mysqli_error($conn));
+    throw new ApiError(null, 500, 'Error getting week\'s schedule');
   }
 
   $data = [];
@@ -51,6 +60,7 @@ $result = mysqli_query($conn, $query);
   $previousStatus = '';
   $previousDate = '';
   $currentDataRow = [];
+
   while ($row = mysqli_fetch_assoc($result)) {
     if ($row['date'] !== $previousDate || $row['start_time'] !== $previousEndTime) {
       $data[] = $currentDataRow;
@@ -69,11 +79,4 @@ $result = mysqli_query($conn, $query);
   }
   $data[] = $currentDataRow;
 
-  // while($row = mysqli_fetch_assoc($result)){
-
-  //   $row['posted'] = $row['status'] === 'posted' ? true: false;
-  //   unset($row['status']);
-  //   $data[] = $row;
-  // }
-
-print(json_encode($data));
+  send($data);
