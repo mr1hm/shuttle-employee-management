@@ -88,13 +88,6 @@ class TradeNotification extends React.Component {
         <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
         <SwapConfirmNotification userId={this.props.userId} />
         </>
-        // <div className="container mt-2">
-        //   <div className="row justify-content-center">
-        //     <div className="col-4">
-        //       <h1>No Notifications</h1>
-        //     </div>
-        //   </div>
-        // </div>);
       );
     } else {
       return (

@@ -26,6 +26,9 @@ bi.`bus_number`,
           WHERE `target_user_id` = {$id} AND t.`status` = 'pending' AND t.`type` != 'swap-confirm'";
 
 $result = mysqli_query($conn, $query);
+if (!$result) {
+  throw new Exception("Sql error" . mysqli_error($conn));
+}
 $output = [];
 
 while($row = mysqli_fetch_assoc($result)){
