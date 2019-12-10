@@ -23,7 +23,7 @@ $checkingType = false;
 //See if the status types are all the same (scheduled/posted) but only works if there a mix of both COUNT(DISTINCT rd.`status`)
 if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
   $checkingType = true;
-  $stmt = $mysqli->prepare("SELECT
+  $statement = $mysqli->prepare("SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
             rd.`start_time`,
@@ -58,7 +58,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
           //   rt.`id`,
           //   rd. `status`";
 } else {
-  $stmt = $mysqli->prepare(" SELECT
+  $statement = $mysqli->prepare(" SELECT
             rd.`id` AS roundID,
             rd.`bus_info_id`,
             rd.`user_id`,
@@ -78,14 +78,23 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
             rd.`date`= ?
             AND rd.`status` = 'posted' AND rd.`user_id` != ?");
 }
+if ($statement == FALSE){
+  throw new ApiError(null, 500, 'Error preparing query');
+}
 
-$stmt->bind_param('si', $date, $user['userId']);
-$stmt->execute();
-$result = $stmt->get_result();
+if (!$statement->bind_param('si', $date, $user['userId'])){
+  throw new ApiError(null, 500, 'Error binding query params');
+}
 
-if (!$result) {
+if (!$statement->execute()){
+  throw new ApiError(null, 500, 'Error executing query');
+}
+
+$result = $statement->get_result();
+if ($result === FALSE) {
   throw new ApiError(null, 500, 'Error retrieving shift data');
 }
+
 $data = [];
 //conditional for grouping contiguous rounds together by status type
 if($checkingType){
