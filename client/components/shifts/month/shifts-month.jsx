@@ -6,17 +6,14 @@ import TopMenuShift from '../../topmenu/topmenu-shift';
 import DayOfMonth from './day-of-month-component';
 import Legend from './shift-month-legends';
 import {
-  getZeroPaddedNumber,
   getLocalDateString,
   getDateString,
-  calculateShiftHours,
   getWorkingHours
 } from '../../../lib/time-functions';
 
 class ShiftsMonth extends React.Component {
   constructor(props) {
     super(props);
-    this.id = '&id=' + this.props.userId;
     this.state = {
       today: new Date(),
       date: new Date(this.props.match.params.date),
@@ -119,10 +116,9 @@ class ShiftsMonth extends React.Component {
   }
 
   componentDidMount() {
-    const today = new Date(this.props.match.params.date);
     const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
     const initialQuery = this.calculateQueryRange(this.props.match.params.date);
-    this.getData('/api/shifts-month.php' + initialQuery + this.id, 'GET');
+    this.getData('/api/shifts-month.php' + initialQuery, 'GET');
     this.setState({
       swapFlag: swapFlag
     });
@@ -143,8 +139,9 @@ class ShiftsMonth extends React.Component {
     lastDayOfMonth.setUTCDate(lastDate);
     dayOffset = lastDayOfMonth.getUTCDay();
     lastDayOfMonth.setUTCDate(lastDate + 6 - dayOffset);
+
     const lastDateString = getDateString(lastDayOfMonth);
-    const query = `?unixstart=${firstDateString}&unixend=${lastDateString}`;
+    const query = `?startDate=${firstDateString}&endDate=${lastDateString}`;
     return query;
   }
 
@@ -164,7 +161,7 @@ class ShiftsMonth extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.date !== this.props.match.params.date) {
       const newQuery = this.calculateQueryRange(this.props.match.params.date);
-      this.getData('/api/shifts-month.php' + newQuery + this.id, 'GET');
+      this.getData('/api/shifts-month.php' + newQuery, 'GET');
     }
   }
 

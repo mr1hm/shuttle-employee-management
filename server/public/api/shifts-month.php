@@ -1,34 +1,45 @@
 <?php
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once('db_connection.php');
+require_once('../../lib/startup.php');
+require_once(AUTH);
+require_once(DATES);
 
-if (!empty($_GET['unixstart'])) {
-    $lowerDateRange = $_GET['unixstart'];
-} else throw new Exception('need lower limit date range for query');
+$user = getRequestUser();
 
-if (!empty($_GET['unixend'])) {
-    $upperDateRange = $_GET['unixend'];
-} else throw new Exception('need upper limit date range for query');
+if(!$user) {
+  throw new ApiError(null ,401, 'Not Authorized');
+}
 
-if (!empty($_GET['id'])) {
-    $ownerID = intval($_GET['id']);
-} else throw new Exception('need id for query');
+$startDate = getFirstDayOfCurrentMonth();
+$endDate = getLastDayOfCurrentMonth();
 
-$query = "SELECT *
+if (isset($_GET['startDate'])) {
+  $startDate = $_GET['startDate'];
+}
+
+if (!empty($_GET['endDate'])) {
+  $endDate = $_GET['endDate'];
+}
+
+$stmt = $mysqli->prepare("SELECT *
   FROM `round`
-  WHERE `user_id`= {$ownerID}
-  AND (`date` >= '$lowerDateRange' AND `date` <= '$upperDateRange')
+  WHERE `user_id`= ?
+  AND (`date` >= ? AND `date` <= ?)
   AND (`status` = 'scheduled' OR `status` = 'posted')
-  ORDER BY `date` ASC";
+  ORDER BY `date` ASC");
 
-$result = mysqli_query($conn, $query);
+$stmt->bind_param('iss', $user['userId'], $startDate, $endDate);
+$stmt->execute();
+
+$result = $stmt->get_result();
+
 if (!$result) {
-    throw new Exception('mysql error ' . mysqli_error($conn));
+  throw new ApiError(null, 500, 'Error getting month schedule');
 }
+
 $data = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $data[] = $row;
+
+while ($row = $result->fetch_assoc()) {
+  $data[] = $row;
 }
-print(json_encode($data));
-?>
+
+send($data);

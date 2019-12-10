@@ -5,7 +5,7 @@ const publicPath = path.resolve(__dirname, 'server/public');
 
 module.exports = {
   resolve: {
-    extensions: ['.js', '.jsx', '.css']
+    extensions: ['.js', '.jsx', '.css', '.scss']
   },
   entry: './client',
   output: {
@@ -26,8 +26,8 @@ module.exports = {
         }
       },
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        test: /\.(c|sa|sc)ss$/i,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
@@ -43,7 +43,11 @@ module.exports = {
     historyApiFallback: true,
     watchContentBase: true,
     stats: 'minimal',
-
+    watchOptions: {
+      ignored: [
+        path.resolve(__dirname, 'server')
+      ]
+    },
     proxy: {
       '/api': {
         target: 'http://localhost',

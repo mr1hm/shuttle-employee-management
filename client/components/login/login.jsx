@@ -1,52 +1,60 @@
 import React from 'react';
-import TopMenuGeneral from '../topmenu/topmenu-general';
+import { connect } from 'react-redux';
+import { userLogin } from '../../actions';
 import './login.css';
 
 class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userID: null,
-      email: null,
-      password: null,
-      loginError: false
+      email: '',
+      password: '',
+      rememberMe: false,
+      loginError: null
     };
     this.checkLoginInfo = this.checkLoginInfo.bind(this);
-    this.handlechange = this.handlechange.bind(this);
+    this.handleCheckChange = this.handleCheckChange.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
-  handlechange(event) {
+  componentDidMount() {
+    this.email.focus();
+  }
+
+  handleInputChange({ target: { name, value } }) {
     this.setState({
-      [event.target.name]: event.target.value
+      [name]: value
     });
   }
 
-  checkLoginInfo(event) {
+  handleCheckChange({ target: { name, value } }) {
+    this.setState({
+      [name]: value === 'false'
+    });
+  }
+
+  async checkLoginInfo(event) {
     event.preventDefault();
-    const { email, password } = this.state;
-    const form = new FormData(event.target);
-    form.append('email', email);
-    form.append('password', password);
-    fetch(`/api/login-page.php`, {
-      method: 'POST',
-      body: form
-    })
-      .then(response => response.json())
-      .then(response => {
-        this.setState({
-          userID: response[0]
-        });
-        this.props.onClick(this.state.userID);
-      })
-      .catch(() => { this.setState({ loginError: true }); });
+    const { email, password, rememberMe } = this.state;
+    const { userLogin } = this.props;
+
+    try {
+      await userLogin({ email, password, rememberMe });
+    } catch (error) {
+      this.setState({
+        loginError: error.message
+      });
+      this.pass.focus();
+      this.pass.select();
+    }
   }
   render() {
-    const { loginError } = this.state;
+    const { loginError, password, email, rememberMe } = this.state;
     const inputClass = loginError ? 'form-control errorLogin' : 'form-control';
-    const errorDisplay = <div className="text-danger">Invalid Email or Password</div>;
+    const errorDisplay = <div className="text-danger">{loginError}</div>;
+
     return (
       <>
-        <TopMenuGeneral userId={this.props.userId} title="LOGIN" />
         <div className="container mt-5 d-flex justify-content-center">
           <form className="w-50" encType="multipart/form-data" onSubmit={this.checkLoginInfo}>
             <div className="form-group">
@@ -58,19 +66,19 @@ class Login extends React.Component {
                   {loginError && errorDisplay}
                 </div>
               </div>
-              <input onChange={this.handlechange} pattern="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$" type="email" name="email" className={inputClass} id="email" placeholder="email@example.com" />
+              <input ref={e => { this.email = e; }} value={email} onChange={this.handleInputChange} type="email" name="email" className={inputClass} id="email" placeholder="email@example.com" autoComplete="username" />
             </div>
             <div className="form-group">
               <label htmlFor="password">Password</label>
-              <input onChange={this.handlechange} type="password" className={inputClass} id="password" name="password" placeholder="Password" />
+              <input ref={e => { this.pass = e; }} value={password} onChange={this.handleInputChange} type="password" className={inputClass} id="password" name="password" placeholder="Password" autoComplete="current-password"/>
             </div>
             <div className="form-check mb-2">
-              <input className="form-check-input" type="checkbox" value="" id="checkbox" />
-              <label className="form-check-label" htmlFor="checkbox">
+              <input className="form-check-input" onChange={this.handleCheckChange} type="checkbox" value={rememberMe} id="rememberMe" name="rememberMe" />
+              <label className="form-check-label" htmlFor="rememberMe">
                 Remember Me
               </label>
             </div>
-            <button type="submit" className="btn btn-primary">Sign in</button>
+            <button className="btn btn-primary">Sign in</button>
           </form>
         </div>
       </>
@@ -78,4 +86,6 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default connect(null, {
+  userLogin
+})(Login);
