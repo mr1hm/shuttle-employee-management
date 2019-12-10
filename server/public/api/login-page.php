@@ -24,7 +24,7 @@ if (!array_key_exists('password', $_POST)){
   $password = filter_var($_POST['password'], FILTER_SANITIZE_UNSAFE_RAW, [
     'flags' => [FILTER_FLAG_STRIP_LOW],
   ]);
-  if (strlen($password) != strlen($_POST['password'])){
+  if ($password == FALSE || strlen($password) != strlen($_POST['password'])){
     $errors[] = 'Invalid characters in password';
   }
 }
