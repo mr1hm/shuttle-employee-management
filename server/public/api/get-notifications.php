@@ -1,4 +1,4 @@
-<?php //http_response_code(501); exit(); // TODO: security check
+<?php
 
 require(__DIR__.'/../../lib/startup.php');
 require_once(AUTH);
