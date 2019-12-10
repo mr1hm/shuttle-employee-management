@@ -235,6 +235,10 @@ function getDateString(dateObj) {
   return `${dateObj.getUTCFullYear()}-${getZeroPaddedNumber(dateObj.getUTCMonth() + 1)}-${getZeroPaddedNumber(dateObj.getUTCDate())}`;
 }
 
+function getDateTimeString(dateObj) {
+  return `${dateObj.getUTCFullYear()}-${getZeroPaddedNumber(dateObj.getUTCMonth() + 1)}-${getZeroPaddedNumber(dateObj.getUTCDate())} ${dateObj.getHours()}:${dateObj.getMinutes()}`;
+}
+
 function getWorkingHours(startTime, endTime) {
   let startHour = Math.floor(startTime / 100);
   let endHour = Math.floor(endTime / 100);
@@ -293,7 +297,7 @@ function returnWeekInfoArray(dateString) {
   return weekArray;
 }
 
-export { globalDayOfWeek, globalDayOfWeekShort, globalMonth, getWorkingHours, getLocalDateString, getDateString, getZeroPaddedNumber, getUTCYearMonthDateDay, returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { globalDayOfWeek, globalDayOfWeekShort, globalMonth, getWorkingHours, getLocalDateString, getDateString, getDateTimeString, getZeroPaddedNumber, getUTCYearMonthDateDay, returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
   createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };

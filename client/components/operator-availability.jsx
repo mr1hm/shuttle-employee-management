@@ -5,7 +5,7 @@ import SelectAvailabilityModal from './operator-availability-modal';
 import ErrorModal from './operator-error-modal';
 import SubmitModal from './operator-submit-modal';
 import SelectSessionModal from './admin-select-session-modal';
-import { getDateString } from '../lib/time-functions';
+import { getDateTimeString } from '../lib/time-functions';
 
 class OperatorAvailability extends React.Component {
   constructor(props) {
@@ -365,7 +365,7 @@ class OperatorAvailability extends React.Component {
 
   setDefaultSession() {
     var dateToday = new Date();
-    var date = getDateString(dateToday);
+    var date = getDateTimeString(dateToday);
     this.state.sessionChoices.forEach(element => {
       if (element.startDateString <= date && date <= element.endDateString) {
         this.setState({
@@ -451,7 +451,7 @@ class OperatorAvailability extends React.Component {
   submitOrMessage() {
     if (this.state.availabilityInfo) {
       var dateToday = new Date();
-      var date = getDateString(dateToday);
+      var date = getDateTimeString(dateToday);
 
       var totalAvailability = this.totalEnteredAvailability();
 
