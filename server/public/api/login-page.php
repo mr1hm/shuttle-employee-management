@@ -1,6 +1,7 @@
 <?php
-  require_once('../../lib/startup.php');
-  require_once(AUTH);
+
+require(__DIR__.'/../../lib/startup.php');
+require_once(AUTH);
 
   $rememberMe = false;
 
