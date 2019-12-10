@@ -18,7 +18,7 @@ export default class Session extends React.Component {
   }
 
   getAllUpdatedSessions() {
-    fetch('api/admin-lines-buses-sessions.php')
+    fetch('/api/admin-lines-buses-sessions.php')
       .then(response => response.json())
       .then(sessions => {
         this.setState({ sessions });

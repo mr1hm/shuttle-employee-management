@@ -366,17 +366,23 @@ if ($method === 'DELETE' && isset($bodyData['sessionToDelete'])) {
     throw new Exception('delete session query error ' . mysqli_error($conn));
   }
 
+  $query = "DELETE FROM `round` WHERE `round`.`session_id` = '$sessionID'";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('delete session rounds query error ' . mysqli_error($conn));
+  }
+
   $query = "DELETE FROM `route` WHERE `route`.`session_id` = '$sessionID'";
   $result = mysqli_query($conn, $query);
 
   if (!$result) {
-    throw new Exception('delete lines on session query error ' . mysqli_error($conn));
+    throw new Exception('delete session lines query error ' . mysqli_error($conn));
   }
 
-  foreach($bodyData['routeIDArr'] as $value) {
-    $routeID = $value;
+  foreach($routeIDArr as $value) {
 
-    $query = "DELETE FROM `bus_info` WHERE `bus_info`.`route_id` = '$routeID'";
+    $query = "DELETE FROM `bus_info` WHERE `bus_info`.`route_id` = '$value'";
     $result = mysqli_query($conn, $query);
 
     if (!$result) {

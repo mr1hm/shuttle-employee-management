@@ -47,7 +47,7 @@ export default class BusesTable extends React.Component {
       method: 'DELETE',
       body: JSON.stringify(body)
     };
-    fetch(`api/admin-lines-buses.php`, init)
+    fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(busDeleted => {
         this.setState({
@@ -79,7 +79,7 @@ export default class BusesTable extends React.Component {
   handleDeleteBusClicked() {
     this.setState({
       deleteBusClicked: !this.state.deleteBusClicked
-    })
+    });
   }
 
   render() {
@@ -104,7 +104,7 @@ export default class BusesTable extends React.Component {
               <br /> */}
               <button onClick={this.handleGapsModal} className="col btn btn-info">Show Gaps</button>
             </td>
-              <td className="d-flex justify-content-center busTableEditBtnTd">
+            <td className="d-flex justify-content-center busTableEditBtnTd">
               <button onClick={this.handleEditBusClicked} className="busTableEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
             </td>
           </tr>

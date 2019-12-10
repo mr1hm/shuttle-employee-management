@@ -88,7 +88,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(sessionID)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(updatedSessionInfo => {
         this.setState({
@@ -117,15 +117,16 @@ class AdminRoutes extends React.Component {
     this.setState({ deleteSessionClicked: !this.state.deleteSessionClicked });
   }
 
-  deleteSession(sessionID, routeIDArr) {
-    const body = { sessionToDelete: sessionID, routeIDArr };
+  deleteSession(sessionID, routeIDArr, lineIDArr) {
+    const body = { sessionToDelete: sessionID, routeIDArr, lineIDArr };
     const init = { method: 'DELETE', body: JSON.stringify(body) };
 
-    fetch('api/admin-lines-buses-sessions.php', init)
+    fetch('/api/admin-lines-buses-sessions.php', init)
       .then(response => response.json())
       .then(deletedSession => {
         this.getAllSessions();
         this.getLinesBusesInfo();
+        this.props.history.push('/admin-routes/');
       }, this.handleDeleteSessionClick)
       .catch(error => console.error(error));
 
@@ -136,7 +137,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(sessionID)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(sessionLines => {
         console.log(sessionLines);
@@ -159,7 +160,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(body)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(updatedSessionInfo => {
         this.setState({
@@ -174,7 +175,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(sessionID)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(sessionData => {
         this.setState({
@@ -213,7 +214,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(newLine)
     };
-    fetch(`api/admin-lines-buses.php`, init)
+    fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(lineInfo => {
         this.setState({
@@ -298,7 +299,7 @@ class AdminRoutes extends React.Component {
   }
 
   getAllSessions() {
-    fetch('api/admin-lines-buses-sessions.php')
+    fetch('/api/admin-lines-buses-sessions.php')
       .then(response => response.json())
       .then(sessionsData => {
         console.log('getallsessions: ', sessionsData);
@@ -316,7 +317,7 @@ class AdminRoutes extends React.Component {
         method: 'POST',
         body: JSON.stringify(sessionID)
       };
-      fetch('api/admin-lines-buses.php', init)
+      fetch('/api/admin-lines-buses.php', init)
         .then(response => response.json())
         .then(updatedLines => {
           this.setState({
@@ -328,7 +329,7 @@ class AdminRoutes extends React.Component {
         })
         .catch(error => console.error(error));
     } else {
-      fetch('api/admin-lines-buses.php')
+      fetch('/api/admin-lines-buses.php')
         .then(response => response.json())
         .then(linesBusesInfo => this.setState({
           linesBusesInfo: linesBusesInfo
@@ -343,7 +344,7 @@ class AdminRoutes extends React.Component {
         method: 'POST',
         body: JSON.stringify(sessionID)
       };
-      fetch('api/admin-lines-buses.php', init)
+      fetch('/api/admin-lines-buses.php', init)
         .then(response => response.json())
         .then(sessionData => {
           console.log('linebusinfo: ', sessionData);
@@ -353,7 +354,7 @@ class AdminRoutes extends React.Component {
         })
         .catch(error => console.error(error));
     } else {
-      fetch('api/admin-lines-buses.php')
+      fetch('/api/admin-lines-buses.php')
         .then(response => response.json())
         .then(linesBusesInfo => {
           this.setState({

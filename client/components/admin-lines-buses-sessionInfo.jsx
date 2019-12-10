@@ -18,7 +18,7 @@ export default class SessionInfo extends React.Component {
   getSessionInfo() {
     const body = { sessionInfo: this.state.selectedSessionID };
     const init = { method: 'POST', body: JSON.stringify(body) };
-    fetch(`api/admin-lines-buses-sessions.php`, init)
+    fetch(`/api/admin-lines-buses-sessions.php`, init)
       .then(response => response.json())
       .then(sessionInfo => {
         console.log('getSessionInfo: ', sessionInfo);

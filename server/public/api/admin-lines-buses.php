@@ -503,6 +503,14 @@ if ($method === 'POST' && (isset($bodyData['line_name']))) {
 
     print(json_encode($data));
 
+} else if ($method === 'DELETE' && (isset($bodyData['busID']))) {
+
+  $busID = $bodyData['busID'];
+  $query = "DELETE FROM `busGaps` WHERE `busGaps`.`bus_id` = '$busID'";
+
+  if (!$result) {
+    throw new Exception('delete bus gaps query error ' . mysqli_error($conn));
+  }
 }
 
 ?>

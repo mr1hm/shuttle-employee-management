@@ -7,14 +7,21 @@ export default class GapsModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editGapStartTimes: null,
-      editGapDurations: null
+      deleteGapID: null
     };
+    this.deleteBusGap = this.deleteBusGap.bind(this);
   }
 
-  editBusGaps(e, busID) {
-    const value = e.target.value;
-
+  deleteBusGap(busGapID) {
+    const body = { busGapID };
+    const init = { method: 'DELETE', body: JSON.stringify(body) };
+    fetch(`/api/admin-lines-buses.php`, init)
+      .then(response => response.json())
+      .then(deleteGapID => {
+        console.log(deleteGapID);
+        this.setState({ deleteGapID });
+      })
+      .catch(error => console.error(error));
   }
 
   render() {
@@ -48,7 +55,7 @@ export default class GapsModal extends React.Component {
                 <td>{`${busGapInfo.gapDurations[0]}min`}</td>
                 <td>
                   <button onClick={this.handleEditBusClicked} className="busGapEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
-                  <button onClick={() => this.deleteBus(busGapInfo.busID)} className="busGapDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
+                  <button onClick={() => this.deleteBusGap(busGapInfo.busID)} className="busGapDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
                 </td>
                 <td></td>
               </tr>

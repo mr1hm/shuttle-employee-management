@@ -55,6 +55,7 @@ class App extends React.Component {
       return (
         <React.Fragment>
           <Switch>
+            {/* <Route path="/admin-routes/" render={props => <AdminRoutes {...props} defaultDate={this.state.presetDateForTesting} />} /> */}
             <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
             <Route path="/masterscheudle/" render={props => <MasterSchedule {...props} />} />
             <Route exact path={['/', '/welcome/']} render={props => <Welcome {...props} userId={this.state.userId ? this.state.userId : 17} />} />

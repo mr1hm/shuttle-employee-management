@@ -94,7 +94,7 @@ export default class Lines extends React.Component {
       method: 'DELETE',
       body: JSON.stringify(body)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(deletedLine => {
         this.setState({
