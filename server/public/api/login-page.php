@@ -21,8 +21,8 @@ if(!array_key_exists('email', $_POST)) {
 if (!array_key_exists('password', $_POST)){
   $errors[] = 'Missing password';
 } else {
-  $password = filter_var($_POST['password'], FILTER_SANITIZE_UNSAFE_RAW, [
-    'flags' => [FILTER_FLAG_STRIP_LOW],
+  $password = filter_var($_POST['password'], FILTER_UNSAFE_RAW, [
+    'flags' => FILTER_FLAG_STRIP_LOW,
   ]);
   if ($password == FALSE || strlen($password) != strlen($_POST['password'])){
     $errors[] = 'Invalid characters in password';
@@ -37,15 +37,15 @@ if(array_key_exists('rememberMe', $_POST)) {
   $rememberMe = filter_var($_POST['rememberMe'], FILTER_VALIDATE_BOOLEAN);
 }
 
-  $user = login($email, $password);
+$user = login($email, $password);
 
-  $_SESSION['user'] = buildUserSessionData($user);
+$_SESSION['user'] = buildUserSessionData($user);
 
-  if($rememberMe) {
-    $user['token'] = encrypt($_SESSION['user']);
-  }
+if($rememberMe) {
+  $user['token'] = encrypt($_SESSION['user']);
+}
 
-  cleanUser($user);
+cleanUser($user);
 
-  send($user);
+send($user);
 ?>
