@@ -34,7 +34,7 @@ if(count($errors)) {
 }
 
 if(array_key_exists('rememberMe', $_POST)) {
-  $rememberMe = $_POST['rememberMe'] === 'true';
+  $rememberMe = filter_var($_POST['rememberMe'], FILTER_VALIDATE_BOOLEAN);
 }
 
   $user = login($email, $password);
