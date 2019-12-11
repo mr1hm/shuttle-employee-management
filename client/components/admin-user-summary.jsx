@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import AddUserModal from './admin-add-user-modal';
 
@@ -176,9 +175,6 @@ class AdminUserSummary extends React.Component {
     }
     return (
       <React.Fragment>
-        <div className='nav'>
-          <TopMenuGeneral title="ADMIN-USER SUMMARY" />
-        </div>
         <div className="addButton d-flex justify-content-end mt-3">
           {this.toggleActiveAndAllUsers()}
           <button type="button" className="btn btn-primary btn ml-3" name="addUser" onClick={this.showAddUserModal}>Add User</button>

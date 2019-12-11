@@ -46,7 +46,7 @@ export const getUserData = () => async dispatch => {
 
 export const userLogin = credentials => async dispatch => {
   try {
-    const { data: { token = null, ...user } } = await axios.post('/api/login-page.php', credentials);
+    const { data: { token = null, ...user } } = await axios.post('/api/user-login.php', credentials);
 
     if (token) {
       localStorage.setItem('uciToken', token);
@@ -58,5 +58,19 @@ export const userLogin = credentials => async dispatch => {
     });
   } catch (error) {
     throwApiError(error, 'Error logging in');
+  }
+};
+
+export const userLogout = () => async dispatch => {
+  try {
+    await axios.get('/api/user-logout.php');
+
+    localStorage.removeItem('uciToken');
+
+    dispatch({
+      type: types.USER_LOGOUT
+    });
+  } catch (error) {
+    throwApiError(error, 'Error logging out');
   }
 };

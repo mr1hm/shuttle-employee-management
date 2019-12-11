@@ -1,16 +1,10 @@
 import React from 'react';
-import TopMenuShift from './topmenu/topmenu-shift';
-import TopMenuGeneral from './topmenu/topmenu-general';
-import TopMenuHamburger from './topmenu/topmenu-hamburger';
-import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
 import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
-import GapsModal from './admin-lines-buses-viewGaps';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
-import AdminRoutes from './admin-lines-buses';
 import EditLine from './admin-lines-buses-editLine';
 import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 
