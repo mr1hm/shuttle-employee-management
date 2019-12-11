@@ -2,7 +2,8 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import * as auth from '../hoc/auth_config';
 import onAuthRedirect from '../hoc/on_auth_redirect';
-import MyInfo from './myinfo/myinfo';
+import AdminEditUser from './user/admin-edit-user';
+import MyInfo from './user/my-info';
 import ShiftsWeek from './shifts/week/shifts-week';
 import ShiftsDay from './shifts/day/shifts-day';
 import ShiftsMonth from './shifts/month/shifts-month';
@@ -69,6 +70,7 @@ class App extends React.Component {
             defaultDate: this.state.presetDateForTesting
           })} />
           <Route path="/admin-operator-availability" component={auth.all(AdminOperatorAvailability)} />
+          <Route path="/admin-edit-user/:uciId" component={auth.admin(AdminEditUser)} />
           <Route path="/admin-user-summary" component={auth.all(AdminUserSummary)} />
           <Route path="/welcome" component={auth.any(Welcome, {}, '/login')} />
           <Route path="/live-field-status" component={auth.operations(LiveFieldStatus, {}, '/welcome')} />
