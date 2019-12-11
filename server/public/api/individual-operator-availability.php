@@ -11,7 +11,7 @@ $individualOperAvailQuery = "SELECT
                         day_of_week,
                         start_time,
                         end_time
-                        FROM operator_availability 
+                        FROM operator_availability
                         WHERE 
                         session_id = $sessionId and user_id = $userId
                         ORDER BY

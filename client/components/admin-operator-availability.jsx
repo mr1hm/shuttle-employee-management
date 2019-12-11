@@ -25,6 +25,7 @@ class AdminOperatorAvailability extends React.Component {
       minTrainerHours: '',
       minTraineeHours: '',
       availSubmissionDate: '',
+      comment: '',
       startDate: '',
       endDate: '',
       changeDate: false,
@@ -60,7 +61,7 @@ class AdminOperatorAvailability extends React.Component {
     this.getIndivOperatorDetails = this.getIndivOperatorDetails.bind(this);
     this.showIndivOperatorDetails = this.showIndivOperatorDetails.bind(this);
     this.closeAvailDetailsModal = this.closeAvailDetailsModal.bind(this);
-
+    this.getIndivOperatorComment = this.getIndivOperatorComment.bind(this);
   }
 
   closeAvailDetailsModal() {
@@ -145,6 +146,25 @@ class AdminOperatorAvailability extends React.Component {
     this.showEditUserModal();
   }
 
+  getIndivOperatorComment() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'session_id': this.state.sessionId,
+        'user_id': this.state.id
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/individual-operator-comment.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          comment: data.comment
+        }, this.showIndivOperatorDetails);
+      })
+      .catch(error => { throw (error); });
+  }
+
   getIndivOperatorDetails(event) {
     const index = event.currentTarget.id;
     const userId = this.state.operatorDetails[index].id;
@@ -168,7 +188,7 @@ class AdminOperatorAvailability extends React.Component {
       .then(data => {
         this.setState({
           individualOperatorDetails: data
-        }, this.showIndivOperatorDetails);
+        }, this.getIndivOperatorComment);
       })
       .catch(error => { throw (error); });
   }
@@ -571,6 +591,7 @@ class AdminOperatorAvailability extends React.Component {
                 {this.createAvailabilityList()}
               </tbody>
             </table>
+            <div>Comment: {this.state.comment}</div>
             <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
               <button className="btn-success mr-2" type='submit' onClick={this.closeAvailDetailsModal}>Close</button>
             </div>
