@@ -169,10 +169,12 @@ class AdminUserSummary extends React.Component {
   }
 
   render() {
-    var tableheaderContent = ['Last Name', 'First Name', 'User Id', 'Role', 'Status', 'Special Route', 'Phone', 'Email', 'Cell Provider', 'Change'];
+    const tableHeaders = ['Last Name', 'First Name', 'User Id', 'Role', 'Status', 'Special Route', 'Phone', 'Email', 'Cell Provider', 'Actions'];
+
     if (!this.state.userDetails) {
       return <div>Loading</div>;
     }
+
     return (
       <React.Fragment>
         <div className="addButton d-flex justify-content-end mt-3">
@@ -182,7 +184,7 @@ class AdminUserSummary extends React.Component {
         <table className= 'mt-4'>
           <thead>
             <tr>
-              {tableheaderContent.map((title, index) => (<th key={index}>{title}</th>))}
+              {tableHeaders.map((title, index) => (<th key={index}>{title}</th>))}
             </tr>
           </thead>
           <tbody>
@@ -202,7 +204,7 @@ class AdminUserSummary extends React.Component {
                         <td className='pb-2'>{user.email}</td>
                         <td className='pb-2'>{user.cell_provider}</td>
                         <td className='pb-2'>
-                          <Link to="/myinfo/" id={parseInt(user.id)}><input value="change" type='button'/> </Link>
+                          <Link className="btn btn-outline-primary" to={`/admin-edit-user/${user.uci_net_id}`}>Edit</Link>
                         </td>
                       </tr>
                     );
