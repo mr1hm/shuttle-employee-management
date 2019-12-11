@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   `nickname` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `photo` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
   `status` enum('active','inactive','suspended','') COLLATE utf8_unicode_ci NOT NULL,
-  `role` enum('admin','super_admin','operator','operations','trainer','trainee') COLLATE utf8_unicode_ci NOT NULL,
   `special_route_ok` tinyint(1) NOT NULL,
   `phone` bigint(10) unsigned NOT NULL,
   `email` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
