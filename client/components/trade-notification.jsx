@@ -30,8 +30,6 @@ class TradeNotification extends React.Component {
       .then(shiftsArrayOfObjects => {
         const newTradeShifts = shiftsArrayOfObjects.filter(oneShift => oneShift.type === 'trade');
         const newSwapShifts = shiftsArrayOfObjects.filter(oneShift => oneShift.type === 'swap');
-        console.log('NewTradeShifts ', newTradeShifts);
-        console.log('newSwapShifts ', newSwapShifts);
         this.setState({
           newShifts: shiftsArrayOfObjects,
           swapShifts: swapShift,
