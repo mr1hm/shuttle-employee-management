@@ -34,6 +34,7 @@ function getOperatorsWithSubmittedAvailability($conn, $session) {
 function getAllActiveOperators($conn, $session) {
   $allActiveOperatorsQuery = "SELECT 
                               us.uci_net_id,
+                              us.id,
                               us.first_name, 
                               us.last_name,                     
                               us.role,
