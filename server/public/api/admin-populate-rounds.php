@@ -8,7 +8,7 @@ require_once('shift-restrictions.php');
 function populateSchedule (&$operators, $rounds, $conn, $session) {
   // Traverse through all rounds
   while ( current($rounds) ) {
-    $shift = getShift(current($rounds)['line_name'], $rounds);
+    $shift = getShift($rounds);
     $madeAssignment = false;
 
     if ( hasAdequateRounds($shift) ) {
@@ -37,29 +37,16 @@ function populateSchedule (&$operators, $rounds, $conn, $session) {
 
 /* Returns an associative array containing all of the rounds to be
  * assigned in a shift */
-function getShift ($lineName, &$rounds) {
-  // $lineRounds = [
-  //   'C' => 3,
-  //   'D' => 4,
-  //   'Hs' => 5,
-  //   'S' => 5,
-  //   'A' => 3,
-  //   'M' => 3,
-  //   'N' => 3,
-  //   'V' => 3
-  // ];
-  // $minimumRoundsInShift = $lineRounds[$lineName];
-
-  // $shift = [];
-  // for ($i = 0; $i < $minimumRoundsInShift; ++$i) {
-  //   $shift[] = current($rounds);
-  //   if ($i !== $minimumRoundsInShift - 1) next($rounds);
-  // }
+function getShift (&$rounds) {
+  $shiftMinutes = 0;
   $shift = [];
-  for ($i = 0; $i < 3; ++$i) {
+  while ( $shiftMinutes < 90 && current($rounds) ) {
     $shift[] = current($rounds);
-    if ($i !== 2) next($rounds);
+    $shiftMinutes += calculateShiftMinutes(current($rounds)['round_start'], current($rounds)['round_end']);
+    next($rounds);
   }
+  prev($rounds);
+
   return $shift;
 }
 

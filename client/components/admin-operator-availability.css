@@ -38,6 +38,10 @@ th, td {
   transform: translate(-50%,-50%);
 }
 
+.editTitle {
+  font-weight: bold;
+}
+
 .number {
   min-height: 30px;
 }
@@ -55,4 +59,3 @@ th, td {
 .display-none {
   display: none;
 }
-

@@ -55,8 +55,10 @@ class AdminShiftsCombinedRounds extends React.Component {
     this.props.onClickShifts({
       userName: this.props.userName,
       userId: this.props.userId,
+      sessionId: this.props.sessionId,
       shiftTime: this.shiftTimeMeridian,
       rounds: this.convertRoundTimesToTimeMeridiem(this.props.rounds),
+      bus_info_id: this.props.rounds[0].bus_info_id,
       roundId: this.props.roundId,
       shiftType: this.props.type,
       lineBus: this.props.lineBus

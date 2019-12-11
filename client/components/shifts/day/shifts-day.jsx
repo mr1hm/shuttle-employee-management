@@ -25,7 +25,7 @@ class ShiftsDay extends React.Component {
     };
   }
   getShifts() {
-    const query = `?date=${this.props.match.params.date}&userID=${this.props.userId}&type=myShifts`;
+    const query = `?date=${this.props.match.params.date}&type=myShifts`;
     console.log('date path: ', this.props.match.params.date);
     console.log('day query: ', query);
     const response = fetch(`/api/shifts-day.php` + query, {

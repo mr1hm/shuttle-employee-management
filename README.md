@@ -7,3 +7,8 @@
 - Brady Greco
 - Daniel Seong
 - Richard Yun
+- Kevin Ihm
+- James Cho
+- Mitch O'Hair
+- Tarun Padath
+- Dane Maison

@@ -50,7 +50,6 @@ class AdminShiftsDay extends React.Component {
   }
   // get assigned/unassigned rounds from database
   getTodaysShiftData(dateString) {
-    console.log('date: ', dateString);
     fetch(`/api/admin-day-shifts.php?date=${dateString}`)
       .then(response => response.json())
       .then(data => {
@@ -97,7 +96,6 @@ class AdminShiftsDay extends React.Component {
     })
       .then(response => response.json())
       .then(data => {
-        console.log('available operators: ', data);
         this.setState({
           availableOperators: data,
           roundsSelected: roundsSelected,
@@ -114,6 +112,8 @@ class AdminShiftsDay extends React.Component {
     });
   }
   handleClickAssignShift(name, id) {
+    console.log('rounds selected: ', this.state.roundsSelected);
+    console.log('shifts selected: ', this.state.shiftsSelected);
     this.setState({
       operatorSelected: {
         name: name,
@@ -122,12 +122,15 @@ class AdminShiftsDay extends React.Component {
     });
   }
   // click handler for the confirm modal to assign shift
-  handleClickAssignShiftConfirm(id) {
+  handleClickAssignShiftConfirm(id, assignStatus) {
     const data = {
       method: 'POST',
       body: JSON.stringify({
         'user_id': id,
-        'rounds': this.state.roundsSelected
+        'rounds': this.state.roundsSelected,
+        'assign_status': assignStatus,
+        'shifts': this.state.shiftsSelected,
+        'date': this.state.date
       }),
       headers: { 'Content-Type': 'application/json' }
     };
@@ -146,13 +149,18 @@ class AdminShiftsDay extends React.Component {
       .catch(error => { throw (error); });
   }
   // click handler for the confirm modal to unassign shift
-  handleClickUnassignOperator() {
+  handleClickUnassignOperator(id, assignStatus) {
     let rounds = this.state.roundsToUnassign;
     const data = {
       method: 'POST',
       body: JSON.stringify({
         'user_id': 1,
-        'rounds': rounds
+        'unassign_id': id,
+        'date': this.state.date,
+        'rounds': rounds,
+        'round_times': this.state.shiftsToUnassign,
+        'shifts': this.state.shiftsSelected,
+        'assign_status': assignStatus
       }),
       headers: { 'Content-Type': 'application/json' }
     };
@@ -183,6 +191,9 @@ class AdminShiftsDay extends React.Component {
   // sets which rounds(an array of round ids) and shifts(an array of shift times)
   // to unassign before confirming with modal
   handleClickUnassignShift(rounds, shifts) {
+    console.log('rounds: ', rounds);
+    console.log('shifts: ', shifts);
+    console.log('shiftsSelected: ', this.state.shiftsSelected);
     this.setState({
       selectingUnassign: true,
       roundsToUnassign: rounds,
@@ -279,6 +290,7 @@ class AdminShiftsDay extends React.Component {
             key={element.round_id + element.line_bus_name + index}
             onClickAvailableDrivers={this.getAvailableDrivers}
             type={roundType}
+            sessionId={element.session_id}
             userId={element.user_id}
             lineBus={element.line_bus_name}
             userName={element.user_name}
@@ -312,6 +324,7 @@ class AdminShiftsDay extends React.Component {
           key={shift.roundId}
           userName={shift.userName}
           userId={shift.userId}
+          busInfoId={shift.bus_info_id}
           lineBus = {shift.lineBus}
           shiftTime={shift.shiftTime}
           rounds={shift.rounds}

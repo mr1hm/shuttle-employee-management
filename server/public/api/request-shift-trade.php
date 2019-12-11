@@ -19,8 +19,13 @@ forEach($user_round as $round){
     (`user_id`, `round_id`, `target_user_id`, `date`, `type`, `comment`) VALUES
     ($user_id, $round, $target_id, $date, '$type', 'no')";
   $result = mysqli_query($conn, $query);
-
 }
+
+if (!$result) {
+  throw new Exception("Sql error" . mysqli_error($conn));
+}
+
+
 if (mysqli_affected_rows($conn) < 1) {
   mysqli_query($conn, "ROLLBACK");
   throw new Exception(mysqli_error($conn));

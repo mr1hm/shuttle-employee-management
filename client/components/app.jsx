@@ -1,5 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import * as auth from '../hoc/auth_config';
+import onAuthRedirect from '../hoc/on_auth_redirect';
 import MyInfo from './myinfo/myinfo';
 import ShiftsWeek from './shifts/week/shifts-week';
 import ShiftsDay from './shifts/day/shifts-day';
@@ -13,10 +15,12 @@ import AdminOperatorAvailability from './admin-operator-availability';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
-import TradeSwap from './trade-swap';
+import TradeSwap from './trade-swap'; 
 import TradeNotification from './trade-notification';
+import AdminUserSummary from './admin-user-summary';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
-import MasterSchedule from './admin-lines-buses-masterSchedule';
+import MasterSchedule from './admin-lines-buses-master-schedule';
+import NotFound from './errors/not_found';
 
 class App extends React.Component {
   constructor(props) {
@@ -49,53 +53,44 @@ class App extends React.Component {
   openRouteDetails(id, date) {
     this.setState({ shiftId: id, date: date });
   }
+
   render() {
-    const userStateId = parseInt(this.state.userId);
-    if (this.state.userLogin === true) {
-      return (
-        <React.Fragment>
-          <Switch>
-            <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
-            <Route path="/masterscheudle/" render={props => <MasterSchedule {...props} />} />
-            <Route exact path={['/', '/welcome/']} render={props => <Welcome {...props} userId={this.state.userId ? this.state.userId : 17} />} />
-            <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId ? this.state.userId : 17} get={this.getUserID} />} />
-            <Route path="/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/day/shifts-day/:date?" render={props => <ShiftsDay openRouteDetails={this.openRouteDetails} {...props} userId={this.state.userId ? this.state.userId : 17} view="myShifts" defaultDate={this.state.presetDateForTesting} />} />
-            <Route path={`/shifts/month/shifts-month/:date`} render={props => <ShiftsMonth userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/available/:date?" render={props => <ShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/shifts/details/" render={props => <ShiftsDetails {...props} userId={this.state.userId} date={this.state.date} shiftId={this.state.shiftId} queryString={this.state.queryString} startSwapTradeTransaction={this.startSwapTradeTransaction} />} />
-            <Route path="/admin-day/" render={props => <AdminShiftsDay userId={this.state.userId ? this.state.userId : 17} {...props} defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/operator-availability/" render={props => <OperatorAvailability userId={this.state.userId ? this.state.userId : 17} />} />
-            <Route path="/admin-operator-availability/" render={props => <AdminOperatorAvailability userId={this.state.userId ? this.state.userId : 17} />} />
-            <Route path="/trade-swap/" render={props => <TradeSwap {...props} shiftDetails={this.state.shiftDetails} />} />
-            <Route path="/trade-notification/" render={props => <TradeNotification {...props} userId={this.state.userId ? this.state.userId : 17} shiftDetails={this.state.shiftDetails} />} />
-          </Switch>
-        </React.Fragment>
-      );
-    }
-    if (this.state.userLogin === false) {
-      return (
-        <React.Fragment>
-          <Switch>
-            <Route path="/livefieldstatus/" render={props => <LiveFieldStatus {...props} />} />
-            <Route path="/masterschedule/" render={props => <MasterSchedule {...props} />} />
-            <Route exact path={['/', '/login/']} render={props => <Login {...props} onClick={this.setLoginProps} onChange={this.getUserID} />} />
-            <Route path="/welcome/" render={props => <Welcome {...props} />}/>
-            <Route path="/myinfo/" render={props => <MyInfo {...props} userId={this.state.userId} />}/>
-            <Route path = "/shifts/week/shifts-week/:date?" render={props => <ShiftsWeek {...props} defaultDate={this.state.presetDateForTesting} />}/>
-            <Route path = "/shifts/day/shifts-day/:date?" render={props => <ShiftsDay {...props} view="myShifts" defaultDate={this.state.presetDateForTesting} />}/>
-            <Route path={`/shifts/month/shifts-month/:date`} render={props => <ShiftsMonth {...props} defaultDate={this.state.presetDateForTesting} />}/>
-            <Route path= "/shifts/available/:date?" render = {props => <ShiftsDay {...props} view="availableShifts" defaultDate={this.state.presetDateForTesting} />}/>
-            <Route path = "/shifts/details/" render={props => <ShiftsDetails {...props} />}/>
-            <Route path = "/admin-day/" render={props => <AdminShiftsDay {...props} defaultDate={this.state.presetDateForTesting} />}/>
-            <Route path="/admin-routes/" render={props => <AdminRoutes {...props} defaultDate={this.state.presetDateForTesting} />} />
-            <Route path="/operator-availability/" render={props => <OperatorAvailability {...props}/>}/>
-            <Route path="/admin-operator-availability/" render={props => <AdminOperatorAvailability {...props}/>}/>
-            <Route path="/trade-swap/" render={props => <TradeSwap {...props}/>} />
-          </Switch>
-        </React.Fragment>
-      );
-    }
+
+    return (
+      <Switch>
+        <Route exact path={['/', '/login']} component={onAuthRedirect(Login, '/welcome')} />
+        <Route path="/admin-day" component={auth.all(AdminShiftsDay, {
+          defaultDate: this.state.presetDateForTesting
+        })} />
+        <Route path="/admin-routes" component={auth.all(AdminRoutes, {
+          defaultDate: this.state.presetDateForTesting
+        })} />
+        <Route path="/admin-operator-availability" component={auth.all(AdminOperatorAvailability)} />
+        <Route path="/admin-user-summary" component={auth.all(AdminUserSummary)} />
+        <Route path="/welcome" component={auth.any(Welcome, {}, '/login')} />
+        <Route path="/live-field-status" component={auth.operations(LiveFieldStatus, {}, '/welcome')} />
+        <Route path="/master-schedule" component={auth.all(MasterSchedule)} />
+        <Route path="/my-info" component={auth.all(MyInfo)} />
+        <Route path="/operator-availability" component={auth.all(OperatorAvailability)} />
+        <Route path="/shifts/available/:date" component={auth.all(ShiftsAvailable)} />
+        <Route path="/shifts/day/shifts-day/:date" component={auth.all(ShiftsDay)} />
+        <Route path="/shifts/details" component={auth.all(ShiftsDetails, {
+          date: this.state.date,
+          shiftId: this.state.shiftId,
+          queryString: this.state.queryString,
+          startSwapTradeTransaction: this.startSwapTradeTransaction
+        })} />
+        <Route path="/shifts/month/shifts-month/:date" component={auth.all(ShiftsMonth)} />
+        <Route path="/shifts/week/shifts-week/:date" component={auth.all(ShiftsWeek)} />
+        <Route path="/trade-notifications" component={auth.all(TradeNotification, {
+          shiftDetails: this.state.shiftDetails
+        })} />
+        <Route path="/trade-swap" component={auth.all(TradeSwap, {
+          shiftDetails: this.state.shiftDetails
+        })} />
+        <Route component={NotFound} />
+      </Switch>
+    );
   }
 }
 

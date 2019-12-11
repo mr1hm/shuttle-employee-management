@@ -7,7 +7,7 @@ const TopMenuGeneral = props => {
   return (
     <div className="container-fluid d-flex justify-content-between mt-2">
       <h3>{props.title}</h3>
-      <TopMenuHamburger notificationCount={props.notificationCount} userId={props.userId} tradeNotification={props.newShiftsandSelectedDriver}/>
+      <TopMenuHamburger notificationCount={props.notificationCount} tradeNotification={props.newShiftsAndSelectedDriver}/>
     </div>
   );
 };
