@@ -1,37 +1,31 @@
 <?php
 
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once 'db_connection.php';
+require(__DIR__.'/../../lib/startup.php');
 
-$data = getBodyData();
+$usersQuery = "SELECT
+              id,
+              uci_net_id,
+              last_name,
+              first_name,
+              role,
+              status,
+              special_route_ok,
+              phone,
+              email,
+              cell_provider
+              FROM user
+              WHERE id != 1
+              ORDER BY
+              last_name ASC";
 
-  $usersQuery = "SELECT 
-                id,
-                uci_net_id,
-                last_name,
-                first_name, 
-                role,
-                status,
-                special_route_ok,
-                phone,
-                email,
-                cell_provider
-                FROM user
-                WHERE id != 1
-                ORDER BY
-                last_name ASC";
+$result = $mysqli->query($usersQuery);
+if ($result === FALSE) {
+  throw new ApiError(NULL, 500, 'Error retrieving users');
+}
 
-  $usersResult = mysqli_query($conn, $usersQuery);
-  if (!$usersResult) {
-    throw new Exception('mysql error ' . mysqli_error($conn));
-  }
-  $usersData = [];
-  while ($row = mysqli_fetch_assoc($usersResult)) {
-    $usersData[] = $row;
-  }
+$response = [];
+while ($row = $result->fetch_assoc()) {
+  $response[] = $row;
+}
 
-  print(json_encode($usersData));
-
-?>
-
+send($response);
