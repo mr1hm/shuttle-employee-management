@@ -1,13 +1,18 @@
 <?php
-require_once('db_connection.php');
+
+require(__DIR__.'/../../lib/startup.php');
+
 $query = "SELECT cell_provider FROM cellProvider";
-$result = mysqli_query($conn, $query);
+
+$result = $mysqli->query($query);
 if (!$result) {
-  throw new Exception('mysql error ' . mysqli_error($conn));
+  throw new ApiError(null, 500, 'Error retrieving cell provider data');
 }
+
 $data = [];
-while ($row = mysqli_fetch_assoc($result)) {
+while ($row = $result->fetch_assoc()) {
   $data[] = $row;
 }
-print(json_encode($data));
+
+send($data);
 ?>
