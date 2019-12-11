@@ -117,8 +117,8 @@ class AdminRoutes extends React.Component {
     this.setState({ deleteSessionClicked: !this.state.deleteSessionClicked });
   }
 
-  deleteSession(sessionID, routeIDArr, lineIDArr) {
-    const body = { sessionToDelete: sessionID, routeIDArr, lineIDArr };
+  deleteSession(sessionID, routeIDArr, busIDArr) {
+    const body = { sessionToDelete: sessionID, routeIDArr, busIDArr };
     const init = { method: 'DELETE', body: JSON.stringify(body) };
 
     fetch('/api/admin-lines-buses-sessions.php', init)

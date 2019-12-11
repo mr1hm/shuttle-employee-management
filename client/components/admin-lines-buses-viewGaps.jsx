@@ -161,9 +161,9 @@ export default class GapsModal extends React.Component {
                   <th scope="col">Gap Duration</th>
                   <th scope="col">Operations</th>
                   <th scope="col">
-                    <div className="d-flex justify-content-end">
+                    {/* <div className="d-flex justify-content-end">
                       <button onClick={this.handleAddNewGapClick} className="closeGapModal btn btn-danger">X</button>
-                    </div>
+                    </div> */}
                   </th>
                 </tr>
               </thead>
@@ -173,13 +173,13 @@ export default class GapsModal extends React.Component {
                     <RouteBusDisplay bus={busGapInfo.busNumber} />
                   </td>
                   <td>
-                    <input onChange={this.handleNewGapChange} name="gapStartTime" type="text"/>
+                    <input className="col border border-primary" onChange={this.handleNewGapChange} name="gapStartTime" type="text"/>
                   </td>
                   <td>
-                    <input onChange={this.handleNewGapChange} name="gapDuration" type="text"/>
+                    <input className="col border border-primary" onChange={this.handleNewGapChange} name="gapDuration" type="text"/>
                   </td>
                   <td>
-                    <button onClick={() => this.addNewGap(newGap, busGapInfo.busID)} className="closeAddGapTable btn btn-success">ADD</button>
+                    <button onClick={() => this.addNewGap(newGap, busGapInfo.busID)} className="closeAddGapTable btn btn-success">ADD GAP</button>
                   </td>
                 </tr>
               </tbody>
@@ -189,7 +189,9 @@ export default class GapsModal extends React.Component {
         }
         <div className="row">
           <div className="col offset-10 d-flex justify-items-end">
-            <button onClick={this.handleAddNewGapClick} className="addGapBtn col btn btn-primary">Add Gap</button>
+            {addNewGapClicked
+              ? <button onClick={this.handleAddNewGapClick} className="addGapCancelBtn col btn btn-warning">CANCEL</button>
+              : <button onClick={this.handleAddNewGapClick} className="addGapBtn col btn btn-primary">ADD GAP</button>}
           </div>
         </div>
       </div>

@@ -359,6 +359,7 @@ if ($method === 'POST' && (isset($bodyData['sessionInfo']))) {
 if ($method === 'DELETE' && isset($bodyData['sessionToDelete'])) {
 
   $routeIDArr = $bodyData['routeIDArr'];
+  $busIDArr = $bodyData['busIDArr'];
   $sessionID = $bodyData['sessionToDelete'];
 
   $query = "DELETE FROM `session` WHERE `session`.`id` = '$sessionID'";
@@ -390,6 +391,24 @@ if ($method === 'DELETE' && isset($bodyData['sessionToDelete'])) {
     if (!$result) {
       throw new Exception('delete from bus_info query error ' . mysqli_error($conn));
     }
+  }
+
+  foreach($busIDArr as $busID) {
+
+    $query = "DELETE FROM `busGaps` WHERE `busGaps`.`bus_id` = '$busID'";
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('delete session - delete from busGaps table error ' . mysqli_error($conn));
+    }
+
+    $query = "DELETE FROM `busDaysActive` WHERE `busDaysActive`.`bus_id` = '$busID'";
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+      throw new Exception('delete session - delete from busDaysActive table error ' . mysqli_error($conn));
+    }
+
   }
 
   // doesn't delete existing bus gaps or bus daysActive

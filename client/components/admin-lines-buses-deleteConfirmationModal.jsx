@@ -7,17 +7,18 @@ export default class DeleteConfirmationModal extends React.Component {
     super(props);
     this.state = {
       deleteStatus: this.props.deleteStatus,
+      selectedSessionID: null,
       sessionInfo: null,
       routeIDArr: [],
-      lineIDArr: []
+      busIDArr: []
     };
     this.getSessionInfo = this.getSessionInfo.bind(this);
     this.getSessionRouteIDsAndBusIDs = this.getSessionRouteIDsAndBusIDs.bind(this);
   }
 
-  // componentDidMount() {
-  //   this.getSessionInfo();
-  // }
+  componentDidMount() {
+    this.getSessionInfo();
+  }
 
   componentDidUpdate(prevProps) {
     if (this.props.selectedSessionID !== prevProps.selectedSessionID) {
@@ -28,8 +29,19 @@ export default class DeleteConfirmationModal extends React.Component {
   getSessionRouteIDsAndBusIDs() {
     const { sessionInfo } = this.state;
     let routeIDArr = [];
-    sessionInfo.forEach(session => routeIDArr.push(session.routeID));
-    this.setState({ routeIDArr });
+    let busIDArr = [];
+    if (sessionInfo) {
+      console.log('sessionInfo is ready');
+      sessionInfo.forEach(session => {
+        routeIDArr.push(session.routeID);
+        for (let i = 0; i < session.activeBuses.length; ++i) {
+          busIDArr.push(session.activeBuses[i]);
+          console.log(busIDArr);
+        }
+      });
+    }
+    console.log('busIDs', busIDArr);
+    this.setState({ routeIDArr, busIDArr });
   }
 
   getSessionInfo() {
@@ -39,13 +51,24 @@ export default class DeleteConfirmationModal extends React.Component {
       .then(response => response.json())
       .then(sessionInfo => {
         console.log('getSessionInfo: ', sessionInfo);
-        this.setState({ sessionInfo }, this.getSessionRouteIDsAndBusIDs);
+        this.setState({ sessionInfo }, () => {
+          let routeIDArr = [];
+          let busIDArr = [];
+          this.state.sessionInfo.forEach(session => {
+            routeIDArr.push(session.routeID);
+            session.activeBuses.forEach(busID => busIDArr.push(busID));
+          });
+          this.setState({ routeIDArr, busIDArr });
+          console.log(busIDArr);
+        });
       })
       .catch(error => console.error(error));
   }
 
   render() {
     const { line, busInfo, selectedSessionID, deleteStatus } = this.props;
+    const { routeIDArr, busIDArr } = this.state;
+    // if (routeIDArr.length === 0) return <div>LOADING...</div>;
     if (deleteStatus === 'session') {
       return (
         <div className="container deleteConfirmationModal">
@@ -63,7 +86,7 @@ export default class DeleteConfirmationModal extends React.Component {
               className="btn btn-success w-100 deleteConfirmationModalConfirmBtn">
                 CONFIRM
               </Link> */}
-              <button className="btn btn-success w-100 deleteConfirmationModalConfirmBtn" onClick={() => this.props.deleteSession(selectedSessionID, this.state.routeIDArr)}>CONFIRM</button>
+              <button className="btn btn-success w-100 deleteConfirmationModalConfirmBtn" onClick={() => this.props.deleteSession(selectedSessionID, this.state.routeIDArr, this.state.busIDArr)}>CONFIRM</button>
             </div>
             <div className="col d-flex justify-content-center">
               <button className="btn btn-warning w-100 deleteConfirmationModalCancelBtn" onClick={this.props.handleDeleteSessionClick}>CANCEL</button>
