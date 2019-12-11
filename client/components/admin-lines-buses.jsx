@@ -10,7 +10,7 @@ import Sessions from './admin-lines-buses-sessions';
 import GapsModal from './admin-lines-buses-viewGaps';
 import Lines from './admin-lines-buses-lines';
 import CreateSession from './admin-lines-buses-createSession';
-import OperationsHistory from './admin-lines-buses-operationsHistory';
+import SessionInfo from './admin-lines-buses-sessionInfo';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
 import MasterSchedule from './admin-lines-buses-master-schedule';
 import { Link } from 'react-router-dom';
@@ -66,11 +66,9 @@ class AdminRoutes extends React.Component {
     this.handleCopySession = this.handleCopySession.bind(this);
     this.handleAddNewSessionClick = this.handleAddNewSessionClick.bind(this);
     this.getAllSessions = this.getAllSessions.bind(this);
-    // this.getStoreOperationsHistoryMethod = this.getStoreOperationsHistoryMethod.bind(this);
     this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
     this.toggleMasterFieldStatus = this.toggleMasterFieldStatus.bind(this);
-    // this.copyOriginalLinesBusesInfo = this.copyOriginalLinesBusesInfo.bind(this);
-    // this.storeOperationsHistory = this.storeOperationsHistory.bind(this);
+    this.resetNewLineState = this.resetNewLineState.bind(this);
   }
 
   componentDidMount() {
@@ -175,7 +173,21 @@ class AdminRoutes extends React.Component {
     });
   }
 
-  addNewLine(newLine, e) { // bug in Winter 2020 session. Special Driver is automatically set to true no matter if the box is checked or not when adding a new line.
+  resetNewLineState() {
+    this.setState(prevState => ({
+      newLine: {
+        session_id: 5,
+        line_name: null,
+        status: 'active',
+        roundDuration: null,
+        public: 'True',
+        regularService: 'True',
+        specialDriver: 0
+      }
+    }));
+  }
+
+  addNewLine(newLine, e) {
     e.preventDefault();
     const init = {
       method: 'POST',
@@ -193,6 +205,7 @@ class AdminRoutes extends React.Component {
           } else {
             this.getUpdatedLines({ session_id: newLine.session_id });
           }
+          this.resetNewLineState();
         });
       })
       .catch(error => console.error(error));
@@ -217,14 +230,13 @@ class AdminRoutes extends React.Component {
   handleAddLineChange(e) {
     const name = e.target.name;
     const value = e.target.value;
-    let sessionFind = this.state.sessions.find(session => session.name === this.state.newLine.session_id);
-    console.log('session found ', sessionFind);
     this.setState(prevState => ({
       newLine: {
         ...prevState.newLine,
         [name]: value
       }
     }), () => {
+      const sessionFind = this.state.sessions.find(session => session.name === this.state.newLine.session_id);
       if (this.state.currentSession !== 'All Sessions') {
         this.setState(prevState => ({
           newLine: {
@@ -233,6 +245,7 @@ class AdminRoutes extends React.Component {
           }
         }));
       } else if (sessionFind) {
+        console.log('session found ', sessionFind);
         this.setState(prevState => ({
           newLine: {
             ...prevState.newLine,
@@ -358,12 +371,6 @@ class AdminRoutes extends React.Component {
     }
   }
 
-  // getStoreOperationsHistoryMethod(callback) {
-  //   this.setState({
-  //     operationsHistoryMethod: callback
-  //   });
-  // }
-
   toggleLiveFieldStatus() {
     this.setState({
       liveFieldStatus: !this.state.liveFieldStatus
@@ -412,7 +419,7 @@ class AdminRoutes extends React.Component {
           <div className="container liveFieldStatusContentContainer">
             <div className="row">
               <div className="col d-inline-flex">
-                <h1 className="adminLinesBusesTitle">Lines & Buses</h1>
+                <h1 className="adminLinesBusesTitle">Lines &amp; Buses</h1>
               </div>
             </div>
           </div>
@@ -424,11 +431,7 @@ class AdminRoutes extends React.Component {
                   <label className="selectSessionLabel">Select Session</label>
                   <select onChange={this.handleSessionChange} className="col border border-primary" name="currentSession">
                     <option>All Sessions</option>
-                    {this.state.sessions.map(sessionData => {
-                      return (
-                        <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
-                      );
-                    })}
+                    <Sessions getAllSessions={this.getAllSessions} allSessions={this.state.sessions} />
                   </select>
                 </div>
                 <div className="col d-flex align-items-end">
@@ -562,8 +565,10 @@ class AdminRoutes extends React.Component {
                   </div>
                 </div>
               </div>
-              <h4 className="operationsHistory mt-2">Operations History</h4>
-              <OperationsHistory getLinesBusesInfo={this.getLinesBusesInfo} linesBusesInfo={this.state.linesBusesInfo} />
+              <h4 className="operationsHistory mt-2">Session Details</h4>
+              {!this.state.sessionSelected
+                ? <SessionInfo currentSession={this.state.currentSession} selectedSessionID={this.state.selectedSessionID} sessionSelected={this.state.sessionSelected} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
+                : <SessionInfo currentSession={this.state.currentSession} sessionSelected={this.state.sessionSelected} selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />}
             </div>
           </div>
           <div className="accordion" id="accordionExample">
@@ -604,7 +609,7 @@ class AdminRoutes extends React.Component {
         <div className="container liveFieldStatusContentContainer">
           <div className="row">
             <div className="col d-inline-flex">
-              <h1 className="adminLinesBusesTitle">Lines & Buses</h1>
+              <h1 className="adminLinesBusesTitle">Lines &amp; Buses</h1>
             </div>
           </div>
         </div>
@@ -616,11 +621,7 @@ class AdminRoutes extends React.Component {
                 <label className="selectSessionLabel">Select Session</label>
                 <select onChange={this.handleSessionChange} className="col border border-primary" name="sessions">
                   <option>All Sessions</option>
-                  {this.state.sessions.map(sessionData => {
-                    return (
-                      <Sessions key={`session${sessionData.id}`} allSessions={this.state.sessions} sessionData={sessionData} />
-                    );
-                  })}
+                  <Sessions getAllSessions={this.getAllSessions} allSessions={this.state.sessions} />;
                 </select>
               </div>
               <div className="col d-flex align-items-end">
@@ -667,8 +668,10 @@ class AdminRoutes extends React.Component {
                 ? <div className="col-2 mt-1"><button className="btn btn-info w-100" onClick={this.handlePasteSession}>Paste Session<FontAwesomeIcon className="ml-1" icon={faPaste} /></button></div> : null}
             </div>
             {this.state.addNewSessionClicked ? <CreateSession handleAddNewSessionClick={this.handleAddNewSessionClick} getAllSessions={this.getAllSessions} allSessions={this.state.sessions} /> : null}
-            <h4 className="operationsHistory mt-2">Operations History</h4>
-            <OperationsHistory getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
+            <h4 className="operationsHistory mt-2">Session Details</h4>
+            {!this.state.sessionSelected
+              ? <SessionInfo currentSession={this.state.currentSession} selectedSessionID={this.state.selectedSessionID} sessionSelected={this.state.sessionSelected} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />
+              : <SessionInfo currentSession={this.state.currentSession} sessionSelected={this.state.sessionSelected} selectedSessionID={this.state.selectedSessionID} getLinesBusesInfo={this.getLinesBusesInfo} originalLinesBusesInfo={this.state.originalLinesBusesInfo} getStoreOperationsHistoryMethod={this.getStoreOperationsHistoryMethod} linesBusesInfo={this.state.linesBusesInfo} />}
           </div>
         </div>
         <div className="accordion" id="accordionExample">

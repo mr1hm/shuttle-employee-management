@@ -61,6 +61,14 @@
   height: 1.25em;
 }
 
+.sessionInfoTitle {
+  font-weight: 600;
+}
+
+.sessionInfoValues {
+  color: rgba(255, 255, 255, .9);
+}
+
 .operationsHistoryAddIcon {
   font-size: 13px;
   margin-right: 4px;
@@ -184,7 +192,15 @@ table.liveFieldStatusTable td {
   overflow: scroll;
   border: 1px solid black;
   border-radius: .25rem;
-  max-width: 65vw;
+  /* max-width: 65vw; */
+}
+
+.masterScheduleTableContainer {
+  height: 550px;
+  overflow: scroll;
+  border: 1px solid black;
+  border-radius: .25rem;
+  /* max-width: 65vw; */
 }
 
 .liveFieldStatusCurrentDateAndTime {
@@ -212,6 +228,7 @@ table.liveFieldStatusTable td {
   margin-top: 10px;
   color: rgb(121, 132, 235);
   font-weight: 700;
+  margin-bottom: 0;
 }
 
 .liveFieldStatusLineName,
@@ -225,8 +242,19 @@ table.liveFieldStatusTable td {
   font-weight: 500;
 }
 
+/* .masterScheduleStartEndDate {
+  margin-bottom: 10px;
+} */
+
+.masterScheduleNoDrivers {
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: red;
+}
+
 .liveFieldStatusStartDateSpan {
   margin-right: 18px;
+  margin-bottom: 10px;
 }
 
 .minHoursReqLabel {

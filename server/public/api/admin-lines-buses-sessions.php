@@ -31,15 +31,11 @@ if ($method === 'POST' && (isset($bodyData['name']))) { // add a new session
   $startDateString = $bodyData['startDateString'];
   $endDateString = $bodyData['endDateString'];
   $holidays = $bodyData['holidays'];
-  $reqStartDate = $bodyData['reqStartDate'];
-  $reqEndDate = $bodyData['reqEndDate'];
   $minHoursReq = $bodyData['minHoursReq'];
-  $startDate = $bodyData['startDate'];
-  $endDate = $bodyData['endDate'];
   $notes = $bodyData['notes'];
 
-  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `startDate`, `endDate`, `notes`)
-          VALUES ('$name', '$startDateString', '$endDateString', '$startDate', '$endDate', '$notes')";
+  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `notes`, `holidays`, `minHoursReq`)
+          VALUES ('$name', '$startDateString', '$endDateString', '$notes', '$holidays', '$minHoursReq')";
   $result = mysqli_query($conn, $query);
 
   if (!$result) {
@@ -279,6 +275,82 @@ if ($method === 'POST' && (isset($bodyData['session_id']))) { // select data fro
   $data = array_values($data);
   print(json_encode($data));
 
+}
+
+if ($method === 'POST' && (isset($bodyData['sessionInfo']))) {
+
+  $sessionID = $bodyData['sessionInfo'];
+
+  $query = "SELECT
+              bi.`id` AS 'busID',
+              rt.`line_name`,
+              rt.`id` AS routeID,
+              s.`name` AS sessionName,
+              s.`notes` AS sessionNotes,
+              s.`holidays` AS sessionHolidays,
+              s.`startDateString` AS sessionStart,
+              s.`endDateString` AS sessionEnd,
+              s.`minHoursReq` AS minHoursReq,
+              s.`id` AS sessionID,
+              IF (rt.`specialDriver` = 1, 'True', 'False') AS specialDriver
+              FROM `route` AS rt
+              LEFT JOIN `bus_info` AS bi ON bi.`route_id` = rt.`id`
+              LEFT JOIN `session` AS s ON s.`id` = rt.`session_id`
+              WHERE s.`id` = '$sessionID'
+              ORDER BY rt.`id`";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('query error ' . mysqli_error($conn));
+  }
+
+  $data = [];
+  $sessionInfo = [];
+  $routeID = NULL;
+  while ($row = mysqli_fetch_assoc($result)) {
+    if ($routeID !== $row['routeID']) {
+      $buses = NULL;
+      $routeID = $row['routeID'];
+      $sessionInfo['sessionName'] = $row['sessionName'];
+      $sessionInfo['sessionNotes'] = $row['sessionNotes'];
+      $sessionInfo['sessionHolidays'] = $row['sessionHolidays'];
+      $sessionInfo['sessionStart'] = $row['sessionStart'];
+      $sessionInfo['sessionEnd'] = $row['sessionEnd'];
+      $sessionInfo['minHoursReq'] = $row['minHoursReq'];
+      $sessionInfo['sessionID'] = $row['sessionID'];
+      $sessionInfo['lineName'] = $row['line_name'];
+      if ($row['busID'] !== NULL) {
+        $buses[] = $row['busID'];
+      } else {
+        $buses = [];
+      }
+      $sessionInfo['activeBuses'] = $buses;
+      unset($row['sessionName']);
+      unset($row['sessionNotes']);
+      unset($row['sessionHolidays']);
+      unset($row['sessionStart']);
+      unset($row['sessionEnd']);
+      unset($row['minHoursReq']);
+      unset($row['busID']);
+      unset($row['line_name']);
+      unset($row['routeID']);
+      unset($row['specialDriver']);
+      unset($row['sessionID']);
+      $data[$routeID] = $sessionInfo;
+    } else if ($routeID === $row['routeID'] && $row['busID'] !== NULL) {
+      $buses[] = $row['busID'];
+      $data[$routeID]['activeBuses'] = $buses;
+    }
+  }
+  $data[$routeID] = $sessionInfo;
+  $data = array_values($data);
+
+  if (!isset($routeID)) {
+    // $data = $sessionInfo;
+    $data = [];
+  }
+
+  print(json_encode($data));
 }
 
 ?>
