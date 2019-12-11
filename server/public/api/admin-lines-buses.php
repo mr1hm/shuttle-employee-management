@@ -10,6 +10,35 @@ $bodyData = getBodyData();
 if ($method === 'GET'){
   // require_once 'admin-lines-buses-get.php';
 
+  // $query = "SELECT
+  //           bi.`id` AS 'busID',
+  //           bi.`bus_number`,
+  //           rt.`id` AS 'real_route_id',
+  //           bi.`rounds`,
+  //           rt.`roundDuration`,
+  //           bi.`start_time`,
+  //           bi.`end_time`,
+  //           bg.`gapStartTimes`,
+  //           bg.`gapDurations`,
+  //           -- busGapID,
+  //           rt.`line_name`,
+  //           rt.`status`,
+  //           bi.`opening_duration`,
+  //           bi.`closing_duration`,
+  //           bi.`vehicle_id`,
+  //           bd.`daysActive`,
+  //           rt.`public`,
+  //           rt.`regularService`,
+  //           rt.`specialDriver`,
+  //           s.`id` AS sessionID,
+  //           IF (rt.`specialDriver` = 1, 'True', 'False') AS specialDriver
+  //           FROM `route` AS rt
+  //           LEFT JOIN `bus_info` AS bi ON bi.`route_id` = rt.`id`
+  //           LEFT JOIN `session` AS s ON s.`id` = rt.`session_id`
+  //           LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`gapStartTime`) AS gapStartTimes, GROUP_CONCAT(`gapDuration`) AS gapDurations FROM `busGaps` GROUP BY `bus_id`) AS bg ON bg.`bus_id` = bi.`id`
+  //           LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`daysActive`) AS daysActive FROM `busDaysActive` GROUP BY `bus_id`) AS bd ON bd.`bus_id` = bi.`id`
+  //           ORDER BY line_name";
+
 $query = "SELECT
             bi.`id` AS 'busID',
             bi.`bus_number`,
@@ -20,6 +49,7 @@ $query = "SELECT
             bi.`end_time`,
             bg.`gapStartTimes`,
             bg.`gapDurations`,
+            busGapID,
             rt.`line_name`,
             rt.`status`,
             bi.`opening_duration`,
@@ -34,7 +64,7 @@ $query = "SELECT
             FROM `route` AS rt
             LEFT JOIN `bus_info` AS bi ON bi.`route_id` = rt.`id`
             LEFT JOIN `session` AS s ON s.`id` = rt.`session_id`
-            LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`gapStartTime`) AS gapStartTimes, GROUP_CONCAT(`gapDuration`) AS gapDurations FROM `busGaps` GROUP BY `bus_id`) AS bg ON bg.`bus_id` = bi.`id`
+            LEFT JOIN (SELECT GROUP_CONCAT(`id`) AS busGapID, `bus_id`, GROUP_CONCAT(`gapStartTime`) AS gapStartTimes, GROUP_CONCAT(`gapDuration`) AS gapDurations FROM `busGaps` GROUP BY `id`, `bus_id`) AS bg ON bg.`bus_id` = bi.`id`
             LEFT JOIN (SELECT `bus_id`, GROUP_CONCAT(`daysActive`) AS daysActive FROM `busDaysActive` GROUP BY `bus_id`) AS bd ON bd.`bus_id` = bi.`id`
             ORDER BY line_name";
 
@@ -364,7 +394,39 @@ $query = "SELECT
     }
 
     print(json_encode($data));
-    exit;
+} else if ($method === 'DELETE' && isset($bodyData['busGapID'])) {
+
+  $busGapID = $bodyData['busGapID'];
+
+  $query = "DELETE FROM `busGaps` WHERE `busGaps`.`id` = $busGapID";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result){
+    throw new Exception('delete busGapID query error ' . mysqli_error($conn));
+  }
+
+  $deletedGapID = [];
+  $deletedGapID['busGapID'] = $busGapID;
+
+  print(json_encode($deletedGapID));
+  exit;
+
+} else if ($method === 'POST' && isset($bodyData['newGap'])) {
+
+  $busID = $bodyData['busID'];
+  $gapStartTime = $bodyData['gapStartTime'];
+  $gapDuration = $bodyData['gapDuration'];
+
+  $query = "INSERT INTO `busGaps` (`bus_id`, `gapStartTime`, `gapDuration`)
+            VALUES ('$busID', '$gapStartTime', '$gapDuration')";
+  $result = mysqli_query($conn, $query);
+
+  if (!$result) {
+    throw new Exception('add new gap query error ' . mysqli_error($conn));
+  }
+
+  print(json_encode($bodyData['newGap']));
+  exit;
 }
 
 $result = mysqli_query($conn, $query);
@@ -375,64 +437,130 @@ if (!$result) {
 
 if($method === 'GET') {
   $data = [];
+  $busInfo = NULL;
+  $busID = NULL;
   while ($row = mysqli_fetch_assoc($result)) {
-    $busInfo = NULL;
-    $routeId = $row['real_route_id'];
-
-    if ($row['bus_number'] !== NULL) {
-      $busInfo = [];
-      $busInfo['busID'] = $row['busID'];
-      $busInfo['busNumber'] = $row['bus_number'];
-      $busInfo['startTime'] = $row['start_time'];
-      $busInfo['rounds'] = $row['rounds'];
-      $busInfo['endTime'] = $row['end_time'];
-      // $busInfo['daysActive'] = $row['daysActive'];
-      // $busInfo['gapDuration'] = $row['gapDuration'];
-      $busInfo['openingDuration'] = $row['opening_duration'];
-      $busInfo['closingDuration'] = $row['closing_duration'];
-      $busInfo['vehicleID'] = $row['vehicle_id'];
-      if ($row['daysActive'] !== NULL) {
-        $busInfo['daysActive'] = explode(',', $row['daysActive']);
-      } else {
-        $busInfo['daysActive'] = [];
-      }
-      if ($row['gapStartTimes'] !== NULL) {
-        $busInfo['gapStartTimes'] = explode(',', $row['gapStartTimes']);
-      } else {
-        $busInfo['gapStartTimes'] = [];
-      }
-      if ($row['gapDurations'] !== NULL) {
-        $busInfo['gapDurations'] = explode(',', $row['gapDurations']);
-      } else {
-        $busInfo['gapDurations'] = [];
-      }
+    $routeID = $row['real_route_id'];
+    $busID = $row['busID'];
+    if (!array_key_exists($routeID, $data)){
+      $data[$routeID]['real_route_id'] = $row['real_route_id'];
+      $data[$routeID]['roundDuration'] = $row['roundDuration'];
+      $data[$routeID]['line_name'] = $row['line_name'];
+      $data[$routeID]['status'] = $row['status'];
+      $data[$routeID]['public'] = $row['public'];
+      $data[$routeID]['regularService'] = $row['regularService'];
+      $data[$routeID]['specialDriver'] = $row['specialDriver'];
+      $data[$routeID]['sessionID'] = $row['sessionID'];
+      $data[$routeID]['activeBuses'] = [];
     }
-
-    unset($row['busID']);
-    unset($row['bus_number']);
-    unset($row['start_time']);
-    unset($row['rounds']);
-    unset($row['end_time']);
-    unset($row['daysActive']);
-    unset($row['gapStartTime']);
-    unset($row['gapDuration']);
-    unset($row['gapStartTimes']);
-    unset($row['gapDurations']);
-    unset($row['opening_duration']);
-    unset($row['closing_duration']);
-    unset($row['vehicle_id']);
-    if (!isset($data[$routeId])) {
-      if (isset($busInfo)) {
-        $row['activeBuses'] = [$busInfo];
-      } else {
-        $row['activeBuses'] = [];
+    if ($row['busID'] !== NULL && !array_key_exists($busID, $data[$routeID]['activeBuses'])) {
+        $busInfo['busID'] = $row['busID'];
+        $busInfo['busNumber'] = $row['bus_number'];
+        $busInfo['startTime'] = $row['start_time'];
+        $busInfo['rounds'] = $row['rounds'];
+        $busInfo['endTime'] = $row['end_time'];
+        $busInfo['openingDuration'] = $row['opening_duration'];
+        $busInfo['closingDuration'] = $row['closing_duration'];
+        $busInfo['vehicleID'] = $row['vehicle_id'];
+        if ($row['daysActive'] !== NULL) {
+          $busInfo['daysActive'] = explode(',', $row['daysActive']);
+        } else {
+          $busInfo['daysActive'] = [];
+        }
+        $busInfo['gapInfo'] = [];
+        $data[$routeID]['activeBuses'][$busID] =$busInfo;
       }
-      $data[$routeId] = $row;
-    } else if (isset($busInfo)) {
-      $data[$routeId]['activeBuses'][] = $busInfo;
+    if ($row['busGapID'] !== NULL && !empty($busID)) {
+      $gapInfo = [];
+      $gapInfo['busGapID'] = $row['busGapID'];
+      $gapInfo['gapStartTime'] = $row['gapStartTimes'];
+      $gapInfo['gapDuration'] = $row['gapDurations'];
+
+      $foundGapID = FALSE;
+      foreach ($data[$routeID]['activeBuses'][$busID]['gapInfo'] as $value){
+        if ($value['busGapID'] == $gapInfo['busGapID']){
+          $foundGapID = TRUE;
+          break;
+        }
+      }
+      if (!$foundGapID){
+        $data[$routeID]['activeBuses'][$busID]['gapInfo'][] = $gapInfo;
+      }
     }
   }
+  // while ($row = mysqli_fetch_assoc($result)) {
+  //   $busInfo = NULL;
+  //   $routeId = $row['real_route_id'];
 
+  //   if ($row['bus_number'] !== NULL) {
+  //     $busInfo = [];
+  //     if (isset($busInfo['busID'])) {
+
+  //     }
+  //     $busInfo['busID'] = $row['busID'];
+  //     $busInfo['busNumber'] = $row['bus_number'];
+  //     $busInfo['startTime'] = $row['start_time'];
+  //     $busInfo['rounds'] = $row['rounds'];
+  //     $busInfo['endTime'] = $row['end_time'];
+  //     // $busInfo['daysActive'] = $row['daysActive'];
+  //     // $busInfo['gapDuration'] = $row['gapDuration'];
+  //     $busInfo['openingDuration'] = $row['opening_duration'];
+  //     $busInfo['closingDuration'] = $row['closing_duration'];
+  //     $busInfo['vehicleID'] = $row['vehicle_id'];
+  //     if ($row['daysActive'] !== NULL) {
+  //       $busInfo['daysActive'] = explode(',', $row['daysActive']);
+  //     } else {
+  //       $busInfo['daysActive'] = [];
+  //     }
+  //     if ($row['gapStartTimes'] !== NULL) {
+  //       $busInfo['gapStartTimes'] = explode(',', $row['gapStartTimes']);
+  //     } else {
+  //       $busInfo['gapStartTimes'] = [];
+  //     }
+  //     if ($row['gapDurations'] !== NULL) {
+  //       $busInfo['gapDurations'] = explode(',', $row['gapDurations']);
+  //     } else {
+  //       $busInfo['gapDurations'] = [];
+  //     }
+  //   }
+
+    // unset($row['busID']);
+    // unset($row['bus_number']);
+    // unset($row['start_time']);
+    // unset($row['rounds']);
+    // unset($row['end_time']);
+    // unset($row['daysActive']);
+    // unset($row['gapStartTime']);
+    // unset($row['gapDuration']);
+    // unset($row['gapStartTimes']);
+    // unset($row['gapDurations']);
+    // unset($row['opening_duration']);
+    // unset($row['closing_duration']);
+    // unset($row['vehicle_id']);
+  //   if (!isset($data[$routeId])) {
+  //     if (isset($busInfo)) {
+  //       $row['activeBuses'] = [$busInfo];
+  //     } else {
+  //       $row['activeBuses'] = [];
+  //     }
+  //     $data[$routeId] = $row;
+  //   } else if (isset($busInfo)) {
+  //     $data[$routeId]['activeBuses'][] = $busInfo;
+  //   }
+  // }
+
+  // while ($row = mysqli_fetch_assoc($result)) {
+  //   $data[] = $row;
+  // }
+  // $data = array_values($data);
+  // $data = array_values($data);
+  // foreach($data[$routeID] as $activeBuses){
+  //   $activeBuses['activeBuses'] = array_values($activeBuses['activeBuses']);
+  // }
+  // $data[$routeID]['activeBuses'] = array_values($data[$routeID]['activeBuses']);
+  foreach($data as &$route){
+    $route['activeBuses'] = array_values($route['activeBuses']);
+  }
   $data = array_values($data);
   print(json_encode($data));
 
@@ -505,8 +633,9 @@ if ($method === 'POST' && (isset($bodyData['line_name']))) {
 
 } else if ($method === 'DELETE' && (isset($bodyData['busID']))) {
 
-  $busID = $bodyData['busID'];
-  $query = "DELETE FROM `busGaps` WHERE `busGaps`.`bus_id` = '$busID'";
+  $busGapID = $bodyData['busGapID'];
+  $query = "DELETE FROM `busGaps` WHERE `busGaps`.`id` = '$busGapID'";
+  $result = mysqli_query($conn, $query);
 
   if (!$result) {
     throw new Exception('delete bus gaps query error ' . mysqli_error($conn));

@@ -6,6 +6,7 @@ export default class DeleteConfirmationModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      deleteStatus: this.props.deleteStatus,
       sessionInfo: null,
       routeIDArr: [],
       lineIDArr: []
@@ -14,9 +15,9 @@ export default class DeleteConfirmationModal extends React.Component {
     this.getSessionRouteIDsAndBusIDs = this.getSessionRouteIDsAndBusIDs.bind(this);
   }
 
-  componentDidMount() {
-    this.getSessionInfo();
-  }
+  // componentDidMount() {
+  //   this.getSessionInfo();
+  // }
 
   componentDidUpdate(prevProps) {
     if (this.props.selectedSessionID !== prevProps.selectedSessionID) {

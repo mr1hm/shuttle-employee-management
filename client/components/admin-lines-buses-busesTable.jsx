@@ -16,13 +16,17 @@ export default class BusesTable extends React.Component {
       checkLinesBusesInfo: null,
       prevDeletedBus: null,
       showGapsModal: false,
-      deleteBusClicked: false
+      deleteBusClicked: false,
+      addNewGapClicked: false,
+      gapThatWasAdded: null
     };
     this.handleEditBusClicked = this.handleEditBusClicked.bind(this);
     this.closeEditBus = this.closeEditBus.bind(this);
     this.deleteBus = this.deleteBus.bind(this);
     this.handleGapsModal = this.handleGapsModal.bind(this);
     this.handleDeleteBusClicked = this.handleDeleteBusClicked.bind(this);
+    this.handleAddNewGapClick = this.handleAddNewGapClick.bind(this);
+    // this.addNewGap = this.addNewGap.bind(this);
   }
 
   // checkForActiveBuses() {
@@ -32,6 +36,10 @@ export default class BusesTable extends React.Component {
   //     });
   //   }
   // }
+
+  handleAddNewGapClick() {
+    this.setState({ addNewGapClicked: !this.state.addNewGapClicked });
+  }
 
   handleGapsModal() {
     this.setState({
@@ -89,7 +97,7 @@ export default class BusesTable extends React.Component {
     if (this.state.showGapsModal) {
       return (
         <>
-        <GapsModal busGapInfo={this.props.busInfo} handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.props.linesBusesInfo} />
+        <GapsModal selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} addNewGapClicked={this.state.addNewGapClicked} handleAddNewGapClick={this.handleAddNewGapClick} getLinesBusesInfo={this.props.getLinesBusesInfo} busGapInfo={this.props.busInfo} handleGapsModal={this.handleGapsModal} showGapsModal={this.state.showGapsModal} linesBusesInfo={this.props.linesBusesInfo} />
         <tbody className="busTable">
           <tr className="busTableInfo">
             <td className="busNumber" rowSpan="3">
