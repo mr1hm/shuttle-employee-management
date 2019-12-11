@@ -1,6 +1,6 @@
 <?php
 
-require(__DIR__.'/../../lib/startup.php');
+require_once(__DIR__.'/../../lib/startup.php');
 require_once(AUTH);
 require_once(DATES);
 set_tz_la();
