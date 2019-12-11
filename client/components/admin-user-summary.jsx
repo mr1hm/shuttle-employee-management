@@ -21,7 +21,7 @@ class AdminUserSummary extends React.Component {
       editUser: false,
       userDetails: [],
       cellProviderList: [],
-      active: ''
+      active: true
 
     };
     this.getOperatorDetails = this.getOperatorDetails.bind(this);
