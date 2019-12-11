@@ -2,15 +2,19 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import equal from 'deep-is';
+import { userLogout } from '../../actions';
 import { getLocalDateString } from '../../lib/time-functions';
 
 class Nav extends React.Component {
   constructor(props) {
     super(props);
 
+    this.Links = this.Links.bind(this);
+    this.logout = this.logout.bind(this);
+
     const today = getLocalDateString(new Date());
 
-    this.logoutBtn = { 'Logout': this.logout };
+    this.logoutLink = { 'Logout': this.logout };
     this.myInfo = { 'My Info': '/my-info' };
 
     this.authRoutes = {
@@ -42,8 +46,6 @@ class Nav extends React.Component {
     this.state = {
       routes: {}
     };
-
-    this.Links = this.Links.bind(this);
   }
 
   componentDidMount() {
@@ -52,13 +54,17 @@ class Nav extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (!equal(this.props.roles, prevProps.roles)) {
-      this.setRoutes();
+      this.setRoutes(prevProps);
     }
   }
 
-  setRoutes() {
+  setRoutes(prevProps = null) {
     const { auth, roles } = this.props;
     let routes = {};
+
+    if (prevProps && !auth) {
+      return this.setState({ routes });
+    }
 
     if (!auth || auth === 'pending') return;
 
@@ -72,13 +78,13 @@ class Nav extends React.Component {
       });
     }
 
-    routes = { ...this.myInfo, ...routes, ...this.logoutBtn };
+    routes = { ...this.myInfo, ...routes, ...this.logoutLink };
 
     this.setState({ routes });
   }
 
   logout() {
-    console.log('Logout User!');
+    this.props.userLogout();
   }
 
   buildDropdown(links, name) {
@@ -150,8 +156,8 @@ class Nav extends React.Component {
   }
 }
 
-function mapStateToProps({ user: {auth, roles} }) {
+function mapStateToProps({ user: { auth, roles } }) {
   return { auth, roles };
 }
 
-export default connect(mapStateToProps)(Nav);
+export default connect(mapStateToProps, { userLogout })(Nav);
