@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping data for table pointy_nostrils.route: ~15 rows (approximately)
+-- Dumping data for table anteaterExpress.route: ~15 rows (approximately)
 DELETE FROM `route`;
 /*!40000 ALTER TABLE `route` DISABLE KEYS */;
 INSERT INTO `route` (`id`, `session_id`, `line_name`, `status`, `roundDuration`, `public`, `regularService`, `specialDriver`) VALUES

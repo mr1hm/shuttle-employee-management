@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table pointy_nostrils.user_roles
+-- Dumping structure for table anteaterExpress.user_roles
 CREATE TABLE IF NOT EXISTS `user_roles` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(11) unsigned NOT NULL,

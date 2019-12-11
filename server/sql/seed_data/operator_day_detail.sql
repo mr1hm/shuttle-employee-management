@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping data for table pointy_nostrils.operator_day_detail: ~0 rows (approximately)
+-- Dumping data for table anteaterExpress.operator_day_detail: ~0 rows (approximately)
 DELETE FROM `operator_day_detail`;
 /*!40000 ALTER TABLE `operator_day_detail` DISABLE KEYS */;
 /*!40000 ALTER TABLE `operator_day_detail` ENABLE KEYS */;

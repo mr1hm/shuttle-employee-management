@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping data for table pointy_nostrils.session: ~5 rows (approximately)
+-- Dumping data for table anteaterExpress.session: ~5 rows (approximately)
 DELETE FROM `session`;
 /*!40000 ALTER TABLE `session` DISABLE KEYS */;
 INSERT INTO `session` (`id`, `name`, `startDateString`, `endDateString`, `startDate`, `endDate`, `notes`, `availStartDateString`, `availEndDateString`, `avail_start_date`, `avail_end_date`, `min_operator_hours`, `min_operations_hours`, `min_trainer_hours`, `min_trainee_hours`) VALUES

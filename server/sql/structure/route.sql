@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table pointy_nostrils.route
+-- Dumping structure for table anteaterExpress.route
 CREATE TABLE IF NOT EXISTS `route` (
   `id` mediumint(9) NOT NULL AUTO_INCREMENT,
   `session_id` smallint(6) unsigned NOT NULL,

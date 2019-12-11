@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping data for table pointy_nostrils.cellProvider: ~10 rows (approximately)
+-- Dumping data for table anteaterExpress.cellProvider: ~10 rows (approximately)
 DELETE FROM `cellProvider`;
 /*!40000 ALTER TABLE `cellProvider` DISABLE KEYS */;
 INSERT INTO `cellProvider` (`id`, `cell_provider`, `cell_domain`) VALUES

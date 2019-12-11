@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping data for table pointy_nostrils.user_roles: ~4 rows (approximately)
+-- Dumping data for table anteaterExpress.user_roles: ~4 rows (approximately)
 DELETE FROM `user_roles`;
 /*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
 INSERT INTO `user_roles` (`id`, `role_id`, `user_id`, `created_at`, `granted_by`) VALUES

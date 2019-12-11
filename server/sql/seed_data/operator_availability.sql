@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping data for table pointy_nostrils.operator_availability: ~184 rows (approximately)
+-- Dumping data for table anteaterExpress.operator_availability: ~184 rows (approximately)
 DELETE FROM `operator_availability`;
 /*!40000 ALTER TABLE `operator_availability` DISABLE KEYS */;
 INSERT INTO `operator_availability` (`id`, `user_id`, `session_id`, `day_of_week`, `start_time`, `end_time`, `cont_block`) VALUES

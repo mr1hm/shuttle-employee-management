@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table pointy_nostrils.round
+-- Dumping structure for table anteaterExpress.round
 CREATE TABLE IF NOT EXISTS `round` (
   `id` int(9) NOT NULL AUTO_INCREMENT,
   `user_id` int(9) NOT NULL,

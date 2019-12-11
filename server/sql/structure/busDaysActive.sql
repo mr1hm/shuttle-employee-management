@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table pointy_nostrils.busDaysActive
+-- Dumping structure for table anteaterExpress.busDaysActive
 CREATE TABLE IF NOT EXISTS `busDaysActive` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `bus_id` int(10) unsigned NOT NULL,

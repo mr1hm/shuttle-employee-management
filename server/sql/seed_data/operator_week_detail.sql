@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping data for table pointy_nostrils.operator_week_detail: ~2 rows (approximately)
+-- Dumping data for table anteaterExpress.operator_week_detail: ~2 rows (approximately)
 DELETE FROM `operator_week_detail`;
 /*!40000 ALTER TABLE `operator_week_detail` DISABLE KEYS */;
 INSERT INTO `operator_week_detail` (`id`, `user_id`, `session_id`, `comment`) VALUES
