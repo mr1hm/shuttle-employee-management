@@ -53,7 +53,7 @@ class Nav extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!equal(this.props.roles, prevProps.roles)) {
+    if (!equal(this.props.roles, prevProps.roles) || prevProps.auth !== this.props.auth) {
       this.setRoutes(prevProps);
     }
   }
