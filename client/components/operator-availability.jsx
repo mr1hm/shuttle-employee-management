@@ -1,5 +1,4 @@
 import React from 'react';
-import TopMenuGeneral from './topmenu/topmenu-general';
 import './operator-availability.css';
 import SelectAvailabilityModal from './operator-availability-modal';
 import ErrorModal from './operator-error-modal';
@@ -523,7 +522,6 @@ class OperatorAvailability extends React.Component {
 
     return (
       <React.Fragment>
-        <TopMenuGeneral title="MY AVAILABILITY"/>
         <div className="ml-3" style={{ fontWeight: 'bold', fontSize: '1.0em' }}>{this.state.sessionName}</div>
         <div className="d-flex justify-content-between">
           <div className='mb-0 ml-3'>Click day and approx. time to add, change, or delete.</div>

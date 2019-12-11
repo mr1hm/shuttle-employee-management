@@ -1,8 +1,4 @@
 import React from 'react';
-import TopMenuShift from './topmenu/topmenu-shift';
-import TopMenuGeneral from './topmenu/topmenu-general';
-import TopMenuHamburger from './topmenu/topmenu-hamburger';
-import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
 
 // THIS FILE IS NOT BEING USED.
@@ -140,8 +136,6 @@ class AdminRoutes extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <TopMenuGeneral userId={this.props.userId} title="ADMIN - Routes/Buses" />
-        {/* <TopMenuShift title="ADMIN - Routes/Buses" page='admin-routes' date="Fall Session"></TopMenuShift> */}
         <div className = "container mt-2">
           <div className = "row ">
             <form onSubmit={this.handleSubmit}>

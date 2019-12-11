@@ -1,6 +1,5 @@
 import React from 'react';
 import './tranaction.css';
-import TopMenuGeneral from '../topmenu/topmenu-general';
 import { convertUnixMonthDay } from '../../lib/time-functions';
 
 class Transaction extends React.Component {
@@ -170,7 +169,6 @@ class Transaction extends React.Component {
 
     return (
       <React.Fragment>
-        <TopMenuGeneral userId={this.props.userId} title="Transaction Log" />
         <div className="span2 offset1 headtable">
           <div className="col-md-4 ml-1 dateRight">Date</div>
           <div className="col-md-4 ml-1 typeRight">type</div>

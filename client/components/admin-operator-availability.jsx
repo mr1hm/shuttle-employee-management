@@ -1,5 +1,4 @@
 import React from 'react';
-import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import EditUserModal from './admin-edit-user-modal';
 import SelectSessionModal from './admin-select-session-modal';
@@ -325,9 +324,6 @@ class AdminOperatorAvailability extends React.Component {
 
     return (
       <React.Fragment>
-        <div className='nav'>
-          <TopMenuGeneral title="ADMIN-OPERATOR AVAILABILITY" />
-        </div>
         <div className="addButton d-flex justify-content-end mt-3">
           <button className="btn-sm btn-primary ml-3" onClick={this.showSelectSessionModal}>Select Session</button>
         </div>

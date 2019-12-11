@@ -1,6 +1,5 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
-import TopMenuGeneral from './topmenu/topmenu-general';
 import { Link } from 'react-router-dom';
 import NotificationShift from './trade-notification-shift';
 import SwapConfirmation from './swap-confirmation-modal';
@@ -85,7 +84,6 @@ class TradeNotification extends React.Component {
     if (this.state.newShifts.length === 0) {
       return (
         <>
-        <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
         <SwapConfirmNotification userId={this.props.userId} />
         </>
         // <div className="container mt-2">
@@ -99,9 +97,6 @@ class TradeNotification extends React.Component {
     } else {
       return (
         <div className="container">
-          <div className="row justify-content-center mb-3">
-            <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
-          </div>
           <div className="row text-center">
             <div className="col-2">
               <h5>Date</h5>
