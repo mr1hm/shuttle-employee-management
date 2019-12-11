@@ -25,7 +25,7 @@ export default class BusesTable extends React.Component {
     this.deleteBus = this.deleteBus.bind(this);
     this.handleGapsModal = this.handleGapsModal.bind(this);
     this.handleDeleteBusClicked = this.handleDeleteBusClicked.bind(this);
-    this.handleAddNewGapClick = this.handleAddNewGapClick.bind(this);
+    // this.handleAddNewGapClick = this.handleAddNewGapClick.bind(this);
     // this.addNewGap = this.addNewGap.bind(this);
   }
 
@@ -37,9 +37,9 @@ export default class BusesTable extends React.Component {
   //   }
   // }
 
-  handleAddNewGapClick() {
-    this.setState({ addNewGapClicked: !this.state.addNewGapClicked });
-  }
+  // handleAddNewGapClick() {
+  //   this.setState({ addNewGapClicked: !this.state.addNewGapClicked });
+  // }
 
   handleGapsModal() {
     this.setState({

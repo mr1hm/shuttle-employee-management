@@ -19,7 +19,7 @@ export default class GapsModal extends React.Component {
       }
     };
     this.deleteBusGap = this.deleteBusGap.bind(this);
-    // this.handleAddNewGapClick = this.handleAddNewGapClick.bind(this);
+    this.handleAddNewGapClick = this.handleAddNewGapClick.bind(this);
     this.handleNewGapChange = this.handleNewGapChange.bind(this);
     this.addNewGap = this.addNewGap.bind(this);
     // this.fetchLinesBusesInfo = this.fetchLinesBusesInfo.bind(this);
@@ -51,7 +51,7 @@ export default class GapsModal extends React.Component {
       .then(response => response.json())
       .then(gapThatWasAdded => {
         console.log(gapThatWasAdded);
-        this.setState({ gapThatWasAdded }, this.props.handleAddNewGapClick);
+        this.setState({ gapThatWasAdded }, this.handleAddNewGapClick);
         if (currentSession === 'All Sessions') {
           this.props.getLinesBusesInfo();
         } else {
@@ -91,13 +91,13 @@ export default class GapsModal extends React.Component {
     }));
   }
 
-  // handleAddNewGapClick() {
-  //   this.setState({ addNewGapClicked: !this.state.addNewGapClicked });
-  // }
+  handleAddNewGapClick() {
+    this.setState({ addNewGapClicked: !this.state.addNewGapClicked });
+  }
 
   render() {
-    const { newGap } = this.state;
-    const { busGapInfo, addNewGapClicked } = this.props;
+    const { newGap, addNewGapClicked } = this.state;
+    const { busGapInfo } = this.props;
     if (!this.props.showGapsModal) return null;
     if (!busGapInfo.gapInfo) return <div>LOADING...</div>;
     if (busGapInfo.gapInfo.length === 0) return <td>There are no gaps for this bus. Please add a gap.</td>;
@@ -162,7 +162,7 @@ export default class GapsModal extends React.Component {
                   <th scope="col">Operations</th>
                   <th scope="col">
                     <div className="d-flex justify-content-end">
-                      <button onClick={this.props.handleAddNewGapClick} className="closeGapModal btn btn-danger">X</button>
+                      <button onClick={this.handleAddNewGapClick} className="closeGapModal btn btn-danger">X</button>
                     </div>
                   </th>
                 </tr>
@@ -189,7 +189,7 @@ export default class GapsModal extends React.Component {
         }
         <div className="row">
           <div className="col offset-10 d-flex justify-items-end">
-            <button onClick={this.props.handleAddNewGapClick} className="addGapBtn col btn btn-primary">Add Gap</button>
+            <button onClick={this.handleAddNewGapClick} className="addGapBtn col btn btn-primary">Add Gap</button>
           </div>
         </div>
       </div>
