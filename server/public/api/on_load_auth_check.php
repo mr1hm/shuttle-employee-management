@@ -1,7 +1,7 @@
 <?php
 
-require(__DIR__.'/../../lib/startup.php');
-require(AUTH);
+require_once(__DIR__.'/../../lib/startup.php');
+require_once(AUTH);
 
 $user = getRequestUser();
 
