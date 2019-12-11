@@ -37,6 +37,12 @@ function getToday() {
   return date(DATE_FORMAT);
 }
 
+function getFormattedDate($date){
+  return date(DATE_FORMAT, strtotime($date));
+}
+
 function set_tz_la() {
   date_default_timezone_set('America/Los_Angeles');
 }
+
+set_tz_la();
