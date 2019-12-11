@@ -1,6 +1,4 @@
 import React from 'react';
-import TopMenuGeneral from '../topmenu/topmenu-general';
-
 import './welcome.css';
 
 class Welcome extends React.Component {
@@ -19,11 +17,6 @@ class Welcome extends React.Component {
   render() {
     return (
       <div className="container-fluid d-flex flex-column h-100 justify-content-around yellow">
-        <div className="row">
-          <div className="col">
-            <TopMenuGeneral title="WELCOME" newShiftsAndSelectedDriver={this.state.newShiftsAndSelectedDriver} />
-          </div>
-        </div>
         <div className="row h-50 justify-content-center">
           <div className="col-md-6 col-10 text-center d-flex align-items-center justify-content-center blue">
             <h1>VERMINLINGUA<br/>EXPRESS</h1>
