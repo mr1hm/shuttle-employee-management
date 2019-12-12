@@ -18,9 +18,6 @@ class FinalSwapConfirmModal extends React.Component {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLongTitle">Confirm shift swap with {this.props.name}?</h5>
-              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
             </div>
             <div className="modal-body">
               <div className="row text-center">
