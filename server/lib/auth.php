@@ -48,6 +48,34 @@ function login($email, $password) {
   return $user;
 }
 
+function getUsersRoles($uciId) {
+  global $mysqli;
+
+  $stmt = $mysqli->prepare('SELECT r.mid
+    FROM `user` AS u 
+    JOIN user_roles AS ur ON u.id=ur.user_id
+    JOIN roles AS r ON r.id=ur.role_id
+    WHERE u.uci_net_id=?
+  ');
+
+  $stmt->bind_param('s', $uciId);
+  $stmt->execute();
+
+  $result = $stmt->get_result();
+
+  if(!$result) {
+    throw new ApiError(null, 500, 'Error retrieving user\'s roles');
+  }
+
+  $roles = [];
+
+  while($row = $result->fetch_assoc()){
+    $roles[] = $row['mid'];
+  }
+
+  return $roles;
+}
+
 function getUserFromToken($token = null) {
   if(!$token) return null;
 
