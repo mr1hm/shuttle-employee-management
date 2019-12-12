@@ -82,6 +82,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             ]
         ];
     }
+
     $base = &$base[$row['bus_info_id']]['posted_by'];
     if ($row['uci_net_id'] === NULL){
         $base = &$base['Operations']['shifts'];
@@ -95,6 +96,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         }
         $base = &$base[$row['uci_net_id']]['shifts'];
     }
+
     $concurrentShifts = [
         'before' => NULL,
         'after' => NULL
@@ -117,26 +119,62 @@ while ($row = mysqli_fetch_assoc($result)) {
         }
     }
 
-    if ($concurrentShifts['before'] !== NULL){
-        if ($concurrentShifts['after'] !== NULL){
+    define('MAX_SHIFT_TIME', 300);
+    if (
+        $concurrentShifts['before'] !== NULL
+        && intval($row['end_time']) - intval($concurrentShifts['before'][1]['start_time']) > MAX_SHIFT_TIME
+    ){ $concurrentShifts['before'] = NULL; }
 
+    if (
+        $concurrentShifts['after'] !== NULL
+        && intval($concurrentShifts['after'][1]['end_time']) - intval($row['start_time']) > MAX_SHIFT_TIME
+    ){ $concurrentShifts['after'] = NULL; }
+
+    if (
+        $concurrentShifts['before'] !== NULL
+        && $concurrentShifts['after'] !== NULL
+        && intval($concurrentShifts['after'][1]['end_time']) - intval($concurrentShifts['before'][1]['start_time']) > MAX_SHIFT_TIME
+    ){
+        $beforeShiftDuration = intval($concurrentShifts['before'][1]['end_time']) - intval($concurrentShifts['before'][1]['start_time']);
+        $afterShiftDuration = intval($concurrentShifts['after'][1]['end_time']) - intval($concurrentShifts['after'][1]['start_time']);
+        if ($beforeShiftDuration <= $afterShiftDuration){
+            $concurrentShifts['after'] = NULL;
         } else {
+            $concurrentShifts['before'] = NULL;
+        }
+    }
 
+    $currentRound = [
+        'id' => $row['round_id'],
+        'start_time' => $row['start_time'],
+        'end_time' => $row['end_time']
+    ];
+
+    if ($concurrentShifts['before'] !== NULL){
+        $shift = &$base[$concurrentShifts['before'][0]];
+
+        if ($concurrentShifts['after'] !== NULL){
+            $shift['end_time'] = $concurrentShifts['after'][1]['end_time'];
+            $shift['rounds'] = array_merge(
+                $concurrentShifts['before'][1]['rounds'],
+                $currentRound,
+                $concurrentShifts['after'][1]['rounds']
+            );
+            array_splice($base, $concurrentShifts['after'][0], 1);
+        } else {
+            $shift['end_time'] = $row['end_time'];
+            array_push($shift['rounds'], $currentRound);
         }
     } else {
         if ($concurrentShifts['after'] !== NULL){
-
+            $shift = &$base[$concurrentShifts['after'][0]];
+            $shift['start_time'] = $row['start_time'];
+            array_unshift($shift['rounds'], $currentRound);
         } else {
             $base[] = [
                 'start_time' => $row['start_time'],
                 'end_time' => $row['end_time'],
-                'rounds' => [
-                    [
-                        'id' => $row['round_id'],
-                        'start_time' => $row['start_time'],
-                        'end_time' => $row['end_time']
-                    ]
-                ]
+                'rounds' => [$currentRound]
             ];
         }
     }
