@@ -24,3 +24,4 @@ JOIN route AS rte ON bi.route_id = rte.id AND s.id = rte.session_id
 WHERE rnd.`status` = "posted"
 AND u.id != 1
 AND u.id != :user_id
+AND rnd.date > UNIX_TIMESTAMP()
