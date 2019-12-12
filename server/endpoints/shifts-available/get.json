@@ -15,11 +15,9 @@
             "last_name": "Cone",
             "first_name": "Waffle"
         },
-        "posted_by(non-operator)": null,
-        "route": {
-            "line_name": "D"
-        },
+        "posted_by(non-operator)": "Operations",
         "bus_info": {
+            "line_name": "D",
             "bus_number": 3
         },
         "rounds": [

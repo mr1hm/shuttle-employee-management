@@ -10,7 +10,7 @@ if ($user === NULL){
 
 $query = '
     SELECT
-        rnd.id AS round_id,
+        rnd.id AS round_id, rnd.bus_info_id,
         DAYOFWEEK(DATE(FROM_UNIXTIME(rnd.date))) AS day_of_week,
         DATE(FROM_UNIXTIME(rnd.date)) AS date,
         CAST(rnd.start_time AS CHAR) AS start_time,
@@ -55,9 +55,93 @@ if ($result === FALSE) {
     throw new ApiError(null, 500, 'Error retrieving shift data');
 }
 
-$data = [];
+$shiftGroupingCache = [];
 while ($row = mysqli_fetch_assoc($result)) {
-    $data[] = $row;
+    $base = &$shiftGroupingCache;
+    if (!array_key_exists($row['date'], $base)){
+        $base[$row['date']] = [
+            'day_of_week' => $row['day_of_week'],
+            'buses' => []
+        ];
+    }
+    $base = &$base[$row['date']]['buses'];
+    if (!array_key_exists($row['bus_info_id'], $base)){
+        $base[$row['bus_info_id']] = [
+            'session' => [
+                'id' => $row['session_id'],
+                'name' => $row['session_name']
+            ],
+            'bus_info' => [
+                'line_name' => $row['line_name'],
+                'bus_number' => $row['bus_number']
+            ],
+            'posted_by' => [
+                'Operations' => [
+                    'shifts' => []
+                ]
+            ]
+        ];
+    }
+    $base = &$base[$row['bus_info_id']]['posted_by'];
+    if ($row['uci_net_id'] === NULL){
+        $base = &$base['Operations']['shifts'];
+    } else {
+        if (!array_key_exists($row['uci_net_id'], $base)){
+            $base[$row['uci_net_id']] = [
+                'last_name' => $row['last_name'],
+                'first_name' => $row['first_name'],
+                'shifts' => []
+            ];
+        }
+        $base = &$base[$row['uci_net_id']]['shifts'];
+    }
+    $concurrentShifts = [
+        'before' => NULL,
+        'after' => NULL
+    ];
+    foreach ($base as $shiftIndex => $shift){
+        if ($shift['end_time'] === $row['start_time']){
+            if ($concurrentShifts['before'] !== NULL){
+                $oldTime = intval($concurrentShifts['before'][1]['end_time']) - intval($concurrentShifts['before'][1]['end_time']);
+                $newTime = intval($shift['end_time']) - intval($shift['start_time']);
+                if ($oldTime <= $newTime){ continue; }
+            }
+            $concurrentShifts['before'] = [$shiftIndex, $shift];
+        } else if ($shift['start_time'] === $row['end_time']){
+            if ($concurrentShifts['after'] !== NULL){
+                $oldTime = intval($concurrentShifts['after'][1]['end_time']) - intval($concurrentShifts['after'][1]['end_time']);
+                $newTime = intval($shift['end_time']) - intval($shift['start_time']);
+                if ($oldTime <= $newTime){ continue; }
+            }
+            $concurrentShifts['after'] = [$shiftIndex, $shift];
+        }
+    }
+
+    if ($concurrentShifts['before'] !== NULL){
+        if ($concurrentShifts['after'] !== NULL){
+
+        } else {
+
+        }
+    } else {
+        if ($concurrentShifts['after'] !== NULL){
+
+        } else {
+            $base[] = [
+                'start_time' => $row['start_time'],
+                'end_time' => $row['end_time'],
+                'rounds' => [
+                    [
+                        'id' => $row['round_id'],
+                        'start_time' => $row['start_time'],
+                        'end_time' => $row['end_time']
+                    ]
+                ]
+            ];
+        }
+    }
 }
 
-send($data);
+$responseBody = $shiftGroupingCache;
+
+send($responseBody);

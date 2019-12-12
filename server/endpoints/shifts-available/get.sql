@@ -1,5 +1,5 @@
 SELECT
-rnd.id AS round_id,
+rnd.id AS round_id, rnd.bus_info_id,
 DAYOFWEEK(DATE(FROM_UNIXTIME(rnd.date))) AS day_of_week,
 DATE(FROM_UNIXTIME(rnd.date)) AS date,
 CAST(rnd.start_time AS CHAR) AS start_time,
