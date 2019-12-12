@@ -8,6 +8,9 @@ if ($user === NULL){
     throw new ApiError(NULL, 401, 'Unauthorized');
 }
 
+/**
+ * Get Future Rounds Posted by other users
+ */
 $query = '
     SELECT
         rnd.id AS round_id, rnd.bus_info_id,
@@ -55,6 +58,13 @@ if ($result === FALSE) {
     throw new ApiError(null, 500, 'Error retrieving shift data');
 }
 
+/**
+ * Combine consecutive rounds into shifts, provided they:
+ * - Are on the same date
+ * - Are for the same bus (session, line, and bus number)
+ * - Are posted by the same user (non-Operators are grouped into "Operations")
+ * - Do not go over the maximum shift duration (3 hours)
+ */
 $shiftGroupingCache = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $base = &$shiftGroupingCache;
@@ -64,6 +74,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             'buses' => []
         ];
     }
+
     $base = &$base[$row['date']]['buses'];
     if (!array_key_exists($row['bus_info_id'], $base)){
         $base[$row['bus_info_id']] = [
@@ -108,14 +119,14 @@ while ($row = mysqli_fetch_assoc($result)) {
                 $newTime = intval($shift['end_time']) - intval($shift['start_time']);
                 if ($oldTime <= $newTime){ continue; }
             }
-            $concurrentShifts['before'] = [$shiftIndex, $shift];
+            $concurrentShifts['before'] = [$shiftIndex, &$shift];
         } else if ($shift['start_time'] === $row['end_time']){
             if ($concurrentShifts['after'] !== NULL){
                 $oldTime = intval($concurrentShifts['after'][1]['end_time']) - intval($concurrentShifts['after'][1]['end_time']);
                 $newTime = intval($shift['end_time']) - intval($shift['start_time']);
                 if ($oldTime <= $newTime){ continue; }
             }
-            $concurrentShifts['after'] = [$shiftIndex, $shift];
+            $concurrentShifts['after'] = [$shiftIndex, &$shift];
         }
     }
 
@@ -163,7 +174,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             array_splice($base, $concurrentShifts['after'][0], 1);
         } else {
             $shift['end_time'] = $row['end_time'];
-            array_push($shift['rounds'], $currentRound);
+            $shift['rounds'][] = $currentRound;
         }
     } else {
         if ($concurrentShifts['after'] !== NULL){
@@ -178,8 +189,44 @@ while ($row = mysqli_fetch_assoc($result)) {
             ];
         }
     }
+    unset($base, $shift);
 }
 
-$responseBody = $shiftGroupingCache;
+/**
+ * Flatten shifts to rows for response body
+ */
+$responseBody = [];
+foreach($shiftGroupingCache as $date => $dateShifts){
+    foreach($dateShifts['buses'] as $busShifts){
+        foreach($busShifts['posted_by'] as $posterUciNetId => $posterShifts){
+            foreach($posterShifts['shifts'] as $shift){
+                $shiftRow = [
+                    'recurring' => FALSE,
+                    'day_of_week' => $dateShifts['day_of_week'],
+                    'start_date' => $date,
+                    'end_date' => $date,
+                    'start_time' => $shift['start_time'],
+                    'end_time' => $shift['end_time'],
+                    'session' => $busShifts['session'],
+                    'bus_info' => $busShifts['bus_info'],
+                    'rounds' => $shift['rounds'],
+                    'conflicts' => [],
+                ];
+
+                if ($posterUciNetId === 'Operations'){
+                    $shiftRow['posted_by'] = $posterUciNetId;
+                } else {
+                    $shiftRow['posted_by'] = [
+                        'uci_net_id' => $posterUciNetId,
+                        'last_name' => $posterShifts['last_name'],
+                        'first_name' => $posterShifts['first_name']
+                    ];
+                }
+
+                $responseBody[] = $shiftRow;
+            }
+        }
+    }
+}
 
 send($responseBody);
