@@ -24,7 +24,7 @@ class NotificationShift extends React.Component {
         <button
           onClick={() => this.props.giveShifttoSelectedDriver(round_id, target_user_id)}
           type="button"
-          className="btn btn-success">
+          className="btn btn-success w-75">
           Take Shift
         </button>
       );
@@ -37,7 +37,7 @@ class NotificationShift extends React.Component {
             swapFlag: round_id
           }
         }}
-        className="btn btn-dark">
+        className="btn btn-dark w-75">
             Swap
         </Link>
       );

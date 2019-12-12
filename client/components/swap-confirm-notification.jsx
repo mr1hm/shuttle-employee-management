@@ -2,6 +2,7 @@ import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import { Link } from 'react-router-dom';
 import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, createDateStringFromDateObject } from '../lib/time-functions';
+import FinalSwapConfirmModal from './final-swap-confirm-modal';
 
 class SwapConfirmNotification extends React.Component {
   constructor(props) {
@@ -9,10 +10,12 @@ class SwapConfirmNotification extends React.Component {
     this.state = {
       ownShift: [],
       shiftsToSwap: [],
-      name: ''
+      name: '',
+      toggle: 0
     };
     this.swapShift = this.swapShift.bind(this);
     this.declineShift = this.declineShift.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
   }
   componentDidMount() {
     fetch(`/api/get-final-swap-confirmation.php?id=${this.props.userId}`)
@@ -77,20 +80,36 @@ class SwapConfirmNotification extends React.Component {
       .catch(err => console.error(err.message));
   }
 
+  toggleModal() {
+    this.setState({
+      toggle: 1
+    });
+  }
   render() {
     const ownShift = this.state.ownShift;
     const shiftsToSwap = this.state.shiftsToSwap;
+    if (this.state.toggle) {
+      return (
+        <FinalSwapConfirmModal ownShift={ownShift} shiftsToSwap={this.state.shiftsToSwap} declineShift={this.declineShift} swapShift={this.swapShift} name={this.state.name} />
+      );
+    }
     if (typeof ownShift === 'undefined' || shiftsToSwap.length === 0 || ownShift.length === 0) {
       return null;
     } else {
       return (
         <>
           <div className="row justify-content-center text-center mt-5">
-            <div className="col">
+            <div className="col-8">
               <h3>Confirm Swap with {this.state.name}?</h3>
             </div>
+            <div className="col-2">
+              <button type="button" onClick={this.toggleModal} className="btn btn-primary w-75">Accept</button>
+            </div>
+            <div className="col-2">
+              <button type="button" onClick={this.declineShift} className="btn btn-danger w-75">Decline</button>
+            </div>
           </div>
-          <div className="row text-center">
+          {/* <div className="row text-center">
             <div className="col-2">
               <h5>Date</h5>
             </div>
@@ -152,7 +171,7 @@ class SwapConfirmNotification extends React.Component {
                 <button type="button" onClick={this.declineShift} className="btn btn-lg btn-danger w-25">Decline</button>
               </Link>
             </div>
-          </div>
+          </div> */}
         </>
       );
     }
