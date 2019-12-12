@@ -40,8 +40,10 @@ class AdminUserEdit extends React.Component {
 
       return (
         <li key={mid} className={`list-group-item user-roles ${className}`} onClick={onClick}>
-          <input id={mid} type="checkbox" checked={value} readOnly/>
-          <label htmlFor={mid} className="ml-3">{name}</label>
+          <div onClick={e => e.preventDefault()}>
+            <input type="checkbox" checked={value} readOnly />
+            <label className="ml-3">{name}</label>
+          </div>
         </li>
       );
     });
