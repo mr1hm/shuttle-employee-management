@@ -8,7 +8,8 @@ class SwapConfirmNotification extends React.Component {
     super(props);
     this.state = {
       ownShift: [],
-      shiftsToSwap: []
+      shiftsToSwap: [],
+      name: ''
     };
     this.swapShift = this.swapShift.bind(this);
     this.declineShift = this.declineShift.bind(this);
@@ -20,7 +21,16 @@ class SwapConfirmNotification extends React.Component {
         const shiftsToSwap = data;
         const ownShift = shiftsToSwap.filter(oneShift => oneShift.user_id === this.props.userId);
         const otherPersonShifts = shiftsToSwap.filter(oneShift => oneShift.user_id !== this.props.userId);
-        // const lastShift = shiftsToSwap.pop();
+        const targetId = otherPersonShifts[0].user_id;
+        fetch(`/api/swap-operator-name.php?id=${targetId}`)
+          .then(response => response.json())
+          .then(name => {
+            const fullName = name[0].first_name + ' ' + name[0].last_name;
+            this.setState({
+              name: fullName
+            });
+          })
+          .catch(error => console.error('Fetch failed', error));
         this.setState({
           ownShift: ownShift,
           shiftsToSwap: otherPersonShifts
@@ -77,7 +87,7 @@ class SwapConfirmNotification extends React.Component {
         <>
           <div className="row justify-content-center text-center mt-5">
             <div className="col">
-              <h3>Confirm Swap</h3>
+              <h3>Confirm Swap with {this.state.name}?</h3>
             </div>
           </div>
           <div className="row text-center">
@@ -109,17 +119,6 @@ class SwapConfirmNotification extends React.Component {
             );
           })
           }
-
-          {/* <div className="row text-center justify-content-center">
-            <div className="col-2">
-              {createDateStringFromDateObject(parseInt(ownShift.shift_date) * 1000)}
-            </div>
-            <div className="col-4 d-flex justify-content-center">
-              <RouteBusDisplay route={ownShift.line_name} bus={ownShift.bus_info_id} />
-            </div>
-            <div className="col-3">{ownShift.length === 0 ? ownShift.start_time + '-' + ownShift.end_time : convertMilitaryTime(ownShift.start_time) + '-' + convertMilitaryTime(ownShift.end_time)}</div>
-            <div className="col-3">{calcShiftLenghtInHourMinFormat(ownShift.start_time, ownShift.end_time)}</div>
-          </div> */}
 
           <div className="row justify-content-center text-center">
             <div className="col-2 ml-3 mt-3 mb-3">
