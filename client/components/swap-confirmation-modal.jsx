@@ -7,7 +7,8 @@ class SwapConfirmation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedRoundsToSwap: []
+      selectedRoundsToSwap: [],
+      operatorName: ''
     };
     this.swapShift = this.swapShift.bind(this);
   }
@@ -24,6 +25,16 @@ class SwapConfirmation extends React.Component {
         selectedRoundsToSwap: selectedShift
       });
     }
+    const targetId = this.props.allShifts[0].user_id;
+    fetch(`/api/swap-operator-name.php?id=${targetId}`)
+      .then(response => response.json())
+      .then(name => {
+        const fullName = name[0].first_name + ' ' + name[0].last_name;
+        this.setState({
+          operatorName: fullName
+        });
+      })
+      .catch(error => console.error('Fetch failed', error));
   }
   swapShift() {
     const { selectedRoundsToSwap } = this.state;
@@ -50,7 +61,7 @@ class SwapConfirmation extends React.Component {
         <div className="modal-dialog modal-lg modal-dialog-centered" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLongTitle">Confirm shift swap?</h5>
+              <h5 className="modal-title" id="exampleModalLongTitle">Confirm shift swap with {this.state.operatorName}?</h5>
               <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -84,7 +95,7 @@ class SwapConfirmation extends React.Component {
                   </div>
                 );
               })}
-              <div className="row justify-content-center">
+              <div className="row justify-content-center text-center">
                 <div className="col-3 ml-3 mt-3 mb-3">
                   <h3>WITH</h3>
                 </div>
