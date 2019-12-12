@@ -10,17 +10,17 @@ class AdminShiftsDisplayComponent extends React.Component {
     };
   }
   calculateMinutesHours(startTime, endTime) {
-    $startHourDigits = floor(startTime / 100);
-    $startMinuteDigits = startTime / 100 - startHourDigits;
+    var startHourDigits = Math.floor(startTime / 100);
+    var startMinuteDigits = startTime / 100 - startHourDigits;
 
-    var endHourDigits = floor(endTime / 100);
+    var endHourDigits = Math.floor(endTime / 100);
     var endMinuteDigits = endTime / 100 - endHourDigits;
 
     var startTimeInMinutes = startHourDigits * 60 + startMinuteDigits * 100;
     var endTimeInMinutes = endHourDigits * 60 + endMinuteDigits * 100;
 
     var shiftLengthInMinutes = endTimeInMinutes - startTimeInMinutes;
-    return round(shiftLengthInMinutes);
+    return Math.round(shiftLengthInMinutes);
   }
 
   render() {

@@ -15,7 +15,7 @@ import AdminOperatorAvailability from './admin-operator-availability';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
-import TradeSwap from './trade-swap'; 
+import TradeSwap from './trade-swap';
 import TradeNotification from './trade-notification';
 import AdminUserSummary from './admin-user-summary';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
@@ -75,7 +75,7 @@ class App extends React.Component {
           <Route path="/master-schedule" component={auth.all(MasterSchedule)} />
           <Route path="/my-info" component={auth.all(MyInfo)} />
           <Route path="/operator-availability" component={auth.all(OperatorAvailability)} />
-          <Route path="/shifts/available/:date" component={auth.all(ShiftsAvailable)} />
+          <Route path="/shifts/available" component={auth.all(ShiftsAvailable)} />
           <Route path="/shifts/day/:date" component={auth.all(ShiftsDay)} />
           <Route path="/shifts/details" component={auth.all(ShiftsDetails, {
             date: this.state.date,
