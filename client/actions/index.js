@@ -17,9 +17,12 @@ export const adminGetUserData = uciId => async dispatch => {
 
 export const adminSetUserRole = (role, uciId) => async dispatch => {
   try {
-    const { data } = await axios.post('/api/admin-set-user-role', { role, uciId });
+    const { data: roles } = await axios.post('/api/admin-set-user-role.php', { role, uciId });
 
-    console.log('Set Role Data:', data);
+    dispatch({
+      type: types.ADMIN_UPDATE_USER_ROLE,
+      roles
+    });
   } catch (error) {
     throwApiError(error, 'Error updating user role');
   }
