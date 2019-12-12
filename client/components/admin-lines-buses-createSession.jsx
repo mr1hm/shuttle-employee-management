@@ -118,7 +118,7 @@ export default class CreateSession extends React.Component {
       method: 'POST',
       body: JSON.stringify(newSession)
     };
-    fetch(`api/admin-lines-buses-sessions.php`, init)
+    fetch(`/api/admin-lines-buses-sessions.php`, init)
       .then(response => response.json())
       .then(sessionInfo => {
         this.setState({
@@ -132,7 +132,7 @@ export default class CreateSession extends React.Component {
   }
 
   getAllUpdatedSessions() {
-    fetch('api/admin-lines-buses-sessions.php')
+    fetch('/api/admin-lines-buses-sessions.php')
       .then(response => response.json())
       .then(sessions => {
         this.setState({ newSessionAdded: true, sessions });

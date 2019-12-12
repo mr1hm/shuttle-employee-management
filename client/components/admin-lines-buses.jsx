@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faPaste } from '@fortawesome/free-solid-svg-icons';
+import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 
 class AdminRoutes extends React.Component {
   constructor(props) {
@@ -40,14 +41,14 @@ class AdminRoutes extends React.Component {
         regularService: 'True',
         specialDriver: 0
       },
-      deleteHistory: [],
-      addHistory: [],
       newLineAdded: false,
       mostRecentRouteID: null,
       operationsHistoryMethod: null,
       originalLinesBusesInfo: null,
       liveFieldStatus: false,
-      masterFieldStatus: false
+      masterFieldStatus: false,
+      deleteSessionClicked: false,
+      deleteStatus: 'session'
     };
     this.getUpdatedLines = this.getUpdatedLines.bind(this);
     this.getLinesBusesInfo = this.getLinesBusesInfo.bind(this);
@@ -66,6 +67,7 @@ class AdminRoutes extends React.Component {
     this.toggleLiveFieldStatus = this.toggleLiveFieldStatus.bind(this);
     this.toggleMasterFieldStatus = this.toggleMasterFieldStatus.bind(this);
     this.resetNewLineState = this.resetNewLineState.bind(this);
+    this.handleDeleteSessionClick = this.handleDeleteSessionClick.bind(this);
   }
 
   componentDidMount() {
@@ -83,7 +85,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(sessionID)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(updatedSessionInfo => {
         this.setState({
@@ -108,12 +110,31 @@ class AdminRoutes extends React.Component {
     this.selectSession({ session_id: sessionInfo.id }, e);
   }
 
+  handleDeleteSessionClick() {
+    this.setState({ deleteSessionClicked: !this.state.deleteSessionClicked });
+  }
+
+  deleteSession(sessionID, routeIDArr, busIDArr) {
+    const body = { sessionToDelete: sessionID, routeIDArr, busIDArr };
+    const init = { method: 'DELETE', body: JSON.stringify(body) };
+
+    fetch('/api/admin-lines-buses-sessions.php', init)
+      .then(response => response.json())
+      .then(deletedSession => {
+        this.getAllSessions();
+        this.getLinesBusesInfo();
+        this.props.history.push('/admin-routes/');
+      }, this.handleDeleteSessionClick)
+      .catch(error => console.error(error));
+
+  }
+
   handleCopySession(sessionID) {
     const init = {
       method: 'POST',
       body: JSON.stringify(sessionID)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(sessionLines => {
         console.log(sessionLines);
@@ -136,7 +157,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(body)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(updatedSessionInfo => {
         this.setState({
@@ -151,7 +172,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(sessionID)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(sessionData => {
         this.setState({
@@ -190,7 +211,7 @@ class AdminRoutes extends React.Component {
       method: 'POST',
       body: JSON.stringify(newLine)
     };
-    fetch(`api/admin-lines-buses.php`, init)
+    fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(lineInfo => {
         this.setState({
@@ -275,7 +296,7 @@ class AdminRoutes extends React.Component {
   }
 
   getAllSessions() {
-    fetch('api/admin-lines-buses-sessions.php')
+    fetch('/api/admin-lines-buses-sessions.php')
       .then(response => response.json())
       .then(sessionsData => {
         console.log('getallsessions: ', sessionsData);
@@ -293,7 +314,7 @@ class AdminRoutes extends React.Component {
         method: 'POST',
         body: JSON.stringify(sessionID)
       };
-      fetch('api/admin-lines-buses.php', init)
+      fetch('/api/admin-lines-buses.php', init)
         .then(response => response.json())
         .then(updatedLines => {
           this.setState({
@@ -305,7 +326,7 @@ class AdminRoutes extends React.Component {
         })
         .catch(error => console.error(error));
     } else {
-      fetch('api/admin-lines-buses.php')
+      fetch('/api/admin-lines-buses.php')
         .then(response => response.json())
         .then(linesBusesInfo => this.setState({
           linesBusesInfo: linesBusesInfo
@@ -320,7 +341,7 @@ class AdminRoutes extends React.Component {
         method: 'POST',
         body: JSON.stringify(sessionID)
       };
-      fetch('api/admin-lines-buses.php', init)
+      fetch('/api/admin-lines-buses.php', init)
         .then(response => response.json())
         .then(sessionData => {
           console.log('linebusinfo: ', sessionData);
@@ -330,11 +351,11 @@ class AdminRoutes extends React.Component {
         })
         .catch(error => console.error(error));
     } else {
-      fetch('api/admin-lines-buses.php')
+      fetch('/api/admin-lines-buses.php')
         .then(response => response.json())
         .then(linesBusesInfo => {
           this.setState({
-            linesBusesInfo: linesBusesInfo
+            linesBusesInfo
           });
         })
         .catch(error => console.error(error));
@@ -381,8 +402,7 @@ class AdminRoutes extends React.Component {
   }
 
   render() {
-    const { linesBusesInfo } = this.state;
-    const { sessions } = this.state;
+    const { linesBusesInfo, sessions, deleteSessionClicked } = this.state;
     const linesInfoLength = this.state.linesBusesInfo.length;
     let linesInfo = this.state.linesBusesInfo;
     let largestID = 0;
@@ -431,6 +451,11 @@ class AdminRoutes extends React.Component {
                     <Sessions getAllSessions={this.getAllSessions} allSessions={this.state.sessions} />
                   </select>
                 </div>
+                {this.state.currentSession !== 'All Sessions'
+                  ? <div className="col d-flex align-items-end">
+                    < button className="btn btn-outline-dark deleteSessionBtn w-100">Delete Session</button>
+                  </div>
+                  : null}
                 <div className="col d-flex align-items-end">
                   {this.state.addNewSessionClicked ? <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark newSessionBtn w-100">Cancel</button>
                     : <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark newSessionBtn w-100">Add New Session</button>}
@@ -621,6 +646,12 @@ class AdminRoutes extends React.Component {
                   <Sessions getAllSessions={this.getAllSessions} allSessions={this.state.sessions} />;
                 </select>
               </div>
+              {this.state.currentSession !== 'All Sessions'
+                ? <div className="col d-flex align-items-end">
+                  < button className="btn btn-outline-dark deleteSessionBtn w-100" onClick={this.handleDeleteSessionClick}>Delete Session</button>
+                </div>
+                : null}
+              {deleteSessionClicked ? <DeleteConfirmationModal handleDeleteSessionClick={this.handleDeleteSessionClick} selectedSessionID={this.state.selectedSessionID} deleteStatus={this.state.deleteStatus} deleteSession={this.deleteSession} /> : null}
               <div className="col d-flex align-items-end">
                 {this.state.addNewSessionClicked ? <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark newSessionBtn w-100">Cancel</button>
                   : <button onClick={this.handleAddNewSessionClick} className="btn btn-outline-dark newSessionBtn w-100">Add New Session</button>}
@@ -676,13 +707,13 @@ class AdminRoutes extends React.Component {
             if (this.state.newLineAdded && (largestID == line.real_route_id)) {
               return (
                 <div className="newLine" key={`lineDiv${line.real_route_id}`} ref={this.ref}>
-                  <Lines operationsHistoryMethod={this.state.operationsHistoryMethod} storeOperationsHistory={this.storeOperationsHistory} handleGapsModal={this.handleGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                  <Lines operationsHistoryMethod={this.state.operationsHistoryMethod} handleGapsModal={this.handleGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} line={line} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
                 </div>
               );
             }
             return (
               <div key={`lineDiv${line.real_route_id}`}>
-                <Lines operationsHistoryMethod={this.state.operationsHistoryMethod} storeOperationsHistory={this.storeOperationsHistory} handleGapsModal={this.handleGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
+                <Lines operationsHistoryMethod={this.state.operationsHistoryMethod} handleGapsModal={this.handleGapsModal} selectedSessionID={this.state.selectedSessionID} currentSession={this.state.currentSession} addLineClicked={this.state.addLineClicked} getSessionName={this.getSessionName} sessionName={this.state.sessionName} sessions={this.state.sessions} line={line} linesBusesInfo={this.state.linesBusesInfo} key={line.real_route_id} getLinesBusesInfo={this.getLinesBusesInfo} accordionID={line.real_route_id + index} addBusClickedToFalse={this.setAddBusClickedToFalse} handleAddBusButton={this.handleAddBusButton} addBusClicked={this.state.addBusClicked} addBus={this.addBus} />
               </div>
             );
           }

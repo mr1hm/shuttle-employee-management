@@ -14,7 +14,7 @@ import OperatorAvailability from './operator-availability';
 import AdminOperatorAvailability from './admin-operator-availability';
 import AdminShiftsDay from './admin-shifts';
 import AdminRoutes from './admin-lines-buses';
-import Transaction from './transaction/transactionpage';
+// import Transaction from './transaction/transactionpage';
 import TradeSwap from './trade-swap';
 import TradeNotification from './trade-notification';
 import AdminUserSummary from './admin-user-summary';
@@ -56,7 +56,6 @@ class App extends React.Component {
   }
 
   render() {
-
     return (
       <>
         <Nav/>

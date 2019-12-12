@@ -1,27 +1,106 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export default class GapsModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editGapStartTimes: null,
-      editGapDurations: null
+      linesBusesInfo: null,
+      deletedGapID: null,
+      addNewGapClicked: false,
+      gapThatWasAdded: null,
+      newGap: {
+        busID: null,
+        gapStartTime: null,
+        gapDuration: null,
+        newGap: 1
+      }
     };
+    this.deleteBusGap = this.deleteBusGap.bind(this);
+    this.handleAddNewGapClick = this.handleAddNewGapClick.bind(this);
+    this.handleNewGapChange = this.handleNewGapChange.bind(this);
+    this.addNewGap = this.addNewGap.bind(this);
+    // this.fetchLinesBusesInfo = this.fetchLinesBusesInfo.bind(this);
   }
 
-  editBusGaps(e, busID) {
-    const value = e.target.value;
+  componentDidUpdate(prevProps) {
+    const { linesBusesInfo, getLinesBusesInfo } = this.props;
+    if (prevProps.linesBusesInfo !== linesBusesInfo) {
+      this.setState({
+        linesBusesInfo
+      });
+    }
+  }
 
+  // fetchLinesBusesInfo() {
+  //   fetch(`/api/admin-lines-buses.php`)
+  //     .then(response => response.json())
+  //     .then(linesBusesInfo => {
+  //       this.setState({ linesBusesInfo });
+  //     })
+  //     .catch(error => console.error(error));
+  // }
+
+  addNewGap(newGap, busID) {
+    const { currentSession, selectedSessionID } = this.props;
+    newGap = { ...newGap, busID: this.props.busGapInfo.busID };
+    const init = { method: 'POST', body: JSON.stringify(newGap) };
+    fetch(`/api/admin-lines-buses.php`, init)
+      .then(response => response.json())
+      .then(gapThatWasAdded => {
+        console.log(gapThatWasAdded);
+        this.setState({ gapThatWasAdded }, this.handleAddNewGapClick);
+        if (currentSession === 'All Sessions') {
+          this.props.getLinesBusesInfo();
+        } else {
+          this.props.getLinesBusesInfo({ session_id: selectedSessionID });
+        }
+      })
+      .catch(e => console.error(e));
+  }
+
+  deleteBusGap(busGapID) {
+    const { currentSession, selectedSessionID } = this.props;
+    const body = { busGapID };
+    const init = { method: 'DELETE', body: JSON.stringify(body) };
+    fetch(`/api/admin-lines-buses.php`, init)
+      .then(response => response.json())
+      .then(deletedGapID => {
+        console.log(deletedGapID);
+        this.setState({ deletedGapID }, () => {
+          if (currentSession === 'All Sessions') {
+            this.props.getLinesBusesInfo();
+          } else {
+            this.props.getLinesBusesInfo({ session_id: selectedSessionID });
+          }
+        });
+      })
+      .catch(error => console.error(error));
+  }
+
+  handleNewGapChange(e) {
+    const name = e.target.name;
+    const value = e.target.value;
+    this.setState(prevState => ({
+      newGap: {
+        ...prevState.newGap,
+        [name]: value
+      }
+    }));
+  }
+
+  handleAddNewGapClick() {
+    this.setState({ addNewGapClicked: !this.state.addNewGapClicked });
   }
 
   render() {
+    const { newGap, addNewGapClicked } = this.state;
     const { busGapInfo } = this.props;
-    if (!this.props.showGapsModal) {
-      return null;
-    }
+    if (!this.props.showGapsModal) return null;
+    if (!busGapInfo.gapInfo) return <div>LOADING...</div>;
+    if (busGapInfo.gapInfo.length === 0) return <td>There are no gaps for this bus. Please add a gap.</td>;
     return (
       <div className="container gapsModal">
         <div className="row">
@@ -40,42 +119,79 @@ export default class GapsModal extends React.Component {
               </tr>
             </thead>
             <tbody>
-              <tr className="busGapInfo">
-                <td className="busNumber" rowSpan="3">
-                  <RouteBusDisplay bus={busGapInfo.busNumber}></RouteBusDisplay>
-                </td>
-                <td>{busGapInfo.gapStartTimes[0]}</td>
-                <td>{`${busGapInfo.gapDurations[0]}min`}</td>
-                <td>
-                  <button onClick={this.handleEditBusClicked} className="busGapEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
-                  <button onClick={() => this.deleteBus(busGapInfo.busID)} className="busGapDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
-                </td>
-                <td></td>
-              </tr>
-              {busGapInfo.gapStartTimes.map((startTime, index) => {
-                if (index === 0) {
-                  return null;
-                } else {
+              {busGapInfo.gapInfo.map((busGap, index) => {
+                if (index > 0) {
                   return (
-                    <tr key={startTime + index} className="busGapInfo">
-                      {/* <td rowSpan="3"></td> */}
-                      <td>{startTime}</td>
-                      <td>{`${busGapInfo.gapDurations[index]}min`}</td>
+                    <tr key={busGap.busGapID + index} className="busGapInfo">
+                      <td>{busGap.gapStartTime}</td>
+                      <td>{`${busGap.gapDuration}min`}</td>
                       <td>
-                        <button onClick={this.handleEditBusClicked} className="busGapEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button>
-                        <button onClick={() => this.deleteBus(busGapInfo.busID)} className="busGapDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
+                        {/* <button onClick={this.handleEditBusClicked} className="busGapEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button> */}
+                        <button onClick={() => this.deleteBusGap(busGap.busGapID)} className="busGapDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
                       </td>
-                      <td></td>
                     </tr>
                   );
                 }
-              })}
+                return (
+                  <tr key={busGap.busGapID + index} className="busGapInfo">
+                    <td rowSpan="6">
+                      <RouteBusDisplay bus={busGapInfo.busNumber} />
+                    </td>
+                    <td>{busGap.gapStartTime}</td>
+                    <td>{`${busGap.gapDuration}min`}</td>
+                    <td>
+                      {/* <button onClick={this.handleEditBusClicked} className="busGapEditIconBtn btn btn-warning"><FontAwesomeIcon icon={faEdit} /></button> */}
+                      <button onClick={() => this.deleteBusGap(busGap.busGapID)} className="busGapDeleteIconBtn btn btn-danger"><FontAwesomeIcon icon={faTrash} /></button>
+                    </td>
+                    <td></td>
+                  </tr>
+                );
+              }
+              )}
             </tbody>
           </table>
         </div>
+        {addNewGapClicked
+          ? <div className="row">
+            <table className="card-table table gapsModalTable">
+              <thead>
+                <tr className="gapModalTableHeader">
+                  <th scope="col">Bus Number</th>
+                  <th scope="col">Gap Start Time</th>
+                  <th scope="col">Gap Duration</th>
+                  <th scope="col">Operations</th>
+                  <th scope="col">
+                    {/* <div className="d-flex justify-content-end">
+                      <button onClick={this.handleAddNewGapClick} className="closeGapModal btn btn-danger">X</button>
+                    </div> */}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowSpan="3">
+                    <RouteBusDisplay bus={busGapInfo.busNumber} />
+                  </td>
+                  <td>
+                    <input className="col border border-primary" onChange={this.handleNewGapChange} name="gapStartTime" type="text"/>
+                  </td>
+                  <td>
+                    <input className="col border border-primary" onChange={this.handleNewGapChange} name="gapDuration" type="text"/>
+                  </td>
+                  <td>
+                    <button onClick={() => this.addNewGap(newGap, busGapInfo.busID)} className="closeAddGapTable btn btn-success">ADD GAP</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          : null
+        }
         <div className="row">
-          <div className="offset-11 col d-flex justify-items-end">
-            <button className="saveChangesBtn btn btn-primary">Save</button>
+          <div className="col offset-10 d-flex justify-items-end">
+            {addNewGapClicked
+              ? <button onClick={this.handleAddNewGapClick} className="addGapCancelBtn col btn btn-warning">CANCEL</button>
+              : <button onClick={this.handleAddNewGapClick} className="addGapBtn col btn btn-primary">ADD GAP</button>}
           </div>
         </div>
       </div>

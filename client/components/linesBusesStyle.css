@@ -118,7 +118,8 @@ table.liveFieldStatusTable td {
 }
 
 .addLineBtn,
-.newSessionBtn {
+.newSessionBtn,
+.deleteSessionBtn {
   color: #FFA804;
   background-color: rgb(23, 2, 61);
   border: 1px solid #FFA804;
@@ -377,7 +378,7 @@ table.liveFieldStatusTable td {
 .gapsModal {
   position: fixed;
   width: 75%;
-  height: 300px;
+  height: 475px;
   z-index: 1;
   left: 17%;
   bottom: 30%;

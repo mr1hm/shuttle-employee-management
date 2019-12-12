@@ -52,7 +52,7 @@ export default class AddBus extends React.Component {
       method: 'POST',
       body: JSON.stringify(newBus)
     };
-    fetch(`api/admin-lines-buses.php`, init)
+    fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(newBusInfo => {
         this.setState({

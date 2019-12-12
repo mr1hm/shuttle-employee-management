@@ -161,9 +161,9 @@ export default class LiveFieldStatus extends React.Component {
       method: 'POST',
       body: JSON.stringify(date)
     };
-    let fetchAllLinesBusesInfo = fetch(`api/admin-lines-buses.php`);
-    let fetchAllSessionsInfo = fetch(`api/admin-lines-buses-sessions.php`);
-    let fetchRoundTableInfo = fetch(`api/admin-lines-buses.php`, init);
+    let fetchAllLinesBusesInfo = fetch(`/api/admin-lines-buses.php`);
+    let fetchAllSessionsInfo = fetch(`/api/admin-lines-buses-sessions.php`);
+    let fetchRoundTableInfo = fetch(`/api/admin-lines-buses.php`, init);
 
     Promise.all([fetchAllLinesBusesInfo, fetchAllSessionsInfo, fetchRoundTableInfo])
       .then(data => Promise.all(data.map(response => response.json())))
