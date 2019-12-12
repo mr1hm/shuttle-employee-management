@@ -2,6 +2,29 @@ import axios from '../lib/axios';
 import types from './types';
 import { throwApiError } from '../lib/redux_functions';
 
+export const adminGetUserData = uciId => async dispatch => {
+  try {
+    const { data: user } = await axios.get(`/api/admin-get-user.php?uciId=${uciId}`);
+
+    dispatch({
+      type: types.ADMIN_GET_USER_DATA,
+      user
+    });
+  } catch (error) {
+    throwApiError(error, 'Error getting user\'s data');
+  }
+};
+
+export const adminSetUserRole = (role, uciId) => async dispatch => {
+  try {
+    const { data } = await axios.post('/api/admin-set-user-role', { role, uciId });
+
+    console.log('Set Role Data:', data);
+  } catch (error) {
+    throwApiError(error, 'Error updating user role');
+  }
+}
+
 export const onLoadCheckAuth = async dispatch => {
   const token = localStorage.getItem('uciToken') || null;
   if (document.cookie.indexOf('PHPSESSID') !== -1 || token) {

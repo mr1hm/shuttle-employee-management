@@ -1,0 +1,9 @@
+.admin-edit-user {
+    .user-roles {
+        cursor: pointer;
+
+        &.disabled {
+            background-color: #efefef;
+        }
+    }
+}

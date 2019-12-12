@@ -4,6 +4,7 @@ require_once(__DIR__.'/error_handler.php');
 require_once(__DIR__.'/../config/db_connect.php');
 
 define('LIB', __DIR__);
+define('ADMIN', LIB.'/admin.php');
 define('AUTH', LIB.'/auth.php');
 define('DATES', LIB.'/dates.php');
 define('ENCRYPT', LIB.'/encrypt.php');
