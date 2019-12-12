@@ -1,6 +1,4 @@
 import React from 'react';
-import RouteBusDisplay from './route-bus-display';
-import { Link } from 'react-router-dom';
 import NotificationShift from './trade-notification-shift';
 import SwapConfirmation from './swap-confirmation-modal';
 import SwapConfirmNotification from './swap-confirm-notification';

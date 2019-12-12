@@ -5,7 +5,6 @@ import {
   getZeroPaddedNumber,
   convertMilitaryTime,
   calcShiftLenghtInHourMinFormat,
-  createDateStringFromDateObject
 } from '../lib/time-functions';
 
 class NotificationShift extends React.Component {
@@ -44,7 +43,7 @@ class NotificationShift extends React.Component {
     }
   }
   render() {
-    const { shift_date, line_name, bus_info_id, start_time, end_time, target_user_id, round_id, busNumber } = this.props;
+    const { shift_date, line_name, start_time, end_time, round_id, busNumber } = this.props;
     const operation = this.renderOperations();
     return (
       <div className="row mb-3 text-center">

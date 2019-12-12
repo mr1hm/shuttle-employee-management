@@ -1,7 +1,4 @@
 import React from 'react';
-import RouteBusDisplay from './route-bus-display';
-import { Link } from 'react-router-dom';
-import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, createDateStringFromDateObject } from '../lib/time-functions';
 import FinalSwapConfirmModal from './final-swap-confirm-modal';
 
 class SwapConfirmNotification extends React.Component {

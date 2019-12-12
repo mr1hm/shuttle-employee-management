@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import './hamburger-menu.css';
-import { parse } from 'querystring';
-import SwapConfirmNotification from '../swap-confirm-notification';
 class HamburgerMenu extends React.Component {
   constructor(props) {
     super(props);
