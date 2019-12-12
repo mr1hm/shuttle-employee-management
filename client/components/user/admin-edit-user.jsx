@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import equal from 'deep-is';
-import { adminGetUserData, adminSetUserRole, getCellProviders } from '../../actions';
+import { adminGetUserData, adminSetUserRole, getCellProviders, getShirtSizes } from '../../actions';
 import { rolesList } from '../../config/permissions';
 import { defaultProfileImage } from '../../config/profile';
 import Editable from './editable-field';
@@ -19,7 +19,8 @@ class AdminUserEdit extends React.Component {
       lastName: '',
       phone: '',
       shirtSize: '',
-      uciNetId: ''
+      uciNetId: '',
+      errors: {}
     };
 
     this.cancelChanges = this.cancelChanges.bind(this);
@@ -31,10 +32,11 @@ class AdminUserEdit extends React.Component {
   }
 
   componentDidMount() {
-    const { adminGetUserData, getCellProviders, match: { params } } = this.props;
+    const { adminGetUserData, getCellProviders, getShirtSizes, match: { params } } = this.props;
 
     adminGetUserData(params.uciId);
     getCellProviders();
+    getShirtSizes();
   }
 
   componentDidUpdate(prevProps) {
@@ -47,7 +49,7 @@ class AdminUserEdit extends React.Component {
     const { cellProviders } = this.props;
 
     if (!cellProviders) {
-    return [<option key="default" value="default">Loading Cell Providers</option>];
+      return [<option key="default" value="default">Loading Cell Providers</option>];
     }
 
     return cellProviders.map(({ id, name }) => {
@@ -100,8 +102,25 @@ class AdminUserEdit extends React.Component {
     });
   }
 
-  saveChanges() {
-    const { edit, ...formValues } = this.state;
+  saveChanges(e) {
+    e.preventDefault();
+    this.setState({ errors: {} });
+    const { edit, errors, ...formValues } = this.state;
+
+    if (formValues['phone']) {
+      const phone = formValues['phone'].toString().replace(/\D/g, '');
+
+      if (phone.length !== 10) {
+        this.setState({
+          errors: {
+            phone: 'Invalid Phone Number'
+          }
+        });
+        return;
+      }
+
+      formValues['phone'] = phone;
+    }
 
     console.log('Form Values:', formValues);
   }
@@ -112,15 +131,15 @@ class AdminUserEdit extends React.Component {
     if (edit) {
       return (
         <div className="d-flex justify-content-center">
-          <button onClick={this.cancelChanges} className="btn-sm btn-danger mr-3">Cancel Changes</button>
-          <button onClick={this.saveChanges} className="btn-sm btn-success">Save Changes</button>
+          <button onClick={this.cancelChanges} type="button" className="btn-sm btn-danger mr-3">Cancel Changes</button>
+          <button className="btn-sm btn-success">Save Changes</button>
         </div>
       );
     }
 
     return (
       <div className="d-flex justify-content-center">
-        <button onClick={this.handleEditButton} className="btn-sm btn-primary">Edit Info</button>
+        <button onClick={this.handleEditButton} type="button" className="btn-sm btn-primary">Edit Info</button>
       </div>
     );
   }
@@ -158,12 +177,12 @@ class AdminUserEdit extends React.Component {
     if (!uciNetId) return <p>Loading...</p>;
 
     const { url } = user;
-    const { cellProvider, email, firstName, lastName, phone, shirtSize } = this.state;
+    const { cellProvider, email, errors, firstName, lastName, phone, shirtSize } = this.state;
 
     return (
       <div className="admin-edit-user container">
         <h1 className="text-center my-3">Admin - Edit User</h1>
-        <div className='row'>
+        <form className="row" onSubmit={this.saveChanges}>
           <div className="col-4">
             <h3>{`${firstName} ${lastName}`}</h3>
             <div className="pr-3">
@@ -182,13 +201,13 @@ class AdminUserEdit extends React.Component {
               <div className="col-6">
                 <strong>Email:</strong>
               </div>
-              <Editable className="col-6" edit={edit} name="email" value={email} onChange={this.inputChange} />
+              <Editable className="col-6" edit={edit} name="email" type="email" value={email} onChange={this.inputChange} />
             </div>
             <div className="row mb-3">
               <div className="col-6">
                 <strong>Phone Number:</strong>
               </div>
-              <Editable className="col-6" edit={edit} name="phone" value={phone} onChange={this.inputChange} />
+              <Editable className="col-6" edit={edit} error={errors.phone || null} name="phone" type="tel" value={phone} onChange={this.inputChange} />
             </div>
             <div className="row mb-3">
               <div className="col-6">
@@ -208,7 +227,7 @@ class AdminUserEdit extends React.Component {
             <h3>Roles</h3>
             <this.Permissions/>
           </div>
-        </div>
+        </form>
       </div>
     );
   }
@@ -221,5 +240,6 @@ function mapStateToProps({ admin: { user }, general: { cellProviders, cellProvid
 export default connect(mapStateToProps, {
   adminGetUserData,
   adminSetUserRole,
-  getCellProviders
+  getCellProviders,
+  getShirtSizes
 })(AdminUserEdit);
