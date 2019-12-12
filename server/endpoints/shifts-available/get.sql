@@ -8,8 +8,7 @@ s.id AS session_id,
 s.name AS session_name,
 u.uci_net_id, u.last_name, u.first_name,
 rte.line_name,
-bi.bus_number,
-rnd.*
+bi.bus_number
 FROM round AS rnd
 JOIN session AS s ON rnd.session_id = s.id
 LEFT JOIN (
