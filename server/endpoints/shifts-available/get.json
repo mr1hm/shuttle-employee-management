@@ -1,0 +1,49 @@
+[
+    {
+        "recurring": true,
+        "day_of_week": "Tuesday",
+        "start_date": "12/11/2019",
+        "end_date": "12/18/2019",
+        "start_time": "0800",
+        "end_time": "0930",
+        "session": {
+            "id": 5,
+            "name": "Winter 2019 Finals Week"
+        },
+        "posted_by": {
+            "uci_net_id": "wcone",
+            "last_name": "Cone",
+            "first_name": "Waffle"
+        },
+        "posted_by(non-operator)": "Operations",
+        "bus_info": {
+            "line_name": "D",
+            "bus_number": 3
+        },
+        "rounds": [
+            {
+                "id": 43,
+                "start_time": "0800",
+                "end_time": "0830"
+            }
+        ],
+        "conflicts": [
+            {
+                "type": "shift_overlap",
+                "fatal": true
+            },
+            {
+                "type": "max_hours_exceeded",
+                "fatal": true
+            },
+            {
+                "type": "special_priviledges_required",
+                "fatal": true
+            },
+            {
+                "type": "soft_hours_cap_exceeded",
+                "fatal": false
+            }
+        ]
+    }
+]

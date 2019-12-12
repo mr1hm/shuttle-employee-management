@@ -1,18 +1,21 @@
 <?php
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once 'db_connection.php';
-// if (!empty($_GET['startTime'])) {
-//   $startTime = $_GET['startTime'];
-//   if ($startTime < 600) {
-//     throw new Exception('start time is too early');
-//   }
-//   $startTime = intval($startTime);
-// }
 
-$userID = $_GET['userID'];
-$date = $_GET['date'];
+require_once(__DIR__.'/../../lib/startup.php');
+require_once(AUTH);
+require_once(DATES);
+set_tz_la();
 
+$user = getRequestUser();
+
+if(!$user) {
+  throw new ApiError(null, 401, 'Not Authorized');
+}
+
+$date = getToday();
+
+if(isset($_GET['date'])) {
+  $date = $_GET['date'];
+}
 
 $checkingType = false;
 //these were placed under rt. `id` before in place
@@ -20,7 +23,7 @@ $checkingType = false;
 //See if the status types are all the same (scheduled/posted) but only works if there a mix of both COUNT(DISTINCT rd.`status`)
 if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
   $checkingType = true;
-  $query = "SELECT
+  $statement = $mysqli->prepare("SELECT
             rd.`bus_info_id`,
             rd.`user_id`,
             rd.`start_time`,
@@ -46,7 +49,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
           ON
             rt.id = bi.`route_id`
           WHERE
-            rd.`date`= '$date' AND rd.`user_id` = $userID";
+            rd.`date`= ? AND rd.`user_id` = ?");
           // GROUP BY
           //   rd.`bus_info_id`,
           //   rd.`user_id`,
@@ -55,7 +58,7 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
           //   rt.`id`,
           //   rd. `status`";
 } else {
-  $query = " SELECT
+  $statement = $mysqli->prepare(" SELECT
             rd.`id` AS roundID,
             rd.`bus_info_id`,
             rd.`user_id`,
@@ -72,22 +75,33 @@ if (!isset($_GET['type']) || $_GET['type'] === 'myShifts') {
           ON
             rd.`bus_info_id` = rt.`id`
           WHERE
-            rd.`date`= '$date'
-            AND rd.`status` = 'posted' AND rd.`user_id` != {$userID}";
+            rd.`date`= ?
+            AND rd.`status` = 'posted' AND rd.`user_id` != ?");
+}
+if ($statement == FALSE){
+  throw new ApiError(null, 500, 'Error preparing query');
 }
 
-
-$result = mysqli_query($conn, $query);
-if (!$result) {
-  throw new Exception('mysql error ' . mysqli_error($conn));
+if (!$statement->bind_param('si', $date, $user['userId'])){
+  throw new ApiError(null, 500, 'Error binding query params');
 }
+
+if (!$statement->execute()){
+  throw new ApiError(null, 500, 'Error executing query');
+}
+
+$result = $statement->get_result();
+if ($result === FALSE) {
+  throw new ApiError(null, 500, 'Error retrieving shift data');
+}
+
 $data = [];
 //conditional for grouping contiguous rounds together by status type
 if($checkingType){
   $previousEndTime = '';
   $previousStatus = '';
   $currentDataRow = [];
-  while ($row = mysqli_fetch_assoc($result)) {
+  while ($row = $result->fetch_assoc()) {
     if($row['status']!==$previousStatus || $row['start_time'] !== $previousEndTime){
       $data[] = $currentDataRow;
       $currentDataRow = $row;
@@ -105,10 +119,10 @@ if($checkingType){
   $data[] = $currentDataRow;
   array_shift($data);
 } else {
-  while ($row = mysqli_fetch_assoc($result)) {
+  while ($row = $result->fetch_assoc()) {
     $data[] = $row;
   }
 }
 
-print(json_encode($data));
+send($data);
 ?>

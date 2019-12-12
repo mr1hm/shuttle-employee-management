@@ -4,16 +4,29 @@ export default class AdminConfirmModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: false
+      show: false,
+      assignStatus: 'none'
     };
     this.handleClickConfirmAssign = this.handleClickConfirmAssign.bind(this);
     this.handleClickConfirmUnassign = this.handleClickConfirmUnassign.bind(this);
+    this.handleAssignStatusChange = this.handleAssignStatusChange.bind(this);
   }
   handleClickConfirmAssign() {
-    this.props.onClickConfirmAssign(this.props.operator.id);
+    if (this.state.assignStatus === 'none') {
+      return;
+    }
+    this.props.onClickConfirmAssign(this.props.operator.id, this.state.assignStatus);
   }
   handleClickConfirmUnassign() {
-    this.props.onClickConfirmUnassign();
+    if (this.state.assignStatus === 'none') {
+      return;
+    }
+    this.props.onClickConfirmUnassign(this.props.operator.id, this.state.assignStatus);
+  }
+  handleAssignStatusChange(e) {
+    this.setState({
+      assignStatus: e.target.value
+    });
   }
   checkIfAssignOrUnassign() {
     if (this.props.assign) {
@@ -68,10 +81,20 @@ export default class AdminConfirmModal extends React.Component {
             <div className="modal-body">
               {`Are you sure you want to ${this.checkIfAssignOrUnassign()} these shifts?`}
               {this.renderShiftsSelected()}
+              <div className="input-group">
+                <div className="input-group-prepend">
+                  <label className="input-group-text" htmlFor="assignType">Options</label>
+                </div>
+                <select className="custom-select" onChange={this.handleAssignStatusChange} id={this.props.operator.id}>
+                  <option defaultValue value="none" >Choose...</option>
+                  <option value="single">Single Shift</option>
+                  <option value="all">Rest of Session</option>
+                </select>
+              </div>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.returnClickHandler()}>Confirm</button>
+              <button type="button" className="btn btn-primary" data-dismiss={this.state.assignStatus === 'none' ? '' : 'modal'} onClick={this.returnClickHandler()}>Confirm</button>
             </div>
           </div>
         </div>

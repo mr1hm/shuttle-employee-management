@@ -6,7 +6,6 @@ class AdminAvailableOperator extends React.Component {
     this.handleClickAssignShift = this.handleClickAssignShift.bind(this);
   }
   handleClickAssignShift() {
-    console.log('clicked: ', this.props.name, this.props.id);
     this.props.onClickAssignShift(this.props.name, this.props.id);
   }
   render() {

@@ -1,9 +1,17 @@
 <?php
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once 'db_connection.php';
 
-$date= $_GET['date'];
+require_once(__DIR__.'/../../lib/startup.php');
+require_once(DATES);
+set_tz_la();
+
+if (array_key_exists('date', $_GET)){
+    $date = getFormattedDate($_GET['date']);
+    if ($date == FALSE){
+        throw new ApiError(['errors' => ['Invalid date']], 422);
+    }
+} else {
+    $date = getToday();
+}
 
 $query = "SELECT
           rd.id AS round_id,
@@ -16,18 +24,34 @@ $query = "SELECT
           us.first_name,
           us.special_route_ok,
           rd.date,
-          rd.status
+          rd.status,
+          rd.bus_info_id,
+          rd.session_id
           FROM route AS rt
           JOIN bus_info AS bi ON bi.route_id = rt.id
           JOIN round AS rd ON rd.bus_info_id = bi.id
           JOIN user AS us ON rd.user_id = us.id
-          WHERE rd.date = '$date'
+          WHERE rd.date = ?
           ORDER BY line_name ASC, bus_number ASC, round_start ASC";
 
-$result = mysqli_query($conn, $query);
-if (!$result) {
-    throw new Exception('mysql error ' . mysqli_error($conn));
+$statement = $mysqli->prepare($query);
+if ($statement == FALSE){
+    throw new ApiError(null, 500, 'Error preparing query');
 }
+
+if (!$statement->bind_param('s', $date)){
+    throw new ApiError(null, 500, 'Error binding query params');
+}
+
+if (!$statement->execute()){
+    throw new ApiError(null, 500, 'Error executing query');
+}
+
+$result = $statement->get_result();
+if ($result === FALSE) {
+    throw new ApiError(null, 500, 'Error retrieving shift data');
+}
+
 $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $data[] = $row;
@@ -61,11 +85,14 @@ for ($data_index = 0; $data_index < count($data); $data_index++){
                     [
                         'id' => (int) $current_data['round_id'],
                         'start' => (int) $current_data['round_start'],
-                        'end' => (int) $current_data['round_end']
+                        'end' => (int) $current_data['round_end'],
+                        'bus_info_id' => (int)$current_data['bus_info_id']
                         ]
                 ],
                 'start_time' => (int) $current_data['round_start'],
-                'end_time' => (int) $current_data['round_end']
+                'end_time' => (int) $current_data['round_end'],
+                'bus_info_id' => (int) $current_data['bus_info_id'],
+                'session_id' => (int) $current_data['session_id']
             ];
             break;
         }
@@ -103,7 +130,8 @@ for ($group_index = 0; $group_index < count($grouped_data); $group_index++) {
             $shifts[$shift_index - 1]['rounds'][] = [
                 'id' => $shift['round_id'],
                 'start' => $shift['start_time'],
-                'end' => $shift['end_time']
+                'end' => $shift['end_time'],
+                'bus_info_id' => $shift['bus_info_id']
             ];
             array_splice($shifts, $shift_index, 1);
             $shift_index--;
@@ -149,6 +177,7 @@ for ($group_index = 0; $group_index < count($grouped_data); $group_index++) {
         $shifts[] = $shift_to_add;
     }
 }
-print(json_encode($grouped_data));
+
+send($grouped_data);
 
 ?>

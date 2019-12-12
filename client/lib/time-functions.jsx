@@ -212,6 +212,7 @@ function createDateObject(unix) {
     weekday
   };
 }
+
 /**
  * global month, day and 3 letter day arrays
  */
@@ -232,6 +233,20 @@ function getLocalDateString(dateObj) {
 
 function getDateString(dateObj) {
   return `${dateObj.getUTCFullYear()}-${getZeroPaddedNumber(dateObj.getUTCMonth() + 1)}-${getZeroPaddedNumber(dateObj.getUTCDate())}`;
+}
+
+function getDateTimeString(dateObj) {
+  return `${dateObj.getUTCFullYear()}-${getZeroPaddedNumber(dateObj.getUTCMonth() + 1)}-${getZeroPaddedNumber(dateObj.getUTCDate())} ${dateObj.getHours()}:${dateObj.getMinutes()}`;
+}
+
+function getWorkingHours(startTime, endTime) {
+  let startHour = Math.floor(startTime / 100);
+  let endHour = Math.floor(endTime / 100);
+  let startMin = startTime - startHour * 100;
+  let endMin = endTime - endHour * 100;
+  let totalMinWorked = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+  let totalHoursWorked = (totalMinWorked / 60).toFixed(2);
+  return totalHoursWorked;
 }
 
 /**
@@ -260,9 +275,9 @@ function getUTCYearMonthDateDay(timestamp) {
 }
 
 /**
- * takes one param unixTimestamp that can be any day of the week
+ * takes one param dateString that can be any day of the week
  * returns an array of 7 objects, one per day of week (sun - sat)
- * each object includes day, date object and unix timestamps of one day
+ * each object includes day, date object of one day
  */
 function returnWeekInfoArray(dateString) {
   const dateObj = new Date(dateString);
@@ -279,11 +294,10 @@ function returnWeekInfoArray(dateString) {
     };
     weekArray.push(weekArrayItem);
   }
-  console.log(weekArray);
   return weekArray;
 }
 
-export { getLocalDateString, getDateString, getZeroPaddedNumber, getUTCYearMonthDateDay, returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
+export { globalDayOfWeek, globalDayOfWeekShort, globalMonth, getWorkingHours, getLocalDateString, getDateString, getDateTimeString, getZeroPaddedNumber, getUTCYearMonthDateDay, returnWeekInfoArray, createDateObject, convertMilitaryTime, adjustLocalTimestampToUTCSeconds, adjustUTCSecondsToLocalTimestamp, convertSecondsToMilliseconds, convertMillisecondsToSeconds, convertUnixTime, convertUnixDateDay, convertUnixDateNumber, getShiftStartHour,
   getShiftStartMinute, getShiftEndHour, getShiftEndMinute, calculateDailyWorkingHours, getTotalDayWorkingHours,
   createDateObjFromDateString, calcShiftLenghtInHourMinFormat, convertMilitaryTimeStringToMilitaryTimeFloat,
   createDateStringFromDateObject, zeroPadNumber, convertUnixMonthDay, calculateShiftHours };

@@ -1,7 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import './hamburger-menu.css';
+import { parse } from 'querystring';
+import SwapConfirmNotification from '../swap-confirm-notification';
 class HamburgerMenu extends React.Component {
   constructor(props) {
     super(props);
@@ -10,6 +13,7 @@ class HamburgerMenu extends React.Component {
       notificationCount: 0
     };
     this.toggleOpen = this.toggleOpen.bind(this);
+    this.getNotifications = this.getNotifications.bind(this);
   }
   toggleOpen() {
     this.setState({
@@ -21,22 +25,27 @@ class HamburgerMenu extends React.Component {
   }
   getNotifications() {
     const ID = this.props.userId ? this.props.userId : 17;
-    fetch(`/api/get-notifications.php?id=${ID}`)
-      .then(response => response.json())
-      .then(shiftsArrayOfObjects => {
-        this.setState({
-          notificationCount: parseInt(shiftsArrayOfObjects.length)
-        });
+    let fetchSwapAndTradeRequest = fetch(`/api/get-notifications.php?id=${ID}`);
+    let fetchSwapConfirmations = fetch(`/api/get-final-swap-confirmation.php?id=${ID}`);
+
+    Promise.all([fetchSwapAndTradeRequest, fetchSwapConfirmations])
+      .then(data => Promise.all(data.map(response => response.json())))
+      .then(allData => {
+        let swapAndTradeRequest = allData[0];
+        let swapConfirmations = allData[1];
+        if (swapConfirmations.length > 0) {
+          this.setState({
+            notificationCount: parseInt(swapAndTradeRequest.length) + 1
+          });
+        } else {
+          this.setState({
+            notificationCount: parseInt(swapAndTradeRequest.length)
+          });
+        }
       })
       .catch(error => console.error('Fetch failed', error));
   }
-  componentDidUpdate(prevProps, prevState) {
-    console.log('prev: ', prevProps.notificationCount);
-    console.log('this: ', this.props.notificationCount);
-    if (prevProps.notificationCount !== this.props.notificationCount) {
-      this.getNotifications();
-    }
-  }
+      
   render() {
     const visibleClass = this.state.open ? 'visible' : 'hidden';
     const menuNotification = (<div className="notification-badge move-notification">
@@ -64,4 +73,11 @@ class HamburgerMenu extends React.Component {
     );
   }
 }
-export default HamburgerMenu;
+
+function mapStateToProps(state) {
+  return {
+    userId: state.user.uciNetId
+  };
+}
+
+export default connect(mapStateToProps)(HamburgerMenu);

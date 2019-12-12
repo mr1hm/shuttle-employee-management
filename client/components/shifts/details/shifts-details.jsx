@@ -53,13 +53,25 @@ class ShiftsDetails extends React.Component {
     });
   }
   selectShift(id) {
+    const idInt = parseInt(id);
+    const idBeforeGivenId = JSON.stringify(idInt - 1);
+    const idAfterGivenId = JSON.stringify(idInt + 1);
     const { checkedRounds } = this.state;
-    if (checkedRounds.includes(id)) {
+    if (checkedRounds.includes(id) && checkedRounds.includes(idBeforeGivenId) && checkedRounds.includes(idAfterGivenId)) {
+      this.setState({ checkedRounds: checkedRounds });
+    } else if (checkedRounds.includes(id)) {
       checkedRounds.splice(checkedRounds.indexOf(id), 1);
-    } else {
+      this.setState({ checkedRounds: checkedRounds });
+    } else if (checkedRounds.length === 0) {
       checkedRounds.push(id);
+      this.setState({ checkedRounds: checkedRounds });
+    } else if (checkedRounds.includes(idBeforeGivenId) || checkedRounds.includes(idAfterGivenId)) {
+      checkedRounds.push(id);
+      this.setState({ checkedRounds: checkedRounds });
+    } else {
+      // this.setState({ consecutiveModalFlag: 1 });
+      // alert('Must select consecutive shift times');
     }
-    this.setState({ checkedRounds: checkedRounds });
   }
   selectAllRounds() {
     this.setState({ selectAll: true });
@@ -184,6 +196,7 @@ class ShiftsDetails extends React.Component {
                         startTime={shift.start_time}
                         endTime={shift.end_time}
                         selected={this.state.selectAll}
+                        checkedRounds={this.state.checkedRounds}
                       />
                     );
                   })}

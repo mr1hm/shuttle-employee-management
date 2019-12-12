@@ -4,9 +4,10 @@ set_exception_handler('error_handler');
 require_once('db_connection.php');
 
 $data = getBodyData();
-$userId = $data['user_id'];
+$userId = intval($data['user_id']);
 $availability = $data['availability'];
-$sessionId = $data['session_id'];
+$sessionId = intval($data['session_id']);
+$comment = $data['comment'];
 
 function buildStartEndArray($availability) {
   $startEndArray = [];
@@ -26,7 +27,6 @@ function buildStartEndArray($availability) {
         array_push($temporaryArray, 2400);
       }if (count($temporaryArray) === 3) {
         array_push($startEndArray, $temporaryArray);
-        print_r($temporaryArray);
         $temporaryArray = [];
       }
     }
@@ -75,8 +75,37 @@ function updateOperatorAvailabilityInDatabase($conn, $arrayOfAvailableShifts, $u
   }
 }
 
+function deleteOperatorAvailabilityCommentInDatabase($conn, $userId, $sessionId) {
+  $deleteQuery = "DELETE FROM operator_week_detail
+                  WHERE user_id = $userId AND session_id = $sessionId";
+
+  $result = mysqli_query($conn, $deleteQuery);
+  if(!$result){
+    throw new Exception('MySQL delete error: '.mysqli_error($conn));
+  }
+}
+
+function addOperatorAvailabilityCommentInDatabase($conn, $userId, $sessionId, $comment) {
+
+  $updateQuery = "INSERT INTO operator_week_detail (
+    user_id,
+    session_id,
+    comment)
+    VALUES (
+    $userId,
+    $sessionId,
+    '$comment')";
+
+  $result = mysqli_query($conn, $updateQuery);
+  if(!$result){
+  throw new Exception('MySQL update error: '.mysqli_error($conn));
+  }
+}
+
 $arrayOfAvailableShifts = buildStartEndArray($availability);
 deleteCurrentAvailabilityInDatabase($conn, $userId, $sessionId);
 updateOperatorAvailabilityInDatabase($conn, $arrayOfAvailableShifts, $userId, $sessionId);
+deleteOperatorAvailabilityCommentInDatabase($conn, $userId, $sessionId);
+addOperatorAvailabilityCommentInDatabase($conn, $userId, $sessionId, $comment);
 
 ?>

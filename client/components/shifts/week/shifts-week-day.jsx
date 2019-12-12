@@ -6,8 +6,10 @@ import {
   convertMilitaryTimeStringToMilitaryTimeFloat,
   getZeroPaddedNumber,
   convertUnixDateDay,
-  convertUnixDateNumber }
+  convertUnixDateNumber,
+  getWorkingHours }
   from '../../../lib/time-functions';
+import { timingSafeEqual } from 'crypto';
 
 class ShiftsWeekDay extends React.Component {
   getDateStringFromTimestamp(timestamp) { // The convertUnixMonthDay(time) function from shifts-day.jsx could be used here 09/17/2019
@@ -57,53 +59,92 @@ class ShiftsWeekDay extends React.Component {
       return shiftHoursPerDay;
     }
   }
+  renderShiftElements() {
+    const elements = [];
+    const shiftObjArr = [];
+    const shifts = this.props.dayData.shifts;
+    if (shifts.length === 0) {
+      elements.push(
+        <ShiftDisplayComponent
+          key={0}
+          width='100%'
+          shift={{ startTime: 600, endTime: 2400, scheduled: false, posted: false }}
+        />
+      );
+      return elements;
+    }
+    for (let shiftIndex = 0; shiftIndex < shifts.length; shiftIndex++) {
+      if (shiftIndex === 0 && parseInt(shifts[0].start_time) > 600) {
+        shiftObjArr.push({
+          startTime: 600,
+          endTime: parseInt(shifts[0].start_time),
+          scheduled: false,
+          posted: false
+        });
+      }
+      if (shiftIndex > 0 && parseInt(shifts[shiftIndex - 1].end_time) !== parseInt(shifts[shiftIndex].start_time)) {
+        shiftObjArr.push({
+          startTime: parseInt(shifts[shiftIndex - 1].end_time),
+          endTime: parseInt(shifts[shiftIndex].start_time),
+          scheduled: false,
+          posted: false
+        });
+      }
+      shiftObjArr.push({
+        startTime: parseInt(shifts[shiftIndex].start_time),
+        endTime: parseInt(shifts[shiftIndex].end_time),
+        scheduled: true,
+        posted: shifts.posted
+      });
+      if (shiftIndex === shifts.length - 1 && shifts[shiftIndex].end_time < 2400) {
+        shiftObjArr.push({
+          startTime: parseInt(shifts[shiftIndex].end_time),
+          endTime: 2400,
+          scheduled: false,
+          posted: false
+        });
+      }
+    }
+    shiftObjArr.map((shift, index) => {
+      const width = this.calculateWidthOfShift(shift.startTime, shift.endTime, { start: 600, end: 2400 });
+      elements.push(
+        <ShiftDisplayComponent key={index} width={width} shift={shift}/>
+      );
+    });
+    return elements;
+  }
+
+  calculateWidthOfShift(startTime, endTime, range) {
+    const rangeHrs = getWorkingHours(range.start, range.end);
+    const shiftHrs = getWorkingHours(startTime, endTime);
+    const ratio = shiftHrs / rangeHrs;
+    const width = ratio.toFixed(2) * 100 + '%';
+    return width;
+  }
+
   render() {
-    const range = { min: 6, max: 24 };
-    const startAndEndTimes = { start: 6, end: 24 };
     const dayObj = getUTCYearMonthDateDay(this.props.dayData.round_date);
-    // console.log('dayObj: ', dayObj);
     const dayText = dayObj.dayNameShort;
     const dateText = dayObj.date;
     const dayHours = this.props.dayData.shifts.reduce((sum, current) => this.calculateDailyWorkingTotalHours(current, current) + sum, 0);
     const dayHoursRounded = dayHours.toFixed(1);
-    const currentUnixDate = this.props.dayData.round_date;
     let currentDayHighlightClass = 'dayMainContainer d-flex border';
 
     if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.round_date)) {
       currentDayHighlightClass += ' currentDay';
     }
-    const convertedShifts = this.props.shifts.map((data, index) => ({
-      test: data.test + '-' + index,
-      type: data.posted ? 'posted' : 'scheduled',
-      range: {
-        min: range.min,
-        max: range.max
-      },
-      shiftData: {
-        start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time), // not working Uncaught TypeError: startTime.slice is not a function
-        end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time)// not working Uncaught TypeError: startTime.slice is not a function
-      },
-      children: [data]
-    }));
-    console.log('convertedShifts: ', convertedShifts);
     return (
       <Link
         className="shiftWeekIndividualDayLink"
         to={`/shifts/day/shifts-day/${dayObj.dateString}`}>
         <div className={currentDayHighlightClass}>
-          <div className="dayInfoContainer d-flex flex-column align-items-center border-right p-2">
+          <div className="dayInfoContainer d-flex flex-column align-items-center border-right">
             <div className="dayName font-weight-bold">{dayText}</div>
             <div className="dayDate">{dateText}</div>
             <div className="hoursSchedued">{`${dayHoursRounded}${dayHoursRounded === 1 ? 'hr' : 'hrs'}`}</div>
           </div>
-          <div className="shiftRowContainer w-100">
-            <ShiftDisplayComponent
-              test='1'
-              type='active'
-              range={range}
-              shiftData={startAndEndTimes}
-              children={convertedShifts}
-            />
+          <div className="shiftRowContainer d-flex align-items-center w-100">
+            {this.renderShiftElements()}
           </div>
         </div>
       </Link>
