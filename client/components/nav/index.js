@@ -18,6 +18,14 @@ class Nav extends React.Component {
     this.myInfo = { 'My Info': '/my-info' };
 
     this.authRoutes = {
+      super_admin: {
+        'Users': '/admin-user-summary',
+        'Operator Availability': '/admin-operator-availability',
+        'Schedule': {
+          'Live Field View': '/live-field-status',
+          'Master Schedule': '/master-schedule'
+        }
+      },
       admin: {
         'Users': '/admin-user-summary',
         'Operator Availability': '/admin-operator-availability',
