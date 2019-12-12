@@ -95,24 +95,6 @@ class AdminUserSummary extends React.Component {
 
   componentDidMount() {
     this.getOperatorDetails();
-    this.getCellProviders();
-  }
-
-  getCellProviders() {
-    const data = {
-      method: 'POST',
-      body: JSON.stringify({
-      }),
-      headers: { 'Content-Type': 'application/json' }
-    };
-    fetch(`/api/cell-provider.php`, data)
-      .then(response => response.json())
-      .then(data => {
-        this.setState({
-          cellProviderList: data
-        });
-      })
-      .catch(error => { throw (error); });
   }
 
   getOperatorDetails() {
