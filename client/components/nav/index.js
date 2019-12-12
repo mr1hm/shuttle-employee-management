@@ -34,7 +34,7 @@ class Nav extends React.Component {
         },
         'Shifts': {
           'Master Schedule': '/master-schedule',
-          'Available Shifts': `/shifts/available/${today}`,
+          'Available Shifts': `/shifts/available`,
           'Trade/Swap Shift': '/trade-swap'
         },
         'Administration': {
