@@ -54,6 +54,20 @@ export const onLoadCheckAuth = async dispatch => {
   });
 };
 
+export const getCellProviders = () => async dispatch => {
+  try {
+    const { data: { providers, map } } = await axios.get('/api/cell-provider.php');
+
+    dispatch({
+      type: types.GET_CELL_PROVIDERS,
+      map,
+      providers
+    });
+  } catch (error) {
+    throwApiError(error, 'Error getting cell providers');
+  }
+};
+
 export const getUserData = () => async dispatch => {
   try {
     const { data } = await axios.get('/api/user-info.php');
