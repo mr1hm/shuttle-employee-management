@@ -1,0 +1,8 @@
+.git* text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.php text eol=lf
+*.http text eol=lf
+*.sql text eol=lf
