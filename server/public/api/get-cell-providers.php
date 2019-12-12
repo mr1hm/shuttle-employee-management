@@ -1,6 +1,12 @@
 <?php
-
 require_once(__DIR__.'/../../lib/startup.php');
+require_once(AUTH);
+
+$user = getRequestUser();
+
+if(!$user) {
+  throw new ApiError(null, 401, 'Not Authorized');
+}
 
 $query = "SELECT id, cell_provider AS `name` FROM cellProvider";
 
