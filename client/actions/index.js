@@ -56,7 +56,7 @@ export const onLoadCheckAuth = async dispatch => {
 
 export const getCellProviders = () => async dispatch => {
   try {
-    const { data: { providers, map } } = await axios.get('/api/cell-provider.php');
+    const { data: { providers, map } } = await axios.get('/api/get-cell-providers.php');
 
     dispatch({
       type: types.GET_CELL_PROVIDERS,
@@ -65,6 +65,16 @@ export const getCellProviders = () => async dispatch => {
     });
   } catch (error) {
     throwApiError(error, 'Error getting cell providers');
+  }
+};
+
+export const getShirtSizes = () => async dispatch => {
+  try {
+    const { data } = await axios.get('/api/get-shirt-sizes.php');
+
+    console.log('Shirt Sizes:', data);
+  } catch (error) {
+    throwApiError(error, 'Error getting shirt sizes');
   }
 };
 
