@@ -4,9 +4,9 @@ import { throwApiError } from '../lib/redux_functions';
 
 export const adminAddUser = user => async dispatch => {
   try {
-    const { data } = await axios.post('/api/admin-add-user.php', user);
+    const { data: { userUciNetId } } = await axios.post('/api/admin-add-user.php', user);
 
-    console.log('Data Add User:', data);
+    return userUciNetId;
   } catch (error) {
     throwApiError(error, 'Error adding user');
   }

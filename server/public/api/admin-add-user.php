@@ -27,6 +27,9 @@ if(!isset($_POST['firstName'])) {
 if(!isset($_POST['lastName'])) {
   $errors[] = 'Missing last name';
 }
+if(!isset($_POST['password'])) {
+  $errors[] = 'Missing password';
+}
 if(!isset($_POST['role'])) {
   $errors[] = 'Missing role';
 }
@@ -45,6 +48,8 @@ if(count($errors)) {
 }
 
 extract($_POST, EXTR_SKIP);
+
+$password = password_hash($password, PASSWORD_BCRYPT);
 
 $roleStmt = $mysqli->prepare('SELECT mid FROM roles WHERE id=?');
 $roleStmt->bind_param('i', $role);
@@ -65,11 +70,11 @@ if($userRole['mid'] === 'super_admin' || $userRole['mid'] === 'admin') {
 }
 
 $stmt = $mysqli->prepare('INSERT INTO `user`
-  (email, first_name, last_name, special_route_ok, `status`, uci_net_id)
-  VALUES (?, ?, ?, ?, ?, ?)
+  (email, first_name, last_name, `password`, special_route_ok, `status`, uci_net_id)
+  VALUES (?, ?, ?, ?, ?, ?, ?)
 ');
 
-$stmt->bind_param('sssiss', $email, $firstName, $lastName, $special, $status, $uciNetId);
+$stmt->bind_param('ssssiss', $email, $firstName, $lastName, $password, $special, $status, $uciNetId);
 $stmt->execute();
 
 if(!$stmt->affected_rows) {
@@ -85,5 +90,4 @@ $newUserRoleStmt = $mysqli->prepare('INSERT INTO user_roles
 $newUserRoleStmt->bind_param('iii', $role, $newUserId, $user['userId']);
 $newUserRoleStmt->execute();
 
-echo $newUserRoleStmt->error;
-send('User Created', 201);
+send(['userUciNetId' => $uciNetId], 201);

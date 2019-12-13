@@ -7,89 +7,22 @@ class AdminUserSummary extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: '',
-      lastName: '',
-      firstName: '',
-      role: '',
-      status: '',
-      specialRouteOK: '',
-      phone: '',
-      email: '',
-      cellProvider: '',
       addUser: false,
       editUser: false,
       userDetails: [],
-      cellProviderList: [],
       active: true
 
     };
     this.getOperatorDetails = this.getOperatorDetails.bind(this);
     this.showAddUserModal = this.showAddUserModal.bind(this);
-    this.addUserToDatabase = this.addUserToDatabase.bind(this);
-    this.handleFormEntry = this.handleFormEntry.bind(this);
     this.closeAddUserModal = this.closeAddUserModal.bind(this);
-    this.closeAddUserModalClearInfo = this.closeAddUserModalClearInfo.bind(this);
     this.showAllUsers = this.showAllUsers.bind(this);
     this.showActiveUsers = this.showActiveUsers.bind(this);
-  }
-
-  addUserToDatabase(event) {
-    event.preventDefault();
-    this.closeAddUserModal();
-    const data = {
-      method: 'POST',
-      body: JSON.stringify({
-        'uci_net_id': this.state.userId,
-        'last_name': this.state.lastName,
-        'first_name': this.state.firstName,
-        'role': this.state.role,
-        'status': this.state.status,
-        'special_route_ok': this.state.specialRouteOK,
-        'phone': this.state.phone,
-        'email': this.state.email,
-        'cell_provider': this.state.cellProvider
-      }),
-      headers: { 'Content-Type': 'application/json' }
-    };
-    fetch('/api/add-user.php', data)
-      .then(response => { })
-      .then(data => {
-        this.getOperatorDetails();
-        this.setState({
-          userId: '',
-          lastName: '',
-          firstName: '',
-          role: '',
-          status: '',
-          specialRouteOK: '',
-          phone: '',
-          email: '',
-          cellProvider: '',
-          active: ''
-        });
-      })
-      .catch(error => { throw (error); });
   }
 
   closeAddUserModal() {
     this.setState({
       addUser: false
-    });
-  }
-
-  closeAddUserModalClearInfo() {
-    this.closeAddUserModal();
-    this.setState({
-      userId: '',
-      lastName: '',
-      firstName: '',
-      role: '',
-      status: '',
-      specialRouteOK: '',
-      phone: '',
-      email: '',
-      cellProvider: '',
-      active: ''
     });
   }
 
@@ -112,12 +45,6 @@ class AdminUserSummary extends React.Component {
         });
       })
       .catch(error => { throw (error); });
-  }
-
-  handleFormEntry(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
   }
 
   showActiveUsers() {
@@ -214,7 +141,7 @@ class AdminUserSummary extends React.Component {
           </tbody>
         </table>
 
-        <AddUserModal open={this.state.addUser}/>
+        <AddUserModal open={this.state.addUser} close={this.closeAddUserModal}/>
       </React.Fragment>
     );
   }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import { adminAddUser, adminGetUserRoles } from '../../actions';
 
 class AddUserModal extends React.Component {
@@ -7,9 +8,11 @@ class AddUserModal extends React.Component {
     super(props);
 
     this.state = {
+      addError: '',
       email: '',
       firstName: '',
       lastName: '',
+      password: '',
       role: 'default',
       special: '0',
       status: 'active',
@@ -17,24 +20,57 @@ class AddUserModal extends React.Component {
     };
 
     this.emailDomain = '@uci.edu';
+    this.closeModal = this.closeModal.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.inputChange = this.inputChange.bind(this);
   }
 
   componentDidMount() {
+    this.genPassword();
     this.props.adminGetUserRoles();
+  }
+
+  closeModal() {
+    this.setState({
+      addError: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      password: '',
+      role: 'default',
+      special: '0',
+      status: 'active',
+      uciNetId: ''
+    });
+
+    this.genPassword();
+
+    this.props.close();
   }
 
   inputChange({ target: { name, value } }) {
     this.setState({ [name]: value });
   }
 
-  handleSubmit(e) {
+  genPassword() {
+    const password = 'password1';
+
+    this.setState({ password });
+  }
+
+  async handleSubmit(e) {
     e.preventDefault();
     const formValues = { ...this.state, email: this.state.uciNetId + this.emailDomain };
 
-    console.log('Form Values:', formValues);
-    this.props.adminAddUser(formValues);
+    try {
+      const userUciNetId = await this.props.adminAddUser(formValues);
+
+      this.props.history.push(`/admin-edit-user/${userUciNetId}`);
+    } catch (error) {
+      this.setState({
+        addError: 'Error creating user, check form for missing fields'
+      });
+    }
   }
 
   render() {
@@ -44,7 +80,7 @@ class AddUserModal extends React.Component {
       return null;
     }
 
-    const { firstName, lastName, role, special, status, uciNetId } = this.state;
+    const { addError, firstName, lastName, role, password, special, status, uciNetId } = this.state;
 
     return (
       <div className="add-user-modal">
@@ -72,6 +108,10 @@ class AddUserModal extends React.Component {
               </div>
               <div className="col-6">
                 <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <input className="form-control" type="text" id="password" name="password" value={password} onChange={this.inputChange} />
+                </div>
+                <div className="form-group">
                   <label htmlFor="roles">User Role</label>
                   <select className="form-control" id="roles" name="role" value={role} onChange={this.inputChange}>
                     <option value="default" disabled>Select a role</option>
@@ -92,12 +132,13 @@ class AddUserModal extends React.Component {
                     <option value="1">Yes</option>
                   </select>
                 </div>
-                <div className="d-flex justify-content-center pt-5">
-                  <button className="btn btn-danger mr-3" type="button">Cancel</button>
-                  <button className="btn btn-success">Add User</button>
-                </div>
               </div>
             </div>
+            <div className="d-flex justify-content-center py-3">
+              <button className="btn btn-danger mr-3" onClick={this.closeModal} type="button">Cancel</button>
+              <button className="btn btn-success">Add User</button>
+            </div>
+            <p className="text-center text-danger">{addError}</p>
           </form>
         </div>
       </div>
@@ -105,71 +146,11 @@ class AddUserModal extends React.Component {
   }
 }
 
-// class AddUserModal extends React.Component {
-//   render() {
-//     return (
-//       <div className={this.props.showAddUserModal ? 'modal display-block' : 'modal display-none'}>
-//         <section className='modal-main'>
-//           <div className="d-flex justify-content-around">
-//             <div className="d-flex justify-content-center">
-//               <form onSubmit={this.addUserToDatabase}>
-//                 <div className="mt-5 ml-2 mr-2 mb-2">
-//                   <div>UCI-ID</div>
-//                   <input type='text' className='form-control' name="userId" value={''} contentEditable="true" onChange={this.handleFormEntry} />
-//                 </div>
-//                 <div className="m-2">
-//                   <div>First Name</div>
-//                   <input type='text' className='form-control' name="firstName" value={''} contentEditable="true" onChange={this.handleFormEntry} />
-//                 </div>
-//                 <div className="m-2">
-//                   <div>Last Name</div>
-//                   <input type='text' className='form-control' name="lastName" value={''} contentEditable="true" onChange={this.handleFormEntry} />
-//                 </div>
-//                 <div className="m-2">
-//                   <div>Role</div>
-//                   <select name="role" value={'operator'} onChange={this.handleFormEntry}>
-//                     <option></option>
-//                     <option value='operator'>operator</option>
-//                     <option value='operations'>operations</option>
-//                     <option value='trainer'>trainer</option>
-//                     <option value='trainee'>trainer</option>
-//                   </select>
-//                 </div>
-//                 <div className="m-2">
-//                   <div>Status</div>
-//                   <select name="status" value={'active'} onChange={this.handleFormEntry}>
-//                     <option></option>
-//                     <option value='active'>active</option>
-//                     <option value='inactive'>inactive</option>
-//                   </select>
-//                 </div>
-//                 <div className="m-2">
-//                   <div>Special Route OK</div>
-//                   <select name="specialRouteOK" value={'0'} onChange={this.handleFormEntry}>
-//                     <option></option>
-//                     <option value='0'>True</option>
-//                     <option value='1'>False</option>
-//                   </select>
-//                 </div>
-//                 <div className="m-2">
-//                   <div>Email</div>
-//                   <input type='text' className='form-control' name="email" value={''} contentEditable="true" onChange={this.handleFormEntry} />
-//                 </div>
-//                 <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
-//                   <button className="btn-success mr-2" type='submit'>Submit</button>
-//                   <button className="btn-danger ml-2" type='reset' onClick={this.closeAddUserModalClearInfo} >Cancel</button>
-//                 </div>
-//               </form>
-//             </div>
-//           </div>
-//         </section>
-//       </div>
-//     );
-//   }
-// }
-
 function mapStateToProps({ admin: { roles, rolesMap } }) {
   return { roles, rolesMap };
 }
 
-export default connect(mapStateToProps, { adminAddUser, adminGetUserRoles })(AddUserModal);
+export default connect(mapStateToProps, {
+  adminAddUser,
+  adminGetUserRoles
+})(withRouter(AddUserModal));
