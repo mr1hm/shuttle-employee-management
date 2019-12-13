@@ -82,7 +82,7 @@ const tableColumns = {
   },
 };
 
-function ShiftsAvailable(props){
+function ShiftsAvailable(){
   const availableShifts = useAvailableShifts();
 
   const tableColumnOrder = [
@@ -113,7 +113,7 @@ function ShiftsAvailable(props){
         ? shift.posted_by
         : `${shift.posted_by.first_name} ${shift.posted_by.last_name} - ${shift.posted_by.uci_net_id}`
       ),
-      [COLUMNS.ROUTE]: `${shift.bus_info.line_name} Line`,
+      [COLUMNS.ROUTE]: (<span className="badge badge-info">{`${shift.bus_info.line_name} Line`}</span>),
       [COLUMNS.BUS_NUMBER]: shift.bus_info.bus_number,
       [COLUMNS.NUMBER_OF_ROUNDS]: shift.rounds.length,
       [COLUMNS.ACTION]: (
