@@ -31,7 +31,7 @@ const DAYS_OF_WEEK = Object.freeze([
   'Sat',
 ]);
 
-const tableHeaders = {
+const tableColumns = {
   [COLUMNS.PERMANENT]: {
     title: '',
     align: 'right',
@@ -82,7 +82,7 @@ const tableHeaders = {
   },
 };
 
-function ShiftsAvailable(props){
+function ShiftsAvailable(){
   const availableShifts = useAvailableShifts();
 
   const tableColumnOrder = [
@@ -113,13 +113,13 @@ function ShiftsAvailable(props){
         ? shift.posted_by
         : `${shift.posted_by.first_name} ${shift.posted_by.last_name} - ${shift.posted_by.uci_net_id}`
       ),
-      [COLUMNS.ROUTE]: `${shift.bus_info.line_name} Line`,
+      [COLUMNS.ROUTE]: (<span className="badge badge-info">{`${shift.bus_info.line_name} Line`}</span>),
       [COLUMNS.BUS_NUMBER]: shift.bus_info.bus_number,
       [COLUMNS.NUMBER_OF_ROUNDS]: shift.rounds.length,
       [COLUMNS.ACTION]: (
         shift.conflicts.filter(conflict => conflict.fatal).length > 0
-        ? (<btn className="btn btn-disabled">Shift Conflict</btn>)
-        : (<btn className="btn btn-primary">Take Shift</btn>)
+        ? (<button type="button" className="btn btn-secondary">Shift Conflict</button>)
+        : (<button type="button" className="btn btn-primary">Take Shift</button>)
       ),
     }))
     : availableShifts
@@ -129,7 +129,7 @@ function ShiftsAvailable(props){
     <main className="container">
       <h1>Shift Posts</h1>
       <h2>Available Shifts</h2>
-      <Table order={tableColumnOrder} headers={tableHeaders} content={tableContent} />
+      <Table colOrder={tableColumnOrder} columns={tableColumns} content={tableContent} />
     </main>
   );
 }
