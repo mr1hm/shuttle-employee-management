@@ -2,6 +2,69 @@ import axios from '../lib/axios';
 import types from './types';
 import { throwApiError } from '../lib/redux_functions';
 
+export const adminAddUser = user => async dispatch => {
+  try {
+    const { data: { userUciNetId } } = await axios.post('/api/admin-add-user.php', user);
+
+    return userUciNetId;
+  } catch (error) {
+    throwApiError(error, 'Error adding user');
+  }
+};
+
+export const adminGetUserData = uciId => async dispatch => {
+  try {
+    const { data: user } = await axios.get(`/api/admin-get-user.php?uciId=${uciId}`);
+
+    dispatch({
+      type: types.ADMIN_GET_USER_DATA,
+      user
+    });
+  } catch (error) {
+    throwApiError(error, 'Error getting user\'s data');
+  }
+};
+
+export const adminGetUserRoles = () => async dispatch => {
+  try {
+    const { data: { roles, map } } = await axios.get('/api/admin-get-roles.php');
+
+    dispatch({
+      type: types.ADMIN_GET_USER_ROLES,
+      roles,
+      map
+    });
+  } catch (error) {
+    throwApiError(error, 'Error getting user roles');
+  }
+};
+
+export const adminSetUserRole = (role, uciId) => async dispatch => {
+  try {
+    const { data: roles } = await axios.post('/api/admin-set-user-role.php', { role, uciId });
+
+    dispatch({
+      type: types.ADMIN_UPDATE_USER_ROLE,
+      roles
+    });
+  } catch (error) {
+    throwApiError(error, 'Error updating user role');
+  }
+};
+
+export const adminUpdateUser = updates => async dispatch => {
+  try {
+    const { data: user } = await axios.post('/api/admin-update-user.php', updates);
+
+    dispatch({
+      type: types.ADMIN_UPDATE_USER,
+      user
+    });
+  } catch (error) {
+    throwApiError(error, 'Error updating user');
+  }
+};
+
 export const onLoadCheckAuth = async dispatch => {
   const token = localStorage.getItem('uciToken') || null;
   if (document.cookie.indexOf('PHPSESSID') !== -1 || token) {
@@ -26,6 +89,34 @@ export const onLoadCheckAuth = async dispatch => {
   dispatch({
     type: types.USER_LOGOUT
   });
+};
+
+export const getCellProviders = () => async dispatch => {
+  try {
+    const { data: { providers, map } } = await axios.get('/api/get-cell-providers.php');
+
+    dispatch({
+      type: types.GET_CELL_PROVIDERS,
+      map,
+      providers
+    });
+  } catch (error) {
+    throwApiError(error, 'Error getting cell providers');
+  }
+};
+
+export const getShirtSizes = () => async dispatch => {
+  try {
+    const { data: { map, sizes } } = await axios.get('/api/get-shirt-sizes.php');
+
+    dispatch({
+      type: types.GET_SHIRT_SIZES,
+      map,
+      sizes
+    });
+  } catch (error) {
+    throwApiError(error, 'Error getting shirt sizes');
+  }
 };
 
 export const getUserData = () => async dispatch => {
