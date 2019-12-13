@@ -21,10 +21,10 @@ CREATE TABLE IF NOT EXISTS `session` (
   `holidays` text COLLATE utf8_unicode_ci,
   `availStartDateString` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   `availEndDateString` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
-  `min_operator_hours` tinyint(4) NOT NULL,
-  `min_operations_hours` tinyint(4) NOT NULL,
-  `min_trainer_hours` tinyint(4) NOT NULL,
-  `min_trainee_hours` tinyint(4) NOT NULL,
+  `min_operator_hours` tinyint(4) NOT NULL DEFAULT 35,
+  `min_operations_hours` tinyint(4) NOT NULL DEFAULT 27,
+  `min_trainer_hours` tinyint(4) NOT NULL DEFAULT 27,
+  `min_trainee_hours` tinyint(4) NOT NULL DEFAULT 27,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
