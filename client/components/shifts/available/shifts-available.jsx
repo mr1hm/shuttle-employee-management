@@ -23,51 +23,51 @@ const COLUMNS = Object.freeze({
 const tableHeaders = {
   [COLUMNS.PERMANENT]: {
     title: '',
-    style: {},
+    align: 'right',
   },
   [COLUMNS.DAY_OF_WEEK]: {
     title: 'Day of Week',
-    style: {},
+    align: 'center',
   },
   [COLUMNS.DATE_START]: {
     title: 'Start Date',
-    style: {},
+    align: 'right',
   },
   [COLUMNS.DATE_END]: {
     title: 'End Date',
-    style: {},
+    align: 'right',
   },
   [COLUMNS.TIME_START]: {
     title: 'Start Time',
-    style: {},
+    align: 'right',
   },
   [COLUMNS.TIME_END]: {
     title: 'End Time',
-    style: {},
+    align: 'right',
   },
   [COLUMNS.SCHEDULE]: {
     title: 'Schedule',
-    style: {},
+    align: 'left',
   },
   [COLUMNS.POSTED_BY]: {
     title: 'Posted By',
-    style: {},
+    align: 'left',
   },
   [COLUMNS.ROUTE]: {
     title: 'Route',
-    style: {},
+    align: 'center',
   },
   [COLUMNS.BUS_NUMBER]: {
     title: 'Bus #',
-    style: {},
+    align: 'center',
   },
   [COLUMNS.NUMBER_OF_ROUNDS]: {
     title: '# of Rounds',
-    style: {},
+    align: 'right',
   },
   [COLUMNS.ACTION]: {
     title: '',
-    style: {},
+    align: 'left',
   },
 };
 
@@ -88,7 +88,7 @@ function ShiftsAvailable(props){
   return (
     <>
       <h1>Available Shifts</h1>
-      <Table order={tableColumnOrder} headers={tableHeaders}></Table>
+      <Table order={tableColumnOrder} headers={tableHeaders} />
     </>
   );
 }
