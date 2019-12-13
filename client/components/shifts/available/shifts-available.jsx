@@ -72,7 +72,7 @@ const tableHeaders = {
 };
 
 function ShiftsAvailable(props){
-  const [tableContent, setTableContent] = useState(null);
+  const availableShifts = useAvailableShifts();
 
   const tableColumnOrder = [
     COLUMNS.DAY_OF_WEEK,
@@ -87,12 +87,73 @@ function ShiftsAvailable(props){
     COLUMNS.ACTION,
   ];
 
+  const tableContent = (
+    Array.isArray(availableShifts)
+    ? availableShifts.map(shift => ({
+      [COLUMNS.PERMANENT]: shift.recurring,
+      [COLUMNS.DAY_OF_WEEK]: shift.day_of_week,
+      [COLUMNS.DATE_START]: shift.start_date,
+      [COLUMNS.DATE_END]: shift.end_date,
+      [COLUMNS.TIME_START]: shift.start_time,
+      [COLUMNS.TIME_END]: shift.end_time,
+      [COLUMNS.SCHEDULE]: shift.session.name,
+      [COLUMNS.POSTED_BY]: (
+        typeof shift.posted_by === 'string'
+        ? shift.posted_by
+        : `${shift.posted_by.first_name} ${shift.posted_by.last_name} - ${shift.posted_by.uci_net_id}`
+      ),
+      [COLUMNS.ROUTE]: shift.bus_info.line_name,
+      [COLUMNS.BUS_NUMBER]: shift.bus_info.bus_number,
+      [COLUMNS.NUMBER_OF_ROUNDS]: shift.rounds.length,
+      [COLUMNS.ACTION]: (
+        shift.conflicts.filter(conflict => conflict.fatal).length > 0
+        ? (<btn>Shift Conflict</btn>)
+        : (<btn>Take Shift</btn>)
+      ),
+    }))
+    : availableShifts
+  );
+
   return (
     <>
       <h1>Available Shifts</h1>
       <Table order={tableColumnOrder} headers={tableHeaders} content={tableContent} />
     </>
   );
+}
+
+function useAvailableShifts(){
+  const [availableShifts, setAvailableShifts] = useState(null);
+
+  useEffect(() => {
+    let abort = false;
+
+    fetch('/api/shifts-available.php', {
+      method: 'GET',
+      cache: 'no-cache',
+    })
+    .then(response => {
+      if (abort){ return; }
+      if (!response.ok){
+        return setAvailableShifts('Could not retrieve available shifts. Please try again later.');
+      }
+      return response.json()
+      .then(responseBody => {
+        if (!abort){
+          setAvailableShifts(responseBody);
+        }
+      });
+    })
+    .catch(() => {
+      if (!abort){
+        setAvailableShifts('No connection available, please try again later.');
+      }
+    });
+
+    return () => { abort = true; };
+  }, []);
+
+  return availableShifts;
 }
 
 export default ShiftsAvailable;
