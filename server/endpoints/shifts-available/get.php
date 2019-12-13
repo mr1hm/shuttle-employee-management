@@ -29,7 +29,7 @@ $query = '
         SELECT u.*
         FROM user AS u
         JOIN user_roles AS ur ON u.id = ur.user_id
-        LEFT JOIN roles AS r ON ur.role_id = r.id AND r.`mid` != "operators"
+        LEFT JOIN roles AS r ON ur.role_id = r.id AND r.`mid` != "operator"
         WHERE r.mid IS NULL
     ) AS u ON rnd.user_id = u.id
     JOIN bus_info AS bi ON rnd.bus_info_id = bi.id
@@ -197,7 +197,7 @@ while ($row = mysqli_fetch_assoc($result)) {
  */
 $responseBody = [];
 $defaultConflicts = (
-    in_array('operators', $user['roles'], TRUE)
+    in_array('operator', $user['roles'], TRUE)
     ? []
     : [[
         'type' => 'not_an_operator',
