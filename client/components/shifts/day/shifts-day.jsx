@@ -26,8 +26,6 @@ class ShiftsDay extends React.Component {
   }
   getShifts() {
     const query = `?date=${this.props.match.params.date}&type=myShifts`;
-    console.log('date path: ', this.props.match.params.date);
-    console.log('day query: ', query);
     const response = fetch(`/api/shifts-day.php` + query, {
       method: 'GET'
     });
@@ -36,7 +34,6 @@ class ShiftsDay extends React.Component {
       .then(response => response.json())
       .then(data => {
         this.setState({ shifts: data });
-        console.log(data);
       })
       .catch(error => { console.error(error); });
   }
