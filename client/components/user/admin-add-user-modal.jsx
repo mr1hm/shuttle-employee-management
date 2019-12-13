@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { adminAddUser, adminGetUserRoles } from '../../actions';
 
 class AddUserModal extends React.Component {
   constructor(props) {
@@ -19,6 +21,10 @@ class AddUserModal extends React.Component {
     this.inputChange = this.inputChange.bind(this);
   }
 
+  componentDidMount() {
+    this.props.adminGetUserRoles();
+  }
+
   inputChange({ target: { name, value } }) {
     this.setState({ [name]: value });
   }
@@ -28,10 +34,11 @@ class AddUserModal extends React.Component {
     const formValues = { ...this.state, email: this.state.uciNetId + this.emailDomain };
 
     console.log('Form Values:', formValues);
+    this.props.adminAddUser(formValues);
   }
 
   render() {
-    const { open } = this.props;
+    const { open, roles } = this.props;
 
     if (!open) {
       return null;
@@ -68,6 +75,7 @@ class AddUserModal extends React.Component {
                   <label htmlFor="roles">User Role</label>
                   <select className="form-control" id="roles" name="role" value={role} onChange={this.inputChange}>
                     <option value="default" disabled>Select a role</option>
+                    { roles.map(({ displayName, id }) => <option key={id} value={id}>{displayName}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
@@ -160,4 +168,8 @@ class AddUserModal extends React.Component {
 //   }
 // }
 
-export default AddUserModal;
+function mapStateToProps({ admin: { roles, rolesMap } }) {
+  return { roles, rolesMap };
+}
+
+export default connect(mapStateToProps, { adminAddUser, adminGetUserRoles })(AddUserModal);

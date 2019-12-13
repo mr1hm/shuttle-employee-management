@@ -2,6 +2,16 @@ import axios from '../lib/axios';
 import types from './types';
 import { throwApiError } from '../lib/redux_functions';
 
+export const adminAddUser = user => async dispatch => {
+  try {
+    const { data } = await axios.post('/api/admin-add-user.php', user);
+
+    console.log('Data Add User:', data);
+  } catch (error) {
+    throwApiError(error, 'Error adding user');
+  }
+};
+
 export const adminGetUserData = uciId => async dispatch => {
   try {
     const { data: user } = await axios.get(`/api/admin-get-user.php?uciId=${uciId}`);
@@ -12,6 +22,20 @@ export const adminGetUserData = uciId => async dispatch => {
     });
   } catch (error) {
     throwApiError(error, 'Error getting user\'s data');
+  }
+};
+
+export const adminGetUserRoles = () => async dispatch => {
+  try {
+    const { data: { roles, map } } = await axios.get('/api/admin-get-roles.php');
+
+    dispatch({
+      type: types.ADMIN_GET_USER_ROLES,
+      roles,
+      map
+    });
+  } catch (error) {
+    throwApiError(error, 'Error getting user roles');
   }
 };
 

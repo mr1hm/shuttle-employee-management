@@ -1,5 +1,7 @@
 export default {
+  ADMIN_ADD_USER: 'admin_add_user',
   ADMIN_GET_USER_DATA: 'admin_get_user_data',
+  ADMIN_GET_USER_ROLES: 'admin_get_user_roles',
   ADMIN_UPDATE_USER_ROLE: 'admin_update_user_role',
   ADMIN_UPDATE_USER: 'admin_update_user',
   GET_CELL_PROVIDERS: 'get_cell_providers',
