@@ -126,10 +126,11 @@ function ShiftsAvailable(props){
   );
 
   return (
-    <>
-      <h1>Available Shifts</h1>
+    <main className="container">
+      <h1>Shift Posts</h1>
+      <h2>Available Shifts</h2>
       <Table order={tableColumnOrder} headers={tableHeaders} content={tableContent} />
-    </>
+    </main>
   );
 }
 
