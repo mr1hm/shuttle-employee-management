@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getUserData } from '../../actions';
 import './my-info-page.css';
-import TopMenuGeneral from '../topmenu/topmenu-general';
 
 class MyInfo extends React.Component {
   constructor(props) {
@@ -119,7 +118,6 @@ class MyInfo extends React.Component {
     // if (this.state.editButton) {
     //   return (
     //     <React.Fragment>
-    //       <TopMenuGeneral title="MY INFO" />
     //       <div className="container d-flex ml-4">
     //         <div className="d-flex flex-column">
     //           <div className="profileName">{stateUserInfo[0].first_name + ' ' + stateUserInfo[0].last_name}</div>
@@ -172,7 +170,6 @@ class MyInfo extends React.Component {
 
     return (
       <React.Fragment>
-        <TopMenuGeneral userId={this.props.userId} title="MY INFO" />
         <div className='container d-flex ml-5 mr-3'>
           <div className="d-flex flex-column mr-2">
             <div className="profileName mb-3">{`${firstName} ${lastName}`}</div>

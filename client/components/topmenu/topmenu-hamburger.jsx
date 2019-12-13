@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './topmenu.css';
 import HamburgerMenu from './hamburger-menu';
-import { getZeroPaddedNumber, createDateStringFromDateObject } from '../../lib/time-functions';
+import { getZeroPaddedNumber } from '../../lib/time-functions';
 
 class TopMenuHamburger extends React.Component {
   constructor(props) {

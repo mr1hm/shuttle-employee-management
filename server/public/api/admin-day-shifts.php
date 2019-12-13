@@ -1,9 +1,17 @@
 <?php
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once 'db_connection.php';
 
-$date= $_GET['date'];
+require_once(__DIR__.'/../../lib/startup.php');
+require_once(DATES);
+set_tz_la();
+
+if (array_key_exists('date', $_GET)){
+    $date = getFormattedDate($_GET['date']);
+    if ($date == FALSE){
+        throw new ApiError(['errors' => ['Invalid date']], 422);
+    }
+} else {
+    $date = getToday();
+}
 
 $query = "SELECT
           rd.id AS round_id,
@@ -23,13 +31,27 @@ $query = "SELECT
           JOIN bus_info AS bi ON bi.route_id = rt.id
           JOIN round AS rd ON rd.bus_info_id = bi.id
           JOIN user AS us ON rd.user_id = us.id
-          WHERE rd.date = '$date'
+          WHERE rd.date = ?
           ORDER BY line_name ASC, bus_number ASC, round_start ASC";
 
-$result = mysqli_query($conn, $query);
-if (!$result) {
-    throw new Exception('mysql error ' . mysqli_error($conn));
+$statement = $mysqli->prepare($query);
+if ($statement == FALSE){
+    throw new ApiError(null, 500, 'Error preparing query');
 }
+
+if (!$statement->bind_param('s', $date)){
+    throw new ApiError(null, 500, 'Error binding query params');
+}
+
+if (!$statement->execute()){
+    throw new ApiError(null, 500, 'Error executing query');
+}
+
+$result = $statement->get_result();
+if ($result === FALSE) {
+    throw new ApiError(null, 500, 'Error retrieving shift data');
+}
+
 $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $data[] = $row;
@@ -155,6 +177,7 @@ for ($group_index = 0; $group_index < count($grouped_data); $group_index++) {
         $shifts[] = $shift_to_add;
     }
 }
-print(json_encode($grouped_data));
+
+send($grouped_data);
 
 ?>

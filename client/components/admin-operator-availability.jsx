@@ -1,16 +1,17 @@
 import React from 'react';
-import TopMenuGeneral from '../components/topmenu/topmenu-general';
 import './admin-operator-availability.css';
 import EditUserModal from './admin-edit-user-modal';
 import SelectSessionModal from './admin-select-session-modal';
 import ChangeDateModal from './admin-change-date-modal';
 import ChangeHoursModal from './admin-change-hours-modal';
-import { getDateString } from '../lib/time-functions';
+import AvailabilityDetailsModal from './admin-show-availablity-details-modal';
+import { getDateTimeString } from '../lib/time-functions';
 
 class AdminOperatorAvailability extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: '',
       userId: '',
       lastName: '',
       firstName: '',
@@ -23,6 +24,7 @@ class AdminOperatorAvailability extends React.Component {
       minTrainerHours: '',
       minTraineeHours: '',
       availSubmissionDate: '',
+      comment: '',
       startDate: '',
       endDate: '',
       changeDate: false,
@@ -30,6 +32,8 @@ class AdminOperatorAvailability extends React.Component {
       addUser: false,
       editUser: false,
       selectSession: false,
+      availDetailsDisplay: false,
+      individualOperatorDetails: null,
       operatorDetails: null,
       parameter: false,
       sessionId: '',
@@ -53,7 +57,16 @@ class AdminOperatorAvailability extends React.Component {
     this.closeChangeHoursModal = this.closeChangeHoursModal.bind(this);
     this.showChangeHoursModal = this.showChangeHoursModal.bind(this);
     this.updateHoursInDatabase = this.updateHoursInDatabase.bind(this);
+    this.getIndivOperatorDetails = this.getIndivOperatorDetails.bind(this);
+    this.showIndivOperatorDetails = this.showIndivOperatorDetails.bind(this);
+    this.closeAvailDetailsModal = this.closeAvailDetailsModal.bind(this);
+    this.getIndivOperatorComment = this.getIndivOperatorComment.bind(this);
+  }
 
+  closeAvailDetailsModal() {
+    this.setState({
+      availDetailsDisplay: false
+    });
   }
 
   closeChangeDateModal() {
@@ -97,6 +110,26 @@ class AdminOperatorAvailability extends React.Component {
     this.getSessions();
   }
 
+  createAvailabilityList() {
+    if (this.state.individualOperatorDetails) {
+      return (
+        this.state.individualOperatorDetails.map((entry, index) =>
+          <tr key={index}>
+            <td className="p-3">{entry.day_of_week}</td>
+            <td className="p-3">{entry.start_time}</td>
+            <td className="p-3">{entry.end_time}</td>
+          </tr>
+        )
+      );
+    } else {
+      return (<tr>
+        <td>
+          loading
+        </td>
+      </tr>);
+    }
+  }
+
   editUser(event) {
     const index = event.currentTarget.id;
     this.setState({
@@ -110,6 +143,53 @@ class AdminOperatorAvailability extends React.Component {
       availSubmissionDate: this.state.operatorDetails[index]['availEndDateString']
     });
     this.showEditUserModal();
+  }
+
+  getIndivOperatorComment() {
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'session_id': this.state.sessionId,
+        'user_id': this.state.id
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/individual-operator-comment.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          comment: data.comment
+        }, this.showIndivOperatorDetails);
+      })
+      .catch(error => { throw (error); });
+  }
+
+  getIndivOperatorDetails(event) {
+    const index = event.currentTarget.id;
+    const userId = this.state.operatorDetails[index].id;
+    const userLastName = this.state.operatorDetails[index].last_name;
+    const userFirstName = this.state.operatorDetails[index].first_name;
+    this.setState({
+      id: userId,
+      firstName: userFirstName,
+      lastName: userLastName
+    });
+    const data = {
+      method: 'POST',
+      body: JSON.stringify({
+        'session_id': this.state.sessionId,
+        'user_id': userId
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    };
+    fetch(`/api/individual-operator-availability.php`, data)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          individualOperatorDetails: data
+        }, this.getIndivOperatorComment);
+      })
+      .catch(error => { throw (error); });
   }
 
   getOperatorDetails() {
@@ -170,7 +250,7 @@ class AdminOperatorAvailability extends React.Component {
 
   setDefaultSession() {
     var dateToday = new Date();
-    var date = getDateString(dateToday);
+    var date = getDateTimeString(dateToday);
     this.state.sessionChoices.forEach(element => {
       if (element.startDateString <= date && date <= element.endDateString) {
         this.setState({
@@ -223,6 +303,13 @@ class AdminOperatorAvailability extends React.Component {
   showEditUserModal() {
     this.setState({
       editUser: true
+    });
+  }
+
+  showIndivOperatorDetails() {
+    console.log(this.state.individualOperatorDetails);
+    this.setState({
+      availDetailsDisplay: true
     });
   }
 
@@ -317,7 +404,7 @@ class AdminOperatorAvailability extends React.Component {
 
   render() {
     var hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
-    var tableheaderContent = ['Last Name', 'First Name', 'User Id', 'Role', 'Special Route', 'Minimum Hrs', 'Submission Date', 'Submitted', 'Change'];
+    var tableheaderContent = ['Last Name', 'First Name', 'User Id', 'Role', 'Special Route', 'Minimum Hrs', 'Submission Date', 'Submitted', 'Details', 'Change'];
 
     if (!this.state.operatorDetails) {
       return <div>Loading</div>;
@@ -325,9 +412,6 @@ class AdminOperatorAvailability extends React.Component {
 
     return (
       <React.Fragment>
-        <div className='nav'>
-          <TopMenuGeneral title="ADMIN-OPERATOR AVAILABILITY" />
-        </div>
         <div className="addButton d-flex justify-content-end mt-3">
           <button className="btn-sm btn-primary ml-3" onClick={this.showSelectSessionModal}>Select Session</button>
         </div>
@@ -374,6 +458,9 @@ class AdminOperatorAvailability extends React.Component {
                     <td className='pb-2'>{operator.availEndDateString}</td>
                     <td className='pb-2'>{this.submittedStatus(operator)}</td>
                     <td className='pb-2'>
+                      <input onClick={this.getIndivOperatorDetails} id ={index} value="details" type='button'/>
+                    </td>
+                    <td className='pb-2'>
                       <input onClick={this.editUser} id ={index} value="change" type='button'/>
                     </td>
                   </tr>
@@ -405,12 +492,12 @@ class AdminOperatorAvailability extends React.Component {
               <div className="m-2">
                 <div className="editTitle">Minimum Available Hours</div>
                 <select name="minAvailHours" defaultValue={this.state.minAvailHours} onChange={this.handleFormEntry}>
-                  <option></option>
+                  <option>select hours</option>
                   {hours.map(index => (<option key={index} value={'' + index}>{index}</option>))}
                 </select>
               </div>
               <div className="m-2">
-                <div className="editTitle">Availability Submission Date</div>
+                <div className="editTitle">Availability Submission End Date</div>
                 <input type='text' name="availSubmissionDate" defaultValue={this.state.availSubmissionDate} contentEditable="true" onChange={this.handleFormEntry} />
               </div>
               <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
@@ -484,6 +571,28 @@ class AdminOperatorAvailability extends React.Component {
             </form>
           </div>
         </ChangeHoursModal>
+
+        <AvailabilityDetailsModal showAvailDetailsModal={this.state.availDetailsDisplay}>
+          <div>
+            <div>{this.state.firstName} {this.state.lastName}</div>
+            <table className="mt-4">
+              <thead>
+                <tr>
+                  <th className="p-3">Day</th>
+                  <th className="p-3">Start</th>
+                  <th className="p-3">End</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.createAvailabilityList()}
+              </tbody>
+            </table>
+            <div>Comment: {this.state.comment}</div>
+            <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
+              <button className="btn-success mr-2" type='submit' onClick={this.closeAvailDetailsModal}>Close</button>
+            </div>
+          </div>
+        </AvailabilityDetailsModal>
 
       </React.Fragment>
     );

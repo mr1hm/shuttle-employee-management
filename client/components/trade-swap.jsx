@@ -3,7 +3,7 @@ import RouteBusDisplay from './route-bus-display';
 import TradeModal from './trade-modal';
 import SwapModal from './swap-modal';
 import Switch from './switch';
-import { convertMilitaryTime, calcShiftLenghtInHourMinFormat, returnWeekInfoArray } from '../lib/time-functions';
+import { convertMilitaryTime, calcShiftLenghtInHourMinFormat } from '../lib/time-functions';
 
 class TradeSwap extends React.Component {
   constructor(props) {
@@ -35,7 +35,6 @@ class TradeSwap extends React.Component {
     });
   }
   getAvailableDrivers() {
-    // const week = returnWeekInfoArray(this.props.shiftDetails[0].date);
     let roundTimes = [];
     this.props.shiftDetails.map(oneShift => {
       roundTimes.push({

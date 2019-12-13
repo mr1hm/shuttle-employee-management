@@ -11,6 +11,7 @@ class HamburgerMenu extends React.Component {
       notificationCount: 0
     };
     this.toggleOpen = this.toggleOpen.bind(this);
+    this.getNotifications = this.getNotifications.bind(this);
   }
   toggleOpen() {
     this.setState({
@@ -21,25 +22,28 @@ class HamburgerMenu extends React.Component {
     this.getNotifications();
   }
   getNotifications() {
-    const { userId } = this.props;
+    const ID = this.props.userId ? this.props.userId : 17;
+    let fetchSwapAndTradeRequest = fetch(`/api/get-notifications.php?id=${ID}`);
+    let fetchSwapConfirmations = fetch(`/api/get-final-swap-confirmation.php?id=${ID}`);
 
-    if (userId) {
-      fetch(`/api/get-notifications.php`)
-        .then(response => response.json())
-        .then(shiftsArrayOfObjects => {
+    Promise.all([fetchSwapAndTradeRequest, fetchSwapConfirmations])
+      .then(data => Promise.all(data.map(response => response.json())))
+      .then(allData => {
+        let swapAndTradeRequest = allData[0];
+        let swapConfirmations = allData[1];
+        if (swapConfirmations.length > 0) {
           this.setState({
-            notificationCount: parseInt(shiftsArrayOfObjects.length)
+            notificationCount: parseInt(swapAndTradeRequest.length) + 1
           });
-        })
-        .catch(error => console.error('Fetch failed', error));
-    }
+        } else {
+          this.setState({
+            notificationCount: parseInt(swapAndTradeRequest.length)
+          });
+        }
+      })
+      .catch(error => console.error('Fetch failed', error));
   }
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.notificationCount !== this.props.notificationCount ||
-      prevProps.userId !== this.props.userId) {
-      this.getNotifications();
-    }
-  }
+      
   render() {
     const visibleClass = this.state.open ? 'visible' : 'hidden';
     const menuNotification = (<div className="notification-badge move-notification">

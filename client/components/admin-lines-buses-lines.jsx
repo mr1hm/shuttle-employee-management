@@ -1,16 +1,10 @@
 import React from 'react';
-import TopMenuShift from './topmenu/topmenu-shift';
-import TopMenuGeneral from './topmenu/topmenu-general';
-import TopMenuHamburger from './topmenu/topmenu-hamburger';
-import Nav from './topmenu/range-nav-bar';
 import RouteBusDisplay from './route-bus-display';
 import BusesTable from './admin-lines-buses-busesTable';
 import AddBus from './admin-lines-buses-addBus';
-import GapsModal from './admin-lines-buses-viewGaps';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCaretUp, faBus, faCaretDown, faEdit, faTrash, faUserTie } from '@fortawesome/free-solid-svg-icons';
-import AdminRoutes from './admin-lines-buses';
 import EditLine from './admin-lines-buses-editLine';
 import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 
@@ -94,7 +88,7 @@ export default class Lines extends React.Component {
       method: 'DELETE',
       body: JSON.stringify(body)
     };
-    fetch('api/admin-lines-buses.php', init)
+    fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(deletedLine => {
         this.setState({
@@ -105,7 +99,6 @@ export default class Lines extends React.Component {
         } else {
           this.props.getLinesBusesInfo({ session_id: sessionID });
         }
-        this.props.operationsHistoryMethod();
       })
       .catch(error => console.error(error));
     console.log('LINE DELETED');
@@ -156,7 +149,7 @@ export default class Lines extends React.Component {
                     </tr>
                   </thead>
                   {activeBuses.map((bus, index) => {
-                    return <BusesTable key={bus.busNumber + index} handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} selectedSessionID={this.props.selectedSessionID} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                    return <BusesTable key={bus.busNumber + index} handleGapsModal={this.props.handleGapsModal} showGapsModal={this.props.showGapsModal} selectedSessionID={this.props.selectedSessionID} linesBusesInfo={this.props.linesBusesInfo} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
                   }
                   )}
                 </table>
@@ -249,7 +242,7 @@ export default class Lines extends React.Component {
                     </tr>
                   </thead>
                   {activeBuses.map((bus, index) => {
-                    return <BusesTable key={bus.busNumber + index} selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} key={bus.busNumber + index} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
+                    return <BusesTable key={bus.busNumber + index} selectedSessionID={this.props.selectedSessionID} currentSession={this.props.currentSession} linesBusesInfo={this.props.linesBusesInfo} getLinesBusesInfo={this.props.getLinesBusesInfo} editBusClicked={this.state.editBusClicked} handleEditBusClicked={this.handleEditBusClicked} line={line} busInfo={bus} />;
                   })
                   }
                 </table>

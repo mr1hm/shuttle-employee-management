@@ -57,7 +57,7 @@ export default class EditLine extends React.Component {
       method: 'POST',
       body: JSON.stringify(line)
     };
-    fetch(`api/admin-lines-buses.php`, init)
+    fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(lineInfo => {
         console.log(line.session_id);

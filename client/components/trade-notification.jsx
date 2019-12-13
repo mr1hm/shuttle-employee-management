@@ -1,7 +1,4 @@
 import React from 'react';
-import RouteBusDisplay from './route-bus-display';
-import TopMenuGeneral from './topmenu/topmenu-general';
-import { Link } from 'react-router-dom';
 import NotificationShift from './trade-notification-shift';
 import SwapConfirmation from './swap-confirmation-modal';
 import SwapConfirmNotification from './swap-confirm-notification';
@@ -15,7 +12,9 @@ class TradeNotification extends React.Component {
       selectedDriver: {},
       swapShifts: [],
       selectedRoundId: 0,
-      notificationCount: 0
+      notificationCount: 0,
+      newTradeShifts: [],
+      newSwapShifts: []
     };
     this.removeShift = this.removeShift.bind(this);
     this.giveShiftToSelectedDriver = this.giveShiftToSelectedDriver.bind(this);
@@ -26,11 +25,15 @@ class TradeNotification extends React.Component {
     fetch(`/api/get-notifications.php`)
       .then(response => response.json())
       .then(shiftsArrayOfObjects => {
+        const newTradeShifts = shiftsArrayOfObjects.filter(oneShift => oneShift.type === 'trade');
+        const newSwapShifts = shiftsArrayOfObjects.filter(oneShift => oneShift.type === 'swap');
         this.setState({
           newShifts: shiftsArrayOfObjects,
           swapShifts: swapShift,
           selectedRoundId: selectedRoundId,
-          notificationCount: shiftsArrayOfObjects.length
+          notificationCount: shiftsArrayOfObjects.length,
+          newTradeShifts: newTradeShifts,
+          newSwapShifts: newSwapShifts
         });
       })
       .catch(error => console.error('Fetch failed', error));
@@ -68,14 +71,21 @@ class TradeNotification extends React.Component {
       })
     })
       .then(response => {
+        const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
+        const newTradeShifts = this.state.newTradeShifts.filter(oneShift => roundID !== oneShift.round_id);
+        const newSwapShifts = this.state.newSwapShifts.filter(oneShift => roundID !== oneShift.round_id);
+        let newNotificationCount = this.state.notificationCount;
+        newNotificationCount = newNotificationCount - 1;
         this.setState({
           newShifts: newShifts,
-          notificationCount: this.state.notificationCount - 1
+          newTradeShifts: newTradeShifts,
+          newSwapShifts: newSwapShifts,
+          notificationCount: newNotificationCount
         });
       })
       .catch(err => console.error(err));
-    const newShifts = this.state.newShifts.filter(oneShift => roundID !== oneShift.round_id);
   }
+
   render() {
     if (this.state.selectedRoundId) {
       return (
@@ -85,23 +95,12 @@ class TradeNotification extends React.Component {
     if (this.state.newShifts.length === 0) {
       return (
         <>
-        <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
         <SwapConfirmNotification userId={this.props.userId} />
         </>
-        // <div className="container mt-2">
-        //   <div className="row justify-content-center">
-        //     <div className="col-4">
-        //       <h1>No Notifications</h1>
-        //     </div>
-        //   </div>
-        // </div>);
       );
     } else {
       return (
         <div className="container">
-          <div className="row justify-content-center mb-3">
-            <TopMenuGeneral notificationCount={this.state.notificationCount} userId={this.props.userId} title="Notifications" newShiftsandSelectedDriver={this.state.newShiftsandSelectedDriver} />
-          </div>
           <div className="row text-center">
             <div className="col-2">
               <h5>Date</h5>
@@ -116,9 +115,28 @@ class TradeNotification extends React.Component {
               <h4>Shift Length</h4>
             </div>
           </div>
-          {this.state.newShifts.length === 1 ? (
+          {
+            this.state.newTradeShifts.map(oneShift => {
+              return (
+                <NotificationShift
+                  key={oneShift.id}
+                  shift_date={oneShift.shift_date}
+                  line_name={oneShift.line_name}
+                  bus_info_id={oneShift.bus_info_id}
+                  start_time={oneShift.start_time}
+                  end_time={oneShift.end_time}
+                  target_user_id={oneShift.target_user_id}
+                  round_id={oneShift.round_id}
+                  removeShift={this.removeShift}
+                  giveShifttoSelectedDriver={this.giveShifttoSelectedDriver}
+                  type={oneShift.type}
+                />
+              );
+            })
+          }
+          {(this.state.newSwapShifts.length === 1) ? (
 
-            this.state.newShifts.map(oneShift => {
+            this.state.newSwapShifts.map(oneShift => {
               return (
                 <NotificationShift
                   key={oneShift.id}
@@ -136,7 +154,7 @@ class TradeNotification extends React.Component {
               );
             })
           ) : (
-            <MultipleSelectedShiftsSwap shifts={this.state.newShifts} />
+            <MultipleSelectedShiftsSwap shifts={this.state.newSwapShifts} />
           )}
           <div>
             <SwapConfirmNotification userId={this.props.userId} />

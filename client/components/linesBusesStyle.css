@@ -61,6 +61,14 @@
   height: 1.25em;
 }
 
+.sessionInfoTitle {
+  font-weight: 600;
+}
+
+.sessionInfoValues {
+  color: rgba(255, 255, 255, .9);
+}
+
 .operationsHistoryAddIcon {
   font-size: 13px;
   margin-right: 4px;
@@ -110,7 +118,8 @@ table.liveFieldStatusTable td {
 }
 
 .addLineBtn,
-.newSessionBtn {
+.newSessionBtn,
+.deleteSessionBtn {
   color: #FFA804;
   background-color: rgb(23, 2, 61);
   border: 1px solid #FFA804;
@@ -184,7 +193,15 @@ table.liveFieldStatusTable td {
   overflow: scroll;
   border: 1px solid black;
   border-radius: .25rem;
-  max-width: 65vw;
+  /* max-width: 65vw; */
+}
+
+.masterScheduleTableContainer {
+  height: 550px;
+  overflow: scroll;
+  border: 1px solid black;
+  border-radius: .25rem;
+  /* max-width: 65vw; */
 }
 
 .liveFieldStatusCurrentDateAndTime {
@@ -212,6 +229,7 @@ table.liveFieldStatusTable td {
   margin-top: 10px;
   color: rgb(121, 132, 235);
   font-weight: 700;
+  margin-bottom: 0;
 }
 
 .liveFieldStatusLineName,
@@ -225,8 +243,19 @@ table.liveFieldStatusTable td {
   font-weight: 500;
 }
 
+/* .masterScheduleStartEndDate {
+  margin-bottom: 10px;
+} */
+
+.masterScheduleNoDrivers {
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: red;
+}
+
 .liveFieldStatusStartDateSpan {
   margin-right: 18px;
+  margin-bottom: 10px;
 }
 
 .minHoursReqLabel {
@@ -349,7 +378,7 @@ table.liveFieldStatusTable td {
 .gapsModal {
   position: fixed;
   width: 75%;
-  height: 300px;
+  height: 475px;
   z-index: 1;
   left: 17%;
   bottom: 30%;

@@ -52,7 +52,7 @@ export default class AddBus extends React.Component {
       method: 'POST',
       body: JSON.stringify(newBus)
     };
-    fetch(`api/admin-lines-buses.php`, init)
+    fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(newBusInfo => {
         this.setState({
@@ -119,7 +119,12 @@ export default class AddBus extends React.Component {
     let finalEndTime = hoursEndTime + leftoverMinutesAfterShift;
 
     if (newBus.gapDuration) {
-      finalEndTime = parseInt(finalEndTime) + parseInt(newBus.gapDuration);
+      finalEndTime = parseInt(finalEndTime);
+      let gapDurationArr = newBus.gapDuration.split(',');
+      for (let i = 0; i < gapDurationArr.length; ++i) {
+        finalEndTime += parseInt(gapDurationArr[i]);
+      }
+      // finalEndTime = parseInt(finalEndTime) + parseInt(newBus.gapDuration);
       finalEndTime = finalEndTime.toString();
       let finalMinutes = parseInt(finalEndTime.substring(finalEndTime.length - 2));
       if (parseInt(finalMinutes) >= 60) {
