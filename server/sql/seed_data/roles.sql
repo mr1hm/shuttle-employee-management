@@ -18,9 +18,9 @@ INSERT INTO `roles` (`id`, `mid`, `display_name`, `description`, `updated_at`, `
 	(1, 'super_admin', 'Super Admin', NULL, '2019-12-02 20:14:59', '2019-12-02 20:14:59'),
 	(2, 'admin', 'Admin', NULL, '2019-12-02 20:14:59', '2019-12-02 20:14:59'),
 	(3, 'operations', 'Operations', NULL, '2019-12-02 20:16:37', '2019-12-02 20:16:37'),
-	(4, 'operators', 'Operators', NULL, '2019-12-02 20:16:37', '2019-12-02 20:16:37'),
-	(5, 'trainers', 'Trainers', NULL, '2019-12-02 20:16:37', '2019-12-02 20:16:37'),
-	(6, 'trainees', 'Trainees', NULL, '2019-12-02 20:16:37', '2019-12-02 20:16:37');
+	(4, 'operator', 'Operator', NULL, '2019-12-02 20:16:37', '2019-12-02 20:16:37'),
+	(5, 'trainer', 'Trainer', NULL, '2019-12-02 20:16:37', '2019-12-02 20:16:37'),
+	(6, 'trainee', 'Trainee', NULL, '2019-12-02 20:16:37', '2019-12-02 20:16:37');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
