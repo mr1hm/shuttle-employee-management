@@ -20,6 +20,17 @@ const COLUMNS = Object.freeze({
   ACTION: 'take_action',
 });
 
+const DAYS_OF_WEEK = Object.freeze([
+  null,
+  'Sun',
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+]);
+
 const tableHeaders = {
   [COLUMNS.PERMANENT]: {
     title: '',
@@ -91,24 +102,24 @@ function ShiftsAvailable(props){
     Array.isArray(availableShifts)
     ? availableShifts.map(shift => ({
       [COLUMNS.PERMANENT]: shift.recurring,
-      [COLUMNS.DAY_OF_WEEK]: shift.day_of_week,
-      [COLUMNS.DATE_START]: shift.start_date,
-      [COLUMNS.DATE_END]: shift.end_date,
-      [COLUMNS.TIME_START]: shift.start_time,
-      [COLUMNS.TIME_END]: shift.end_time,
+      [COLUMNS.DAY_OF_WEEK]: DAYS_OF_WEEK[shift.day_of_week],
+      [COLUMNS.DATE_START]: formatDate(shift.start_date),
+      [COLUMNS.DATE_END]: formatDate(shift.end_date),
+      [COLUMNS.TIME_START]: formatTimeOfDay(shift.start_time),
+      [COLUMNS.TIME_END]: formatTimeOfDay(shift.end_time),
       [COLUMNS.SCHEDULE]: shift.session.name,
       [COLUMNS.POSTED_BY]: (
         typeof shift.posted_by === 'string'
         ? shift.posted_by
         : `${shift.posted_by.first_name} ${shift.posted_by.last_name} - ${shift.posted_by.uci_net_id}`
       ),
-      [COLUMNS.ROUTE]: shift.bus_info.line_name,
+      [COLUMNS.ROUTE]: `${shift.bus_info.line_name} Line`,
       [COLUMNS.BUS_NUMBER]: shift.bus_info.bus_number,
       [COLUMNS.NUMBER_OF_ROUNDS]: shift.rounds.length,
       [COLUMNS.ACTION]: (
         shift.conflicts.filter(conflict => conflict.fatal).length > 0
-        ? (<btn>Shift Conflict</btn>)
-        : (<btn>Take Shift</btn>)
+        ? (<btn className="btn btn-disabled">Shift Conflict</btn>)
+        : (<btn className="btn btn-primary">Take Shift</btn>)
       ),
     }))
     : availableShifts
@@ -120,6 +131,18 @@ function ShiftsAvailable(props){
       <Table order={tableColumnOrder} headers={tableHeaders} content={tableContent} />
     </>
   );
+}
+
+function formatDate(date){
+  return new Date(date).toDateString().slice(4, -5);
+}
+
+function formatTimeOfDay(timeString){
+  const hour24Format = Number(timeString.slice(0,-2));
+  const hour12Format = (hour24Format + 11) % 12 + 1;
+  const minuteFormat = timeString.slice(-2);
+  const amPmFormat = (hour24Format >= 12) ? 'PM' : 'AM';
+  return `${hour12Format}:${minuteFormat} ${amPmFormat}`;
 }
 
 function useAvailableShifts(){

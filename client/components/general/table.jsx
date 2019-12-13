@@ -30,7 +30,7 @@ function Table(props){
                                         const align = headers[key].align || DEFAULT_ALIGN;
                                         const cellContent = rowContent[key];
                                         return (
-                                            <td key={`${key}-${rowIndex}`} className={`text-${align}`}>{cellContent}</td>
+                                            <td key={`${key}-${rowIndex}`} className={`text-${align} align-middle`}>{cellContent}</td>
                                         );
                                     })}
                                 </tr>
