@@ -2,7 +2,8 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import * as auth from '../hoc/auth_config';
 import onAuthRedirect from '../hoc/on_auth_redirect';
-import MyInfo from './myinfo/myinfo';
+import AdminEditUser from './user/admin-edit-user';
+import MyInfo from './user/my-info';
 import ShiftsWeek from './shifts/week/shifts-week';
 import ShiftsDay from './shifts/day/shifts-day';
 import ShiftsMonth from './shifts/month/shifts-month';
@@ -17,7 +18,7 @@ import AdminRoutes from './admin-lines-buses';
 // import Transaction from './transaction/transactionpage';
 import TradeSwap from './trade-swap';
 import TradeNotification from './trade-notification';
-import AdminUserSummary from './admin-user-summary';
+import AdminUserSummary from './user/admin-user-summary';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
 import MasterSchedule from './admin-lines-buses-master-schedule';
 import Nav from './nav';
@@ -68,6 +69,7 @@ class App extends React.Component {
             defaultDate: this.state.presetDateForTesting
           })} />
           <Route path="/admin-operator-availability" component={auth.all(AdminOperatorAvailability)} />
+          <Route path="/admin-edit-user/:uciId" component={auth.admin(AdminEditUser)} />
           <Route path="/admin-user-summary" component={auth.all(AdminUserSummary)} />
           <Route path="/welcome" component={auth.any(Welcome, {}, '/login')} />
           <Route path="/live-field-status" component={auth.operations(LiveFieldStatus, {}, '/welcome')} />

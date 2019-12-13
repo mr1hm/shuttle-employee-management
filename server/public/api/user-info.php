@@ -11,9 +11,11 @@ if(!$user) {
 
 $query = "SELECT
   uci_net_id AS uciNetId, last_name AS lastName, first_name AS firstName, email,
-  cell_provider AS cellProvider, phone, url, shirt_size AS shirtSize
-  FROM user
-  WHERE id = ?";
+  cp.cell_provider AS cellProvider, phone, url, ss.size AS shirtSize
+  FROM user AS u
+  LEFT JOIN cellProvider as cp ON u.cell_provider_id=cp.id
+  LEFT JOIN shirt_sizes as ss ON u.shirt_size_id=ss.id
+  WHERE u.id = ?";
 
 $statement = $mysqli->prepare($query);
 if ($statement == FALSE){
