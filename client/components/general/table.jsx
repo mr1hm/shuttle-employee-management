@@ -4,18 +4,19 @@ import React from 'react';
 const DEFAULT_ALIGN = 'center';
 
 function Table(props){
-    const { order, headers, content } = props;
+    const { colOrder, columns, content } = props;
 
     return (
         <>
             <table className='table table-striped'>
                 <thead>
                     <tr>
-                        {order.map(key => {
-                            const { title } = headers[key];
-                            const align = headers[key].align || DEFAULT_ALIGN;
+                        {colOrder.map(key => {
+                            const { title } = columns[key];
+                            const horizontalAlign = columns[key].align || DEFAULT_ALIGN;
+                            const verticalAlign = 'bottom';
                             return (
-                                <th key={key} className={`text-${align}`}>{title}</th>
+                                <th key={key} className={`text-${horizontalAlign} align-${verticalAlign}`}>{title}</th>
                             );
                         })}
                     </tr>
@@ -26,11 +27,12 @@ function Table(props){
                         ? (
                             content.map((rowContent, rowIndex) => (
                                 <tr key={`row-${rowIndex}`}>
-                                    {order.map(key => {
-                                        const align = headers[key].align || DEFAULT_ALIGN;
+                                    {colOrder.map(key => {
+                                        const horizontalAlign = columns[key].align || DEFAULT_ALIGN;
+                                        const verticalAlign = 'middle';
                                         const cellContent = rowContent[key];
                                         return (
-                                            <td key={`${key}-${rowIndex}`} className={`text-${align} align-middle`}>{cellContent}</td>
+                                            <td key={`${key}-${rowIndex}`} className={`text-${horizontalAlign} align-${verticalAlign}`}>{cellContent}</td>
                                         );
                                     })}
                                 </tr>

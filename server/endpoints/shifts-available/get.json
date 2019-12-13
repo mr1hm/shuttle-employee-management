@@ -29,6 +29,10 @@
         ],
         "conflicts": [
             {
+                "type": "not_an_operator",
+                "fatal": true
+            },
+            {
                 "type": "shift_overlap",
                 "fatal": true
             },
