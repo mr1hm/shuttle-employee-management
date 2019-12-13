@@ -72,6 +72,8 @@ const tableHeaders = {
 };
 
 function ShiftsAvailable(props){
+  const [tableContent, setTableContent] = useState(null);
+
   const tableColumnOrder = [
     COLUMNS.DAY_OF_WEEK,
     COLUMNS.DATE_START,
@@ -88,7 +90,7 @@ function ShiftsAvailable(props){
   return (
     <>
       <h1>Available Shifts</h1>
-      <Table order={tableColumnOrder} headers={tableHeaders} />
+      <Table order={tableColumnOrder} headers={tableHeaders} content={tableContent} />
     </>
   );
 }
