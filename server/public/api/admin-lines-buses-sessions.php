@@ -31,11 +31,11 @@ if ($method === 'POST' && (isset($bodyData['name']))) { // add a new session
   $startDateString = $bodyData['startDateString'];
   $endDateString = $bodyData['endDateString'];
   $holidays = $bodyData['holidays'];
-  $minHoursReq = $bodyData['minHoursReq'];
+  // $minHoursReq = $bodyData['minHoursReq'];
   $notes = $bodyData['notes'];
 
-  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `notes`, `holidays`, `minHoursReq`)
-          VALUES ('$name', '$startDateString', '$endDateString', '$notes', '$holidays', '$minHoursReq')";
+  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `notes`, `holidays`)
+          VALUES ('$name', '$startDateString', '$endDateString', '$notes', '$holidays')";
   $result = mysqli_query($conn, $query);
 
   if (!$result) {
