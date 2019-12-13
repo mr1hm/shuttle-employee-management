@@ -196,6 +196,14 @@ while ($row = mysqli_fetch_assoc($result)) {
  * Flatten shifts to rows for response body
  */
 $responseBody = [];
+$defaultConflicts = (
+    in_array('operators', $user['roles'], TRUE)
+    ? []
+    : [[
+        'type' => 'not_an_operator',
+        'fatal' => TRUE,
+    ]]
+);
 foreach($shiftGroupingCache as $date => $dateShifts){
     foreach($dateShifts['buses'] as $busShifts){
         foreach($busShifts['posted_by'] as $posterUciNetId => $posterShifts){
@@ -210,7 +218,7 @@ foreach($shiftGroupingCache as $date => $dateShifts){
                     'session' => $busShifts['session'],
                     'bus_info' => $busShifts['bus_info'],
                     'rounds' => $shift['rounds'],
-                    'conflicts' => [],
+                    'conflicts' => $defaultConflicts,
                 ];
 
                 if ($posterUciNetId === 'Operations'){
