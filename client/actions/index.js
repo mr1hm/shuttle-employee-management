@@ -26,7 +26,20 @@ export const adminSetUserRole = (role, uciId) => async dispatch => {
   } catch (error) {
     throwApiError(error, 'Error updating user role');
   }
-}
+};
+
+export const adminUpdateUser = updates => async dispatch => {
+  try {
+    const { data: user } = await axios.post('/api/admin-update-user.php', updates);
+
+    dispatch({
+      type: types.ADMIN_UPDATE_USER,
+      user
+    });
+  } catch (error) {
+    throwApiError(error, 'Error updating user');
+  }
+};
 
 export const onLoadCheckAuth = async dispatch => {
   const token = localStorage.getItem('uciToken') || null;
@@ -70,9 +83,13 @@ export const getCellProviders = () => async dispatch => {
 
 export const getShirtSizes = () => async dispatch => {
   try {
-    const { data } = await axios.get('/api/get-shirt-sizes.php');
+    const { data: { map, sizes } } = await axios.get('/api/get-shirt-sizes.php');
 
-    console.log('Shirt Sizes:', data);
+    dispatch({
+      type: types.GET_SHIRT_SIZES,
+      map,
+      sizes
+    });
   } catch (error) {
     throwApiError(error, 'Error getting shirt sizes');
   }

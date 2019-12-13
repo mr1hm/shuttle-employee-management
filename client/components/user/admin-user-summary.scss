@@ -1,0 +1,15 @@
+.add-user-modal {
+    background-color: rgba(0, 0, 0, .4);
+    display: flex;
+    height: 100vh;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+
+    .add-user-modal-content {
+        background-color: #fff;
+        margin: auto;
+        width: 80%;
+    }
+}

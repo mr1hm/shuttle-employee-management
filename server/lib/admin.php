@@ -33,7 +33,7 @@ function adminGetUser($uciId) {
   global $mysqli;
 
   $stmt = $mysqli->prepare("SELECT 
-    uci_net_id AS uciNetId, last_name AS lastName, first_name AS firstName, nickname, status, special_route_ok AS specialRouteOk, phone, email, cp.id AS cellProvider, cp.cell_provider AS cellProviderName, shirt_size AS shirtSize, CONCAT('[', GROUP_CONCAT('\"', r.mid, '\"'), ']') AS roles
+    uci_net_id AS uciNetId, last_name AS lastName, first_name AS firstName, nickname, status, special_route_ok AS specialRouteOk, phone, email, cp.id AS cellProvider, shirt_size_id AS shirtSize, CONCAT('[', GROUP_CONCAT('\"', r.mid, '\"'), ']') AS roles
     FROM user AS u
     LEFT JOIN user_roles as ur
     ON u.id=ur.user_id

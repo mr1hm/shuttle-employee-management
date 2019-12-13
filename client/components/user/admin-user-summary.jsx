@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './admin-operator-availability.css';
 import AddUserModal from './admin-add-user-modal';
+import './admin-user-summary.scss';
 
 class AdminUserSummary extends React.Component {
   constructor(props) {
@@ -214,69 +214,7 @@ class AdminUserSummary extends React.Component {
           </tbody>
         </table>
 
-        <AddUserModal showAddUserModal={this.state.addUser}>
-          <div className="d-flex justify-content-center">
-            <form onSubmit={this.addUserToDatabase}>
-              <div className="mt-5 ml-2 mr-2 mb-2">
-                <div>UCI-ID</div>
-                <input type='text' className ='form-control' name="userId" value={this.state.userId} contentEditable="true" onChange={this.handleFormEntry} />
-              </div>
-              <div className="m-2">
-                <div>First Name</div>
-                <input type='text' className ='form-control' name="firstName" value={this.state.firstName} contentEditable="true" onChange={this.handleFormEntry} />
-              </div>
-              <div className="m-2">
-                <div>Last Name</div>
-                <input type='text' className ='form-control' name="lastName" value={this.state.lastName} contentEditable="true" onChange={this.handleFormEntry} />
-              </div>
-              <div className="m-2">
-                <div>Role</div>
-                <select name="role" value={this.state.role} onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='operator'>operator</option>
-                  <option value='operations'>operations</option>
-                  <option value='trainer'>trainer</option>
-                  <option value='trainee'>trainer</option>
-                </select>
-              </div>
-              <div className="m-2">
-                <div>Status</div>
-                <select name="status" value={this.state.status} onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='active'>active</option>
-                  <option value='inactive'>inactive</option>
-                </select>
-              </div>
-              <div className="m-2">
-                <div>Special Route OK</div>
-                <select name="specialRouteOK" value={this.state.specialRouteOK} onChange={this.handleFormEntry}>
-                  <option></option>
-                  <option value='0'>0</option>
-                  <option value='1'>1</option>
-                </select>
-              </div>
-              <div className="m-2">
-                <div>Phone</div>
-                <input type='text' className ='form-control' name="phone" pattern="^[0-9]{10}$" required defaultValue={this.state.phone} contentEditable="true" onChange={this.handleFormEntry} />
-              </div>
-              <div className="m-2">
-                <div>Email</div>
-                <input type='text' className ='form-control' name="email" value={this.state.email} contentEditable="true" onChange={this.handleFormEntry} />
-              </div>
-              <div className="m-2">
-                <div>Cell Provider</div>
-                <select className="form-control" type="text" name='cellProvider' onChange={this.handleFormEntry} defaultValue={this.state.cellProvider}>
-                  {this.state.cellProviderList.map((provider, index) => <option key={index} value={provider.cell_provider}>{provider.cell_provider}</option>)}
-                </select>
-              </div>
-              <div className="mt-4 mr-2 ml-2 mb-5 d-flex justify-content-center">
-                <button className="btn-success mr-2" type='submit'>Submit</button>
-                <button className="btn-danger ml-2" type='reset' onClick={this.closeAddUserModalClearInfo} >Cancel</button>
-              </div>
-            </form>
-          </div>
-        </AddUserModal>
-
+        <AddUserModal open={this.state.addUser}/>
       </React.Fragment>
     );
   }

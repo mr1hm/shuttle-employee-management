@@ -4,10 +4,9 @@ import PropTypes from 'prop-types';
 const EditableField = ({ className, displayValue, edit = false, error, name, onChange, options, type = 'text', value }) => {
   if (edit) {
     if (type === 'select') {
-      console.log('Is Array:', Array.isArray(options));
       return (
-        <div className={className}>
-          <select name={name} value={value || 'default'} onChange={onChange}>
+        <div className={`form-group ${className}`}>
+          <select className="form-control" name={name} value={value || 'default'} onChange={onChange}>
             <option value="default" disabled>Select an Option</option>
             {options}
           </select>
@@ -16,8 +15,8 @@ const EditableField = ({ className, displayValue, edit = false, error, name, onC
     }
 
     return (
-      <div className={className}>
-        <input name={name} onChange={onChange} type={type} value={value} />
+      <div className={`form-group ${className}`}>
+        <input className="form-control" name={name} onChange={onChange} type={type} value={value} />
         <div className="text-danger">{error}</div>
       </div>
     );

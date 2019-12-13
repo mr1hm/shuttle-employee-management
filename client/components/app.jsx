@@ -18,7 +18,7 @@ import AdminRoutes from './admin-lines-buses';
 import Transaction from './transaction/transactionpage';
 import TradeSwap from './trade-swap'; 
 import TradeNotification from './trade-notification';
-import AdminUserSummary from './admin-user-summary';
+import AdminUserSummary from './user/admin-user-summary';
 import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
 import MasterSchedule from './admin-lines-buses-master-schedule';
 import Nav from './nav';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import equal from 'deep-is';
-import { adminGetUserData, adminSetUserRole, getCellProviders, getShirtSizes } from '../../actions';
+import { adminGetUserData, adminSetUserRole, adminUpdateUser, getCellProviders, getShirtSizes } from '../../actions';
 import { rolesList } from '../../config/permissions';
 import { defaultProfileImage } from '../../config/profile';
 import Editable from './editable-field';
@@ -23,7 +23,7 @@ class AdminUserEdit extends React.Component {
       errors: {}
     };
 
-    this.cancelChanges = this.cancelChanges.bind(this);
+    this.resetForm = this.resetForm.bind(this);
     this.FormControls = this.FormControls.bind(this);
     this.handleEditButton = this.handleEditButton.bind(this);
     this.inputChange = this.inputChange.bind(this);
@@ -45,14 +45,12 @@ class AdminUserEdit extends React.Component {
     }
   }
 
-  buildCellProviderOptions() {
-    const { cellProviders } = this.props;
-
-    if (!cellProviders) {
-      return [<option key="default" value="default">Loading Cell Providers</option>];
+  buildOptions(data, key) {
+    if (!data) {
+      return [<option key="default" disabled>Loading Options...</option>];
     }
 
-    return cellProviders.map(({ id, name }) => {
+    return data.map(({ id, [key]: name }) => {
       return <option key={id} value={id}>{name}</option>;
     });
   }
@@ -94,7 +92,7 @@ class AdminUserEdit extends React.Component {
     );
   }
 
-  cancelChanges() {
+  resetForm() {
     this.updateStateFromProps();
 
     this.setState({
@@ -102,13 +100,14 @@ class AdminUserEdit extends React.Component {
     });
   }
 
-  saveChanges(e) {
+  async saveChanges(e) {
     e.preventDefault();
     this.setState({ errors: {} });
     const { edit, errors, ...formValues } = this.state;
+    const { adminUpdateUser, user } = this.props;
 
-    if (formValues['phone']) {
-      const phone = formValues['phone'].toString().replace(/\D/g, '');
+    if (formValues.phone) {
+      const phone = formValues.phone.toString().replace(/\D/g, '');
 
       if (phone.length !== 10) {
         this.setState({
@@ -119,10 +118,14 @@ class AdminUserEdit extends React.Component {
         return;
       }
 
-      formValues['phone'] = phone;
+      formValues.phone = phone;
     }
 
-    console.log('Form Values:', formValues);
+    formValues.originalUciNetId = user.uciNetId;
+
+    await adminUpdateUser(formValues);
+
+    this.resetForm();
   }
 
   FormControls() {
@@ -131,7 +134,7 @@ class AdminUserEdit extends React.Component {
     if (edit) {
       return (
         <div className="d-flex justify-content-center">
-          <button onClick={this.cancelChanges} type="button" className="btn-sm btn-danger mr-3">Cancel Changes</button>
+          <button onClick={this.resetForm} type="button" className="btn-sm btn-danger mr-3">Cancel Changes</button>
           <button className="btn-sm btn-success">Save Changes</button>
         </div>
       );
@@ -170,8 +173,29 @@ class AdminUserEdit extends React.Component {
     });
   }
 
+  EditUsersName({ edit, firstName, lastName, onChange }) {
+    if (!edit) return null;
+
+    return (
+      <>
+        <div className="row mb-3">
+          <div className="col-6">
+            <strong>First Name:</strong>
+          </div>
+          <Editable className="col-6" edit={edit} name="firstName" value={firstName} onChange={onChange}/>
+        </div>
+        <div className="row mb-3">
+          <div className="col-6">
+            <strong>Last Name:</strong>
+          </div>
+          <Editable className="col-6" edit={edit} name="lastName" value={lastName} onChange={onChange}/>
+        </div>
+      </>
+    );
+  }
+
   render() {
-    const { user, cellProvidersMap } = this.props;
+    const { user, cellProviders, cellProvidersMap, shirtSizes, shirtSizesMap } = this.props;
     const { edit, uciNetId } = this.state;
 
     if (!uciNetId) return <p>Loading...</p>;
@@ -191,6 +215,7 @@ class AdminUserEdit extends React.Component {
           </div>
           <div className="col-4">
             <h3 className="mb-3">User Info</h3>
+            <this.EditUsersName edit={edit} firstName={firstName} lastName={lastName} onChange={this.inputChange} />
             <div className="row mb-3">
               <div className="col-6">
                 <strong>UCI Net ID:</strong>
@@ -213,13 +238,13 @@ class AdminUserEdit extends React.Component {
               <div className="col-6">
                 <strong>Cell Provider:</strong>
               </div>
-              <Editable className="col-6" edit={edit} name="cellProvider" displayValue={cellProvidersMap[cellProvider]} value={cellProvider} type="select" options={this.buildCellProviderOptions()} onChange={this.inputChange} />
+              <Editable className="col-6" edit={edit} name="cellProvider" displayValue={cellProvidersMap[cellProvider]} value={cellProvider} type="select" options={this.buildOptions(cellProviders, 'name')} onChange={this.inputChange} />
             </div>
             <div className="row mb-3">
               <div className="col-6">
                 <strong>Shirt Size:</strong>
               </div>
-              <Editable className="col-6" edit={edit} name="shirtSize" value={shirtSize} onChange={this.inputChange} />
+              <Editable className="col-6" edit={edit} name="shirtSize" displayValue={shirtSizesMap[shirtSize]} value={shirtSize} type="select" options={this.buildOptions(shirtSizes, 'size')} onChange={this.inputChange} />
             </div>
             <this.FormControls/>
           </div>
@@ -233,13 +258,14 @@ class AdminUserEdit extends React.Component {
   }
 }
 
-function mapStateToProps({ admin: { user }, general: { cellProviders, cellProvidersMap }, user: { roles: loggedInUsersRoles } }) {
-  return { cellProviders, cellProvidersMap, loggedInUsersRoles, user };
+function mapStateToProps({ admin: { user }, general: { cellProviders, cellProvidersMap, shirtSizes, shirtSizesMap }, user: { roles: loggedInUsersRoles } }) {
+  return { cellProviders, cellProvidersMap, loggedInUsersRoles, shirtSizes, shirtSizesMap, user };
 }
 
 export default connect(mapStateToProps, {
   adminGetUserData,
   adminSetUserRole,
+  adminUpdateUser,
   getCellProviders,
   getShirtSizes
 })(AdminUserEdit);
