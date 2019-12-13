@@ -34,7 +34,7 @@ if ($method === 'POST' && (isset($bodyData['name']))) { // add a new session
   // $minHoursReq = $bodyData['minHoursReq'];
   $notes = $bodyData['notes'];
 
-  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `notes`, `holidays`, `min_operator_hours`, `min_operations_hours`, `min_trainer_hours`, `min_trainee_hours`)
+  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `notes`, `holidays`)
           VALUES ('$name', '$startDateString', '$endDateString', '$notes', '$holidays')";
   $result = mysqli_query($conn, $query);
 
