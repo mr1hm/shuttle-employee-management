@@ -20,6 +20,7 @@ class Nav extends React.Component {
     this.authRoutes = {
       super_admin: {
         'Users': '/admin-user-summary',
+        'Lines & Buses': '/admin-routes',
         'Operator Availability': '/admin-operator-availability',
         'Schedule': {
           'Live Field View': '/live-field-status',
@@ -28,6 +29,7 @@ class Nav extends React.Component {
       },
       admin: {
         'Users': '/admin-user-summary',
+        'Lines & Buses': '/admin-routes',
         'Operator Availability': '/admin-operator-availability',
         'Schedule': {
           'Live Field View': '/live-field-status',
