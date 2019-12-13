@@ -15,12 +15,7 @@
 DELETE FROM `user_roles`;
 /*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
 INSERT INTO `user_roles` (`id`, `role_id`, `user_id`, `created_at`, `granted_by`) VALUES
-  (1, 1, 7, '2019-12-02 21:08:20', 7),
-  (2, 2, 7, '2019-12-03 00:07:35', 7),
-  (3, 4, 14, '2019-12-05 23:23:19', 7),
-  (4, 4, 13, '2019-12-07 18:23:23', 7),
-  (5, 2, 49, '2019-12-11 18:48:57', 7),
-  (6, 4, 50, '2019-12-11 18:49:32', 7);
+  (1, 1, 1, '2019-12-02 21:08:20', 1)
 /*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
