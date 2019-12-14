@@ -1,7 +1,7 @@
 import React from 'react';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWindowClose, faBan, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faBan, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 export default class EditBusModal extends React.Component {
   constructor(props) {
@@ -46,7 +46,6 @@ export default class EditBusModal extends React.Component {
     fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(busInfo => {
-        console.log(busInfo);
         this.setState({
           editBus: busInfo
         }, this.props.handleEditBusClicked);
@@ -82,20 +81,16 @@ export default class EditBusModal extends React.Component {
       let newHourInt = Math.round(parseInt(newHourStr) + amountOfHours);
       let newHourIntStr = newHourInt + '';
       let splitNewHourStr = newHourIntStr.split('');
-      // console.log('splitNewHourStr', splitNewHourStr);
       if (splitNewHourStr[1]) {
-        let addHourToArr = startTimeArr.splice(0, 0, splitNewHourStr[0], splitNewHourStr[1]);
+        startTimeArr.splice(0, 0, splitNewHourStr[0], splitNewHourStr[1]);
       }
-      let addHourToArr = startTimeArr.splice(0, 0, splitNewHourStr[0]);
-      console.log('startTimeArr', startTimeArr);
+      startTimeArr.splice(0, 0, splitNewHourStr[0]);
       if (startTimeArr.length === 3) {
         startTimeArr.unshift(0);
       } else if (startTimeArr.length === 5) {
         startTimeArr.shift();
       }
       endTime = startTimeArr.join('');
-      console.log('endTime', endTime);
-      console.log(endTime);
       return endTime;
     } else if (startTimeLength === 4 && editBus.start_time[0] !== '0') {
       totalRoundTime = rounds * roundDuration;
@@ -104,10 +99,8 @@ export default class EditBusModal extends React.Component {
       let hour = startTimeArr.splice(0, 2);
       let newHour = hour.join('');
       let newHour2 = parseInt(newHour) + amountOfHours;
-      let joinHour = startTimeArr.splice(0, 0, newHour2);
-      // console.log(startTimeArr);
+      startTimeArr.splice(0, 0, newHour2);
       endTime = startTimeArr.join('');
-      // console.log(endTime);
       return endTime;
     }
   }
