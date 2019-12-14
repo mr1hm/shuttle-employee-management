@@ -5,7 +5,7 @@ export default class LiveFieldStatusTable extends React.Component {
     super(props);
     this.state = {
       activeBuses: null
-    }
+    };
   }
 
   render() {
