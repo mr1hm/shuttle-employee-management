@@ -37,9 +37,9 @@ class ShiftsDetails extends React.Component {
       .catch(error => { console.error(error); });
   }
   getShiftDetails() {
-    const { start_time, end_time, user_id } = this.state.shiftOverview;
+    const { start_time: startTime, end_time: endTime, user_id: userId } = this.state.shiftOverview;
     const { date } = this.props;
-    const response = fetch(`/api/shifts-details.php?unixdate=${date}&start_time=${start_time}&end_time=${end_time}&user_id=${user_id}`);
+    const response = fetch(`/api/shifts-details.php?unixdate=${date}&start_time=${startTime}&end_time=${endTime}&user_id=${userId}`);
     response
       .then(res => res.json())
       .then(json => this.setState({ shiftDetails: json }))
@@ -100,12 +100,12 @@ class ShiftsDetails extends React.Component {
           </div>
         </div>);
     }
-    const { start_time, end_time, date } = this.state.shiftOverview;
+    const { start_time: startTime, end_time: endTime, date } = this.state.shiftOverview;
     const dateObj = getUTCYearMonthDateDay(date);
     const timeDisplay = (
       <>
         <div>
-          {`${convertMilitaryTime(start_time)} - ${convertMilitaryTime(end_time)}`}
+          {`${convertMilitaryTime(startTime)} - ${convertMilitaryTime(endTime)}`}
         </div>
         <div>
           {`${dateObj.dayName}, ${dateObj.monthName} ${dateObj.date}, ${dateObj.year}`}
