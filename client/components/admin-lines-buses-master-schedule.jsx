@@ -96,15 +96,15 @@ export default class MasterSchedule extends React.Component {
     // condense each shift by start time, end time, userID
     const shifts = [];
     for (let i = 0; i < roundInfoToday.length; i++) {
-      const { line_name, bus_number, vehicle_id, shifts: rounds } = roundInfoToday[i];
+      const { line_name: lineName, bus_number: busNumber, vehicle_id: vehicleId, shifts: rounds } = roundInfoToday[i];
 
       for (let j = 0, h = 0; j < rounds.length; j++) {
         if (j === rounds.length - 1) {
           const { start, userID, name, role } = rounds[h];
           shifts.push({
-            line_name,
-            bus_number,
-            vehicle_id,
+            lineName,
+            busNumber,
+            vehicleId,
             start: convertMilitaryTime(start),
             userID,
             name,
@@ -114,9 +114,9 @@ export default class MasterSchedule extends React.Component {
         } else if (rounds[j].userID !== rounds[h].userID) {
           const { start, userID, name, role } = rounds[h];
           shifts.push({
-            line_name,
-            bus_number,
-            vehicle_id,
+            lineName,
+            busNumber,
+            vehicleId,
             start: convertMilitaryTime(start),
             userID,
             name,
