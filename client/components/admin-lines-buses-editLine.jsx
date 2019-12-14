@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle, faCaretUp, faBus, faCaretDown, faWindowClose, faEdit, faTrash, faBan, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faCaretUp, faCaretDown, faEdit, faTrash, faBan, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 export default class EditLine extends React.Component {
   constructor(props) {
@@ -60,7 +60,6 @@ export default class EditLine extends React.Component {
     fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(lineInfo => {
-        console.log(line.session_id);
         this.setState({
           editLineSent: !this.state.editLineSent
         }, () => {
