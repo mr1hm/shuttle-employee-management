@@ -30,7 +30,7 @@ export default class Operations extends React.Component {
           </div>
           <div className="col d-flex align-items-end">
             <br />
-            <button onClick={} className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
+            <button className="btn btn-outline-dark w-100 liveFieldStatusBtn">Live Field View</button>
           </div>
           <div className="col d-flex align-items-end">
             <br />
