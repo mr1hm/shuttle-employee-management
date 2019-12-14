@@ -1,15 +1,8 @@
 import React from 'react';
-import Nav from './topmenu/range-nav-bar';
-import RouteBusDisplay from './route-bus-display';
-import BusesTable from './admin-lines-buses-busesTable';
-import AddBus from './admin-lines-buses-addBus';
 import Sessions from './admin-lines-buses-sessions';
-import GapsModal from './admin-lines-buses-viewGaps';
 import Lines from './admin-lines-buses-lines';
 import CreateSession from './admin-lines-buses-createSession';
 import SessionInfo from './admin-lines-buses-sessionInfo';
-import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
-import MasterSchedule from './admin-lines-buses-master-schedule';
 import { Link } from 'react-router-dom';
 import './linesBusesStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -137,7 +130,6 @@ class AdminRoutes extends React.Component {
     fetch('/api/admin-lines-buses.php', init)
       .then(response => response.json())
       .then(sessionLines => {
-        console.log(sessionLines);
         this.setState({
           copiedSession: sessionLines
         });
@@ -147,11 +139,9 @@ class AdminRoutes extends React.Component {
 
   handlePasteSession(e) {
     let copiedSessionArr = this.state.copiedSession.slice();
-    console.log(copiedSessionArr);
     copiedSessionArr.forEach(line => {
       line.sessionID = this.state.selectedSessionID;
     });
-    console.log(copiedSessionArr);
     const body = { copiedSessionArr, paste: 1 };
     const init = {
       method: 'POST',
@@ -185,10 +175,12 @@ class AdminRoutes extends React.Component {
   }
 
   scrollToNewLine() {
-    this.ref.current.scrollIntoView({
-      behavior: 'auto',
-      block: 'start'
-    });
+    if (this.ref.current) {
+      this.ref.current.scrollIntoView({
+        behavior: 'auto',
+        block: 'start'
+      });
+    }
   }
 
   resetNewLineState() {
@@ -263,7 +255,6 @@ class AdminRoutes extends React.Component {
           }
         }));
       } else if (sessionFind) {
-        console.log('session found ', sessionFind);
         this.setState(prevState => ({
           newLine: {
             ...prevState.newLine,
@@ -273,7 +264,6 @@ class AdminRoutes extends React.Component {
       }
     });
     this.checkIfLineExists(value);
-    console.log(value);
   }
 
   handleSpecialDriverClick(e) {
@@ -299,7 +289,6 @@ class AdminRoutes extends React.Component {
     fetch('/api/admin-lines-buses-sessions.php')
       .then(response => response.json())
       .then(sessionsData => {
-        console.log('getallsessions: ', sessionsData);
         this.setState({
           sessions: sessionsData
         });
@@ -344,7 +333,6 @@ class AdminRoutes extends React.Component {
       fetch('/api/admin-lines-buses.php', init)
         .then(response => response.json())
         .then(sessionData => {
-          console.log('linebusinfo: ', sessionData);
           this.setState({
             linesBusesInfo: sessionData
           });
