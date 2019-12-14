@@ -149,7 +149,6 @@ class ShiftsMonth extends React.Component {
     fetch(url, { method: methodToUse })
       .then(response => response.json())
       .then(monthShiftInfo => {
-        console.log('data: ', monthShiftInfo);
         this.setState({
           scheduledHoursForCurrentMonth: monthShiftInfo
         });
