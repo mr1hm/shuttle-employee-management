@@ -1,7 +1,7 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export default class GapsModal extends React.Component {
   constructor(props) {
@@ -22,26 +22,16 @@ export default class GapsModal extends React.Component {
     this.handleAddNewGapClick = this.handleAddNewGapClick.bind(this);
     this.handleNewGapChange = this.handleNewGapChange.bind(this);
     this.addNewGap = this.addNewGap.bind(this);
-    // this.fetchLinesBusesInfo = this.fetchLinesBusesInfo.bind(this);
   }
 
   componentDidUpdate(prevProps) {
-    const { linesBusesInfo, getLinesBusesInfo } = this.props;
+    const { linesBusesInfo } = this.props;
     if (prevProps.linesBusesInfo !== linesBusesInfo) {
       this.setState({
         linesBusesInfo
       });
     }
   }
-
-  // fetchLinesBusesInfo() {
-  //   fetch(`/api/admin-lines-buses.php`)
-  //     .then(response => response.json())
-  //     .then(linesBusesInfo => {
-  //       this.setState({ linesBusesInfo });
-  //     })
-  //     .catch(error => console.error(error));
-  // }
 
   addNewGap(newGap, busID) {
     const { currentSession, selectedSessionID } = this.props;
@@ -50,7 +40,6 @@ export default class GapsModal extends React.Component {
     fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(gapThatWasAdded => {
-        console.log(gapThatWasAdded);
         this.setState({ gapThatWasAdded }, this.handleAddNewGapClick);
         if (currentSession === 'All Sessions') {
           this.props.getLinesBusesInfo();
@@ -68,7 +57,6 @@ export default class GapsModal extends React.Component {
     fetch(`/api/admin-lines-buses.php`, init)
       .then(response => response.json())
       .then(deletedGapID => {
-        console.log(deletedGapID);
         this.setState({ deletedGapID }, () => {
           if (currentSession === 'All Sessions') {
             this.props.getLinesBusesInfo();
