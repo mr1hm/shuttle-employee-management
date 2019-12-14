@@ -21,7 +21,6 @@ export default class SessionInfo extends React.Component {
     fetch(`/api/admin-lines-buses-sessions.php`, init)
       .then(response => response.json())
       .then(sessionInfo => {
-        console.log('getSessionInfo: ', sessionInfo);
         this.setState({ sessionInfo });
       })
       .catch(error => console.error(error));
@@ -40,7 +39,6 @@ export default class SessionInfo extends React.Component {
     let minOperationsHours = null;
     let minTrainerHours = null;
     let minTraineeHours = null;
-    let sessionID = null;
     if (this.props.currentSession === 'All Sessions') return <span>Please select a session to see details</span>;
     if (sessionInfo.length === 0) return <span>There are no lines and buses</span>;
     sessionInfo.forEach(line => {
