@@ -3,13 +3,9 @@ import { Link } from 'react-router-dom';
 import ShiftDisplayComponent from './shift-display-component';
 import {
   getUTCYearMonthDateDay,
-  convertMilitaryTimeStringToMilitaryTimeFloat,
   getZeroPaddedNumber,
-  convertUnixDateDay,
-  convertUnixDateNumber,
   getWorkingHours }
   from '../../../lib/time-functions';
-import { timingSafeEqual } from 'crypto';
 
 class ShiftsWeekDay extends React.Component {
   getDateStringFromTimestamp(timestamp) { // The convertUnixMonthDay(time) function from shifts-day.jsx could be used here 09/17/2019

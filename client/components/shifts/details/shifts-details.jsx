@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { convertMilitaryTime, createDateObject, getUTCYearMonthDateDay } from '../../../lib/time-functions';
+import { convertMilitaryTime, getUTCYearMonthDateDay } from '../../../lib/time-functions';
 import TopMenuHamburger from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
 import PostModal from './post-modal';

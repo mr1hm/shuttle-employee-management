@@ -31,11 +31,11 @@ if ($method === 'POST' && (isset($bodyData['name']))) { // add a new session
   $startDateString = $bodyData['startDateString'];
   $endDateString = $bodyData['endDateString'];
   $holidays = $bodyData['holidays'];
-  $minHoursReq = $bodyData['minHoursReq'];
+  // $minHoursReq = $bodyData['minHoursReq'];
   $notes = $bodyData['notes'];
 
-  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `notes`, `holidays`, `minHoursReq`)
-          VALUES ('$name', '$startDateString', '$endDateString', '$notes', '$holidays', '$minHoursReq')";
+  $query = "INSERT INTO `session` (`name`, `startDateString`, `endDateString`, `notes`, `holidays`)
+          VALUES ('$name', '$startDateString', '$endDateString', '$notes', '$holidays')";
   $result = mysqli_query($conn, $query);
 
   if (!$result) {
@@ -292,7 +292,10 @@ if ($method === 'POST' && (isset($bodyData['sessionInfo']))) {
               s.`holidays` AS sessionHolidays,
               s.`startDateString` AS sessionStart,
               s.`endDateString` AS sessionEnd,
-              s.`minHoursReq` AS minHoursReq,
+              s.`min_operator_hours`,
+              s.`min_operations_hours`,
+              s.`min_trainer_hours`,
+              s.`min_trainee_hours`,
               s.`id` AS sessionID,
               IF (rt.`specialDriver` = 1, 'True', 'False') AS specialDriver
               FROM `route` AS rt
@@ -322,6 +325,10 @@ if ($method === 'POST' && (isset($bodyData['sessionInfo']))) {
       $sessionInfo['sessionID'] = $row['sessionID'];
       $sessionInfo['lineName'] = $row['line_name'];
       $sessionInfo['routeID'] = $row['routeID'];
+      $sessionInfo['min_operator_hours'] = $row['min_operator_hours'];
+      $sessionInfo['min_operations_hours'] = $row['min_operations_hours'];
+      $sessionInfo['min_trainer_hours'] = $row['min_trainer_hours'];
+      $sessionInfo['min_trainee_hours'] = $row['min_trainee_hours'];
       if ($row['busID'] !== NULL) {
         $buses[] = $row['busID'];
       } else {
