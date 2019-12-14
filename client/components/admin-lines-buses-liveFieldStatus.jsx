@@ -85,7 +85,6 @@ export default class LiveFieldStatus extends React.Component {
       const compareSessionStartDate = splitSessionStartDate.join('');
       const splitSessionEndDate = session.endDateString.split('-');
       const compareSessionEndDate = splitSessionEndDate.join('');
-      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate);
       const compareStartDates = parseInt(currentDateTotal) > parseInt(compareSessionStartDate);
       const compareEndDates = parseInt(currentDateTotal) < parseInt(compareSessionEndDate);
 
@@ -183,8 +182,6 @@ export default class LiveFieldStatus extends React.Component {
   render() {
     const { currentSession, allShifts } = this.state;
     if (!currentSession) return <div>LOADING</div>;
-    console.log('current session:', currentSession);
-    console.log('all shifts:', allShifts);
     return (
       <>
       <div className="container-fluid">
@@ -245,7 +242,6 @@ export default class LiveFieldStatus extends React.Component {
                 </thead>
                 <tbody>
                   {allShifts.map((shift, index) => {
-                    console.log(shift);
                     return (
                       <tr key={shift.prevShift.busID + index}>
                         <td className="liveFieldStatusLineName">{shift.currentShift.lineName}</td>
