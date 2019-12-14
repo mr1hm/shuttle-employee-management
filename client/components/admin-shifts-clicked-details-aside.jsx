@@ -15,7 +15,7 @@ class AdminClickedShiftDetailsAside extends React.Component {
   onRoundCheckboxChange(e) {
     let roundIds = this.state.roundIdsChecked;
     let roundTimes = this.state.roundTimesChecked;
-    let rounds = this.state.rounds;
+
     if (e.target.checked) {
       roundIds.push(e.target.id);
       roundTimes.push(e.target.value);
@@ -28,7 +28,6 @@ class AdminClickedShiftDetailsAside extends React.Component {
       roundIdsChecked: roundIds,
       roundTimesChecked: roundTimes
     });
-    console.log('roundIdsChecked: ', roundIds, 'roundTimesChecked: ', roundTimes);
   }
   handleClickUnassignSubmit(e) {
     e.preventDefault();
@@ -69,10 +68,7 @@ class AdminClickedShiftDetailsAside extends React.Component {
     const lastName = this.props.userName.last;
     const firstName = this.props.userName.first;
     const displayName = lastName + ', ' + firstName;
-    let shiftStatus = 'Unscheduled';
-    if (this.props.shiftType === 'active') {
-      shiftStatus = 'Scheduled';
-    }
+
     return (
       <div className="card rounded-0">
         <div className="card-header btn btn-light dropdown-toggle d-flex justify-content-center align-items-center border-0 px-0 rounded-0" type="button" data-toggle="collapse" data-target={'#round' + this.props.rounds[0].id} aria-expanded="false" aria-controls="collapseExample">

@@ -307,7 +307,6 @@ class AdminOperatorAvailability extends React.Component {
   }
 
   showIndivOperatorDetails() {
-    console.log(this.state.individualOperatorDetails);
     this.setState({
       availDetailsDisplay: true
     });

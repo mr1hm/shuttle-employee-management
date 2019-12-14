@@ -22,7 +22,6 @@ class MultipleSelectedShiftsSwap extends React.Component {
     this.setState({
       shifts: shifts
     });
-    console.log('My shifts', this.props.shifts);
   }
 
   removeShift() {
