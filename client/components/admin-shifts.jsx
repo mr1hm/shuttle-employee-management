@@ -6,7 +6,7 @@ import AdminClickedShiftDetailsAside from './admin-shifts-clicked-details-aside'
 import AdminShiftsCombinedRounds from './admin-shifts-combined-rounds';
 import AdminAvailableOperator from './admin-available-operator';
 import AdminUnavailableOperator from './admin-unavailable-operator';
-import { getZeroPaddedNumber, getDateString, returnWeekInfoArray } from '../lib/time-functions';
+import { getZeroPaddedNumber, returnWeekInfoArray } from '../lib/time-functions';
 import './admin-shifts-display.css';
 import AdminConfirmModal from './admin-confirm-modal';
 class AdminShiftsDay extends React.Component {
