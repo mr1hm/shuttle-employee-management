@@ -46,7 +46,6 @@ export default class MasterSchedule extends React.Component {
       const compareSessionStartDate = splitSessionStartDate.join('');
       const splitSessionEndDate = session.endDateString.split('-');
       const compareSessionEndDate = splitSessionEndDate.join('');
-      console.log(`compare dates`, currentDateTotal, compareSessionStartDate, compareSessionEndDate);
       const compareStartDates = parseInt(currentDateTotal) > parseInt(compareSessionStartDate);
       const compareEndDates = parseInt(currentDateTotal) < parseInt(compareSessionEndDate);
 
@@ -67,9 +66,7 @@ export default class MasterSchedule extends React.Component {
     reformatValue[2] = day;
     reformatValue.splice(1, 0, '-');
     reformatValue.splice(3, 0, '-');
-    console.log(reformatValue);
     let formattedDate = reformatValue.join('');
-    console.log(formattedDate);
     this.setState({ [name]: formattedDate }, this.getDataOnSelectedDate);
   }
 
@@ -92,11 +89,6 @@ export default class MasterSchedule extends React.Component {
     this.getCurrentSession();
     const { roundInfoToday } = this.state;
     const d = new Date();
-    let hh = new Date().getHours();
-    let mm = new Date().getMinutes();
-    let time = hh + '' + mm;
-    let currentTime = parseInt(time);
-    console.log(currentTime);
 
     // Loop through roundInfoToday
     // For each object in roundInfoToday store the line name, and Vehicle ID
@@ -136,7 +128,6 @@ export default class MasterSchedule extends React.Component {
       }
     }
     let localTime = d.toLocaleTimeString();
-    console.log('ALL SHIFTS: ', shifts);
     this.setState({ allShifts: shifts, currentTime: localTime });
   }
 
@@ -162,7 +153,6 @@ export default class MasterSchedule extends React.Component {
         if (day.length < 2) {
           day = '0' + day;
         }
-        console.log('day', day);
         dateSelection.push(`${mm}/${day}/${yyyy}`);
       } else {
         parseInt(day);
@@ -170,7 +160,6 @@ export default class MasterSchedule extends React.Component {
         day += '';
         dateSelection.push(`${mm}/${day}/${yyyy}`);
       }
-      console.log(dateSelection);
     }
 
     switch (currentDayOfTheWeek) {
@@ -235,7 +224,7 @@ export default class MasterSchedule extends React.Component {
   }
 
   render() {
-    const { roundInfoToday, currentSession, allShifts, dateSelection } = this.state;
+    const { currentSession, allShifts, dateSelection } = this.state;
     if (!currentSession) {
       return <div>LOADING...</div>;
     }
