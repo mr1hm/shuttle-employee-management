@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `round` (
   `user_id` int(9) NOT NULL,
   `session_id` int(9) NOT NULL,
   `bus_info_id` int(6) NOT NULL,
-  `date` bigint(20) NOT NULL,
+  `date` date NOT NULL,
   `start_time` smallint(4) NOT NULL,
   `end_time` smallint(4) NOT NULL,
   `status` enum('scheduled','posted','traded','swapped','unscheduled') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'unscheduled',
