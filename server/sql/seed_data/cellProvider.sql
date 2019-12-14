@@ -15,7 +15,7 @@
 DELETE FROM `cellProvider`;
 /*!40000 ALTER TABLE `cellProvider` DISABLE KEYS */;
 INSERT INTO `cellProvider` (`id`, `cell_provider`, `cell_domain`) VALUES
-	(1, '  ATT', 'txt.att.net'),
+	(1, 'ATT', 'txt.att.net'),
 	(2, 'Boost Mobile ', 'myboostmobile.com'),
 	(3, 'Cricket Wireless', 'mms.cricketwireless.net'),
 	(4, 'Project Fi', 'msg.fi.google.com'),
