@@ -75,11 +75,7 @@ export default class Lines extends React.Component {
   }
 
   deleteLine(lineID, sessionID) {
-    let busIDArr = [];
-    let busIDs = this.props.line.activeBuses.forEach(buses => {
-      busIDArr.push(buses.busID);
-    });
-    console.log(busIDArr);
+    const busIDArr = this.props.line.activeBuses.map(bus => bus.busID);
     const body = {
       routeID: lineID,
       buses: busIDArr
@@ -101,7 +97,6 @@ export default class Lines extends React.Component {
         }
       })
       .catch(error => console.error(error));
-    console.log('LINE DELETED');
   }
 
   render() {
