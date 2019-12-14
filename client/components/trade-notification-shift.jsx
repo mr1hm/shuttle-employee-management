@@ -11,17 +11,17 @@ class NotificationShift extends React.Component {
   removeShift(id) {
     this.props.removeShift(id);
   }
-  giveShifttoSelectedDriver(round_id, target_id) {
-    this.props.giveShifttoSelectedDriver(round_id, target_id);
+  giveShifttoSelectedDriver(roundId, targetId) {
+    this.props.giveShifttoSelectedDriver(roundId, targetId);
   }
   renderOperations() {
-    const { round_id, target_user_id } = this.props;
+    const { round_id: roundId, target_user_id: targetUserId } = this.props;
     const today = new Date();
     const dateString = `${today.getFullYear()}-${getZeroPaddedNumber(today.getMonth() + 1)}-${getZeroPaddedNumber(today.getDate())}`;
     if (this.props.type === 'trade') {
       return (
         <button
-          onClick={() => this.props.giveShifttoSelectedDriver(round_id, target_user_id)}
+          onClick={() => this.props.giveShifttoSelectedDriver(roundId, targetUserId)}
           type="button"
           className="btn btn-success w-75">
           Take Shift
@@ -33,7 +33,7 @@ class NotificationShift extends React.Component {
         <Link to={{
           pathname: '/shifts/month/shifts-month/' + dateString,
           state: {
-            swapFlag: round_id
+            swapFlag: roundId
           }
         }}
         className="btn btn-dark w-75">
@@ -43,23 +43,23 @@ class NotificationShift extends React.Component {
     }
   }
   render() {
-    const { shift_date, line_name, start_time, end_time, round_id, busNumber } = this.props;
+    const { shift_date: shiftDate, line_name: lineName, start_time: startTime, end_time: endTime, round_id: roundId, busNumber } = this.props;
     const operation = this.renderOperations();
     return (
       <div className="row mb-3 text-center">
         <div className="col-2">
-          {shift_date}
+          {shiftDate}
         </div>
         <div className="col-2">
-          <RouteBusDisplay route={line_name} bus={busNumber} />
+          <RouteBusDisplay route={lineName} bus={busNumber} />
         </div>
-        <div className="col-2">{convertMilitaryTime(start_time) + '-' + convertMilitaryTime(end_time)}</div>
-        <div className="col-2">{calcShiftLenghtInHourMinFormat(start_time, end_time)}</div>
+        <div className="col-2">{convertMilitaryTime(startTime) + '-' + convertMilitaryTime(endTime)}</div>
+        <div className="col-2">{calcShiftLenghtInHourMinFormat(startTime, endTime)}</div>
         <div className="col-2">
           {operation}
         </div>
         <div className="col-2">
-          <button onClick={() => this.removeShift(round_id)} type="button" className="btn btn-danger">Remove Shift</button>
+          <button onClick={() => this.removeShift(roundId)} type="button" className="btn btn-danger">Remove Shift</button>
         </div>
       </div>
     );
