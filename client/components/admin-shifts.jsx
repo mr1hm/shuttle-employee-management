@@ -9,6 +9,7 @@ import AdminUnavailableOperator from './admin-unavailable-operator';
 import { getZeroPaddedNumber, returnWeekInfoArray } from '../lib/time-functions';
 import './admin-shifts-display.css';
 import AdminConfirmModal from './admin-confirm-modal';
+
 class AdminShiftsDay extends React.Component {
   constructor(props) {
     super(props);
@@ -53,7 +54,6 @@ class AdminShiftsDay extends React.Component {
     fetch(`/api/admin-day-shifts.php?date=${dateString}`)
       .then(response => response.json())
       .then(data => {
-        console.log('todays data: ', data);
         this.setState({
           groupedShifts: data,
           week: returnWeekInfoArray(dateString),
@@ -112,8 +112,6 @@ class AdminShiftsDay extends React.Component {
     });
   }
   handleClickAssignShift(name, id) {
-    console.log('rounds selected: ', this.state.roundsSelected);
-    console.log('shifts selected: ', this.state.shiftsSelected);
     this.setState({
       operatorSelected: {
         name: name,
@@ -191,9 +189,6 @@ class AdminShiftsDay extends React.Component {
   // sets which rounds(an array of round ids) and shifts(an array of shift times)
   // to unassign before confirming with modal
   handleClickUnassignShift(rounds, shifts) {
-    console.log('rounds: ', rounds);
-    console.log('shifts: ', shifts);
-    console.log('shiftsSelected: ', this.state.shiftsSelected);
     this.setState({
       selectingUnassign: true,
       roundsToUnassign: rounds,
