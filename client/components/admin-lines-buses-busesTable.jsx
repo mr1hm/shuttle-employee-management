@@ -1,11 +1,10 @@
 import React from 'react';
 import RouteBusDisplay from './route-bus-display';
 import EditBusModal from './admin-lines-buses-editBus';
-import AdminRoutes from './admin-lines-buses';
 import GapsModal from './admin-lines-buses-viewGaps';
 import DeleteConfirmationModal from './admin-lines-buses-deleteConfirmationModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faPaperPlane, faDivide } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export default class BusesTable extends React.Component {
   constructor(props) {
@@ -67,7 +66,6 @@ export default class BusesTable extends React.Component {
             this.props.getLinesBusesInfo();
           }
         });
-        console.log('deleted', busDeleted);
       })
       .catch(error => console.error(error));
   }
