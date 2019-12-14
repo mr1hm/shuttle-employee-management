@@ -1,6 +1,4 @@
 import React from 'react';
-import Lines from './admin-lines-buses-lines';
-import { Link } from 'react-router-dom';
 
 export default class DeleteConfirmationModal extends React.Component {
   constructor(props) {
@@ -31,16 +29,13 @@ export default class DeleteConfirmationModal extends React.Component {
     let routeIDArr = [];
     let busIDArr = [];
     if (sessionInfo) {
-      console.log('sessionInfo is ready');
       sessionInfo.forEach(session => {
         routeIDArr.push(session.routeID);
         for (let i = 0; i < session.activeBuses.length; ++i) {
           busIDArr.push(session.activeBuses[i]);
-          console.log(busIDArr);
         }
       });
     }
-    console.log('busIDs', busIDArr);
     this.setState({ routeIDArr, busIDArr });
   }
 
@@ -50,7 +45,6 @@ export default class DeleteConfirmationModal extends React.Component {
     fetch(`/api/admin-lines-buses-sessions.php`, init)
       .then(response => response.json())
       .then(sessionInfo => {
-        console.log('getSessionInfo: ', sessionInfo);
         this.setState({ sessionInfo }, () => {
           let routeIDArr = [];
           let busIDArr = [];
@@ -59,7 +53,6 @@ export default class DeleteConfirmationModal extends React.Component {
             session.activeBuses.forEach(busID => busIDArr.push(busID));
           });
           this.setState({ routeIDArr, busIDArr });
-          console.log(busIDArr);
         });
       })
       .catch(error => console.error(error));
@@ -67,8 +60,6 @@ export default class DeleteConfirmationModal extends React.Component {
 
   render() {
     const { line, busInfo, selectedSessionID, deleteStatus } = this.props;
-    const { routeIDArr, busIDArr } = this.state;
-    // if (routeIDArr.length === 0) return <div>LOADING...</div>;
     if (deleteStatus === 'session') {
       return (
         <div className="container deleteConfirmationModal">
@@ -79,13 +70,6 @@ export default class DeleteConfirmationModal extends React.Component {
           </div>
           <div className="row">
             <div className="col d-flex justify-content-center">
-              {/* <Link to={{
-                pathname: `/admin-routes/`
-              }}
-              onClick={() => this.props.deleteSession(selectedSessionID, this.state.routeIDArr)}
-              className="btn btn-success w-100 deleteConfirmationModalConfirmBtn">
-                CONFIRM
-              </Link> */}
               <button className="btn btn-success w-100 deleteConfirmationModalConfirmBtn" onClick={() => this.props.deleteSession(selectedSessionID, this.state.routeIDArr, this.state.busIDArr)}>CONFIRM</button>
             </div>
             <div className="col d-flex justify-content-center">
