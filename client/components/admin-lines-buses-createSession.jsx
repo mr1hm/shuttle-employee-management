@@ -57,7 +57,6 @@ export default class CreateSession extends React.Component {
   }
 
   handleNewSessionHolidays(dates) {
-    console.log(dates);
     let holidays = '';
     let holidaysArr = [];
     dates.forEach(d => {
@@ -66,7 +65,6 @@ export default class CreateSession extends React.Component {
       let yyyy = d.getFullYear();
       let dateToday = yyyy + '-' + mm + '-' + dd;
       holidaysArr.push(dateToday);
-      console.log(holidaysArr);
     });
     holidaysArr.forEach((date, index) => {
       if (index !== holidaysArr.length - 1) {
