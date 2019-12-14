@@ -23,7 +23,7 @@ class SingleShift extends React.Component {
   }
 
   render() {
-    const { shifts, view } = this.props;
+    const { shifts } = this.props;
     let shiftHours = calcShiftLenghtInHourMinFormat(shifts.start_time, shifts.end_time);
     let statusIndicator = (parseInt(shifts['COUNT(DISTINCT rd.`status`)']) > 1)
       ? 'Scheduled/Posted'
