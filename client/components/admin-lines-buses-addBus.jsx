@@ -1,5 +1,4 @@
 import React from 'react';
-import { parse } from 'url';
 
 export default class AddBus extends React.Component {
   constructor(props) {
@@ -64,7 +63,6 @@ export default class AddBus extends React.Component {
             this.props.getLinesBusesInfo({ session_id: sessionID });
           }
         });
-        console.log('BUS ADDED', newBusInfo);
       })
       .catch(error => console.error(error));
     this.props.handleAddBusButtonClick();
@@ -154,10 +152,8 @@ export default class AddBus extends React.Component {
     let endTime = this.state.newBus.end_time;
     let gapTime = this.state.newBus.gap.slice();
     const gapTimeArr = gapTime.split(',');
-    console.log('gaptime: ', gapTimeArr);
     let gapDuration = this.state.newBus.gapDuration.slice();
     const gapDurationArr = gapDuration.split(',');
-    console.log('gapduration: ', gapDurationArr);
     const date = new Date();
     const roundTimes = [];
     date.setHours(parseInt(startTime[0] + startTime[1]));
@@ -181,7 +177,6 @@ export default class AddBus extends React.Component {
       }
       roundTimes.push({ start_time: startTime, end_time: endTime });
     }
-    console.log('round times: ', roundTimes);
     return roundTimes;
   }
 
