@@ -15,8 +15,21 @@ UC Irvine Verminlingua (Anteater) Express
 - Tarun Padath
 - Dane Maison
 
+## Languages Utilized
+
+- React
+- JavaScript
+- PHP
+- MySQL
+
 ## Features
 
 - User Authentication
-- Create, Edit and Delete Routes(Lines), Buses, Sessions(Quarters)
-- Auto-calculation of bus end times
+- Manipulation of Routes(Lines), Buses and Sessions(Quarters)
+- Desktop and Mobile Responsive
+
+## App Details
+
+- Simple and clean user interface for easy understanding and usage
+- Create, edit and delete Routes, Buses and Sessions
+- Copy and paste existing sessions into new sessions for a quick and easy set up of a new session
