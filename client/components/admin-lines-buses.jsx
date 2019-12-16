@@ -188,10 +188,12 @@ class AdminRoutes extends React.Component {
   }
 
   scrollToNewLine() {
-    this.ref.current.scrollIntoView({
-      behavior: 'auto',
-      block: 'start'
-    });
+    if (this.ref.current) {
+      this.ref.current.scrollIntoView({
+        behavior: 'auto',
+        block: 'start'
+      });
+    }
   }
 
   resetNewLineState() {
