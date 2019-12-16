@@ -1,0 +1,41 @@
+GET http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+
+###
+
+GET http://localhost/519_anteater_express/server/public/api/admin-lines-buses-sessions.php
+#get sessions
+
+###
+
+POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+content-type: application/json
+
+{
+  "rounds": "1"
+}
+
+###
+POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+content-type: application/json
+
+{
+  "date": "2019-12-07"
+}
+
+###
+
+POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses.php
+content-type: application/json
+
+{
+  "masterSchedule": "2019-12-07"
+}
+
+###
+
+POST http://localhost/519_anteater_express/server/public/api/admin-lines-buses-sessions.php
+content-type: application/json
+
+{
+  "sessionInfo": "8"
+}

@@ -1,30 +1,54 @@
 <?php
-require_once('functions.php');
-set_exception_handler('error_handler');
-require_once('db_connection.php');
 
-if (!empty($_GET['id'])) {
-    $ownerID = intval($_GET['id']);
-} else throw new Exception('need id for query');
+require_once(__DIR__.'/../../lib/startup.php');
+require_once(AUTH);
+require_once(DATES);
+set_tz_la();
 
-if (!empty($_GET['unixstart'])) {
-    $lowerDateRange = intval($_GET['unixstart']);
-} else throw new Exception('need lower limit date range for query');
+$user = getRequestUser();
 
-if (!empty($_GET['unixend'])) {
-    $upperDateRange = intval($_GET['unixend']);
-} else throw new Exception('need upper limit date range for query');
-
-$query = "SELECT * FROM `round` WHERE `driver_id`= {$ownerID} AND (`round_date` >= {$lowerDateRange} AND `round_date` <={$upperDateRange})
-            ORDER BY `round_date` ASC";
-
-$result = mysqli_query($conn, $query);
-if (!$result) {
-    throw new Exception('mysql error ' . mysqli_error($conn));
+if(!$user) {
+  throw new ApiError(null ,401, 'Not Authorized');
 }
+
+$startDate = getFirstDayOfCurrentMonth();
+$endDate = getLastDayOfCurrentMonth();
+
+if (isset($_GET['startDate'])) {
+  $startDate = $_GET['startDate'];
+}
+
+if (!empty($_GET['endDate'])) {
+  $endDate = $_GET['endDate'];
+}
+
+$statement = $mysqli->prepare("SELECT *
+  FROM `round`
+  WHERE `user_id`= ?
+  AND (`date` >= ? AND `date` <= ?)
+  AND (`status` = 'scheduled' OR `status` = 'posted')
+  ORDER BY `date` ASC");
+if ($statement == FALSE){
+  throw new ApiError(null, 500, 'Error preparing query');
+}
+
+if (!$statement->bind_param('iss', $user['userId'], $startDate, $endDate)){
+  throw new ApiError(null, 500, 'Error binding query params');
+}
+
+if (!$statement->execute()){
+  throw new ApiError(null, 500, 'Error executing query');
+}
+
+$result = $statement->get_result();
+if ($result === FALSE) {
+  throw new ApiError(null, 500, 'Error getting month schedule');
+}
+
 $data = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $data[] = $row;
+
+while ($row = $result->fetch_assoc()) {
+  $data[] = $row;
 }
-print(json_encode($data));
-?>
+
+send($data);

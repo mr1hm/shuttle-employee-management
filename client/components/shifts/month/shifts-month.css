@@ -1,86 +1,30 @@
-.calendarContainer{
-    display: flex;
-    justify-content: center; 
-    padding: 1rem;
-    box-sizing: border-box
+.mainCalendarContainer {
+  height: 100vh;
 }
-.calendarBox{
-  display: flex;
-  justify-content: center; 
+.calendarShiftContainer {
+  height: 80%;
 }
-.wrapper {
-    border: 1.5em solid rgba(white, .2);
-    border-radius: 5px;
-    display: grid;
-    grid-template-columns: repeat(7,0fr);
-    grid-gap: 1vh;
-    justify-content: center;
-    padding: 0.5rem
+.calendarShiftContainer a:hover{
+  color: blue;
+  font-weight: normal;
 }
-.wrapper > div {
-    display: flex;
-    height: 14vh;
-    width: 16vh;
-    border: 0.5px solid lightgray;
-    border-radius: 5px;
-    background-color: white;  
-    justify-content: center;
-    align-items: center;
-    color: black;
-}
-.Title{
-  border: 1.5em solid rgba(white, .2);
-  display: grid;
-  grid-template-columns: repeat(7,0fr);
-  justify-content: center;
-}
-.Title > div {
-    display: flex;
-    height: 6vh;
-    width: 15vh;
-    border-radius: 5px;
-    background-color: lightgrey;  
-    justify-content: center;
-    align-items: center;
-    font-size: 5vh;
-    color: black;
+.monthTable {
+  width: 50%;
 }
 .totalHoursColumn{
   flex-direction: column;
   background-color: white;
   padding-top: 0.5rem
 }
-.weekTotalWrapper{
-  display: flex;
-  flex-direction: column
-}
 .weekTotal {
-    font-size: 5vh;
-    display: flex;
-    height: 6vh;
-    width: 20vh;
-    border-radius: 5px;
-    background-color: lightgrey;  
-    justify-content: center;
-    align-items: center;
-    color: black;
+  width: fit-content;
 }
-.totalHoursForWeek{
-  border-radius: 5px;
-  height: 14vh;
-  width: 20vh;
-  border: 0.5px solid lightgrey;
-  margin-bottom: 0.5vh;
-  margin-top: 0.5vh;
-  font-size: 3rem;
-  display: inline-block;
-  line-height: 14vh;
-  text-align: center;
-  flex-wrap: wrap
+.monthDay {
+  height: 30px;
+  width: 30px;
 }
-.totalHoursForWeek div {
-  font-size: 4vh;
-  vertical-align: middle;
+.weekHours {
+  height: 30px;
 }
 .calendarDay {
   font-size: 4vh;

@@ -2,19 +2,41 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './topmenu.css';
 import HamburgerMenu from './hamburger-menu';
+import { getZeroPaddedNumber } from '../../lib/time-functions';
 
-const TopMenuHamburger = ()=> {
+class TopMenuHamburger extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      numberOfShifts: 0
+    };
+  }
+  componentDidUpdate(prevProps) {
+    const prevNumberOfShifts = prevProps.tradeNotification ? prevProps.tradeNotification.newShifts.length : 0;
+    const numberOfShifts = this.props.tradeNotification ? this.props.tradeNotification.newShifts.length : 0;
+    if (numberOfShifts !== prevNumberOfShifts) {
+      this.setState({
+        numberOfShifts: numberOfShifts
+      });
+    }
+  }
+  render() {
+    const today = new Date();
+    const dateString = `${today.getFullYear()}-${getZeroPaddedNumber(today.getMonth() + 1)}-${getZeroPaddedNumber(today.getDate())}`;
     return (
-        <div className="text-dark">
-            <HamburgerMenu>
-                <Link className="d-block text-center" to="/myinfo"><div className="dropdown-item">MyInfo</div></Link>
-                <Link className="d-block text-center" to="/shifts/day/shifts-day"><div className="dropdown-item">Day</div></Link>
-                <Link className="d-block text-center" to="/shifts/week/shifts-week"><div className="dropdown-item">Week</div></Link>
-                <Link className="d-block text-center" to="/shifts/month/shifts-month"><div className="dropdown-item">Month</div></Link>
-                <Link className="d-block text-center" to="/shifts/available"><div className="dropdown-item">Available</div></Link>
-            </HamburgerMenu>
-        </div>
-    )
+      <HamburgerMenu notificationCount={this.props.notificationCount} count={this.state.numberOfShifts}>
+        <Link to={{ pathname: '/trade-notifications', state: { newShiftsAndSelectedDriver: this.props.tradeNotification } }}>Notifications</Link>
+        <Link to="/my-info">My Info</Link>
+        <Link to={`/shifts/day/shifts-day/${dateString}`}>Day</Link>
+        <Link to={`/shifts/week/shifts-week/${dateString}`}>Week</Link>
+        <Link to={`/shifts/month/shifts-month/${dateString}`}>Month</Link>
+        <Link to={`/shifts/available/${dateString}`}>Available</Link>
+      </HamburgerMenu>
+
+    );
+
+  }
+
 }
 
 export default TopMenuHamburger;

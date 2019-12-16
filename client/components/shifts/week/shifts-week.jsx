@@ -1,136 +1,131 @@
 import React from 'react';
 import './shifts-week.css';
-import HoursOfOperation from './hours-of-operation';
+import HoursOfOperationWeek from './hours-of-operation-week';
 import ShiftsWeekDay from './shifts-week-day';
 import TopMenuShift from '../../topmenu/topmenu-shift';
-import {createDateObjFromDateString} from '../../../lib/time-functions';
-
+import WeekListItem from './shifts-week-list-item';
+import {
+  getDateString
+} from '../../../lib/time-functions';
 
 class ShiftsWeek extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      data: null
-    }
+      week: [],
+      data: null,
+      userId: this.props.userId
+    };
   }
-  generateFullWeekOfTimestamps(time) {
-    const convertedDateStart = createDateObjFromDateString(time)
-    const convertedDate = new Date(convertedDateStart);
-    const finalConvertedDate = convertedDate.getUTCDay();
-    const sunday = time - finalConvertedDate * 86400000;
-    const monday = time - (finalConvertedDate -1) * 86400000;
-    const tuesday = time - (finalConvertedDate - 2) * 86400000;
-    const wednesday = time - (finalConvertedDate - 3) * 86400000;
-    const thursday = time - (finalConvertedDate - 4) * 86400000;
-    const friday = time - (finalConvertedDate - 5) * 86400000;
-    const saturday = time - (finalConvertedDate - 6) * 86400000;
-    var daysObject = { };
-    function addDayObject( timestamp ){
-      daysObject[timestamp] = {
-        round_date: timestamp,
+  initializeWeekData() {
+    const dateObj = new Date(this.props.match.params.date);// converts unix time to date/at midnight
+    const dayOffset = dateObj.getUTCDay();
+    dateObj.setUTCDate(dateObj.getUTCDate() - dayOffset);
+    var firstDayOfWeek = null;
+    var lastDayOfWeek = null;
+    const week = {};
+    for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+      let date = getDateString(dateObj);
+      if (dayIndex === 0) {
+        firstDayOfWeek = date;
+      } else if (dayIndex === 6) {
+        lastDayOfWeek = date;
+      }
+      week[date] = {
+        round_date: date,
         shifts: []
+      };
+      dateObj.setUTCDate(dateObj.getUTCDate() + 1);
+    }
+    fetch(`/api/shifts-week.php?startDate=${firstDayOfWeek}&endDate=${lastDayOfWeek}`)
+      .then(response => response.json())
+      .then(data => {
+        let weekWithShifts = this.generateArrayOfFullWeek(week, data);
+
+        this.setState({
+          week: weekWithShifts,
+          data: data
+        });
+      });
+  }
+  generateArrayOfFullWeek(weekObj, shifts) {
+    for (let shiftI = 0; shiftI < shifts.length; shiftI++) {
+      let shift = shifts[shiftI];
+      let shiftDate = shift.date;
+      if (weekObj[shiftDate] !== undefined) {
+        weekObj[shiftDate].shifts.push(shift);
       }
     }
-    const timeArray = [sunday, monday, tuesday, wednesday, thursday, friday, saturday];
-    timeArray.map( round_date => {
-      addDayObject( round_date );
-    })
-    return daysObject;
-  }
-  generateStartOfWeekTimestamp(time) {
-    const convertedDate = createDateObjFromDateString(time);
-    const numericDay = convertedDate.getDay();
-    const startDay = createDateObjFromDateString(time);
-    startDay.setDate(startDay.getDate() - numericDay);
-    const startOfWeek = startDay.getTime();
-    return startOfWeek;
-  }
-  generateEndOfWeekTimestamp(time) {
-    const convertedDate = createDateObjFromDateString(time);
-    const numericDay = convertedDate.getDay();
-    const endDay = createDateObjFromDateString(time);
-    endDay.setDate(endDay.getDate() + 6 - numericDay);
-    const endOfWeek = endDay.getTime();
-    return endOfWeek;
-  }
-  generateArrayOfFullWeek(weekData){
-    if(this.state.data===null){
-      return;
-    }
-    for( let shiftI = 0; shiftI < this.state.data.length; shiftI++){
-      let thisShift = this.state.data[shiftI];
-      let shiftTimestamp = thisShift.round_date;
-      if( weekData[ shiftTimestamp] !== undefined ){
-        weekData[ shiftTimestamp].shifts.push( thisShift );
-      }
-    }
-    let weekDataArray = Object.values(weekData);
+    let weekDataArray = Object.values(weekObj);
     return weekDataArray;
   }
-  getData(url, methodToUse) {
-    fetch(url, { method: methodToUse })
-      .then(response => { return response.json() })
-      .then(weekShiftInfo => {
-        // weekShiftInfo = [{
-        //   "id": "8",
-        //   "startTime": "600",
-        //   "endTime": "1000",
-        //   "routeInfoID": "1",
-        //   "authorID": "2",
-        //   "sessionID": "1",
-        //   "ownerID": "1",
-        //   "round_date": "1563692400000",
-        //   "posted": false
-        // }]
-        this.setState({
-          data: weekShiftInfo
-        })
-      })
+  renderShiftList() {
+    return (
+      <table className='table table-striped text-center'>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Line/#</th>
+            <th>Start-End</th>
+            <th>Rounds</th>
+            <th>Shift Hours</th>
+            <th>Post Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            this.state.week.map((day, index) => {
+              const elements = [];
+              const shifts = day.shifts;
+              for (let shiftIndex = 0; shiftIndex < shifts.length; shiftIndex++) {
+                elements.push(
+                  < WeekListItem
+                    dateString={day.round_date}
+                    key={shifts[shiftIndex].roundID}
+                    shifts={shifts[shiftIndex]}
+                    view={this.props.view}
+                    openRouteDetails={this.props.openRouteDetails}
+                  />
+                );
+              }
+              return elements;
+            })
+          }
+        </tbody>
+      </table>
+    );
   }
-  componentDidMount(){
-    const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.defaultDate);
-    const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.defaultDate);
-    this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
+  componentDidMount() {
+    this.initializeWeekData();
   }
   componentDidUpdate(prevProps) {
-    if(prevProps.match.params.date !== this.props.match.params.date){
-      const startOfTheWeek = this.generateStartOfWeekTimestamp(this.props.match.params.date);
-      const endOfTheWeek = this.generateEndOfWeekTimestamp(this.props.match.params.date);
-      this.getData('/api/shifts-week.php?startDate=' + startOfTheWeek + '&endDate=' + endOfTheWeek + '&id=' + 1, 'GET');
+    if (prevProps.match.params.date !== this.props.match.params.date) {
+      this.initializeWeekData();
     }
   }
   render() {
-    if (this.props.match.params.date === undefined) {
-      var dateToPass = this.props.defaultDate;
-    } else {
-      dateToPass = createDateObjFromDateString( this.props.match.params.date );
-      dateToPass = dateToPass.getTime();
-    }
-    const weekArray = this.generateFullWeekOfTimestamps(dateToPass);
-    const weekDayShiftArray = this.generateArrayOfFullWeek(weekArray);
-    if (!this.state.data){
+    if (!this.state.data) {
       return <div>No Data Available</div>;
     }
-    console.log('shift array:', weekDayShiftArray)
+    const week = this.state.week;
     return (
-        <React.Fragment>
-        <TopMenuShift title="WEEK" page='week' date={dateToPass}/>
-
-        <div className="masterContainerIphone">
-          <div className="viewHoursContainer">
-            <HoursOfOperation />
+      <React.Fragment>
+        <TopMenuShift title="WEEK" page='week' dateString={this.props.match.params.date} />
+        <div className="mainContainerWeek d-flex flex-column">
+          <div className="weeksContainer px-5">
+            <HoursOfOperationWeek />
+            {week.map((dayData, index) => {
+              return (
+                <ShiftsWeekDay key={index} dayData={dayData} shifts={dayData.shifts} />
+              );
+            })}
           </div>
-          <div className="calendarContainerWeekComponent">
-              {weekDayShiftArray.map((dayData, index) => {
-                console.log('daydata: ', dayData);
-                return (
-                  <ShiftsWeekDay key={index} dayData={dayData} shifts={dayData.shifts} defaultDay={this.props.defaultDate} date={dateToPass} />
-                  )
-              })}
+          <div className="weekList">
+            {this.renderShiftList()}
           </div>
         </div>
-
-        </React.Fragment>
+      </React.Fragment>
     );
   }
 }

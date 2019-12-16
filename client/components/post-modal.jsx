@@ -1,9 +1,9 @@
 import React from 'react';
 import './post-modal.css';
 
-class Modal extends React.Component{
+class Modal extends React.Component {
 
-  render(){
+  render() {
 
     return (
       <div className="modalShadow" style={{ display: this.props.open ? 'block' : 'none' }}>

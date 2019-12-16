@@ -1,0 +1,18 @@
+.imageHolder{
+    background-color: lightgray;
+    height: 46vh;
+    width: 52vh;
+}
+
+.photoInput {
+    font-size: 12px;
+}
+
+.profileName{
+    font-size: 20px;
+}
+
+.editInput{
+    border: 2px solid #aaa;
+    border-radius: 4%;
+}

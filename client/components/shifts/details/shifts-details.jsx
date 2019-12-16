@@ -1,211 +1,213 @@
 import React from 'react';
-import './shifts-details.css';
 import { Link } from 'react-router-dom';
-import TopMenuShift from '../../topmenu/topmenu-shift';
-import TopMenuGeneral from '../../topmenu/topmenu-general';
+import { convertMilitaryTime, getUTCYearMonthDateDay } from '../../../lib/time-functions';
+import TopMenuHamburger from '../../topmenu/topmenu-general';
 import RouteBusDisplay from '../../route-bus-display';
-import {createDateObjFromDateString} from '../../../lib/time-functions';
-import {Grid} from '@material-ui/core';
+import PostModal from './post-modal';
+import Round from './round';
+
+import './shifts-details.css';
 
 class ShiftsDetails extends React.Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
+    this.state = {
+      postModalOpen: false,
+      shiftOverview: null,
+      shiftDetails: null,
+      checkedRounds: [],
+      swapFlag: 0
+    };
+    this.passCheckedRoundIds = this.passCheckedRoundIds.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
+    this.selectShift = this.selectShift.bind(this);
+    this.selectAllRounds = this.selectAllRounds.bind(this);
+    this.unselectAllRounds = this.unselectAllRounds.bind(this);
+  }
+  getShifts(query) {
+    const { date, userId } = this.props;
+    const response = fetch(`/api/shifts-day.php?date=${date}&userID=${userId}`);
+    response
+      .then(response => response.json())
+      .then(json => {
+        const shiftOverview = json.filter(shift => shift.roundID === this.props.shiftId);
+        this.setState({ shiftOverview: shiftOverview[0] });
+      })
+      .then(() => { this.getShiftDetails(); })
+      .catch(error => { console.error(error); });
+  }
+  getShiftDetails() {
+    const { start_time: startTime, end_time: endTime, user_id: userId } = this.state.shiftOverview;
+    const { date } = this.props;
+    const response = fetch(`/api/shifts-details.php?unixdate=${date}&start_time=${startTime}&end_time=${endTime}&user_id=${userId}`);
+    response
+      .then(res => res.json())
+      .then(json => this.setState({ shiftDetails: json }))
+      .catch(error => console.error(error));
+  }
+  componentDidMount() {
+    const swapFlag = this.props.location.state ? this.props.location.state.swapFlag : 0;
+    this.getShifts();
+    this.setState({
+      swapFlag: swapFlag
+    });
+  }
+  selectShift(id) {
+    const idInt = parseInt(id);
+    const idBeforeGivenId = JSON.stringify(idInt - 1);
+    const idAfterGivenId = JSON.stringify(idInt + 1);
+    const { checkedRounds } = this.state;
+    if (checkedRounds.includes(id) && checkedRounds.includes(idBeforeGivenId) && checkedRounds.includes(idAfterGivenId)) {
+      this.setState({ checkedRounds: checkedRounds });
+    } else if (checkedRounds.includes(id)) {
+      checkedRounds.splice(checkedRounds.indexOf(id), 1);
+      this.setState({ checkedRounds: checkedRounds });
+    } else if (checkedRounds.length === 0) {
+      checkedRounds.push(id);
+      this.setState({ checkedRounds: checkedRounds });
+    } else if (checkedRounds.includes(idBeforeGivenId) || checkedRounds.includes(idAfterGivenId)) {
+      checkedRounds.push(id);
+      this.setState({ checkedRounds: checkedRounds });
+    } else {
+      // this.setState({ consecutiveModalFlag: 1 });
+      // alert('Must select consecutive shift times');
     }
-    render() {
-        // if (this.props.match.params.date === undefined) {
-        //     var dateToPass = this.props.defaultDate;
-        // } else {
-        //     dateToPass = createDateObjFromDateString( this.props.match.params.date );
-        //     dateToPass = dateToPass.getTime();
-        // }
-        return (
-            <React.Fragment>
-                {/* <TopMenuShift title="DETAILS" page='details' date={dateToPass}/> */}
-                <TopMenuGeneral title="Shifts - DETAILS"/>
-                <div className="details subHeader">
-                    <div className="busRouteIconContainer">
-                        <RouteBusDisplay bus='1' route='H'/>
-                    </div>
-                    <div className="subHeaderInfoContainer">
-                        <div className="shiftTimeSpan">6:30 AM - 7:30 AM</div>
-                        <div className="recurringAndRoundCount">Every Tuesday Recurring | Rounds: 4</div>
-                    </div>
-                </div>
-                <div className="details mainContainer">
-                    <Grid container className="flex-section">
-                        <Grid 
-                            item 
-                            xs={6} 
-                            className={"flex-col-scroll"} 
-                        >
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckT0"></input>
-                                                        <label class="custom-control-label" for="customCheckT0">{""}</label>
-                                                    </div>
-                                                    <th scope="col">Start</th>
-                                                    <th scope="col">End</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckT1"></input>
-                                                        <label class="custom-control-label" for="customCheckT1"></label>
-                                                    </div>
-                                                    </td>
-                                                    <td>6:30 AM</td>
-                                                    <td>6:45 AM</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckT2"></input>
-                                                        <label class="custom-control-label" for="customCheckT2">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>6:45 AM</td>
-                                                    <td>7:00 AM</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckT3"></input>
-                                                        <label class="custom-control-label" for="customCheckT3">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>7:00 AM</td>
-                                                    <td>7:15 AM</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckT4"></input>
-                                                        <label class="custom-control-label" for="customCheckT4">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>7:15 AM</td>
-                                                    <td>7:30 AM</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </Grid>
-                        <Grid 
-                            item 
-                            xs={6} 
-                            className={"flex-col-scroll"} 
-                        >
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD0"></input>
-                                                        <label class="custom-control-label" for="customCheckD0">{""}</label>
-                                                    </div>
-                                                    <th scope="col">Dates</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD1"></input>
-                                                        <label class="custom-control-label" for="customCheckD1"></label>
-                                                    </div>
-                                                    </td>
-                                                    <td>07/23/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD2"></input>
-                                                        <label class="custom-control-label" for="customCheckD2">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>07/30/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD3"></input>
-                                                        <label class="custom-control-label" for="customCheckD3">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>08/06/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD4"></input>
-                                                        <label class="custom-control-label" for="customCheckD4">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>08/13/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD5"></input>
-                                                        <label class="custom-control-label" for="customCheckD5">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>08/20/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD6"></input>
-                                                        <label class="custom-control-label" for="customCheckD6">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>08/27/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD7"></input>
-                                                        <label class="custom-control-label" for="customCheckD7">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>09/03/2019</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="customCheckD8"></input>
-                                                        <label class="custom-control-label" for="customCheckD8">{""}</label>
-                                                    </div>
-                                                    </td>
-                                                    <td>09/10/2019</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </Grid>
-                    </Grid>
-                    <div className="buttonContainer">
-                        <button type="button" class="btn btn-outline-dark btn-block">Post</button>
-                        <button type="button" class="btn btn-outline-dark btn-block">Trade/Swap</button>
-                        <button type="button" class="btn btn-outline-dark btn-block">My Shifts</button>
-                    </div>
-                </div>
-            </React.Fragment>            
-        )
+  }
+  selectAllRounds() {
+    this.setState({ selectAll: true });
+  }
+  unselectAllRounds() {
+    this.setState({ selectAll: false });
+  }
+  passCheckedRoundIds() { // callback method for post/trade/swap
+    const shiftDetails = this.state.shiftDetails.filter(shift => this.state.checkedRounds.includes(shift.roundID));
+    this.props.startSwapTradeTransaction(shiftDetails);
+  }
+  toggleModal(e) {
+    this.setState({ postModalOpen: !this.state.postModalOpen });
+  }
+  render() {
+    if (!this.state.shiftDetails) {
+      return (
+        <div className="container mt-2">
+          <div className="row">
+            <div className="col">
+              <h1>No Shift Details Available</h1>
+            </div>
+            <div className="col">
+              <TopMenuHamburger/>
+            </div>
+          </div>
+        </div>);
     }
+    const { start_time: startTime, end_time: endTime, date } = this.state.shiftOverview;
+    const dateObj = getUTCYearMonthDateDay(date);
+    const timeDisplay = (
+      <>
+        <div>
+          {`${convertMilitaryTime(startTime)} - ${convertMilitaryTime(endTime)}`}
+        </div>
+        <div>
+          {`${dateObj.dayName}, ${dateObj.monthName} ${dateObj.date}, ${dateObj.year}`}
+        </div>
+      </>
+    );
+    const { checkedRounds } = this.state;
+    const { userId, date: unixDate } = this.props;
+    return (
+      <>
+        {this.state.postModalOpen && <PostModal date={unixDate} userId={userId} checkedRounds={checkedRounds} toggleModal={this.toggleModal}/>}
+        <div className="container">
+          <div className="row">
+            <div className="col">
+              <h1>Shift Details</h1>
+            </div>
+            <div className="col">
+              <TopMenuHamburger userId={userId}/>
+            </div>
+          </div>
+          <div className="row align-items-center mb-2">
+            <div className="col-2 col-md-1">
+              <RouteBusDisplay route={this.state.shiftOverview.line_name} bus={this.state.shiftOverview.route_id}/>
+            </div>
+            <div className="col text-left col-md-4">
+              {timeDisplay}
+            </div>
+          </div>
+          <div className="row my-4 flex-wrap justify-content-space-between">
+            <div className="col text-left"><h5>Tap or click the shifts you want to change</h5></div>
+          </div>
+          <div className="row mb-3">
+            <div className="col">
+              {this.state.selectAll
+                ? <button className="btn btn-success" onClick={this.unselectAllRounds}>
+                  Unselect All
+                </button>
+                : <button className="btn btn-success" onClick={this.selectAllRounds}>
+                  Select All
+                </button>
+              }
+
+            </div>
+            {this.state.swapFlag ? (
+              <div className="col d-flex justify-content-end">
+                <button className="btn btn-primary mr-3">
+                  <Link to={{
+                    pathname: '/trade-notification',
+                    state: {
+                      swapFlag: this.state.swapFlag
+                    }
+                  }}
+                  onClick={this.passCheckedRoundIds}>
+                    Select Swap Shift
+                  </Link>
+                </button>
+              </div>
+            ) : (
+              <div className="col d-flex justify-content-end">
+                <button className="btn btn-primary mr-3" onClick={this.toggleModal}>
+                    Post
+                </button>
+                <button className="btn btn-primary mr-3">
+                  <Link to='/trade-swap'
+                    onClick={this.passCheckedRoundIds}>
+                      Trade/Swap
+                  </Link>
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="row">
+            <div className="col">
+              <table className="table table-bordered text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.shiftDetails.map((shift, index) => {
+                    return (
+                      <Round
+                        id={shift.roundID}
+                        selectShift={this.selectShift}
+                        key={shift.roundID}
+                        startTime={shift.start_time}
+                        endTime={shift.end_time}
+                        selected={this.state.selectAll}
+                        checkedRounds={this.state.checkedRounds}
+                      />
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 }
 
 export default ShiftsDetails;
