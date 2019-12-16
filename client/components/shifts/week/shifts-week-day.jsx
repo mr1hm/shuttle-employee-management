@@ -119,64 +119,16 @@ class ShiftsWeekDay extends React.Component {
   }
 
   render() {
-<<<<<<< HEAD
-    // console.log('day data: ', this.props.dayData);
-    // console.log('shift data: ', this.props.shifts);
-
-    const range = { min: 6, max: 24 };
-    const startAndEndTimes = {start: 6, end: 24};
-    const dayText = convertUnixDateDay(parseInt(this.props.dayData.round_date));
-    const dateText = convertUnixDateNumber(parseInt(this.props.dayData.round_date));
-    const dayHours = this.props.dayData.shifts.reduce(((sum, current) => this.calculateDailyWorkingTotalHours(current, current)+sum),0);
-    const currentUnixDate = this.props.dayData.round_date;
-    let currentDayHighlightClass = 'dayDataContainer';
-=======
     const dayObj = getUTCYearMonthDateDay(this.props.dayData.round_date);
     const dayText = dayObj.dayNameShort;
     const dateText = dayObj.date;
     const dayHours = this.props.dayData.shifts.reduce((sum, current) => this.calculateDailyWorkingTotalHours(current, current) + sum, 0);
     const dayHoursRounded = dayHours.toFixed(1);
     let currentDayHighlightClass = 'dayMainContainer d-flex border';
->>>>>>> 2104ba19b95d2356742687f48d902a6831e8d25d
 
     if (parseInt(this.props.defaultDay) === parseInt(this.props.dayData.round_date)) {
       currentDayHighlightClass += ' currentDay';
     }
-<<<<<<< HEAD
-    const convertedShifts = this.props.shifts.map( (data,index) => ({
-      test: data.test + '-' + index,
-      type: data.posted ? 'posted': 'scheduled',
-      range: {
-        min: range.min,
-        max: range.max
-      },
-      shiftData: {
-        start: convertMilitaryTimeStringToMilitaryTimeFloat(data.start_time),
-        end: convertMilitaryTimeStringToMilitaryTimeFloat(data.end_time)
-      },
-      children: [data]
-    }));
-    return (
-      <div className={currentDayHighlightClass}>
-        <div className="dayLabelContainer">
-          <div className="dayText">{dayText}</div>
-          <div className="dateText">{dateText}</div>
-          <div className="dayHours">{dayHours} {dayHours === 1 ? 'Hour' : 'Hours'}</div>
-        </div>
-        <Link to={`/shifts/day/shifts-day/${this.getDateStringFromTimestamp(currentUnixDate)}`}>
-        <div className="shiftRowContainer">
-            <ShiftDisplayComponent
-              test='1'
-              type='active'
-              range={range}
-              shiftData={startAndEndTimes}
-              children={convertedShifts}
-            />
-        </div>
-        </Link>
-      </div>
-    )
-=======
     return (
       <Link
         className="shiftWeekIndividualDayLink"
@@ -193,30 +145,7 @@ class ShiftsWeekDay extends React.Component {
         </div>
       </Link>
     );
->>>>>>> 2104ba19b95d2356742687f48d902a6831e8d25d
   }
 }
 
 export default ShiftsWeekDay;
-<<<<<<< HEAD
-
-
-/*
-inside
-children: []
-range: {min: 6, max: 24}
-shiftData: {start: 8, end: 11.5}
-test: "undefined-0"
-type: "posted"
-__proto__: Object
-
-outside
-children: []
-range: {min: 600, max: 2400}
-shiftData: {start: 600, end: 2400}
-test: "1"
-type: "active"
-__proto__: Object
-*/
-=======
->>>>>>> 2104ba19b95d2356742687f48d902a6831e8d25d

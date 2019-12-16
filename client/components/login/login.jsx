@@ -86,11 +86,6 @@ class Login extends React.Component {
   }
 }
 
-<<<<<<< HEAD
-export default Login;
-
-=======
 export default connect(null, {
   userLogin
 })(Login);
->>>>>>> 2104ba19b95d2356742687f48d902a6831e8d25d

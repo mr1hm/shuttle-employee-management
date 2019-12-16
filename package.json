@@ -78,7 +78,7 @@
       }
     },
     "plugins": [
-        "react"
+      "react"
     ],
     "extends": [
       "standard",

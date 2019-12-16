@@ -14,9 +14,6 @@ import Welcome from './welcome/welcome';
 import OperatorAvailability from './operator-availability';
 import AdminOperatorAvailability from './admin-operator-availability';
 import AdminShiftsDay from './admin-shifts';
-<<<<<<< HEAD
-import './post-modal.css';
-=======
 import AdminRoutes from './admin-lines-buses';
 // import Transaction from './transaction/transactionpage';
 import TradeSwap from './trade-swap';
@@ -26,7 +23,6 @@ import LiveFieldStatus from './admin-lines-buses-liveFieldStatus';
 import MasterSchedule from './admin-lines-buses-master-schedule';
 import Nav from './nav';
 import NotFound from './errors/not_found';
->>>>>>> 2104ba19b95d2356742687f48d902a6831e8d25d
 
 class App extends React.Component {
   constructor(props) {
