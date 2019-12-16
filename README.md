@@ -1,4 +1,5 @@
-# 519_anteater_express
+UC Irvine Verminlingua (Anteater) Express
+======
 
 ## Participants
 
