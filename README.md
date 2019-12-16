@@ -1,6 +1,7 @@
 # 519_anteater_express
 
-### participants
+## Participants
+
 - Juliann Talkington
 - David Lazeskay
 - Stephanie Burcombe
@@ -12,3 +13,9 @@
 - Mitch O'Hair
 - Tarun Padath
 - Dane Maison
+
+## Features
+
+- User Authentication
+- Create, Edit and Delete Routes(Lines), Buses, Sessions(Quarters)
+- Auto-calculation of bus end times
